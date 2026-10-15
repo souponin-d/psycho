@@ -1,0 +1,23 @@
+name: Задача
+description: Конкретное изменение с проверяемым результатом
+title: "[Задача] "
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Цель
+      description: Что должно измениться и кому это нужно?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Ожидаемый результат
+      description: По каким наблюдаемым признакам задача будет выполнена?
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Контекст
+      description: Связанные требования, документы, идеи и зависимости.

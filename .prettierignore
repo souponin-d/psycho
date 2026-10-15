@@ -1,0 +1,12 @@
+node_modules/
+.cache/
+.superpowers/
+.worktrees/
+scratch/
+dist/
+build/
+coverage/
+package-lock.json
+
+# Preserve the original research document; its links are still checked.
+docs/Клинический-компас_исходное-ТЗ.md

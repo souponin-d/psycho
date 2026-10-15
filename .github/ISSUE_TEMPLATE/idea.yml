@@ -1,0 +1,30 @@
+name: Продуктовая гипотеза
+description: Идея для обсуждения с командой и проверки прототипом
+title: "[Идея] "
+body:
+  - type: textarea
+    id: user
+    attributes:
+      label: Пользователь и проблема
+      description: Кто сталкивается с трудностью и в какой ситуации?
+    validations:
+      required: true
+  - type: textarea
+    id: scenario
+    attributes:
+      label: Предлагаемый сценарий
+      description: Что делает пользователь и какой полезный результат получает?
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Как проверить
+      description: Что покажем команде или эксперту и что хотим узнать?
+    validations:
+      required: true
+  - type: textarea
+    id: assumptions
+    attributes:
+      label: Допущения и вопросы
+      description: Что ещё не подтверждено официальным заданием?

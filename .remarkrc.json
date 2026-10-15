@@ -1,0 +1,7 @@
+{
+  "plugins": [
+    "remark-gfm",
+    "remark-lint-no-undefined-references",
+    "remark-validate-links"
+  ]
+}

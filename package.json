@@ -1,0 +1,32 @@
+{
+  "name": "psycho-repository-tools",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Проверки и инструменты репозитория команды Клинического компаса",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "dev": "vite site --host 127.0.0.1",
+    "build": "vite build site --base ./ --outDir ../dist --emptyOutDir",
+    "preview": "vite preview site --host 127.0.0.1 --outDir ../dist",
+    "site:check": "node --check site/app.js",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "docs:check": "remark . .github --frail --no-stdout --quiet",
+    "check": "npm run format:check && npm run docs:check && npm run site:check && npm run build"
+  },
+  "devDependencies": {
+    "prettier": "3.9.10",
+    "remark-cli": "12.0.1",
+    "remark-gfm": "4.0.1",
+    "remark-lint-no-undefined-references": "5.0.2",
+    "remark-validate-links": "13.1.0",
+    "vite": "8.3.4"
+  },
+  "overrides": {
+    "unified-args": {
+      "chokidar": "5.0.0"
+    }
+  }
+}

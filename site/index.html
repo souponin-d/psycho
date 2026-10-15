@@ -1,0 +1,1192 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#edf3e8" />
+    <meta name="referrer" content="no-referrer" />
+    <meta
+      name="description"
+      content="Синкли — единая клиническая среда для врача и пациента: оценка состояния, динамика, безопасность терапии и связь между приёмами."
+    />
+    <title>Синкли — полная картина. Ближе к пациенту.</title>
+    <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
+    <link
+      rel="preload"
+      href="./assets/fonts/Onest.ttf"
+      as="font"
+      type="font/ttf"
+      crossorigin
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Перейти к содержимому</a>
+    <svg
+      class="svg-library"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <symbol id="i-arrow" viewBox="0 0 24 24">
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </symbol>
+      <symbol id="i-diagonal" viewBox="0 0 24 24">
+        <path d="M6 18 18 6M6 6h12v12" />
+      </symbol>
+      <symbol id="i-check" viewBox="0 0 24 24">
+        <path d="m5 12 4 4L19 6" />
+      </symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24">
+        <path d="M12 5v14M5 12h14" />
+      </symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24">
+        <path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Z" />
+        <path d="m8 12 3 3 5-6" />
+      </symbol>
+      <symbol id="i-bell" viewBox="0 0 24 24">
+        <path d="M6 9a6 6 0 0 1 12 0c0 6 3 6 3 8H3c0-2 3-2 3-8ZM9 21h6" />
+      </symbol>
+      <symbol id="i-grid" viewBox="0 0 24 24">
+        <rect x="4" y="4" width="6" height="6" rx="1" />
+        <rect x="14" y="4" width="6" height="6" rx="1" />
+        <rect x="4" y="14" width="6" height="6" rx="1" />
+        <rect x="14" y="14" width="6" height="6" rx="1" />
+      </symbol>
+      <symbol id="i-person" viewBox="0 0 24 24">
+        <circle cx="12" cy="8" r="4" />
+        <path d="M4 21v-3a8 8 0 0 1 16 0v3" />
+      </symbol>
+      <symbol id="i-chart" viewBox="0 0 24 24">
+        <path d="M4 3v17h17M8 14l4-5 4 3 5-7" />
+      </symbol>
+      <symbol id="i-message" viewBox="0 0 24 24">
+        <path d="M4 4h16v13H9l-5 4V4Z" />
+        <path d="M8 8h8M8 12h5" />
+      </symbol>
+      <symbol id="i-file" viewBox="0 0 24 24">
+        <path d="M5 3h9l5 5v13H5V3ZM14 3v6h5M9 13h6M9 17h4" />
+      </symbol>
+      <symbol id="i-monitor" viewBox="0 0 24 24">
+        <rect x="3" y="3" width="18" height="13" rx="2" />
+        <path d="M12 16v5M7 21h10" />
+      </symbol>
+      <symbol id="i-phone" viewBox="0 0 24 24">
+        <rect x="6" y="2" width="12" height="20" rx="3" />
+        <path d="M10 18h4" />
+      </symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7v5l3 2" />
+      </symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24">
+        <rect x="5" y="10" width="14" height="11" rx="2" />
+        <path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3" />
+      </symbol>
+      <symbol id="i-close" viewBox="0 0 24 24">
+        <path d="m6 6 12 12M18 6 6 18" />
+      </symbol>
+    </svg>
+
+    <header class="header" id="top">
+      <div class="container header-inner">
+        <a class="brand" href="#top" aria-label="Синкли, главная"
+          ><span class="brand-mark" aria-hidden="true"></span>синкли<span
+            class="brand-dot"
+            aria-hidden="true"
+            >●</span
+          ></a
+        >
+        <button
+          class="menu-toggle"
+          aria-label="Открыть меню"
+          aria-expanded="false"
+          aria-controls="navigation"
+        >
+          <span></span><span></span>
+        </button>
+        <nav id="navigation" aria-label="Главная навигация">
+          <a href="#product">Продукт</a><a href="#ecosystem">Экосистема</a
+          ><a href="#evidence">Научная основа</a
+          ><a href="#privacy">Защита данных</a>
+        </nav>
+        <button class="button button-small button-dark header-cta" data-demo>
+          Знакомство с продуктом <svg><use href="#i-diagonal" /></svg>
+        </button>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="hero">
+        <div class="container">
+          <div class="hero-top reveal">
+            <div class="hero-heading">
+              <p class="eyebrow">
+                <span class="status-dot"></span> Для врачей, пациентов и клиник
+              </p>
+              <h1>Полная картина.<br /><span>Ближе к пациенту.</span></h1>
+            </div>
+            <div class="hero-intro">
+              <p>
+                Тревога и депрессия требуют внимания и между приёмами. Соединяем
+                клинические данные, решения врача и повседневную жизнь пациента.
+              </p>
+              <button class="button button-dark" data-demo>
+                Посмотреть в работе
+                <svg><use href="#i-diagonal" /></svg></button
+              ><span class="quiet hero-caption"
+                >Одна среда. Три способа быть на связи.</span
+              >
+            </div>
+          </div>
+          <div class="hero-stage reveal">
+            <svg
+              class="contour-art"
+              viewBox="0 0 1200 520"
+              fill="none"
+              aria-hidden="true"
+            >
+              <ellipse cx="840" cy="285" rx="330" ry="180" />
+              <ellipse cx="840" cy="285" rx="370" ry="210" />
+              <ellipse cx="840" cy="285" rx="410" ry="240" />
+              <ellipse cx="840" cy="285" rx="450" ry="270" />
+            </svg>
+            <div class="desktop hero-desktop">
+              <div class="window-bar">
+                <div class="window-dots"><i></i><i></i><i></i></div>
+                <span
+                  ><svg><use href="#i-lock" /></svg> Рабочее пространство
+                  врача</span
+                ><span class="window-online"><b></b> Синхронизировано</span>
+              </div>
+              <div class="app-layout">
+                <aside class="app-sidebar">
+                  <div class="app-brand">
+                    <span class="brand-mark"></span><b>синкли</b>
+                  </div>
+                  <span class="side-label">РАБОЧЕЕ ПРОСТРАНСТВО</span>
+                  <div class="side-item active">
+                    <svg><use href="#i-grid" /></svg> Обзор
+                  </div>
+                  <div class="side-item">
+                    <svg><use href="#i-person" /></svg> Пациенты <span>24</span>
+                  </div>
+                  <div class="side-item">
+                    <svg><use href="#i-bell" /></svg> Сигналы
+                    <span class="side-alert">2</span>
+                  </div>
+                  <div class="side-item">
+                    <svg><use href="#i-message" /></svg> Сообщения
+                  </div>
+                  <div class="side-item">
+                    <svg><use href="#i-file" /></svg> База знаний
+                  </div>
+                  <div class="sidebar-doctor">
+                    <span class="avatar avatar-green">ЕК</span>
+                    <div>Елена К.<small>Лечащий врач</small></div>
+                  </div>
+                </aside>
+                <div class="app-main">
+                  <div class="app-topline">
+                    <span>Обзор пациентов</span
+                    ><span
+                      >Четверг, 15 октября
+                      <span class="avatar avatar-small">ЕК</span></span
+                    >
+                  </div>
+                  <div class="app-greeting">
+                    <div>
+                      <small>ВАЖНОЕ НА СЕГОДНЯ</small>
+                      <h3>Всё нужное — в поле зрения</h3>
+                    </div>
+                    <span class="demo-badge">Демо-данные</span>
+                  </div>
+                  <div class="app-stats">
+                    <div>
+                      <span>На сопровождении</span
+                      ><strong>24 <small>пациента</small></strong>
+                      <div class="stat-ticks">
+                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                      </div>
+                    </div>
+                    <div>
+                      <span>Новые самоотчёты</span
+                      ><strong>08 <small>с последнего входа</small></strong
+                      ><span class="stat-note"><b></b> Карточки обновлены</span>
+                    </div>
+                    <div class="stat-priority">
+                      <span>Требуют внимания</span
+                      ><strong>02 <small>сигнала</small></strong
+                      ><span class="stat-note"
+                        >Решения ожидают подтверждения</span
+                      >
+                    </div>
+                  </div>
+                  <div class="app-bottom-grid">
+                    <div class="patient-list">
+                      <div class="widget-title">
+                        <b>Ваши пациенты</b><span>Все пациенты ↗</span>
+                      </div>
+                      <div class="patient-row selected">
+                        <span class="avatar avatar-lilac">АМ</span>
+                        <div>
+                          <b>Анна М.</b
+                          ><small>Самоотчёт · сегодня, 09:12</small>
+                        </div>
+                        <span class="mini-pill mint">Есть обновление</span>
+                      </div>
+                      <div class="patient-row">
+                        <span class="avatar avatar-sand">СК</span>
+                        <div>
+                          <b>Сергей К.</b
+                          ><small>Повторный приём · 16 октября</small>
+                        </div>
+                        <span class="tiny-chart">⌁</span>
+                      </div>
+                      <div class="patient-row">
+                        <span class="avatar avatar-blue">ОВ</span>
+                        <div>
+                          <b>Ольга В.</b
+                          ><small>Сообщение · сегодня, 08:40</small>
+                        </div>
+                        <span class="mini-pill amber">Внимание</span>
+                      </div>
+                    </div>
+                    <div class="trend-widget">
+                      <div class="widget-title">
+                        <b>Анна М. · динамика</b><span>4 недели</span>
+                      </div>
+                      <div class="trend-legend">
+                        <span><i></i> PHQ-9</span><span><i></i> GAD-7</span>
+                      </div>
+                      <svg
+                        viewBox="0 0 300 105"
+                        class="line-chart"
+                        aria-label="Иллюстрация динамики баллов двух шкал за четыре недели"
+                      >
+                        <path
+                          class="chart-grid"
+                          d="M0 20H300M0 55H300M0 90H300"
+                        />
+                        <path
+                          class="line-secondary"
+                          d="M10 25C45 22 45 42 80 40S120 55 150 52 200 75 225 72 260 79 290 82"
+                        />
+                        <path
+                          class="line-primary"
+                          pathLength="1"
+                          d="M10 18C45 18 45 28 80 32S120 47 150 45 200 62 225 61 260 67 290 73"
+                        />
+                        <circle cx="290" cy="73" r="4" fill="currentColor" />
+                      </svg>
+                      <div class="chart-labels">
+                        <span>22 сен</span><span>29 сен</span><span>6 окт</span
+                        ><span>13 окт</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="hero-floating">
+              <span class="floating-icon"
+                ><svg><use href="#i-check" /></svg
+              ></span>
+              <div>
+                <b>Контекст сохранён</b
+                ><span>Самоотчёт уже в карточке у врача</span>
+              </div>
+            </div>
+            <div class="phone hero-phone">
+              <div class="phone-island"></div>
+              <div class="phone-status"><b>9:41</b><span>••• ▰</span></div>
+              <div class="phone-app">
+                <div class="phone-app-brand">
+                  <span class="brand-mark"></span>синкли<span
+                    class="avatar avatar-small avatar-lilac"
+                    >А</span
+                  >
+                </div>
+                <span class="phone-day">ЧЕТВЕРГ, 15 ОКТЯБРЯ</span>
+                <h3>Как вы<br />сегодня, Анна?</h3>
+                <p>Небольшая отметка.<br />Важная часть общей картины.</p>
+                <div class="mood-options">
+                  <span>◡</span><span>◡</span><span class="chosen">◡</span
+                  ><span>◡</span><span>◡</span>
+                </div>
+                <div class="phone-checkin">
+                  <span>Сон</span><b>Лучше, чем вчера <span>↗</span></b>
+                  <div class="sleep-bars">
+                    <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                  </div>
+                </div>
+                <div class="phone-connection">
+                  <span class="avatar avatar-small avatar-green">ЕК</span>
+                  <div>
+                    Ваш врач рядом<small>Елена К. · лечащий врач</small>
+                  </div>
+                  <svg><use href="#i-message" /></svg>
+                </div>
+                <div class="phone-button">
+                  Поделиться с врачом <span>↗</span>
+                </div>
+                <div class="phone-tabbar">
+                  <span>⌂<small>Сегодня</small></span
+                  ><span>⌁<small>Динамика</small></span
+                  ><span>□<small>Диалог</small></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="hero-bottom">
+            <span
+              >Врач принимает решение.<br /><b
+                >Синкли сохраняет связность.</b
+              ></span
+            >
+            <div>
+              <span
+                ><svg><use href="#i-monitor" /></svg> Веб и десктоп</span
+              ><span
+                ><svg><use href="#i-phone" /></svg> iOS и Android</span
+              ><span
+                ><svg><use href="#i-shield" /></svg> Российский контур
+                данных</span
+              >
+            </div>
+            <a
+              href="#product"
+              class="scroll-cue"
+              aria-label="Далее к возможностям продукта"
+              >↓</a
+            >
+          </div>
+        </div>
+      </section>
+
+      <section class="section product-section" id="product">
+        <div class="container">
+          <div class="section-heading reveal">
+            <p class="eyebrow">01 / Клиническая картина</p>
+            <div>
+              <h2>
+                Меньше разрозненных данных.<br /><span
+                  >Больше ясности для решения.</span
+                >
+              </h2>
+              <p class="section-intro">
+                От первого обращения до следующего приёма — одна история, в
+                которой видно главное.
+              </p>
+            </div>
+          </div>
+          <div class="capabilities reveal">
+            <article>
+              <span class="feature-number">01</span>
+              <h3>Оценить состояние</h3>
+              <p>
+                Стандартизированные шкалы, история пациента и контекст
+                обращения. С понятным происхождением каждого факта.
+              </p>
+            </article>
+            <article>
+              <span class="feature-number">02</span>
+              <h3>Сопровождать лечение</h3>
+              <p>
+                Динамика, переносимость и приверженность. Самоотчёты пациента
+                связаны с карточкой у его врача.
+              </p>
+            </article>
+            <article>
+              <span class="feature-number">03</span>
+              <h3>Вовремя отреагировать</h3>
+              <p>
+                Приоритетные сигналы и маршрутизация. Изменения плана вступают в
+                силу после решения врача.
+              </p>
+            </article>
+          </div>
+          <div class="clinical-showcase reveal">
+            <div class="showcase-copy">
+              <span class="mini-pill mint">Врач + пациент</span>
+              <h3>
+                Между двумя приёмами<br />не должно быть<br /><em
+                  >белых пятен.</em
+                >
+              </h3>
+              <p>
+                Видеть изменения. Слышать пациента. Понимать, что требует
+                внимания прямо сейчас.
+              </p>
+              <button class="text-button" data-demo>
+                Пройти клинический сценарий <svg><use href="#i-arrow" /></svg>
+              </button>
+              <div class="showcase-note">
+                <svg><use href="#i-lock" /></svg
+                ><span
+                  >Назначения и маршрутизация —<br />после подтверждения
+                  врачом.</span
+                >
+              </div>
+            </div>
+            <div class="clinical-panel">
+              <div class="clinical-panel-head">
+                <div>
+                  <span class="avatar avatar-lilac">АМ</span>
+                  <div>
+                    <b>Анна М., 34 года</b
+                    ><small>Наблюдение между визитами</small>
+                  </div>
+                </div>
+                <span class="live-label"><i></i> Связь с врачом</span>
+              </div>
+              <div
+                class="clinical-tabs"
+                role="tablist"
+                aria-label="Клиническая карточка"
+              >
+                <button
+                  role="tab"
+                  aria-selected="true"
+                  aria-controls="clinical-content"
+                  id="tab-dynamics"
+                  data-clinical-tab="dynamics"
+                >
+                  Динамика</button
+                ><button
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="clinical-content"
+                  id="tab-safety"
+                  tabindex="-1"
+                  data-clinical-tab="safety"
+                >
+                  Безопасность</button
+                ><button
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="clinical-content"
+                  id="tab-plan"
+                  tabindex="-1"
+                  data-clinical-tab="plan"
+                >
+                  План лечения
+                </button>
+              </div>
+              <div
+                id="clinical-content"
+                class="clinical-content"
+                role="tabpanel"
+                aria-labelledby="tab-dynamics"
+                tabindex="0"
+              ></div>
+              <div class="clinical-panel-foot">
+                <svg><use href="#i-file" /></svg> Вымышленный сценарий · шкалы
+                не заменяют клиническую оценку
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section ecosystem-section" id="ecosystem">
+        <div class="container">
+          <div class="section-heading reveal">
+            <p class="eyebrow">02 / Общая среда</p>
+            <div>
+              <h2>Разные экраны.<br /><span>Одна история пациента.</span></h2>
+              <p class="section-intro">
+                В кабинете, в клинике и в повседневной жизни. Контекст следует
+                за человеком.
+              </p>
+            </div>
+          </div>
+          <div
+            class="ecosystem-tabs reveal"
+            role="tablist"
+            aria-label="Платформы Синкли"
+          >
+            <button
+              role="tab"
+              aria-selected="true"
+              aria-controls="platform-panel"
+              id="platform-web"
+              data-platform="web"
+            >
+              <svg><use href="#i-grid" /></svg> Веб-приложение</button
+            ><button
+              role="tab"
+              aria-selected="false"
+              aria-controls="platform-panel"
+              id="platform-desktop"
+              tabindex="-1"
+              data-platform="desktop"
+            >
+              <svg><use href="#i-monitor" /></svg> Десктоп</button
+            ><button
+              role="tab"
+              aria-selected="false"
+              aria-controls="platform-panel"
+              id="platform-mobile"
+              tabindex="-1"
+              data-platform="mobile"
+            >
+              <svg><use href="#i-phone" /></svg> Мобильное приложение
+            </button>
+          </div>
+          <div
+            class="platform-panel reveal"
+            id="platform-panel"
+            role="tabpanel"
+            aria-labelledby="platform-web"
+            tabindex="0"
+          >
+            <div class="platform-description">
+              <span class="eyebrow" id="platform-kicker"
+                >ДЛЯ ВРАЧА И КЛИНИКИ</span
+              >
+              <h3 id="platform-title">Рабочий день.<br />Собранный воедино.</h3>
+              <p id="platform-copy">
+                Карточки пациентов, динамика и очередь внимания. Единая среда в
+                браузере — от индивидуальной практики до команды клиники.
+              </p>
+              <div class="platform-tags" id="platform-tags">
+                <span>Карточка пациента</span><span>Общий контекст</span
+                ><span>Разделение доступа</span>
+              </div>
+              <button class="text-button" data-demo>
+                Открыть рабочее пространство <svg><use href="#i-arrow" /></svg>
+              </button>
+            </div>
+            <div class="ecosystem-visual" id="ecosystem-visual"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section intelligence-section">
+        <div class="container">
+          <div class="section-heading reveal">
+            <p class="eyebrow">03 / Продумано для практики</p>
+            <div>
+              <h2>Помогает в деталях.<br /><span>Сохраняет главное.</span></h2>
+            </div>
+          </div>
+          <div class="feature-grid">
+            <article class="feature-card feature-evidence reveal">
+              <span class="card-label">ОБОСНОВАННОЕ РЕШЕНИЕ</span>
+              <h3>За каждым выводом —<br />видимый источник.</h3>
+              <p>
+                Клиническая рекомендация, инструкция или шкала. Врач видит
+                основание, версию и границы применимости.
+              </p>
+              <div class="source-paper">
+                <div>
+                  <svg><use href="#i-file" /></svg
+                  ><span>Паспорт рекомендации</span
+                  ><span class="mini-pill mint">Проверяемо</span>
+                </div>
+                <b>От вывода — к первоисточнику</b>
+                <p>
+                  Источник · версия · исходные данные<br />Недостающие сведения
+                  отмечены отдельно
+                </p>
+                <a href="#evidence">Научная основа <span>↗</span></a>
+              </div>
+            </article>
+            <article class="feature-card feature-brief reveal">
+              <span class="card-label">ПОДГОТОВКА К ПРИЁМУ</span>
+              <h3>Встреча начинается<br />с общей картины.</h3>
+              <p>
+                Сводка изменений, вопросы пациента и данные, которые ещё нужно
+                уточнить. Врач проверяет извлечённые факты.
+              </p>
+              <div class="brief-stack">
+                <div>
+                  <span class="check-circle">✓</span> Что изменилось за неделю
+                </div>
+                <div>
+                  <span class="check-circle">✓</span> Переносимость и пропуски
+                </div>
+                <div>
+                  <span class="pending-circle">?</span> Что важно уточнить на
+                  приёме
+                </div>
+              </div>
+            </article>
+            <article class="feature-card feature-alert reveal">
+              <span class="card-label">ЗАМКНУТЫЙ ЦИКЛ ВНИМАНИЯ</span>
+              <h3>У сигнала есть<br />адресат и продолжение.</h3>
+              <p>
+                Доставка, подтверждение получения и эскалация по регламенту
+                клиники. Виден весь путь до действия врача.
+              </p>
+              <div class="alert-flow">
+                <span><i></i> Получен</span><b>→</b><span><i></i> Принят</span
+                ><b>→</b><span><i></i> Обработан</span>
+              </div>
+            </article>
+            <article class="feature-card feature-clinic reveal">
+              <span class="card-label">ДЛЯ КОМАНДЫ КЛИНИКИ</span>
+              <h3>Ваши протоколы.<br />Согласованная работа.</h3>
+              <p>
+                Настраиваемые маршруты, версии правил и передача наблюдения с
+                правами доступа. Врачебные решения остаются персональными.
+              </p>
+              <div class="protocol-line">
+                <svg><use href="#i-person" /></svg><span>Лечащий врач</span
+                ><svg><use href="#i-arrow" /></svg
+                ><svg><use href="#i-shield" /></svg
+                ><span>Дежурная команда</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section evidence-section" id="evidence">
+        <div class="container">
+          <div class="section-heading reveal">
+            <p class="eyebrow">04 / Научная основа</p>
+            <div>
+              <h2>Измерять. Обсуждать.<br /><span>Принимать решение.</span></h2>
+              <p class="section-intro">
+                В основе — measurement-based care: регулярные измерения
+                становятся частью клинической работы.
+              </p>
+            </div>
+          </div>
+          <div class="evidence-cards reveal">
+            <article>
+              <div class="paper-top">
+                <span>РАНДОМИЗИРОВАННОЕ ИССЛЕДОВАНИЕ</span><span>2015</span>
+              </div>
+              <div class="paper-number">120<span>участников</span></div>
+              <h3>Измерения, включённые<br />в решения врача</h3>
+              <p>
+                Guo и соавт. сравнили ведение депрессии на основе измерений со
+                стандартной помощью в течение 24 недель.
+              </p>
+              <a
+                href="https://pubmed.ncbi.nlm.nih.gov/26315978/"
+                target="_blank"
+                rel="noopener noreferrer"
+                >American Journal of Psychiatry
+                <svg><use href="#i-diagonal" /></svg
+              ></a>
+            </article>
+            <article>
+              <div class="paper-top">
+                <span>СИСТЕМАТИЧЕСКИЙ ОБЗОР И МЕТААНАЛИЗ</span><span>2021</span>
+              </div>
+              <div class="paper-number">
+                7<span>рандомизированных исследований</span>
+              </div>
+              <h3>Подход изучен<br />в нескольких испытаниях</h3>
+              <p>
+                Zhu и соавт. объединили данные 2 019 пациентов. Результаты
+                поддерживают MBC, при ограничениях качества и неоднородности
+                исследований.
+              </p>
+              <a
+                href="https://pubmed.ncbi.nlm.nih.gov/34587377/"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Journal of Clinical Psychiatry
+                <svg><use href="#i-diagonal" /></svg
+              ></a>
+            </article>
+            <article>
+              <div class="paper-top">
+                <span>ПСИХОМЕТРИЧЕСКИЕ ИССЛЕДОВАНИЯ</span><span>2023</span>
+              </div>
+              <div class="paper-number paper-letters">
+                RU<span>русскоязычные версии шкал</span>
+              </div>
+              <h3>Измерения должны<br />подходить пациенту</h3>
+              <p>
+                Публикации о русских версиях PHQ-9 и GAD-7 описывают
+                психометрические свойства. Шкала помогает оценке, но не
+                устанавливает диагноз.
+              </p>
+              <div class="paper-links">
+                <a
+                  href="https://psyjournals.ru/en/journals/cpse/archive/2023_n4/Zolotareva"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >PHQ-9 <svg><use href="#i-diagonal" /></svg></a
+                ><a
+                  href="https://psyjournals.ru/en/journals/cpp/archive/2023_n4/Zolotareva"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >GAD-7 <svg><use href="#i-diagonal" /></svg
+                ></a>
+              </div>
+            </article>
+          </div>
+          <p class="research-note reveal">
+            <span>ГРАНИЦЫ ДОКАЗАТЕЛЬСТВ</span> Исследования обосновывают подход,
+            а не эффективность Синкли. Клиническая апробация продукта проводится
+            отдельно. Подбор версии шкалы и условия её использования проверяются
+            перед внедрением.
+          </p>
+        </div>
+      </section>
+
+      <section class="section comparison-section" id="compare">
+        <div class="container">
+          <div class="section-heading reveal">
+            <p class="eyebrow">05 / Контекст рынка</p>
+            <div>
+              <h2>
+                Сильные подходы.<br /><span>Собранные под нашу практику.</span>
+              </h2>
+              <p class="section-intro">
+                Мировой опыт цифровой психиатрии — с фокусом на российскую
+                клинику, источники и ответственность врача.
+              </p>
+            </div>
+          </div>
+          <div
+            class="comparison-wrap reveal"
+            role="region"
+            aria-label="Сравнение Синкли с тремя цифровыми платформами"
+            tabindex="0"
+          >
+            <table class="comparison-table">
+              <caption class="visually-hidden">
+                Сравнение публичных возможностей NeuroFlow, Osmind и Limbic с
+                проектируемым составом Синкли. Проверено 15 октября 2026 года.
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">Что важно в практике</th>
+                  <th scope="col" class="our-column">
+                    <span class="comparison-brand">синкли</span
+                    ><small>Наша концепция</small>
+                  </th>
+                  <th scope="col">
+                    <a
+                      href="https://www.neuroflow.com/integratebh/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >NeuroFlow ↗</a
+                    ><small>Поведенческое здоровье</small>
+                  </th>
+                  <th scope="col">
+                    <a
+                      href="https://www.osmind.org/psychiatry-ehr"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >Osmind ↗</a
+                    ><small>Психиатрическая практика</small>
+                  </th>
+                  <th scope="col">
+                    <a
+                      href="https://limbic.ai/access"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >Limbic ↗</a
+                    ><small>Intake и цифровая поддержка</small>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">Стандартизированная оценка состояния</th>
+                  <td class="our-column">
+                    <span class="table-check">✓</span> В едином маршруте
+                  </td>
+                  <td>Есть</td>
+                  <td>Есть</td>
+                  <td>Есть</td>
+                </tr>
+                <tr>
+                  <th scope="row">Интерфейсы команды и пациента</th>
+                  <td class="our-column">
+                    <span class="table-check">✓</span> Веб, десктоп, мобильный
+                  </td>
+                  <td>Есть</td>
+                  <td>Есть</td>
+                  <td>
+                    <a
+                      href="https://limbic.ai/care"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >Access + Care ↗</a
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">Выделение риска и сигналы</th>
+                  <td class="our-column">
+                    <span class="table-check">✓</span> С подтверждением и
+                    эскалацией
+                  </td>
+                  <td>Есть risk alerts</td>
+                  <td>Есть smart alerts</td>
+                  <td>Есть risk alerts</td>
+                </tr>
+                <tr>
+                  <th scope="row">Рекомендации Минздрава и инструкции ГРЛС</th>
+                  <td class="our-column">
+                    <span class="table-check">✓</span> В основе локального
+                    контура
+                  </td>
+                  <td class="not-disclosed">Не указано*</td>
+                  <td class="not-disclosed">Не указано*</td>
+                  <td class="not-disclosed">Не указано*</td>
+                </tr>
+                <tr>
+                  <th scope="row">Контур обработки данных в РФ</th>
+                  <td class="our-column">
+                    <span class="table-check">✓</span> Требование архитектуры
+                  </td>
+                  <td class="not-disclosed">Не указано*</td>
+                  <td class="not-disclosed">Не указано*</td>
+                  <td class="not-disclosed">Не указано*</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="comparison-notes reveal">
+            <p>
+              * Не указано в изученных публичных материалах — это не
+              подтверждение отсутствия функции. Сведения о конкурентах основаны
+              на их собственных описаниях.
+            </p>
+            <p>
+              Для Синкли показан проектируемый состав продукта. Проверено
+              15.10.2026. Эффективность, тарифы и полнота функций платформ здесь
+              не сравниваются.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section privacy-section" id="privacy">
+        <div class="container">
+          <div class="privacy-shell reveal">
+            <div class="privacy-heading">
+              <p class="eyebrow">
+                <svg><use href="#i-shield" /></svg> Данные под контролем клиники
+              </p>
+              <h2>Доверие начинается<br /><span>с архитектуры.</span></h2>
+              <p>
+                Медицинские данные требуют большего, чем российского сервера. В
+                основе — разделение доступа, правовые основания обработки и
+                управляемый жизненный цикл данных.
+              </p>
+              <button class="button button-mint" data-privacy>
+                Как устроен контур <svg><use href="#i-diagonal" /></svg>
+              </button>
+            </div>
+            <div class="privacy-diagram">
+              <div class="privacy-orbit orbit-one"></div>
+              <div class="privacy-orbit orbit-two"></div>
+              <div class="privacy-core">
+                <svg><use href="#i-shield" /></svg
+                ><b>Российский<br />контур данных</b
+                ><span>Доступ по роли и основанию</span>
+              </div>
+              <span class="diagram-node node-doctor"
+                ><svg><use href="#i-person" /></svg> Врач</span
+              ><span class="diagram-node node-patient"
+                ><svg><use href="#i-phone" /></svg> Пациент</span
+              ><span class="diagram-node node-clinic"
+                ><svg><use href="#i-grid" /></svg> Клиника</span
+              >
+            </div>
+            <div class="privacy-principles">
+              <div>
+                <span>01 / ЛОКАЛИЗАЦИЯ</span>
+                <h3>Хранение и обработка в РФ</h3>
+                <p>
+                  Данные, резервные копии и сервисы обработки — в российском
+                  контуре.
+                </p>
+              </div>
+              <div>
+                <span>02 / ПРАВА И ОСНОВАНИЯ</span>
+                <h3>Видно только необходимое</h3>
+                <p>
+                  Привязка к лечащему врачу, роли, согласия и учёт правовых
+                  оснований.
+                </p>
+              </div>
+              <div>
+                <span>03 / ПРОСЛЕЖИВАЕМОСТЬ</span>
+                <h3>Каждое действие учитывается</h3>
+                <p>Журнал доступа, изменения плана и обработка инцидентов.</p>
+              </div>
+            </div>
+            <p class="privacy-legal">
+              Проектирование с учётом
+              <a
+                href="https://mintrud.gov.ru/docs/laws/130"
+                target="_blank"
+                rel="noopener noreferrer"
+                >152-ФЗ</a
+              >
+              и врачебной тайны. Соответствие внедрения подтверждается после
+              реализации, определения ролей оператора и оценки мер защиты.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section faq-section">
+        <div class="container faq-grid">
+          <div class="reveal">
+            <p class="eyebrow">Коротко о главном</p>
+            <h2>Есть вопросы.<br /><span>Есть ясность.</span></h2>
+          </div>
+          <div class="faq-list reveal">
+            <details>
+              <summary>
+                Синкли принимает решения за врача?<svg>
+                  <use href="#i-plus" />
+                </svg>
+              </summary>
+              <p>
+                Синкли собирает контекст и предлагает варианты для рассмотрения.
+                Назначение, изменение и отмена терапии, направление к психиатру
+                и изменение плана требуют подтверждения врачом.
+              </p>
+            </details>
+            <details>
+              <summary>
+                Как разделены роли врача и пациента?<svg>
+                  <use href="#i-plus" />
+                </svg>
+              </summary>
+              <p>
+                Пациент видит собственные данные, задачи, динамику и диалог.
+                Врач работает с клинической карточкой связанных с ним пациентов.
+                Доступ клиники определяется полномочиями, а не просто наличием
+                учётной записи.
+              </p>
+            </details>
+            <details>
+              <summary>
+                На чём основаны рекомендации?<svg><use href="#i-plus" /></svg>
+              </summary>
+              <p>
+                В целевом продукте — на действующих рекомендациях Минздрава РФ,
+                актуальных инструкциях ГРЛС и валидированных русскоязычных
+                инструментах. Для каждого вывода предусмотрены источник, версия
+                и исходные данные. Международные материалы обозначаются
+                отдельно.
+              </p>
+            </details>
+            <details>
+              <summary>
+                Как рассматривается лекарственная терапия?<svg>
+                  <use href="#i-plus" />
+                </svg>
+              </summary>
+              <p>
+                Врач рассматривает препараты в рамках зарегистрированных
+                показаний и действующей инструкции. В демонстрационных сценариях
+                есть рассмотрение «Авиандра», как предусмотрено кейсом. Лендинг
+                не назначает лечение и не содержит персональных рекомендаций или
+                дозировок.
+              </p>
+            </details>
+            <details>
+              <summary>
+                Что требуется для соответствия 152-ФЗ?<svg>
+                  <use href="#i-plus" />
+                </svg>
+              </summary>
+              <p>
+                Российская локализация — лишь одна часть. Нужны правовые
+                основания обработки сведений о здоровье, документы оператора,
+                поручения обработчикам, необходимые согласия, оценка угроз и
+                меры защиты. Полный состав определяется для конкретного
+                внедрения. На этом сайте используются только вымышленные данные;
+                формы сбора медицинских данных отсутствуют.
+              </p>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section class="closing">
+        <div class="container reveal">
+          <p class="eyebrow">
+            <span class="status-dot"></span> Врач. Пациент. Клиника.
+          </p>
+          <h2>Быть на связи.<br /><span>Видеть целиком.</span></h2>
+          <div class="closing-bottom">
+            <p>Общая клиническая среда,<br />в которой важное не теряется.</p>
+            <button class="button button-dark" data-demo>
+              Познакомиться с Синкли <svg><use href="#i-diagonal" /></svg>
+            </button>
+          </div>
+          <span class="closing-watermark" aria-hidden="true">синкли</span>
+        </div>
+      </section>
+    </main>
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-top">
+          <a class="brand" href="#top"
+            ><span class="brand-mark" aria-hidden="true"></span>синкли</a
+          >
+          <p>Клиническая поддержка.<br />Человеческая связь.</p>
+          <div>
+            <a href="#evidence">Исследования ↗</a
+            ><a href="#compare">Сравнение платформ ↗</a
+            ><button data-privacy>Обработка данных ↗</button>
+          </div>
+          <a class="back-top" href="#top" aria-label="Наверх">↑</a>
+        </div>
+        <div class="footer-bottom">
+          <span>© 2026 · Концепция продукта «Синкли»</span>
+          <p>
+            Демонстрационная версия. Данные вымышлены. Клиническая эффективность
+            продукта не установлена.
+          </p>
+          <span>Создано для «Клинического компаса»</span>
+        </div>
+      </div>
+    </footer>
+
+    <dialog
+      class="product-dialog"
+      id="product-dialog"
+      aria-labelledby="demo-title"
+    >
+      <div class="dialog-top">
+        <div>
+          <p class="eyebrow">СИНКЛИ / ЗНАКОМСТВО С ПРОДУКТОМ</p>
+          <h2 id="demo-title">Одна история. Три точки зрения.</h2>
+        </div>
+        <button
+          class="icon-button"
+          data-close
+          aria-label="Закрыть демонстрацию"
+        >
+          <svg><use href="#i-close" /></svg>
+        </button>
+      </div>
+      <div
+        class="demo-role-tabs"
+        role="tablist"
+        aria-label="Роль в демонстрации"
+      >
+        <button
+          role="tab"
+          id="role-doctor"
+          data-role="doctor"
+          aria-selected="true"
+          aria-controls="demo-content"
+        >
+          Врач</button
+        ><button
+          role="tab"
+          id="role-patient"
+          data-role="patient"
+          aria-selected="false"
+          tabindex="-1"
+          aria-controls="demo-content"
+        >
+          Пациент</button
+        ><button
+          role="tab"
+          id="role-clinic"
+          data-role="clinic"
+          aria-selected="false"
+          tabindex="-1"
+          aria-controls="demo-content"
+        >
+          Клиника
+        </button>
+      </div>
+      <div
+        id="demo-content"
+        role="tabpanel"
+        aria-labelledby="role-doctor"
+        tabindex="0"
+      ></div>
+      <div class="dialog-bottom">
+        <span
+          ><i class="status-dot"></i> Учебный сценарий, данные вымышлены</span
+        ><button class="text-button" id="reset-demo">Начать заново ↺</button>
+      </div>
+    </dialog>
+    <dialog
+      class="privacy-dialog"
+      id="privacy-dialog"
+      aria-labelledby="privacy-title"
+    >
+      <div class="dialog-top">
+        <div>
+          <p class="eyebrow">АРХИТЕКТУРА ДОВЕРИЯ</p>
+          <h2 id="privacy-title">152-ФЗ — система требований.</h2>
+        </div>
+        <button
+          class="icon-button"
+          data-close
+          aria-label="Закрыть сведения о данных"
+        >
+          <svg><use href="#i-close" /></svg>
+        </button>
+      </div>
+      <div class="privacy-dialog-content">
+        <p class="dialog-lead">
+          Для будущей экосистемы закладывается российский контур без передачи
+          медицинских данных внешним зарубежным сервисам.
+        </p>
+        <div class="privacy-checklist">
+          <article>
+            <span>01</span>
+            <div>
+              <h3>Роли и основания</h3>
+              <p>
+                Определение оператора и обработчиков. Сведения о здоровье —
+                специальная категория. Основания обработки определяются для
+                каждого процесса; согласие не подменяет остальные обязанности.
+              </p>
+            </div>
+          </article>
+          <article>
+            <span>02</span>
+            <div>
+              <h3>Локализация и доступ</h3>
+              <p>
+                Российские базы, обработка и резервные копии. Раздельные
+                полномочия, привязка к лечащему врачу, многофакторный доступ для
+                сотрудников и журнал действий.
+              </p>
+            </div>
+          </article>
+          <article>
+            <span>03</span>
+            <div>
+              <h3>Жизненный цикл и инциденты</h3>
+              <p>
+                Сроки хранения, права субъектов, процедуры удаления,
+                реагирование на инциденты и проверка восстановления из резервных
+                копий.
+              </p>
+            </div>
+          </article>
+        </div>
+        <p class="dialog-limit">
+          Это описание проектируемых мер, а не сертификат соответствия.
+          Внедрение требует правовой и технической оценки. На текущем лендинге
+          нет аккаунтов, аналитики, трекеров или сбора сведений о здоровье.
+        </p>
+        <a
+          class="text-button"
+          href="https://mintrud.gov.ru/docs/laws/130"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Текст 152-ФЗ на сайте Минтруда <svg><use href="#i-diagonal" /></svg
+        ></a>
+      </div>
+    </dialog>
+    <div class="toast" role="status" aria-live="polite" id="toast"></div>
+  </body>
+</html>
