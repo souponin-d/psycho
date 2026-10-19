@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "scenario": "normal",
+  "patients": [
+    {
+      "id": "demo-patient-01",
+      "displayName": "Учебный пациент 01",
+      "secondaryText": "Синтетическая запись для примера"
+    },
+    {
+      "id": "demo-patient-02",
+      "displayName": "Учебный пациент 02",
+      "secondaryText": ""
+    }
+  ],
+  "department": {
+    "items": [
+      {
+        "id": "demo-records",
+        "label": "Учебные записи",
+        "value": "2",
+        "caption": "Готовое значение из набора"
+      },
+      { "id": "demo-zero", "label": "Пустые строки", "value": "0" },
+      {
+        "id": "demo-unavailable",
+        "label": "Недоступный показатель",
+        "value": null
+      }
+    ],
+    "series": {
+      "label": "Количество учебных записей",
+      "points": [
+        { "id": "demo-mon", "label": "Понедельник", "value": 2 },
+        { "id": "demo-tue", "label": "Вторник", "value": 0 },
+        { "id": "demo-wed", "label": "Среда", "value": null },
+        { "id": "demo-thu", "label": "Четверг", "value": 3 }
+      ]
+    }
+  }
+}

@@ -38,7 +38,7 @@
 ## Verification and documentation
 
 - Current prerequisites: Node.js 24.x and npm. Use `npm ci --ignore-scripts` after cloning or lockfile changes; use exact dependency versions.
-- Follow the [role-specific setup checklist](docs/team/local-development-setup.md). Contributors 2–5 need Node/web tooling only. Keep their shared and presentation checks runnable without .NET, a database, or mobile SDKs; backend/mobile checks remain separate required CI jobs. Planned application commands in that checklist are not available until P01 implements them.
-- Run `npm run check` before submitting changes. It currently checks formatting, local Markdown links, landing JavaScript syntax, and the landing build; production app checks do not exist yet.
+- Follow the [role-specific setup checklist](docs/team/local-development-setup.md) and [web component handoff](docs/team/web-components.md). Contributors 2–5 need Node/web tooling only. The doctor/admin shells and examples run independently of backend. Keep web and fixture checks runnable without .NET, a database, or mobile SDKs; backend/mobile checks remain separate as those applications arrive.
+- Run `npm run check` before submitting changes: formatting, local Markdown links, landing JavaScript syntax, and the landing build. For web or shared UI changes also run `npm run check:web`; for presentation data run `npm run check:fixtures`. CI runs all three independently on Ubuntu and Windows. Source workspace exports need no preliminary UI package build; one root lockfile controls all packages.
 - Add real application checks as their implementations arrive. Report commands, results, and checks that could not run. Do not describe planned commands or CI settings as already working.
 - Keep team documents and product copy in Russian. Update documentation when behavior, contracts, setup, or responsibilities change.

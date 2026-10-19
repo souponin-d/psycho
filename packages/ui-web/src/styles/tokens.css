@@ -1,0 +1,23 @@
+:root {
+  color-scheme: light;
+  --color-page: #fafbf7;
+  --color-surface: #ffffff;
+  --color-text: #1c2924;
+  --color-muted: #56645c;
+  --color-border: #dfe5dc;
+  --color-accent: #355e4a;
+  --color-accent-soft: #c6eba8;
+  --color-context: #e6dff0;
+  --color-soft: #edf3e8;
+  --color-error: #9d302a;
+  --font-body: Onest, Arial, sans-serif;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --radius-control: 6px;
+  --radius-panel: 10px;
+  --radius-dialog: 14px;
+}
