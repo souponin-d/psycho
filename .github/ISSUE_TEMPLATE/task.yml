@@ -10,10 +10,31 @@ body:
     validations:
       required: true
   - type: textarea
+    id: ownership
+    attributes:
+      label: Ответственность и границы
+      description: Кто владелец по плану участников 1–5? Перечисли разрешённые файлы, готовые входы/выходы, запреты и проверяющего. Участникам 2–5 не передаются backend, мобильное приложение и ключевые механизмы.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Требования, контракты и зависимости
+      description: Коды F/M/E/T, связанные issue/PR, входные и выходные API/данные. Укажи, что должно быть согласовано или слито до начала, либо напиши «нет».
+    validations:
+      required: true
+  - type: textarea
     id: acceptance
     attributes:
       label: Ожидаемый результат
       description: По каким наблюдаемым признакам задача будет выполнена?
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: Проверка и интеграция
+      description: Класс A (материал), B (представление) или C (поведение, владелец — глава разработки). Укажи готовую команду/инструкцию, данные и наблюдаемый результат. Для простых задач — короткая проверка; для ключевых механизмов — автоматические и интеграционные проверки.
     validations:
       required: true
   - type: textarea
