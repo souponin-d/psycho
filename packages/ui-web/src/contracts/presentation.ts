@@ -39,7 +39,7 @@ export const seriesPointSchema = z.strictObject({
 });
 export const chartSeriesSchema = z.strictObject({
   label,
-  points: z.array(seriesPointSchema).superRefine(uniqueIds),
+  points: z.array(seriesPointSchema).superRefine(uniqueIds).readonly(),
 });
 export const presentationFixtureSchema = z.strictObject({
   schemaVersion: z.literal(1),
