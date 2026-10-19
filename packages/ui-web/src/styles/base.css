@@ -1,4 +1,5 @@
 @import "./tokens.css";
+@import "./demo.css";
 
 @font-face {
   font-family: Onest;
@@ -14,7 +15,8 @@ body {
   margin: 0;
   background: var(--color-page);
   color: var(--color-text);
-  font: 15px/1.55 var(--font-body);
+  font: 14px/1.6 var(--font-body);
+  -webkit-font-smoothing: antialiased;
 }
 button,
 input,
@@ -50,17 +52,20 @@ p {
   overflow-wrap: anywhere;
 }
 h1 {
-  font-size: clamp(24px, 3vw, 30px);
-  line-height: 1.25;
-  letter-spacing: -0.025em;
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 450;
+  line-height: 1.08;
+  letter-spacing: -0.055em;
 }
 h2 {
-  font-size: 19px;
+  font-size: 24px;
+  font-weight: 450;
   line-height: 1.35;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.035em;
 }
 h3 {
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 500;
 }
 code {
   font-size: 0.875em;
@@ -79,7 +84,7 @@ code {
 }
 .stack {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-6);
 }
 .muted {
   color: var(--color-muted);
@@ -100,6 +105,7 @@ code {
   border: 1px dashed #9eafa2;
   border-radius: var(--radius-control);
   background: var(--color-page);
+  font-size: 13px;
 }
 .placeholder p {
   margin-top: var(--space-2);

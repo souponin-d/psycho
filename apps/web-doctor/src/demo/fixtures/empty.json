@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "synthetic": true,
+  "snapshot": "20 октября 2026",
+  "scenario": "empty",
+  "doctor": {
+    "id": "demo-doctor-01",
+    "name": "Врач Д-01",
+    "unit": "Кабинет сопровождения"
+  },
+  "highlights": [
+    {
+      "id": "demo-doctor-patients",
+      "label": "Пациенты",
+      "value": "0",
+      "caption": "Записей нет"
+    },
+    {
+      "id": "demo-doctor-updates",
+      "label": "Новые записи",
+      "value": "0",
+      "caption": "Обновлений нет"
+    },
+    {
+      "id": "demo-doctor-visits",
+      "label": "Встречи",
+      "value": "0",
+      "caption": "Расписание пусто"
+    }
+  ],
+  "patients": []
+}

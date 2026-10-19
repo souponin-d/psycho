@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "synthetic": true,
+  "snapshot": "20 октября 2026",
+  "scenario": "normal",
+  "unit": "Отделение сопровождения",
+  "period": "7–20 октября 2026",
+  "metrics": [
+    {
+      "id": "demo-admin-patients",
+      "label": "На сопровождении",
+      "value": "24",
+      "caption": "Четыре учебных кабинета"
+    },
+    {
+      "id": "demo-admin-reports",
+      "label": "Самоотчёты за период",
+      "value": "31",
+      "caption": "По доступным данным за 14 дней"
+    },
+    {
+      "id": "demo-admin-unanswered",
+      "label": "Обращения без ответа",
+      "value": "0",
+      "caption": "В учебной очереди"
+    },
+    {
+      "id": "demo-admin-history",
+      "label": "Сводка за прошлый месяц",
+      "value": null,
+      "caption": "Архивный набор не загружен"
+    }
+  ],
+  "series": {
+    "label": "Самоотчёты · 7–20 октября",
+    "points": [
+      {
+        "id": "demo-day-7",
+        "label": "7 октября",
+        "value": 1
+      },
+      {
+        "id": "demo-day-8",
+        "label": "8 октября",
+        "value": 2
+      },
+      {
+        "id": "demo-day-9",
+        "label": "9 октября",
+        "value": 0
+      },
+      {
+        "id": "demo-day-10",
+        "label": "10 октября",
+        "value": 3
+      },
+      {
+        "id": "demo-day-11",
+        "label": "11 октября",
+        "value": null
+      },
+      {
+        "id": "demo-day-12",
+        "label": "12 октября",
+        "value": 2
+      },
+      {
+        "id": "demo-day-13",
+        "label": "13 октября",
+        "value": 4
+      },
+      {
+        "id": "demo-day-14",
+        "label": "14 октября",
+        "value": 1
+      },
+      {
+        "id": "demo-day-15",
+        "label": "15 октября",
+        "value": 3
+      },
+      {
+        "id": "demo-day-16",
+        "label": "16 октября",
+        "value": 0
+      },
+      {
+        "id": "demo-day-17",
+        "label": "17 октября",
+        "value": 5
+      },
+      {
+        "id": "demo-day-18",
+        "label": "18 октября",
+        "value": 4
+      },
+      {
+        "id": "demo-day-19",
+        "label": "19 октября",
+        "value": 3
+      },
+      {
+        "id": "demo-day-20",
+        "label": "20 октября",
+        "value": 3
+      }
+    ]
+  },
+  "team": [
+    {
+      "id": "demo-doctor-01",
+      "name": "Врач Д-01",
+      "unit": "Кабинет сопровождения",
+      "patients": 8,
+      "reports": 9,
+      "nextVisit": "22 октября · 10:30"
+    },
+    {
+      "id": "demo-doctor-02",
+      "name": "Врач Д-02",
+      "unit": "Кабинет плановых встреч",
+      "patients": 7,
+      "reports": 8,
+      "nextVisit": "22 октября · 09:00"
+    },
+    {
+      "id": "demo-doctor-03",
+      "name": "Врач Д-03",
+      "unit": "Кабинет сопровождения",
+      "patients": 5,
+      "reports": 8,
+      "nextVisit": null
+    },
+    {
+      "id": "demo-doctor-04",
+      "name": "Врач Д-04",
+      "unit": "Кабинет первичных встреч",
+      "patients": 4,
+      "reports": 6,
+      "nextVisit": "23 октября · 14:00"
+    }
+  ],
+  "events": [
+    {
+      "id": "demo-admin-event-1",
+      "date": "20 октября · 10:05",
+      "title": "Добавлена учебная запись",
+      "body": "Кабинет Д-01 · новая запись доступна в демонстрации врача."
+    },
+    {
+      "id": "demo-admin-event-2",
+      "date": "20 октября · 09:40",
+      "title": "Расписание обновлено",
+      "body": "Кабинет Д-02 · показано готовое время следующей встречи."
+    },
+    {
+      "id": "demo-admin-event-3",
+      "date": "20 октября · 09:12",
+      "title": "Самоотчёт добавлен",
+      "body": "Синтетический пример поступившей записи, без сетевой доставки."
+    },
+    {
+      "id": "demo-admin-event-4",
+      "date": "19 октября · 17:30",
+      "title": "Сводка подготовлена",
+      "body": "За 11 октября нет данных. Пропуск на графике не означает нулевую активность."
+    }
+  ]
+}

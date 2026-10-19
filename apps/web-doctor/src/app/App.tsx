@@ -4,7 +4,7 @@ import {
   fixtureSources,
   type ExampleDefinition,
 } from "@psycho/ui-web/examples";
-import { presentationFixtureSchema } from "@psycho/ui-web/contracts";
+import { DoctorDemo } from "../demo/DoctorDemo";
 import { PatientListExample } from "../examples/PatientList.example";
 import { InfoDialogExample } from "../examples/InfoDialog.example";
 import { PrimitivesExample } from "../examples/Primitives.example";
@@ -32,28 +32,6 @@ const examples: ExampleDefinition[] = [
   },
 ];
 
-function PatientWorkspace() {
-  const data = presentationFixtureSchema.safeParse(fixtureSources.normal);
-  if (!data.success)
-    return (
-      <p role="alert">
-        Ошибка normal.json:{" "}
-        {data.error.issues.map((issue) => issue.path.join(".")).join(", ")}
-      </p>
-    );
-  return (
-    <div className="stack">
-      <div className="panel">
-        <PatientListExample fixture={data.data} recordAction={() => {}} />
-      </div>
-      <p className="notice">
-        Для проверки пустого списка, длинного текста и callbacks откройте{" "}
-        <a href="#/examples">примеры компонентов</a>.
-      </p>
-    </div>
-  );
-}
-
 export function App() {
   return (
     <AppShell
@@ -64,8 +42,8 @@ export function App() {
           path: "/patients",
           title: "Пациенты",
           description:
-            "Рабочая область списка и выбранного пациента. Подключения компонентов готовы.",
-          content: <PatientWorkspace />,
+            "Встречи, новые записи и общий контекст — в поле зрения врача.",
+          content: <DoctorDemo />,
         },
         {
           path: "/examples",

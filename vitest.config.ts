@@ -9,7 +9,7 @@ export default defineConfig({
         test: {
           name: "fixtures",
           environment: "node",
-          include: ["tests/fixtures.test.ts"],
+          include: ["tests/*fixtures.test.ts"],
         },
       },
       {

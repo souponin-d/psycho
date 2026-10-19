@@ -3,6 +3,9 @@
   flex-wrap: wrap;
   align-items: end;
   gap: 16px;
+  padding: 20px;
+  background: #f0edf4;
+  border-radius: 12px;
 }
 .selectField {
   display: grid;
@@ -16,7 +19,7 @@
 .selectField select {
   min-height: 44px;
   padding: 10px 32px 10px 12px;
-  border: 1px solid #899b8e;
+  border: 1px solid #b5c0b1;
   background: white;
   color: var(--color-text);
   border-radius: var(--radius-control);
@@ -30,8 +33,10 @@
 .log {
   display: grid;
   gap: 12px;
-  padding-top: 20px;
-  border-top: 1px solid var(--color-border);
+  padding: 20px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-page);
 }
 .logHeading {
   display: flex;
