@@ -8,6 +8,35 @@ import { DialogRoot, DialogTrigger, DialogPanel } from "./Dialog";
 import { LineChart } from "./LineChart";
 
 describe("поле", () => {
+  it.each([
+    { invalid: true, error: undefined, expected: "true" },
+    { invalid: "grammar" as const, error: undefined, expected: "grammar" },
+    { invalid: "spelling" as const, error: undefined, expected: "spelling" },
+    { invalid: false, error: undefined, expected: "false" },
+    { invalid: false, error: "Ошибка поля", expected: "true" },
+  ])(
+    "сохраняет внешнее aria-invalid=$invalid; локальная ошибка=$error",
+    ({ invalid, error, expected }) => {
+      render(
+        <>
+          <p id="external-error">Сообщение внешнего валидатора</p>
+          <TextField
+            label="Внешняя проверка"
+            value="Пример"
+            onChange={() => {}}
+            aria-invalid={invalid}
+            aria-describedby="external-error"
+            error={error}
+          />
+        </>,
+      );
+      const input = screen.getByRole("textbox", { name: "Внешняя проверка" });
+      expect(input.getAttribute("aria-invalid")).toBe(expected);
+      expect(input.getAttribute("aria-describedby")?.split(" ")).toContain(
+        "external-error",
+      );
+    },
+  );
   it("связывает подпись, подсказку и ошибку с контролируемым значением", async () => {
     const user = userEvent.setup();
     function Field() {
