@@ -1,0 +1,59 @@
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 16px;
+}
+.selectField {
+  display: grid;
+  gap: 6px;
+  min-width: 180px;
+  max-width: 100%;
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+}
+.selectField select {
+  min-height: 44px;
+  padding: 10px 32px 10px 12px;
+  border: 1px solid #899b8e;
+  background: white;
+  color: var(--color-text);
+  border-radius: var(--radius-control);
+  max-width: 100%;
+  text-overflow: ellipsis;
+}
+.stage {
+  display: grid;
+  gap: 24px;
+}
+.log {
+  display: grid;
+  gap: 12px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
+}
+.logHeading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+.entries {
+  margin: 0;
+  padding-left: 24px;
+  max-height: 240px;
+  overflow: auto;
+  font-size: 13px;
+}
+.entries li {
+  padding: 8px;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+.entries li:nth-child(odd) {
+  background: var(--color-page);
+}
+.preview {
+  min-width: 0;
+}

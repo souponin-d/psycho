@@ -1,0 +1,137 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-control);
+  background: var(--color-accent);
+  color: white;
+  font-weight: 500;
+  transition: background-color 120ms ease;
+}
+.button:hover:not(:disabled) {
+  background: #284b3a;
+}
+.button[data-variant="secondary"] {
+  background: white;
+  color: var(--color-text);
+  border-color: #a1afa5;
+}
+.button[data-variant="secondary"]:hover:not(:disabled) {
+  background: var(--color-soft);
+}
+.button:disabled {
+  background: #e3e8e0;
+  color: #647064;
+  border-color: #c7d0c4;
+}
+.field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.label {
+  font-size: 14px;
+  font-weight: 500;
+}
+.input {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #899b8e;
+  border-radius: var(--radius-control);
+  padding: 10px 12px;
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+.input[aria-invalid="true"] {
+  border-color: var(--color-error);
+}
+.input:disabled {
+  background: #edf0ea;
+  color: var(--color-muted);
+}
+.hint {
+  color: var(--color-muted);
+  font-size: 13px;
+}
+.error {
+  color: var(--color-error);
+  font-size: 13px;
+}
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: #10251b80;
+}
+.dialog {
+  position: fixed;
+  z-index: 41;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  width: min(580px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: var(--radius-dialog);
+  box-shadow: 0 20px 80px #10251b30;
+}
+.dialogHeader {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+.dialogTitle {
+  font-size: 19px;
+  margin: 0;
+}
+.dialogBody {
+  padding: 20px;
+  overflow: auto;
+  min-height: 0;
+}
+.chart {
+  margin: 0;
+  min-width: 0;
+}
+.chart figcaption {
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+.chart svg {
+  display: block;
+  width: 100%;
+  height: 160px;
+  background: var(--color-page);
+  border-radius: var(--radius-control);
+}
+.tableScroll {
+  overflow-x: auto;
+  margin-top: 12px;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.table th,
+.table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--color-border);
+  overflow-wrap: anywhere;
+}
+.table td:last-child {
+  width: 35%;
+}

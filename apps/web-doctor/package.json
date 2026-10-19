@@ -1,0 +1,15 @@
+{
+  "name": "@psycho/web-doctor",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 8767 --strictPort",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@psycho/ui-web": "0.0.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  }
+}
