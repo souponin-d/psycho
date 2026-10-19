@@ -83,6 +83,12 @@
   align-items: center;
   color: var(--color-muted);
 }
+.siteLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+}
 .development::before {
   content: "";
   width: 7px;
