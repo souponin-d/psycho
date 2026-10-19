@@ -20,6 +20,7 @@ export function TextField({
   id: suppliedId,
   className = "",
   "aria-describedby": describedBy,
+  "aria-invalid": invalid,
   ...props
 }: TextFieldProps) {
   const generatedId = useId();
@@ -43,7 +44,7 @@ export function TextField({
         value={value}
         onChange={(event) => onChange(event.currentTarget.value)}
         aria-describedby={descriptions}
-        aria-invalid={error ? true : undefined}
+        aria-invalid={error ? true : invalid}
         className={`${styles.input} ${className}`}
       />
       {hint && (

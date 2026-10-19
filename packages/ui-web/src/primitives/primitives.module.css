@@ -100,6 +100,22 @@
   overflow: auto;
   min-height: 0;
 }
+@media (max-height: 480px) {
+  .dialog {
+    max-height: calc(100dvh - 16px);
+  }
+  .dialogHeader {
+    gap: 12px;
+    padding: 8px 12px;
+  }
+  .dialogTitle {
+    font-size: 16px;
+    line-height: 1.25;
+  }
+  .dialogBody {
+    padding: 8px 12px;
+  }
+}
 .chart {
   margin: 0;
   min-width: 0;
