@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { AppShell } from "./AppShell";
@@ -22,8 +22,22 @@ const shell = () => (
 );
 
 describe("навигация оболочки", () => {
+  it("возвращает на сайт из опубликованного демо", () => {
+    vi.stubEnv("VITE_DEMO_SITE_HOME", "../../");
+    try {
+      render(shell());
+      expect(
+        screen
+          .getByRole("link", { name: "На сайт Синкли" })
+          .getAttribute("href"),
+      ).toBe("../../");
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
   it("открывает основной раздел и обновляет заголовок", () => {
     render(shell());
+    expect(screen.queryByRole("link", { name: "На сайт Синкли" })).toBeNull();
     expect(screen.getByRole("heading", { level: 1 }).textContent).toBe(
       "Пациенты",
     );

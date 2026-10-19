@@ -108,11 +108,11 @@
         <nav id="navigation" aria-label="Главная навигация">
           <a href="#product">Продукт</a><a href="#ecosystem">Экосистема</a
           ><a href="#evidence">Научная основа</a
-          ><a href="#privacy">Защита данных</a>
+          ><a href="#privacy">Защита данных</a><a href="#demo-apps">Демо</a>
         </nav>
-        <button class="button button-small button-dark header-cta" data-demo>
-          Знакомство с продуктом <svg><use href="#i-diagonal" /></svg>
-        </button>
+        <a class="button button-small button-dark header-cta" href="#demo-apps">
+          Открыть демо <svg><use href="#i-diagonal" /></svg>
+        </a>
       </div>
     </header>
 
@@ -131,12 +131,25 @@
                 Тревога и депрессия требуют внимания и между приёмами. Соединяем
                 клинические данные, решения врача и повседневную жизнь пациента.
               </p>
-              <button class="button button-dark" data-demo>
-                Посмотреть в работе
-                <svg><use href="#i-diagonal" /></svg></button
-              ><span class="quiet hero-caption"
-                >Одна среда. Три способа быть на связи.</span
+              <div
+                class="demo-entry"
+                id="demo-apps"
+                role="group"
+                aria-label="Демо веб-приложений"
               >
+                <a class="button button-dark" href="demo/doctor/">
+                  Демо врача <svg><use href="#i-diagonal" /></svg>
+                </a>
+                <a class="button button-mint" href="demo/admin/">
+                  Демо администратора <svg><use href="#i-diagonal" /></svg>
+                </a>
+                <span class="quiet demo-entry-note"
+                  >Синтетические данные. Без регистрации.</span
+                >
+              </div>
+              <button class="text-button demo-scenario" data-demo>
+                Учебный сценарий <svg><use href="#i-arrow" /></svg>
+              </button>
             </div>
           </div>
           <div class="hero-stage reveal">
@@ -554,9 +567,9 @@
                 <span>Карточка пациента</span><span>Общий контекст</span
                 ><span>Разделение доступа</span>
               </div>
-              <button class="text-button" data-demo>
-                Открыть рабочее пространство <svg><use href="#i-arrow" /></svg>
-              </button>
+              <a class="text-button" href="#demo-apps">
+                Открыть демо веб-приложений <svg><use href="#i-arrow" /></svg>
+              </a>
             </div>
             <div class="ecosystem-visual" id="ecosystem-visual"></div>
           </div>

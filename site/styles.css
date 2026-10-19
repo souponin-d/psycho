@@ -340,6 +340,26 @@ h1 span {
   font-size: 10px;
   margin-top: 13px;
 }
+.demo-entry {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+}
+.demo-entry .button {
+  min-height: 44px;
+  padding: 12px 16px;
+  gap: 12px;
+  justify-content: space-between;
+}
+.demo-entry-note {
+  font-size: 11px;
+  color: #56645c;
+}
+.demo-scenario {
+  margin-top: 16px;
+  min-height: 44px;
+}
 .hero-stage {
   position: relative;
   height: 570px;

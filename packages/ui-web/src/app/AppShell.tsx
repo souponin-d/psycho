@@ -28,6 +28,7 @@ export function AppShell({
   const heading = useRef<HTMLHeadingElement>(null);
   const previousPath = useRef(path);
   const pageTitle = section?.title ?? "Страница не найдена";
+  const siteHref = import.meta.env.VITE_DEMO_SITE_HOME;
   useEffect(() => {
     document.title = `${pageTitle} · ${title} · Синкли`;
     if (previousPath.current !== path) heading.current?.focus();
@@ -71,7 +72,9 @@ export function AppShell({
           ))}
         </nav>
         <p className={styles.sidebarNote}>
-          P01a · Подготовка веб-приложений
+          {siteHref
+            ? "Демо веб-приложения"
+            : "P01a · Подготовка веб-приложений"}
           <br />
           Только вымышленные примеры
         </p>
@@ -79,8 +82,15 @@ export function AppShell({
       <div className={styles.workspace}>
         <header className={styles.topbar}>
           <span>{title}</span>
+          {siteHref && (
+            <a className={styles.siteLink} href={siteHref}>
+              <span aria-hidden="true">←</span> На сайт Синкли
+            </a>
+          )}
           <span className={styles.development}>
-            Среда разработки · синтетические данные
+            {siteHref
+              ? "Демо · синтетические данные"
+              : "Среда разработки · синтетические данные"}
           </span>
         </header>
         <main id="main-content" className={styles.content}>
