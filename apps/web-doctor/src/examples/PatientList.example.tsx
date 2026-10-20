@@ -21,7 +21,7 @@ export function PatientListExample({ fixture, recordAction }: ExampleContext) {
       </section>
       <section className="stack" aria-label="Область выбранного пациента">
         <h2>Выбранный пациент</h2>
-        <p className="notice">
+        <p className="notice" role="status">
           {selectedId ? (
             <>
               Идентификатор: <code>{selectedId}</code>
@@ -31,8 +31,8 @@ export function PatientListExample({ fixture, recordAction }: ExampleContext) {
           )}
         </p>
         <p className="muted">
-          После выполнения #5 выбор строки передаст сюда её id. Клиническая
-          карточка и загрузка данных появятся в следующих задачах.
+          Выберите пациента в списке, чтобы увидеть его идентификатор здесь и
+          вызов onSelect в журнале действий.
         </p>
       </section>
     </div>
