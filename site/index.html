@@ -108,7 +108,7 @@
         <nav id="navigation" aria-label="Главная навигация">
           <a href="#product">Продукт</a><a href="#ecosystem">Экосистема</a
           ><a href="#evidence">Научная основа</a
-          ><a href="#privacy">Защита данных</a><a href="#demo-apps">Демо</a>
+          ><a href="#privacy">Защита данных</a>
         </nav>
         <a class="button button-small button-dark header-cta" href="#demo-apps">
           Открыть демо <svg><use href="#i-diagonal" /></svg>
@@ -117,14 +117,48 @@
     </header>
 
     <main id="main">
+      <section
+        class="identity-hero"
+        data-hero-animation
+        aria-labelledby="identity-title"
+      >
+        <canvas aria-hidden="true"></canvas>
+        <div class="identity-fallback" data-hero-fallback aria-hidden="true">
+          <span></span><span></span>
+        </div>
+        <div class="container identity-copy">
+          <span class="identity-brand" aria-hidden="true"
+            ><span class="brand-mark"></span>синкли<span class="brand-dot"
+              >●</span
+            ></span
+          >
+          <h1 id="identity-title">
+            Больше внимания<br /><span>человеку.</span>
+          </h1>
+          <p>
+            Связываем работу врача, повседневную жизнь пациента и аналитику в
+            единую цифровую среду.
+          </p>
+        </div>
+        <div class="container identity-controls">
+          <button
+            class="identity-toggle"
+            data-hero-toggle
+            type="button"
+            aria-pressed="false"
+            hidden
+          >
+            Приостановить анимацию
+          </button>
+        </div>
+      </section>
       <section class="hero">
         <div class="container">
           <div class="hero-top reveal">
             <div class="hero-heading">
-              <p class="eyebrow">
-                <span class="status-dot"></span> Для врачей, пациентов и клиник
-              </p>
-              <h1>Полная картина.<br /><span>Ближе к пациенту.</span></h1>
+              <h2 class="legacy-hero-title">
+                Полная картина.<br /><span>Ближе к пациенту.</span>
+              </h2>
             </div>
             <div class="hero-intro">
               <p>
@@ -143,9 +177,6 @@
                 <a class="button button-mint" href="demo/admin/">
                   Демо администратора <svg><use href="#i-diagonal" /></svg>
                 </a>
-                <span class="quiet demo-entry-note"
-                  >Синтетические данные. Без регистрации.</span
-                >
               </div>
               <button class="text-button demo-scenario" data-demo>
                 Учебный сценарий <svg><use href="#i-arrow" /></svg>
@@ -352,11 +383,6 @@
             </div>
           </div>
           <div class="hero-bottom">
-            <span
-              >Врач принимает решение.<br /><b
-                >Синкли сохраняет связность.</b
-              ></span
-            >
             <div>
               <span
                 ><svg><use href="#i-monitor" /></svg> Веб и десктоп</span
@@ -944,6 +970,60 @@
               реализации, определения ролей оператора и оценки мер защиты.
             </p>
           </div>
+        </div>
+      </section>
+
+      <section
+        class="section team-section"
+        id="team"
+        aria-labelledby="team-title"
+      >
+        <div class="container">
+          <div class="section-heading reveal">
+            <h2 id="team-title">Команда</h2>
+          </div>
+          <ul class="team-grid">
+            <li class="team-card reveal">
+              <div class="team-photo">
+                <svg aria-hidden="true"><use href="#i-person" /></svg>
+                <span>Фото участника</span>
+              </div>
+              <h3>Имя Фамилия</h3>
+              <p>Роль в команде и несколько слов об участнике.</p>
+            </li>
+            <li class="team-card reveal">
+              <div class="team-photo">
+                <svg aria-hidden="true"><use href="#i-person" /></svg>
+                <span>Фото участника</span>
+              </div>
+              <h3>Имя Фамилия</h3>
+              <p>Роль в команде и несколько слов об участнике.</p>
+            </li>
+            <li class="team-card reveal">
+              <div class="team-photo">
+                <svg aria-hidden="true"><use href="#i-person" /></svg>
+                <span>Фото участника</span>
+              </div>
+              <h3>Имя Фамилия</h3>
+              <p>Роль в команде и несколько слов об участнике.</p>
+            </li>
+            <li class="team-card reveal">
+              <div class="team-photo">
+                <svg aria-hidden="true"><use href="#i-person" /></svg>
+                <span>Фото участника</span>
+              </div>
+              <h3>Имя Фамилия</h3>
+              <p>Роль в команде и несколько слов об участнике.</p>
+            </li>
+            <li class="team-card reveal">
+              <div class="team-photo">
+                <svg aria-hidden="true"><use href="#i-person" /></svg>
+                <span>Фото участника</span>
+              </div>
+              <h3>Имя Фамилия</h3>
+              <p>Роль в команде и несколько слов об участнике.</p>
+            </li>
+          </ul>
         </div>
       </section>
 

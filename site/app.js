@@ -1,3 +1,7 @@
+import { mountHeroAnimation } from "./hero-animation.js";
+
+mountHeroAnimation(document.querySelector("[data-hero-animation]"));
+
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const icon = (name) => `<svg aria-hidden="true"><use href="#i-${name}"/></svg>`;
