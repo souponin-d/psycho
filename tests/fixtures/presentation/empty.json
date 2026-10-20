@@ -4,6 +4,9 @@
   "patients": [],
   "department": {
     "items": [],
-    "series": { "label": "Учебная серия без данных", "points": [] }
+    "series": {
+      "label": "Учебная серия: учебные записи отсутствуют",
+      "points": []
+    }
   }
 }
