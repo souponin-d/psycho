@@ -36,5 +36,28 @@
     "points": []
   },
   "team": [],
-  "events": []
+  "events": [],
+  "currentEmployeeId": "demo-staff-01",
+  "employees": [
+    {
+      "id": "demo-staff-01",
+      "name": "Сотрудник А-01",
+      "kind": "staff",
+      "roles": ["coordinator", "director", "system"]
+    }
+  ],
+  "tasks": [],
+  "periods": [
+    {
+      "id": "demo-period-full",
+      "label": "7–20 октября 2026",
+      "startDate": "2026-10-07",
+      "endDate": "2026-10-20",
+      "series": {
+        "label": "Самоотчёты за период",
+        "points": []
+      },
+      "officeReports": []
+    }
+  ]
 }

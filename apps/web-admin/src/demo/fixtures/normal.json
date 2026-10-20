@@ -165,5 +165,231 @@
       "title": "Сводка подготовлена",
       "body": "За 11 октября нет данных. Пропуск на графике не означает нулевую активность."
     }
+  ],
+  "currentEmployeeId": "demo-staff-01",
+  "employees": [
+    {
+      "id": "demo-staff-01",
+      "name": "Сотрудник А-01",
+      "kind": "staff",
+      "roles": ["coordinator", "director", "system"]
+    },
+    {
+      "id": "demo-staff-02",
+      "name": "Сотрудник А-02",
+      "kind": "staff",
+      "roles": ["coordinator"]
+    },
+    {
+      "id": "demo-doctor-01",
+      "name": "Врач Д-01",
+      "kind": "doctor",
+      "roles": []
+    },
+    {
+      "id": "demo-doctor-02",
+      "name": "Врач Д-02",
+      "kind": "doctor",
+      "roles": []
+    },
+    {
+      "id": "demo-doctor-03",
+      "name": "Врач Д-03",
+      "kind": "doctor",
+      "roles": []
+    },
+    {
+      "id": "demo-doctor-04",
+      "name": "Врач Д-04",
+      "kind": "doctor",
+      "roles": []
+    }
+  ],
+  "tasks": [
+    {
+      "id": "demo-task-schedule",
+      "title": "Уточнить расписание кабинета Д-03",
+      "description": "В сводке не указано время следующей встречи",
+      "detail": "Связаться с ответственным сотрудником и уточнить организационную информацию о расписании. Выполнение задачи не добавляет дату встречи и не изменяет медицинские записи.",
+      "completedTitle": "Расписание кабинета проверено",
+      "assigneeId": "demo-staff-01",
+      "officeId": "demo-doctor-03",
+      "due": "Сегодня · до 16:00"
+    },
+    {
+      "id": "demo-task-coverage",
+      "title": "Проверить сводку за 11 октября",
+      "description": "Нет дневных данных. Это не нулевая активность",
+      "detail": "Проверить полноту сводки у ответственного сотрудника. Отметка о выполнении фиксирует организационную проверку и не меняет исходные значения графика.",
+      "completedTitle": "Полнота сводки проверена",
+      "assigneeId": "demo-staff-01",
+      "officeId": null,
+      "due": "Сегодня · до 17:00"
+    }
+  ],
+  "periods": [
+    {
+      "id": "demo-period-full",
+      "label": "7–20 октября 2026",
+      "startDate": "2026-10-07",
+      "endDate": "2026-10-20",
+      "series": {
+        "label": "Самоотчёты · 7–20 октября",
+        "points": [
+          {
+            "id": "demo-day-7",
+            "label": "7 октября",
+            "value": 1
+          },
+          {
+            "id": "demo-day-8",
+            "label": "8 октября",
+            "value": 2
+          },
+          {
+            "id": "demo-day-9",
+            "label": "9 октября",
+            "value": 0
+          },
+          {
+            "id": "demo-day-10",
+            "label": "10 октября",
+            "value": 3
+          },
+          {
+            "id": "demo-day-11",
+            "label": "11 октября",
+            "value": null
+          },
+          {
+            "id": "demo-day-12",
+            "label": "12 октября",
+            "value": 2
+          },
+          {
+            "id": "demo-day-13",
+            "label": "13 октября",
+            "value": 4
+          },
+          {
+            "id": "demo-day-14",
+            "label": "14 октября",
+            "value": 1
+          },
+          {
+            "id": "demo-day-15",
+            "label": "15 октября",
+            "value": 3
+          },
+          {
+            "id": "demo-day-16",
+            "label": "16 октября",
+            "value": 0
+          },
+          {
+            "id": "demo-day-17",
+            "label": "17 октября",
+            "value": 5
+          },
+          {
+            "id": "demo-day-18",
+            "label": "18 октября",
+            "value": 4
+          },
+          {
+            "id": "demo-day-19",
+            "label": "19 октября",
+            "value": 3
+          },
+          {
+            "id": "demo-day-20",
+            "label": "20 октября",
+            "value": 3
+          }
+        ]
+      },
+      "officeReports": [
+        {
+          "doctorId": "demo-doctor-01",
+          "count": 9
+        },
+        {
+          "doctorId": "demo-doctor-02",
+          "count": 8
+        },
+        {
+          "doctorId": "demo-doctor-03",
+          "count": 8
+        },
+        {
+          "doctorId": "demo-doctor-04",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "id": "demo-period-recent",
+      "label": "14–20 октября 2026",
+      "startDate": "2026-10-14",
+      "endDate": "2026-10-20",
+      "series": {
+        "label": "Самоотчёты · 14–20 октября",
+        "points": [
+          {
+            "id": "demo-day-14",
+            "label": "14 октября",
+            "value": 1
+          },
+          {
+            "id": "demo-day-15",
+            "label": "15 октября",
+            "value": 3
+          },
+          {
+            "id": "demo-day-16",
+            "label": "16 октября",
+            "value": 0
+          },
+          {
+            "id": "demo-day-17",
+            "label": "17 октября",
+            "value": 5
+          },
+          {
+            "id": "demo-day-18",
+            "label": "18 октября",
+            "value": 4
+          },
+          {
+            "id": "demo-day-19",
+            "label": "19 октября",
+            "value": 3
+          },
+          {
+            "id": "demo-day-20",
+            "label": "20 октября",
+            "value": 3
+          }
+        ]
+      },
+      "officeReports": [
+        {
+          "doctorId": "demo-doctor-01",
+          "count": 6
+        },
+        {
+          "doctorId": "demo-doctor-02",
+          "count": 5
+        },
+        {
+          "doctorId": "demo-doctor-03",
+          "count": 5
+        },
+        {
+          "doctorId": "demo-doctor-04",
+          "count": 3
+        }
+      ]
+    }
   ]
 }

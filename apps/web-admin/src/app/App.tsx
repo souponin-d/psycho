@@ -1,4 +1,4 @@
-import { AppShell, LineChart } from "@psycho/ui-web";
+import { LineChart } from "@psycho/ui-web";
 import {
   ExampleWorkbench,
   fixtureSources,
@@ -22,26 +22,10 @@ const examples: ExampleDefinition[] = [
 
 export function App() {
   return (
-    <AppShell
-      title="Административный веб"
-      defaultPath="/summary"
-      sections={[
-        {
-          path: "/summary",
-          title: "Сводка",
-          description:
-            "Ритм отделения, работа команды и события — в одном пространстве.",
-          content: <AdminDemo />,
-        },
-        {
-          path: "/examples",
-          title: "Примеры",
-          description: "Проверка отображения готовых показателей и серий.",
-          content: (
-            <ExampleWorkbench fixtures={fixtureSources} examples={examples} />
-          ),
-        },
-      ]}
+    <AdminDemo
+      examples={
+        <ExampleWorkbench fixtures={fixtureSources} examples={examples} />
+      }
     />
   );
 }
