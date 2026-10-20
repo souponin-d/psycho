@@ -7,6 +7,7 @@
     ".": "./src/index.ts",
     "./contracts": "./src/contracts/presentation.ts",
     "./examples": "./src/examples/index.ts",
+    "./demo-data": "./src/demo/data.ts",
     "./styles.css": "./src/styles/base.css"
   },
   "dependencies": {

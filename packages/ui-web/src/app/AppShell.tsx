@@ -53,20 +53,24 @@ export function AppShell({
             href={`#${defaultPath}`}
             aria-label="Синкли — основной раздел"
           >
-            <span className={styles.mark} aria-hidden="true">
-              с
+            <span className={styles.mark} aria-hidden="true" />
+            синкли
+            <span className={styles.brandDot} aria-hidden="true">
+              ●
             </span>
-            Синкли
           </a>
           <p className={styles.appName}>{title}</p>
         </div>
         <nav aria-label="Разделы приложения" className={styles.nav}>
-          {sections.map((item) => (
+          {sections.map((item, index) => (
             <a
               key={item.path}
               href={`#${item.path}`}
               aria-current={path === item.path ? "page" : undefined}
             >
+              <span className={styles.navIndex} aria-hidden="true">
+                {String(index + 1).padStart(2, "0")}
+              </span>
               {item.title}
             </a>
           ))}

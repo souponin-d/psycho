@@ -1,15 +1,19 @@
 .shell {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 232px minmax(0, 1fr);
+  grid-template-columns: 224px minmax(0, 1fr);
 }
 .sidebar {
-  padding: 28px 20px;
-  background: #f0f4ed;
+  padding: 32px 20px;
+  background: var(--color-page);
   border-right: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
   gap: 28px;
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  overflow-y: auto;
 }
 .brand {
   color: var(--color-text);
@@ -17,24 +21,51 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 23px;
-  font-weight: 700;
-  letter-spacing: -0.04em;
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.065em;
 }
 .mark {
-  display: grid;
-  place-items: center;
-  width: 34px;
+  display: inline-block;
+  position: relative;
+  width: 28px;
   height: 34px;
-  background: var(--color-accent);
-  color: white;
-  border-radius: 9px;
-  font-size: 20px;
+  flex-shrink: 0;
+  transform: rotate(-18deg);
+}
+.mark::before,
+.mark::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 23px;
+  border: 2.5px solid currentColor;
+  border-radius: 20px;
+  left: 0;
+  top: 0;
+}
+.mark::after {
+  left: 9px;
+  top: 10px;
+}
+.brandDot {
+  font-size: 8px;
+  color: #6a8362;
+  align-self: start;
+  margin-top: 6px;
+}
+.navIndex {
+  font-size: 10px;
+  opacity: 0.7;
+  margin-right: 12px;
+  font-variant-numeric: tabular-nums;
 }
 .appName {
   color: var(--color-muted);
-  font-size: 13px;
-  margin-top: 8px;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 20px;
 }
 .nav {
   display: grid;
@@ -55,13 +86,16 @@
   color: var(--color-text);
 }
 .nav a[aria-current="page"] {
-  background: var(--color-accent);
+  background: var(--color-text);
   color: white;
 }
 .sidebarNote {
   margin-top: auto;
   font-size: 12px;
   color: var(--color-muted);
+  border-top: 1px solid var(--color-border);
+  padding-top: 20px;
+  line-height: 1.8;
 }
 .workspace {
   min-width: 0;
@@ -75,7 +109,8 @@
   justify-content: space-between;
   align-items: center;
   font-size: 13px;
-  background: var(--color-surface);
+  background: var(--color-page);
+  min-height: 76px;
 }
 .development {
   display: inline-flex;
@@ -97,12 +132,12 @@
   background: var(--color-accent);
 }
 .content {
-  padding: 32px 24px;
+  padding: 36px 32px;
   max-width: 1440px;
   margin: 0 auto;
 }
 .heading {
-  margin-bottom: 24px;
+  margin-bottom: 32px;
   display: grid;
   gap: 8px;
 }
@@ -127,6 +162,9 @@
     grid-template-columns: minmax(0, 1fr);
   }
   .sidebar {
+    position: static;
+    height: auto;
+    overflow: visible;
     padding: 16px;
     border-right: 0;
     border-bottom: 1px solid var(--color-border);
@@ -140,6 +178,9 @@
     padding: 10px 16px;
   }
   .sidebarNote {
+    display: none;
+  }
+  .appName {
     display: none;
   }
   .content {

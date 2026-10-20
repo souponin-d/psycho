@@ -43,6 +43,15 @@ export function LineChart({ series }: { series: ChartSeries }) {
           role="img"
           aria-label={`${series.label} — график`}
         >
+          <g
+            stroke="var(--color-border)"
+            strokeDasharray="3 5"
+            aria-hidden="true"
+          >
+            {[20, 80, 140].map((y) => (
+              <line key={y} x1="20" x2="580" y1={y} y2={y} />
+            ))}
+          </g>
           <path
             d={path.trim()}
             fill="none"
@@ -67,7 +76,12 @@ export function LineChart({ series }: { series: ChartSeries }) {
           Нет числовых значений для графика.
         </p>
       )}
-      <div className={styles.tableScroll}>
+      <div
+        className={styles.tableScroll}
+        tabIndex={0}
+        role="region"
+        aria-label={`${series.label} — таблица с прокруткой`}
+      >
         <table
           className={styles.table}
           aria-label={`${series.label} — значения`}

@@ -4,7 +4,7 @@ import {
   fixtureSources,
   type ExampleDefinition,
 } from "@psycho/ui-web/examples";
-import { presentationFixtureSchema } from "@psycho/ui-web/contracts";
+import { AdminDemo } from "../demo/AdminDemo";
 import { DepartmentSummaryExample } from "../examples/DepartmentSummary.example";
 
 const examples: ExampleDefinition[] = [
@@ -20,29 +20,6 @@ const examples: ExampleDefinition[] = [
   },
 ];
 
-function SummaryWorkspace() {
-  const data = presentationFixtureSchema.safeParse(fixtureSources.normal);
-  if (!data.success)
-    return (
-      <p role="alert">
-        Ошибка normal.json:{" "}
-        {data.error.issues.map((issue) => issue.path.join(".")).join(", ")}
-      </p>
-    );
-  return (
-    <div className="stack">
-      <div className="panel">
-        <DepartmentSummaryExample fixture={data.data} recordAction={() => {}} />
-      </div>
-      <p className="notice">
-        Примитив графика и варианты данных доступны в разделе{" "}
-        <a href="#/examples">«Примеры»</a>. Отчёт отделения будет подключён в
-        следующем этапе.
-      </p>
-    </div>
-  );
-}
-
 export function App() {
   return (
     <AppShell
@@ -53,8 +30,8 @@ export function App() {
           path: "/summary",
           title: "Сводка",
           description:
-            "Подготовленная область показателей отделения и графика.",
-          content: <SummaryWorkspace />,
+            "Ритм отделения, работа команды и события — в одном пространстве.",
+          content: <AdminDemo />,
         },
         {
           path: "/examples",

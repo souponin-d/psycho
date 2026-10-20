@@ -1,0 +1,64 @@
+.dashboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(270px, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+.chartNote {
+  margin: 16px 0 24px;
+  font-size: 12px;
+  color: var(--color-muted);
+  line-height: 1.75;
+}
+.tableScroll {
+  overflow: auto;
+}
+.team {
+  width: 100%;
+  min-width: 540px;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.team th,
+.team td {
+  padding: 18px 12px;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: top;
+}
+.team thead th {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-muted);
+}
+.team tbody th {
+  width: 42%;
+  font-weight: 400;
+}
+.team tbody th strong {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 4px;
+  overflow-wrap: anywhere;
+}
+.team tbody th span {
+  display: block;
+  color: var(--color-muted);
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+.team tbody tr:last-child > * {
+  border-bottom: 0;
+}
+.team td:last-child {
+  width: 25%;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 1100px) {
+  .dashboard {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

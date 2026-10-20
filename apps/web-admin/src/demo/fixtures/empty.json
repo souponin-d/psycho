@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "synthetic": true,
+  "snapshot": "20 октября 2026",
+  "scenario": "empty",
+  "unit": "Отделение сопровождения",
+  "period": "7–20 октября 2026",
+  "metrics": [
+    {
+      "id": "demo-admin-patients",
+      "label": "На сопровождении",
+      "value": "0",
+      "caption": "Команда ещё не добавлена"
+    },
+    {
+      "id": "demo-admin-reports",
+      "label": "Самоотчёты за период",
+      "value": "0",
+      "caption": "Учебных записей нет"
+    },
+    {
+      "id": "demo-admin-unanswered",
+      "label": "Обращения без ответа",
+      "value": "0",
+      "caption": "Очередь пуста"
+    },
+    {
+      "id": "demo-admin-history",
+      "label": "Сводка за прошлый месяц",
+      "value": null,
+      "caption": "Данные не загружены"
+    }
+  ],
+  "series": {
+    "label": "Самоотчёты за период",
+    "points": []
+  },
+  "team": [],
+  "events": []
+}
