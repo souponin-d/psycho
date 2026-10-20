@@ -26,15 +26,35 @@
         "id": "demo-unavailable",
         "label": "Недоступный показатель",
         "value": null
+      },
+      {
+        "id": "demo-group",
+        "label": "Учебная группа",
+        "value": "Группа А",
+        "caption": ""
+      },
+      {
+        "id": "demo-layout",
+        "label": "Учебный макет",
+        "value": "Вариант Б",
+        "caption": "Абстрактные демонстрационные данные"
+      },
+      {
+        "id": "demo-section",
+        "label": "Раздел примера",
+        "value": "Блок 03"
       }
     ],
     "series": {
-      "label": "Количество учебных записей",
+      "label": "Абстрактная учебная серия без медицинской интерпретации",
       "points": [
         { "id": "demo-mon", "label": "Понедельник", "value": 2 },
         { "id": "demo-tue", "label": "Вторник", "value": 0 },
         { "id": "demo-wed", "label": "Среда", "value": null },
-        { "id": "demo-thu", "label": "Четверг", "value": 3 }
+        { "id": "demo-thu", "label": "Четверг", "value": 3 },
+        { "id": "demo-fri", "label": "Пятница", "value": 5 },
+        { "id": "demo-sat", "label": "Суббота", "value": 1 },
+        { "id": "demo-sun", "label": "Воскресенье", "value": 2 }
       ]
     }
   }
