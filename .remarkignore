@@ -7,3 +7,6 @@ scratch/
 dist/
 build/
 coverage/
+**/bin/
+**/obj/
+**/.data/

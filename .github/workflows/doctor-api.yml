@@ -1,0 +1,53 @@
+name: Doctor API checks
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  doctor-api:
+    name: Doctor API integration (PostgreSQL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17.11
+        env:
+          POSTGRES_USER: doctor_test
+          POSTGRES_PASSWORD: synthetic-ci-password-only
+          POSTGRES_DB: doctor_workspace
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      ConnectionStrings__Doctor: Host=127.0.0.1;Port=5432;Database=doctor_workspace;Username=doctor_test;Password=synthetic-ci-password-only
+      ASPNETCORE_ENVIRONMENT: Development
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - name: Setup .NET
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        with:
+          dotnet-version: 10.0.x
+      - name: Install tools
+        run: npm ci --ignore-scripts
+      - name: Check contract
+        run: npm run contract:doctor:check
+      - name: Build API
+        run: npm run build:doctor:api
+      - name: Test isolated synthetic clinic
+        run: node scripts/verify-doctor-api-ci.mjs
