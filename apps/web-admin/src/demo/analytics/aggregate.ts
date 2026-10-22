@@ -1,3 +1,4 @@
+import { z } from "zod";
 import {
   addDays,
   dayNumber,
@@ -20,13 +21,13 @@ export function validFilter(
 ): ClinicFilter {
   const base = defaultFilter();
   const from =
-    Number.isFinite(dayNumber(filter.from)) &&
+    z.iso.date().safeParse(filter.from).success &&
     filter.from >= DATA_START &&
     filter.from <= DEMO_DAY
       ? filter.from
       : base.from;
   const to =
-    Number.isFinite(dayNumber(filter.to)) &&
+    z.iso.date().safeParse(filter.to).success &&
     filter.to >= from &&
     filter.to <= DEMO_DAY
       ? filter.to

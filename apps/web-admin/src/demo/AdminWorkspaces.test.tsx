@@ -1,23 +1,22 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { App } from "../app/App";
 import { adminDemoSchema, adminDemoSources } from "./data";
 import { createSession, reduceSession } from "./workspaceState";
 
-const metric = (label: string) =>
-  within(
-    screen.getByRole("region", { name: "Показатели отделения" }),
-  ).getByRole("article", { name: label });
-
+beforeEach(() => {
+  sessionStorage.clear();
+  window.history.replaceState(null, "", "/");
+});
 describe("рабочие пространства администратора", () => {
   it("не открывает прямую ссылку на роль, отсутствующую у сотрудника", async () => {
     const user = userEvent.setup();
     const previous = adminDemoSources.normal;
     const data = adminDemoSchema.parse(previous);
-    data.employees.find(
-      (employee) => employee.id === data.currentEmployeeId,
-    )!.roles = ["coordinator"];
+    data.employees.find((e) => e.id === data.currentEmployeeId)!.roles = [
+      "coordinator",
+    ];
     try {
       adminDemoSources.normal = data;
       window.location.hash = "/system/employees";
@@ -43,100 +42,30 @@ describe("рабочие пространства администратора",
       adminDemoSources.normal = previous;
     }
   });
-
-  it("игнорирует действия по неизвестным записям и сохранение текущей учётной записи", () => {
-    const data = adminDemoSchema.parse(adminDemoSources.normal);
-    const state = createSession(data);
+  it("игнорирует неизвестные записи и сохранение текущей учётной записи", () => {
+    const data = adminDemoSchema.parse(adminDemoSources.normal),
+      state = createSession(data);
     for (const type of [
       "toggleTask",
       "completeTask",
       "period",
       "employee",
-    ] as const) {
+    ] as const)
       expect(reduceSession(data, state, { type, id: "demo-missing" })).toBe(
         state,
       );
-    }
     const own = { ...state, employeeId: data.currentEmployeeId };
     expect(
       reduceSession(data, own, { type: "draft", roles: ["coordinator"] }),
     ).toBe(own);
     expect(reduceSession(data, own, { type: "saveRoles" })).toBe(own);
   });
-
-  it("сохраняет выполненную задачу, выбранный период и отчёт при смене роли", async () => {
-    const user = userEvent.setup();
-    const original = JSON.stringify(adminDemoSources.normal);
+  it("сохраняет фильтр, последний раздел и черновик при переключении ролей, исходные данные не мутирует", async () => {
+    const user = userEvent.setup(),
+      original = JSON.stringify(adminDemoSources.normal);
     render(<App />);
-    await user.click(
-      screen.getAllByRole("button", { name: "Открыть задачу" })[0]!,
-    );
-    await user.click(
-      screen.getByRole("button", { name: "Отметить выполненной" }),
-    );
-    expect(within(metric("Открытые задачи")).getByText("1")).toBeTruthy();
-    await user.selectOptions(
-      screen.getByLabelText("Рабочее пространство"),
-      "director",
-    );
-    await screen.findByRole("heading", { name: "Обзор отделения" });
-    expect(screen.getByText("1 открытая задача")).toBeTruthy();
-    await user.selectOptions(
-      screen.getByLabelText("Период отчёта"),
-      "demo-period-recent",
-    );
-    expect(within(metric("Самоотчёты")).getByText("19")).toBeTruthy();
-    await user.click(screen.getByRole("link", { name: "Отчёт" }));
-    await user.click(
-      await screen.findByRole("button", { name: "Предпросмотр отчёта" }),
-    );
-    expect(
-      screen.getByRole("region", { name: "Предпросмотр отчёта" }).textContent,
-    ).toContain("Известные самоотчёты: 19");
-    await user.selectOptions(
-      screen.getByLabelText("Рабочее пространство"),
-      "coordinator",
-    );
-    await screen.findByRole("heading", { name: "Рабочий день отделения" });
-    expect(within(metric("Открытые задачи")).getByText("1")).toBeTruthy();
-    await user.click(
-      screen.getByRole("button", {
-        name: "Выполнено · Расписание кабинета проверено",
-      }),
-    );
-    expect(
-      (
-        screen.getByRole("button", {
-          name: "Отметить выполненной",
-        }) as HTMLButtonElement
-      ).disabled,
-    ).toBe(true);
-    await user.click(screen.getByRole("link", { name: "События" }));
-    const log = await screen.findByRole("list", {
-      name: "Организационные события",
-    });
-    expect(
-      within(log).getAllByText("Расписание кабинета проверено"),
-    ).toHaveLength(1);
-    await user.selectOptions(
-      screen.getByLabelText("Рабочее пространство"),
-      "director",
-    );
-    expect(
-      await screen.findByRole("heading", {
-        name: "Отчёт для руководителя",
-        level: 1,
-      }),
-    ).toBeTruthy();
-    expect(
-      screen.getByRole("region", { name: "Предпросмотр отчёта" }).textContent,
-    ).toContain("Известные самоотчёты: 19");
-    expect(JSON.stringify(adminDemoSources.normal)).toBe(original);
-  });
-
-  it("сохраняет черновик нескольких ролей и регистрирует только фактическое изменение", async () => {
-    const user = userEvent.setup();
-    render(<App />);
+    await user.selectOptions(screen.getByLabelText("Период анализа"), "7");
+    await user.click(screen.getByRole("link", { name: "Медстатистика" }));
     await user.selectOptions(
       screen.getByLabelText("Рабочее пространство"),
       "system",
@@ -146,9 +75,17 @@ describe("рабочие пространства администратора",
     );
     await user.selectOptions(
       screen.getByLabelText("Рабочее пространство"),
-      "coordinator",
+      "director",
     );
-    await screen.findByRole("heading", { name: "Рабочий день отделения" });
+    expect(
+      await screen.findByRole("heading", {
+        level: 1,
+        name: "Медицинская статистика",
+      }),
+    ).toBeTruthy();
+    expect(
+      (screen.getByLabelText("Период анализа") as HTMLSelectElement).value,
+    ).toBe("7");
     await user.selectOptions(
       screen.getByLabelText("Рабочее пространство"),
       "system",
@@ -160,25 +97,20 @@ describe("рабочие пространства администратора",
         })) as HTMLInputElement
       ).checked,
     ).toBe(true);
-    await user.click(screen.getByRole("button", { name: "Сохранить роли" }));
-    expect(
-      screen.getByRole("table", { name: "Сотрудники отделения" }).textContent,
-    ).toContain("Координатор, Руководитель");
-    expect(within(metric("Изменения ролей")).getByText("1")).toBeTruthy();
-    await user.click(screen.getByRole("button", { name: "Сохранить роли" }));
-    expect(within(metric("Изменения ролей")).getByText("1")).toBeTruthy();
-    await user.click(screen.getByRole("link", { name: "Журнал доступа" }));
-    const log = await screen.findByRole("list", {
-      name: "Журнал изменений доступа",
-    });
-    expect(within(log).getAllByRole("listitem")).toHaveLength(1);
-    expect(log.textContent).toContain("Сотрудник А-01");
-    expect(log.textContent).toContain(
-      "Координатор → Координатор, Руководитель",
+    expect(screen.getByText("Есть несохранённые изменения ролей")).toBeTruthy();
+    await user.click(
+      screen.getByRole("button", { name: "Отменить изменения" }),
     );
+    expect(
+      (
+        screen.getByRole("checkbox", {
+          name: "Руководитель",
+        }) as HTMLInputElement
+      ).checked,
+    ).toBe(false);
+    expect(JSON.stringify(adminDemoSources.normal)).toBe(original);
   });
-
-  it("не сохраняет пустой набор ролей и не редактирует текущего сотрудника", async () => {
+  it("не сохраняет пустые роли и возвращает фокус к первой ошибке", async () => {
     const user = userEvent.setup();
     render(<App />);
     await user.selectOptions(
@@ -190,16 +122,14 @@ describe("рабочие пространства администратора",
     );
     await user.click(screen.getByRole("button", { name: "Сохранить роли" }));
     expect(screen.getByRole("alert").textContent).toContain("хотя бы одну");
-    expect(within(metric("Изменения ролей")).getByText("0")).toBeTruthy();
-    expect(screen.getByRole("checkbox", { name: "Координатор" })).toBe(
-      document.activeElement,
+    expect(document.activeElement).toBe(
+      screen.getByRole("checkbox", { name: "Координатор" }),
     );
     expect(
       screen.queryByRole("button", { name: "Настроить Сотрудник А-01" }),
     ).toBeNull();
   });
-
-  it("сбрасывает сессию при смене набора, сохраняя рабочее пространство", async () => {
+  it("разделяет сеансы наборов и явным сбросом восстанавливает роли и черновик", async () => {
     const user = userEvent.setup();
     render(<App />);
     await user.selectOptions(
@@ -217,18 +147,6 @@ describe("рабочие пространства администратора",
     expect(
       await screen.findByText("Нет сотрудников для настройки"),
     ).toBeTruthy();
-    expect(within(metric("Учётные записи")).getByText("1")).toBeTruthy();
-    await user.selectOptions(
-      screen.getByLabelText("Набор демо-данных"),
-      "long",
-    );
-    expect(
-      (
-        (await screen.findByRole("checkbox", {
-          name: "Руководитель",
-        })) as HTMLInputElement
-      ).checked,
-    ).toBe(true);
     await user.selectOptions(
       screen.getByLabelText("Набор демо-данных"),
       "normal",
@@ -239,41 +157,54 @@ describe("рабочие пространства администратора",
           name: "Руководитель",
         })) as HTMLInputElement
       ).checked,
+    ).toBe(true);
+    await user.click(screen.getByRole("link", { name: "Демонстрация" }));
+    await user.click(
+      await screen.findByRole("button", { name: "Начать новый сеанс" }),
+    );
+    await user.click(screen.getByRole("button", { name: "Сбросить сеанс" }));
+    await user.click(screen.getByRole("link", { name: "Сотрудники" }));
+    expect(
+      (
+        (await screen.findByRole("checkbox", {
+          name: "Руководитель",
+        })) as HTMLInputElement
+      ).checked,
     ).toBe(false);
-    expect(within(metric("Изменения ролей")).getByText("0")).toBeTruthy();
+    expect(screen.queryByText("Есть несохранённые изменения ролей")).toBeNull();
   });
-
-  it("различает ноль и отсутствие данных и обрабатывает пустой отчёт", async () => {
+  it("объясняет повреждённое сохранение и не перезаписывает его без явного сброса", async () => {
+    sessionStorage.setItem("syncli.analytics.demo.v1.normal", "broken");
     const user = userEvent.setup();
     render(<App />);
-    await user.selectOptions(
-      screen.getByLabelText("Рабочее пространство"),
-      "director",
+    expect(screen.getByRole("alert").textContent).toContain(
+      "восстановить сохранение",
     );
-    await user.click(await screen.findByText("Таблица значений"));
-    const table = screen.getByRole("table", {
-      name: "Самоотчёты · 7–20 октября — значения",
-    });
-    expect(
-      within(table).getByRole("row", { name: "9 октября 0" }),
-    ).toBeTruthy();
-    expect(
-      within(table).getByRole("row", { name: "11 октября Нет данных" }),
-    ).toBeTruthy();
-    await user.selectOptions(
-      screen.getByLabelText("Набор демо-данных"),
-      "empty",
+    expect(sessionStorage.getItem("syncli.analytics.demo.v1.normal")).toBe(
+      "broken",
     );
-    expect(
-      await screen.findByText("Нет данных за выбранный период"),
-    ).toBeTruthy();
-    expect(within(metric("Самоотчёты")).getByText("0")).toBeTruthy();
-    expect(
-      within(metric("Дни с данными")).getByText("Нет данных"),
-    ).toBeTruthy();
+    await user.click(screen.getByRole("link", { name: "Демонстрация" }));
+    await user.click(
+      await screen.findByRole("button", { name: "Начать новый сеанс" }),
+    );
+    await user.click(screen.getByRole("button", { name: "Сбросить сеанс" }));
+    expect(screen.queryByRole("alert")).toBeNull();
+    expect(sessionStorage.getItem("syncli.analytics.demo.v1.normal")).not.toBe(
+      "broken",
+    );
   });
-
-  it("отделяет служебный стенд и восстанавливается после неизвестного URL", async () => {
+  it("различает отсутствие сводки и ноль и запрещает неверный диапазон дат", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await user.click(screen.getByText("Даты и таблица значений"));
+    expect(screen.getByRole("row", { name: /8 окт.*Нет сводки/ })).toBeTruthy();
+    await user.click(screen.getByRole("button", { name: "Указать даты" }));
+    await user.clear(screen.getByLabelText("Дата начала"));
+    await user.click(screen.getByRole("button", { name: "Применить даты" }));
+    expect(screen.getByRole("alert").textContent).toContain("Укажите даты");
+    expect(document.activeElement).toBe(screen.getByLabelText("Дата начала"));
+  });
+  it("восстанавливается после неизвестного URL и сохраняет отдельный стенд примеров", async () => {
     const user = userEvent.setup();
     window.location.hash = "/unknown";
     render(<App />);
@@ -284,15 +215,8 @@ describe("рабочие пространства администратора",
       screen.getByRole("link", { name: "Открыть рабочее пространство" }),
     );
     expect(
-      await screen.findByRole("heading", { name: "Рабочий день отделения" }),
+      await screen.findByRole("heading", { name: "Обзор клиники" }),
     ).toBeTruthy();
-    expect(
-      within(
-        screen.getByRole("navigation", {
-          name: "Разделы рабочего пространства",
-        }),
-      ).queryByRole("link", { name: "Примеры" }),
-    ).toBeNull();
     await user.click(screen.getByRole("link", { name: "Примеры компонентов" }));
     expect(await screen.findByLabelText("Компонент")).toBeTruthy();
   });

@@ -14,6 +14,7 @@ import type { ClinicDataset, ClinicFilter, DemoCommand } from "./model";
 export function useClinicSession(data: ClinicDataset) {
   const key = `syncli.analytics.demo.v1.${data.scenario}`;
   const blocked = useRef(false);
+  const [writeAttempt, setWriteAttempt] = useState(0);
   const [storageStatus, setStorageStatus] = useState(
     "Сеанс сохранён в этой вкладке",
   );
@@ -61,7 +62,7 @@ export function useClinicSession(data: ClinicDataset) {
         "Не удалось сохранить. Действия остаются в памяти до перезагрузки.",
       );
     }
-  }, [key, state.commands, state.filter]);
+  }, [key, state.commands, state.filter, writeAttempt]);
   useEffect(() => {
     const url = new URL(window.location.href);
     url.searchParams.set("dataset", data.scenario);
@@ -107,6 +108,7 @@ export function useClinicSession(data: ClinicDataset) {
     reset,
     storageStatus,
     defaultFilter,
+    retrySave: () => setWriteAttempt((value) => value + 1),
   };
 }
 export type ClinicController = ReturnType<typeof useClinicSession>;

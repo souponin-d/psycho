@@ -21,6 +21,24 @@ const report: DemoCommand = {
   at: "2026-10-20T12:00:00Z",
 };
 describe("сквозной сеанс клиники", () => {
+  it("не дублирует организационный запрос с новым техническим ID", () => {
+    const data = createClinicDataset("normal");
+    const command: DemoCommand = {
+      id: "demo-action-1",
+      kind: "request",
+      patientId: DEMO_PATIENT,
+      at: "2026-10-20T12:00:00Z",
+    };
+    const state = reduceClinicSession(data, initialClinicSession(), {
+      type: "command",
+      command,
+    });
+    const repeated = reduceClinicSession(data, state, {
+      type: "command",
+      command: { ...command, id: "demo-action-2" },
+    });
+    expect(repeated.commands).toHaveLength(1);
+  });
   it("проводит форму через единые данные, приём и ответ; повтор не удваивает запись", () => {
     const data = createClinicDataset("normal");
     const original = JSON.stringify(data);

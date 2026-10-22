@@ -48,7 +48,13 @@ export function createClinicDataset(
   data.outages = ["2026-09-24", "2026-10-08"];
   for (let i = 0; i < 200; i++) {
     const id = `demo-patient-${String(i + 1).padStart(3, "0")}`;
-    const doctorIndex = i < 8 ? 0 : 1 + ((i - 8) % 11);
+    const weights = [8, 28, 24, 22, 21, 19, 18, 16, 14, 12, 10, 8];
+    let doctorIndex = 0,
+      total = weights[0]!;
+    while (i >= total) {
+      doctorIndex++;
+      total += weights[doctorIndex]!;
+    }
     const enrolled = addDays(DATA_START, i % 35);
     const closed =
       i > 0 && i % 13 === 0 ? addDays(DEMO_DAY, -(i % 25) - 1) : null;
@@ -59,8 +65,16 @@ export function createClinicDataset(
           ? "Пациент П-001 с намеренно длинным обозначением учебной записи"
           : `Пациент П-${String(i + 1).padStart(3, "0")}`,
       doctorId: data.doctors[doctorIndex]!.id,
-      group: groups[i % 3]!,
-      ageBand: ["18–29", "30–44", "45–59", "60+"][i % 4]!,
+      group: groups[(i * 17) % 10 < 4 ? 0 : (i * 17) % 10 < 8 ? 1 : 2]!,
+      ageBand: ["18–29", "30–44", "45–59", "60+"][
+        (i * 37) % 100 < 22
+          ? 0
+          : (i * 37) % 100 < 61
+            ? 1
+            : (i * 37) % 100 < 89
+              ? 2
+              : 3
+      ]!,
       enrolled,
       closed,
     });
@@ -128,20 +142,23 @@ export function createClinicDataset(
     if (i % 9 === 0 && i > 0) {
       const day = addDays(DEMO_DAY, -i % 22);
       const status =
-        i % 3 === 0 && i % 2 === 0
-          ? "closed"
-          : i % 4 === 0
-            ? "accepted"
-            : "open";
+        (i / 9) % 3 === 0 ? "closed" : (i / 9) % 3 === 1 ? "open" : "accepted";
+      const createdAt = `${day}T08:00:00Z`;
+      const acceptedAt = new Date(
+        Date.parse(createdAt) + (15 + (i % 8) * 7) * 60000,
+      ).toISOString();
+      const closedAt = new Date(
+        Date.parse(acceptedAt) + (25 + (i % 6) * 10) * 60000,
+      ).toISOString();
       data.signals.push({
         id: `signal-${id}`,
         patientId: id,
         day,
         title: i % 2 ? "Вопрос о следующей встрече" : "Запрос связи с командой",
         status,
-        createdAt: `${day}T08:00:00Z`,
-        acceptedAt: status !== "open" ? `${day}T08:25:00Z` : null,
-        closedAt: status === "closed" ? `${day}T09:15:00Z` : null,
+        createdAt,
+        acceptedAt: status !== "open" ? acceptedAt : null,
+        closedAt: status === "closed" ? closedAt : null,
       });
     }
   }

@@ -105,6 +105,9 @@ export function toWorkspaceData(
         : "Клиника «Синкли»",
     employees,
     team,
+    // The analytical coordinator creates tasks from events; legacy fixture
+    // tasks refer to a different roster and must not enter this projection.
+    tasks: [],
     periods,
     series: periods[0]!.series,
     period: periods[0]!.label,

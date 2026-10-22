@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
+  adminDemoSchema,
+  adminDemoSources,
+} from "../apps/web-admin/src/demo/data";
+import { toWorkspaceData } from "../apps/web-admin/src/demo/analytics/workspaceData";
+import {
   createClinicDataset,
   DEMO_DAY,
   DATA_START,
@@ -10,9 +15,54 @@ import {
   defaultFilter,
   previousPeriod,
   csvReport,
+  validFilter,
 } from "../apps/web-admin/src/demo/analytics/aggregate";
 
 describe("событийная аналитика клиники", () => {
+  it.each(["normal", "empty", "long"] as const)(
+    "проекция %s согласована с оболочкой и кабинетами",
+    (scenario) => {
+      const data = createClinicDataset(scenario);
+      expect(
+        adminDemoSchema.safeParse(
+          toWorkspaceData(
+            adminDemoSchema.parse(adminDemoSources[scenario]),
+            data,
+            [],
+          ),
+        ).success,
+      ).toBe(true);
+    },
+  );
+  it("набор содержит разные стадии событий, размеры кабинетов и направления динамики", () => {
+    const data = createClinicDataset("normal");
+    expect(new Set(data.signals.map((s) => s.status))).toEqual(
+      new Set(["open", "accepted", "closed"]),
+    );
+    expect(
+      new Set(
+        data.doctors.map(
+          (d) => data.patients.filter((p) => p.doctorId === d.id).length,
+        ),
+      ).size,
+    ).toBeGreaterThan(5);
+    const clinical = clinicalSummary(
+      data.observations,
+      data.patients.map((p) => p.id),
+      { ...defaultFilter(), from: DATA_START },
+    );
+    expect(clinical.rows.some((r) => r.change > 0)).toBe(true);
+    expect(clinical.rows.some((r) => r.change < 0)).toBe(true);
+    expect(clinical.rows.some((r) => r.change === 0)).toBe(true);
+  });
+  it("отклоняет несуществующую дату из ссылки вместо её нормализации JavaScript", () => {
+    expect(
+      validFilter(createClinicDataset("normal"), {
+        ...defaultFilter(),
+        from: "2026-09-31",
+      }).from,
+    ).toBe(defaultFilter().from);
+  });
   it("воспроизводит 200 пациентов, 12 врачей, 3 отделения и 180 дней без случайных ID", () => {
     const data = createClinicDataset("normal");
     expect(data).toEqual(createClinicDataset("normal"));

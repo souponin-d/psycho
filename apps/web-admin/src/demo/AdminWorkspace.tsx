@@ -27,19 +27,46 @@ const sections: Record<
       title: "Организационные события",
       description: "Подготовленные события и действия в этой вкладке.",
     },
+    {
+      id: "journey",
+      label: "Демонстрация",
+      title: "Сквозной учебный сценарий",
+      description: "Пациент, врач и клиника в одном локальном сеансе.",
+    },
   ],
   director: [
     {
       id: "overview",
       label: "Обзор",
-      title: "Обзор отделения",
-      description: "Активность и распределение пациентов между кабинетами.",
+      title: "Обзор клиники",
+      description:
+        "Сопровождение, команда и полнота данных в одной управленческой картине.",
     },
     {
-      id: "offices",
-      label: "Кабинеты",
-      title: "Показатели кабинетов",
-      description: "Готовые показатели за выбранный период.",
+      id: "load",
+      label: "Нагрузка",
+      title: "Работа команды",
+      description: "Приёмы, распределение событий и ритм работы клиники.",
+    },
+    {
+      id: "medical",
+      label: "Медстатистика",
+      title: "Медицинская статистика",
+      description:
+        "Описательные наблюдения, сопоставимые пары и состав выборки.",
+    },
+    {
+      id: "quality",
+      label: "Сигналы и качество",
+      title: "Сигналы и качество данных",
+      description: "Стадии обработки, время принятия и ограничения сводки.",
+    },
+    {
+      id: "journey",
+      label: "Демонстрация",
+      title: "Сквозной учебный сценарий",
+      description:
+        "Пульт для руководителя и жюри. Все действия явно демонстрационные.",
     },
     {
       id: "report",
@@ -68,6 +95,12 @@ const sections: Record<
       title: "Журнал изменений доступа",
       description:
         "Автор, сотрудник и состав ролей до и после учебного изменения.",
+    },
+    {
+      id: "journey",
+      label: "Демонстрация",
+      title: "Сквозной учебный сценарий",
+      description: "Локальные события, воспроизведение показа и явный сброс.",
     },
   ],
 };
@@ -103,7 +136,12 @@ export function AdminWorkspace({
     director: defaultPath("director"),
     system: defaultPath("system"),
   });
-  const path = !hash || hash === "/summary" ? defaultPath(first) : hash;
+  const path =
+    !hash || hash === "/summary"
+      ? defaultPath(first)
+      : hash === "/director/offices"
+        ? "/director/load"
+        : hash;
   const candidate = (Object.keys(sections) as AdminRole[]).find((role) =>
     sections[role].some((section) => path === `/${role}/${section.id}`),
   );
@@ -228,7 +266,7 @@ export function AdminWorkspace({
                 onScenario(event.currentTarget.value as Scenario)
               }
             >
-              <option value="normal">Рабочий день</option>
+              <option value="normal">Клиника · 180 дней</option>
               <option value="empty">Новое отделение</option>
               <option value="long">Длинные подписи</option>
             </select>
@@ -254,9 +292,9 @@ export function AdminWorkspace({
           </section>
         )}
         <footer className={styles.footer}>
-          Демо · только вымышленные данные. Действия сохраняются в памяти
-          вкладки до смены набора или перезагрузки. Назначение ролей здесь не
-          меняет серверные права.
+          Демо · только вымышленные данные. Учебные события сохраняются в этой
+          вкладке; новый набор открывает отдельный сеанс. Роли и доставка
+          симулируются.
         </footer>
       </main>
     </div>

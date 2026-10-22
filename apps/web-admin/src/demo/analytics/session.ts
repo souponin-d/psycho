@@ -169,6 +169,13 @@ function invalidCommand(
   )
     return "Пациент отсутствует в этом наборе.";
   const view = projectClinic(data, state.commands);
+  if (
+    command.kind === "request" &&
+    state.commands.some(
+      (c) => c.kind === "request" && c.patientId === command.patientId,
+    )
+  )
+    return "Запрос самоотчёта уже зафиксирован в этом сеансе.";
   if (command.kind === "report") {
     if (
       !data.expectedForms.some(

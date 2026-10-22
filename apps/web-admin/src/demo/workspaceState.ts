@@ -11,6 +11,7 @@ export type AccessChange = {
   employeeId: string;
   before: AdminRole[];
   after: AdminRole[];
+  at?: string;
 };
 export type SessionState = {
   completed: string[];
