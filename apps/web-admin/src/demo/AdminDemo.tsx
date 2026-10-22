@@ -115,13 +115,13 @@ function AdminSession({ data, ...props }: DemoProps & { data: AdminDemoData }) {
                 section={section}
               />
             )}
-            <p className={styles.muted}>
-              {controller.storageStatus} · часы демо: 20 октября 2026, Москва.
-            </p>
             {controller.storageStatus.startsWith("Не удалось сохранить") && (
-              <button onClick={controller.retrySave}>
-                Повторить сохранение
-              </button>
+              <div role="alert">
+                <p>{controller.storageStatus}</p>
+                <button onClick={controller.retrySave}>
+                  Повторить сохранение
+                </button>
+              </div>
             )}
           </>
         );

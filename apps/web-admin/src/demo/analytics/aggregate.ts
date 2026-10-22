@@ -241,7 +241,7 @@ export function csvReport(
   const doctor =
     data.doctors.find((d) => d.id === filter.doctorId)?.name ?? "Все врачи";
   const rows: (string | number)[][] = [
-    ["Синтетические данные. Не клинический отчёт"],
+    ["Сводка клиники"],
     ["Период", filter.from, filter.to],
     ["Отделение", department],
     ["Врач", doctor],

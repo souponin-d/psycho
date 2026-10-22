@@ -140,17 +140,11 @@ describe("рабочие пространства администратора",
       await screen.findByRole("checkbox", { name: "Руководитель" }),
     );
     await user.click(screen.getByRole("button", { name: "Сохранить роли" }));
-    await user.selectOptions(
-      screen.getByLabelText("Набор демо-данных"),
-      "empty",
-    );
+    await user.selectOptions(screen.getByLabelText("Набор данных"), "empty");
     expect(
       await screen.findByText("Нет сотрудников для настройки"),
     ).toBeTruthy();
-    await user.selectOptions(
-      screen.getByLabelText("Набор демо-данных"),
-      "normal",
-    );
+    await user.selectOptions(screen.getByLabelText("Набор данных"), "normal");
     expect(
       (
         (await screen.findByRole("checkbox", {
@@ -158,7 +152,7 @@ describe("рабочие пространства администратора",
         })) as HTMLInputElement
       ).checked,
     ).toBe(true);
-    await user.click(screen.getByRole("link", { name: "Демонстрация" }));
+    await user.click(screen.getByRole("link", { name: "Путь пациента" }));
     await user.click(
       await screen.findByRole("button", { name: "Начать новый сеанс" }),
     );
@@ -183,7 +177,7 @@ describe("рабочие пространства администратора",
     expect(sessionStorage.getItem("syncli.analytics.demo.v1.normal")).toBe(
       "broken",
     );
-    await user.click(screen.getByRole("link", { name: "Демонстрация" }));
+    await user.click(screen.getByRole("link", { name: "Путь пациента" }));
     await user.click(
       await screen.findByRole("button", { name: "Начать новый сеанс" }),
     );
@@ -204,7 +198,7 @@ describe("рабочие пространства администратора",
     expect(screen.getByRole("alert").textContent).toContain("Укажите даты");
     expect(document.activeElement).toBe(screen.getByLabelText("Дата начала"));
   });
-  it("восстанавливается после неизвестного URL и сохраняет отдельный стенд примеров", async () => {
+  it("восстанавливается после неизвестного URL и скрывает служебную навигацию", async () => {
     const user = userEvent.setup();
     window.location.hash = "/unknown";
     render(<App />);
@@ -217,7 +211,8 @@ describe("рабочие пространства администратора",
     expect(
       await screen.findByRole("heading", { name: "Обзор клиники" }),
     ).toBeTruthy();
-    await user.click(screen.getByRole("link", { name: "Примеры компонентов" }));
-    expect(await screen.findByLabelText("Компонент")).toBeTruthy();
+    expect(
+      screen.queryByRole("link", { name: "Примеры компонентов" }),
+    ).toBeNull();
   });
 });

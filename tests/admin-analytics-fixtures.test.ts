@@ -206,7 +206,7 @@ describe("событийная аналитика клиники", () => {
     const csv = csvReport(data, filter, analyseClinic(data, filter));
     expect(csv).toContain(filter.from);
     expect(csv).toContain(data.departments[0]!.name.replaceAll('"', '""'));
-    expect(csv).toContain("Синтетические данные");
+    expect(csv).toContain("Сводка клиники");
     expect(csv).toContain("Определение");
   });
 });

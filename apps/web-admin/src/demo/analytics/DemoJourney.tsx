@@ -11,9 +11,9 @@ export function commandText(command: DemoCommand) {
     case "report":
       return "Пациент · самоотчёт и запрос связи получены";
     case "accept":
-      return "Учебный врач · событие принято";
+      return "Врач · событие принято";
     case "respond":
-      return "Учебный врач · просмотр и ответ подтверждены";
+      return "Врач · просмотр и ответ подтверждены";
     case "schedule":
       return `Координатор · встреча ${dateLabel(command.day)} в ${command.time} добавлена`;
     case "roles":
@@ -29,15 +29,13 @@ export function DemoLog({ commands }: { commands: DemoCommand[] }) {
         <li key={command.id}>
           <time dateTime={command.at}>{timeLabel(command.at)}</time>
           <strong>{commandText(command)}</strong>
-          <small>
-            Только этот демонстрационный сеанс · {command.id.slice(-8)}
-          </small>
+          <small>Событие · {command.id.slice(-8)}</small>
         </li>
       ))}
     </ol>
   ) : (
     <p className={styles.empty}>
-      Событий этого сеанса пока нет. Начните с учебного самоотчёта.
+      Событий этого сеанса пока нет. Начните с самоотчёта.
     </p>
   );
 }
@@ -59,16 +57,15 @@ export function DemoJourney({ controller }: { controller: ClinicController }) {
           <span className={styles.kicker}>Один сеанс · три точки зрения</span>
           <h2>Действие пациента становится частью общей картины</h2>
           <p>
-            Учебный пациент, учебный врач и руководитель используют одни
-            события. Это локальная симуляция, без доставки с телефона или
-            обращения к врачебному API.
+            Самоотчёт поступает врачу, ответ фиксируется в журнале, а показатели
+            клиники обновляются.
           </p>
         </div>
         <DialogRoot open={confirmReset} onOpenChange={setConfirmReset}>
           <Button variant="secondary" onClick={() => setConfirmReset(true)}>
             Начать новый сеанс
           </Button>
-          <DialogPanel title="Сбросить учебный сеанс?">
+          <DialogPanel title="Сбросить сеанс?">
             <p>
               Будут удалены только действия, роли и фильтры этого набора в
               текущей вкладке. Подготовленная история останется.
@@ -94,7 +91,7 @@ export function DemoJourney({ controller }: { controller: ClinicController }) {
       </section>
       {!data.patients.length ? (
         <p className={styles.empty}>
-          В этом наборе нет учебного пациента. Выберите «Клиника · 180 дней».
+          В этом наборе нет пациента. Выберите «Клиника · 180 дней».
         </p>
       ) : (
         <div className={styles.equalColumns}>
@@ -102,7 +99,7 @@ export function DemoJourney({ controller }: { controller: ClinicController }) {
             <div className={styles.stepHeading}>
               <span>1</span>
               <div>
-                <h2>Учебный пациент П-001</h2>
+                <h2>Пациент П-001</h2>
                 <p>
                   {dateLabel(DEMO_DAY)} ·{" "}
                   {report ? "форма получена" : "ожидается форма"}
@@ -136,7 +133,7 @@ export function DemoJourney({ controller }: { controller: ClinicController }) {
                 </select>
               </label>
               <label className={styles.field}>
-                Учебная заметка
+                Заметка
                 <textarea
                   rows={3}
                   maxLength={500}
@@ -150,7 +147,7 @@ export function DemoJourney({ controller }: { controller: ClinicController }) {
                 организационный и не является оценкой риска.
               </p>
               <Button type="submit" disabled={!!report}>
-                Отправить учебный самоотчёт
+                Отправить самоотчёт
               </Button>
               {report && (
                 <p className={styles.success}>
@@ -163,7 +160,7 @@ export function DemoJourney({ controller }: { controller: ClinicController }) {
             <div className={styles.stepHeading}>
               <span>2</span>
               <div>
-                <h2>Учебный кабинет врача</h2>
+                <h2>Кабинет врача</h2>
                 <p>Появление записи и явная обработка</p>
               </div>
             </div>
@@ -185,9 +182,7 @@ export function DemoJourney({ controller }: { controller: ClinicController }) {
                 )}
                 {signal?.status === "accepted" && (
                   <>
-                    <p className={styles.success}>
-                      Событие принято учебным врачом
-                    </p>
+                    <p className={styles.success}>Событие принято врачом</p>
                     <Button
                       onClick={() =>
                         send({ kind: "respond", signalId: signal.id })
@@ -198,9 +193,7 @@ export function DemoJourney({ controller }: { controller: ClinicController }) {
                   </>
                 )}
                 {signal?.status === "closed" && (
-                  <p className={styles.success}>
-                    Ответ подтверждён учебным врачом
-                  </p>
+                  <p className={styles.success}>Ответ подтверждён врачом</p>
                 )}
                 <p className={styles.footnote}>
                   Действие не назначает лечение и не изменяет медицинские
@@ -210,7 +203,7 @@ export function DemoJourney({ controller }: { controller: ClinicController }) {
               </>
             ) : (
               <p className={styles.empty}>
-                Пока нет новой формы. Отправьте её в учебном приложении слева.
+                Пока нет новой формы. Отправьте её в форме слева.
               </p>
             )}
           </section>
@@ -280,12 +273,6 @@ export function DemoJourney({ controller }: { controller: ClinicController }) {
               <a href="#/director/report">Сохранить агрегированный отчёт.</a>
             </li>
           </ol>
-          <p className={styles.footnote}>
-            Показаны F04/F05/F06 на уровне локального учебного сценария и
-            организационные роли. Автоматическое клиническое решение, экстренная
-            доставка, назначение «Авиандра», серверные права и клиническая
-            апробация этим демо не подтверждаются.
-          </p>
         </section>
       </div>
     </div>

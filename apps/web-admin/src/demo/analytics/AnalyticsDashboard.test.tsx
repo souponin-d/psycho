@@ -17,18 +17,12 @@ describe("аналитическая демонстрация", () => {
     render(<App />);
     await user.selectOptions(screen.getByLabelText("Период анализа"), "7");
     await user.selectOptions(screen.getByLabelText("Врач"), "demo-doctor-01");
-    await user.selectOptions(
-      screen.getByLabelText("Набор демо-данных"),
-      "long",
-    );
+    await user.selectOptions(screen.getByLabelText("Набор данных"), "long");
     expect(
       (screen.getByLabelText("Период анализа") as HTMLSelectElement).value,
     ).toBe("30");
     await user.selectOptions(screen.getByLabelText("Период анализа"), "90");
-    await user.selectOptions(
-      screen.getByLabelText("Набор демо-данных"),
-      "normal",
-    );
+    await user.selectOptions(screen.getByLabelText("Набор данных"), "normal");
     expect(
       (screen.getByLabelText("Период анализа") as HTMLSelectElement).value,
     ).toBe("7");
@@ -52,8 +46,8 @@ describe("аналитическая демонстрация", () => {
       screen.getByRole("button", { name: "Повторить сохранение" }),
     );
     expect(
-      await screen.findByText(/Сеанс сохранён в этой вкладке/),
-    ).toBeTruthy();
+      screen.queryByText(/Не удалось сохранить\. Действия остаются/),
+    ).toBeNull();
   });
   it("открывает руководство, согласованно фильтрует и раскрывает состав показателя", async () => {
     const user = userEvent.setup();
@@ -83,9 +77,11 @@ describe("аналитическая демонстрация", () => {
   it("проводит самоотчёт через учебного врача, журнал и сохранение сеанса", async () => {
     const user = userEvent.setup();
     const view = render(<App />);
-    await user.click(await screen.findByRole("link", { name: "Демонстрация" }));
     await user.click(
-      screen.getByRole("button", { name: "Отправить учебный самоотчёт" }),
+      await screen.findByRole("link", { name: "Путь пациента" }),
+    );
+    await user.click(
+      screen.getByRole("button", { name: "Отправить самоотчёт" }),
     );
     expect(
       await screen.findByText("Форма получена. Повторная отправка отключена."),
@@ -94,12 +90,10 @@ describe("аналитическая демонстрация", () => {
     await user.click(
       screen.getByRole("button", { name: "Подтвердить просмотр и ответ" }),
     );
-    expect(screen.getByText("Ответ подтверждён учебным врачом")).toBeTruthy();
+    expect(screen.getByText("Ответ подтверждён врачом")).toBeTruthy();
     view.unmount();
     render(<App />);
-    expect(
-      await screen.findByText("Ответ подтверждён учебным врачом"),
-    ).toBeTruthy();
+    expect(await screen.findByText("Ответ подтверждён врачом")).toBeTruthy();
   });
   it("сохраняет совмещённые роли и не дублирует журнал", async () => {
     const user = userEvent.setup();
@@ -139,10 +133,7 @@ describe("аналитическая демонстрация", () => {
     const user = userEvent.setup();
     const print = vi.spyOn(window, "print").mockImplementation(() => {});
     render(<App />);
-    await user.selectOptions(
-      screen.getByLabelText("Набор демо-данных"),
-      "empty",
-    );
+    await user.selectOptions(screen.getByLabelText("Набор данных"), "empty");
     expect(
       await screen.findByText("В клинике пока нет пациентов"),
     ).toBeTruthy();

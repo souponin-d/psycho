@@ -29,8 +29,8 @@ const sections: Record<
     },
     {
       id: "journey",
-      label: "Демонстрация",
-      title: "Сквозной учебный сценарий",
+      label: "Путь пациента",
+      title: "Путь пациента",
       description: "Пациент, врач и клиника в одном локальном сеансе.",
     },
   ],
@@ -63,10 +63,9 @@ const sections: Record<
     },
     {
       id: "journey",
-      label: "Демонстрация",
-      title: "Сквозной учебный сценарий",
-      description:
-        "Пульт для руководителя и жюри. Все действия явно демонстрационные.",
+      label: "Путь пациента",
+      title: "Путь пациента",
+      description: "От самоотчёта пациента до ответа врача и сводки клиники.",
     },
     {
       id: "report",
@@ -87,19 +86,18 @@ const sections: Record<
       id: "matrix",
       label: "Возможности ролей",
       title: "Возможности рабочих пространств",
-      description: "Какие задачи и данные доступны в каждом пространстве демо.",
+      description: "Задачи и данные каждого рабочего пространства.",
     },
     {
       id: "access",
       label: "Журнал доступа",
       title: "Журнал изменений доступа",
-      description:
-        "Автор, сотрудник и состав ролей до и после учебного изменения.",
+      description: "Автор, сотрудник и состав ролей до и после изменения.",
     },
     {
       id: "journey",
-      label: "Демонстрация",
-      title: "Сквозной учебный сценарий",
+      label: "Путь пациента",
+      title: "Путь пациента",
       description: "Локальные события, воспроизведение показа и явный сброс.",
     },
   ],
@@ -154,7 +152,7 @@ export function AdminWorkspace({
   const selected = allowed
     ? sections[role].find((section) => path === `/${role}/${section.id}`)
     : undefined;
-  const isExamples = path === "/examples";
+  const isExamples = import.meta.env.DEV && path === "/examples";
   const title = !data
     ? "Данные не загружены"
     : isExamples
@@ -191,7 +189,7 @@ export function AdminWorkspace({
             А-01
           </span>
           <div>
-            <strong>{current?.name ?? "Учебная учётная запись"}</strong>
+            <strong>{current?.name ?? "Учётная запись"}</strong>
             <span>Одна учётная запись · роли можно совмещать</span>
           </div>
         </div>
@@ -240,9 +238,8 @@ export function AdminWorkspace({
           ))}
         </nav>
         <div className={styles.sidebarFooter}>
-          <p>{data?.unit ?? "Демо администратора"}</p>
+          <p>{data?.unit ?? "Административный веб"}</p>
           {siteHref && <a href={siteHref}>← На сайт Синкли</a>}
-          <a href="#/examples">Примеры компонентов</a>
         </div>
       </aside>
       <main id="admin-main" className={styles.main}>
@@ -259,7 +256,7 @@ export function AdminWorkspace({
             </p>
           </div>
           <label className={styles.field}>
-            Набор демо-данных
+            Набор данных
             <select
               value={scenario}
               onChange={(event) =>
@@ -291,11 +288,6 @@ export function AdminWorkspace({
             <a href={`#${defaultPath(role)}`}>Открыть рабочее пространство</a>
           </section>
         )}
-        <footer className={styles.footer}>
-          Демо · только вымышленные данные. Учебные события сохраняются в этой
-          вкладке; новый набор открывает отдельный сеанс. Роли и доставка
-          симулируются.
-        </footer>
       </main>
     </div>
   );

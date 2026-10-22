@@ -120,7 +120,7 @@ export function projectClinic(
           id: `signal-${command.id}`,
           patientId: command.patientId,
           day: command.day,
-          title: "Запрос пациента на связь · учебный сценарий",
+          title: "Запрос пациента на связь",
           status: "open",
           createdAt: command.at,
           acceptedAt: null,
@@ -258,7 +258,7 @@ export function reduceClinicSession(
     ...state,
     commands: [...state.commands, action.command],
     error: "",
-    notice: "Учебное событие записано. Связанные показатели обновлены.",
+    notice: "Событие записано. Показатели обновлены.",
   };
 }
 export function serializeClinicSession(state: ClinicSession) {

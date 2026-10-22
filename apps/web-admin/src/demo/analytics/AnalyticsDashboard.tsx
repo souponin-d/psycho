@@ -418,10 +418,6 @@ export function AnalyticsDashboard({
                       <dd>{minutes.length}</dd>
                     </div>
                   </dl>
-                  <p className={styles.footnote}>
-                    Учебные организационные события. Это не экстренный алертинг
-                    и не клинический риск.
-                  </p>
                 </section>
                 <section className={styles.panel}>
                   <h2>Качество и происхождение</h2>
@@ -449,9 +445,8 @@ export function AnalyticsDashboard({
                       : "В выбранном диапазоне нет отмеченных пропусков дневной сводки."}
                   </p>
                   <p className={styles.footnote}>
-                    Нулевое значение отличается от отсутствующего. Сырые данные
-                    — синтетические; агрегаты вычислены из событий текущей
-                    выборки. Дубли по ID/окну формы не принимаются.
+                    Нулевое значение отличается от отсутствующего. Каждая форма
+                    учитывается один раз.
                   </p>
                 </section>
               </div>
@@ -462,7 +457,7 @@ export function AnalyticsDashboard({
                     <thead>
                       <tr>
                         <th>Дата</th>
-                        <th>Учебная запись</th>
+                        <th>Пациент</th>
                         <th>Событие</th>
                         <th>Стадия</th>
                       </tr>

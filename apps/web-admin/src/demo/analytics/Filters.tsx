@@ -129,8 +129,7 @@ export function Filters({
       </div>
       <div className={styles.filterCaption}>
         <span>
-          {dateLabel(filter.from)} – {dateLabel(filter.to)} 2026 · фиксированные
-          часы демо
+          {dateLabel(filter.from)} – {dateLabel(filter.to)} 2026
         </span>
         <button
           onClick={() => {

@@ -147,8 +147,7 @@ export function reduceSession(
           ...state.changes,
         ],
         roleError: false,
-        roleMessage:
-          "Рабочие роли сохранены в этой демонстрации. Изменение записано в журнал.",
+        roleMessage: "Рабочие роли сохранены. Изменение записано в журнал.",
       };
     }
   }

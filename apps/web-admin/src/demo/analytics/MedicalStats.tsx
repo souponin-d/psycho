@@ -32,20 +32,9 @@ export function MedicalStats({
   }));
   return (
     <div className={styles.stack}>
-      <div className={styles.notice}>
-        <strong>Описательная медицинская статистика</strong>
-        <p>
-          Синтетические внешние результаты оценки. Приложение не проводит
-          тестирование, не определяет диагноз и не оценивает эффективность
-          лечения.
-        </p>
-      </div>
       <div className={styles.panelHeading}>
         <div>
-          <h2>Наблюдения, а не выводы о лечении</h2>
-          <p className={styles.muted}>
-            Версия: synthetic-external-2026-10 · единица: баллы
-          </p>
+          <h2>Динамика наблюдений</h2>
         </div>
         <label className={styles.field}>
           Инструмент оценки
@@ -173,7 +162,7 @@ export function MedicalStats({
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>Учебная запись</th>
+                <th>Пациент</th>
                 <th>Исходное</th>
                 <th>Повторное</th>
                 <th>Разность</th>

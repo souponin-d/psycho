@@ -24,7 +24,9 @@ export function App() {
   return (
     <AdminDemo
       examples={
-        <ExampleWorkbench fixtures={fixtureSources} examples={examples} />
+        import.meta.env.DEV ? (
+          <ExampleWorkbench fixtures={fixtureSources} examples={examples} />
+        ) : undefined
       }
     />
   );

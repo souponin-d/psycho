@@ -91,15 +91,14 @@ export function Drilldown({
         <section aria-label="Состав показателя">
           <p className={styles.muted}>
             {dateLabel(result.filter.from)} – {dateLabel(result.filter.to)} ·{" "}
-            {rows.length} записей. Только синтетические сведения текущей
-            выборки.
+            {rows.length} записей текущей выборки.
           </p>
           {rows.length ? (
             <>
               <table className={styles.table}>
                 <thead>
                   <tr>
-                    <th>Учебная запись</th>
+                    <th>Пациент</th>
                     <th>Дата</th>
                   </tr>
                 </thead>

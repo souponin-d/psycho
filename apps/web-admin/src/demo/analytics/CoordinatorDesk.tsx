@@ -73,8 +73,7 @@ export function CoordinatorDesk({
             <span className={styles.kicker}>Организационный вопрос</span>
             <h2>Уточнить расписание кабинета Д-03</h2>
             <p className={styles.muted}>
-              Подтверждённая учебная встреча появится в расписании команды и
-              журнале.
+              Подтверждённая встреча появится в расписании команды и журнале.
             </p>
             <form
               className={styles.scheduleForm}
@@ -127,8 +126,8 @@ export function CoordinatorDesk({
                 : "Ожидается самоотчёт П-001"}
             </h2>
             <p className={styles.muted}>
-              Запрос фиксируется в общем журнале. Ответ учебного пациента
-              закрывает ожидание.
+              Запрос фиксируется в общем журнале. Ответ пациента закрывает
+              ожидание.
             </p>
             <div className={styles.actions}>
               <Button
@@ -139,7 +138,7 @@ export function CoordinatorDesk({
               >
                 Запросить самоотчёт
               </Button>
-              <a href="#/coordinator/journey">Открыть учебного пациента</a>
+              <a href="#/coordinator/journey">Открыть пациента</a>
             </div>
             {received ? (
               <p className={styles.success}>
