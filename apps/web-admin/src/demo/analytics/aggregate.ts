@@ -245,7 +245,7 @@ export function csvReport(
     ["Период", filter.from, filter.to],
     ["Отделение", department],
     ["Врач", doctor],
-    ["Группа", filter.group],
+    ["Группа", filter.group === "all" ? "Все группы" : filter.group],
     ["Показатель", "Значение", "Определение"],
     [
       "На сопровождении",

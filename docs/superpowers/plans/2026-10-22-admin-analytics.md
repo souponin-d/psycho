@@ -29,11 +29,11 @@
 
 Files: demo/data.ts; tests/admin-workspace-fixtures.test.ts; demo/analytics/model.ts, fixtures.ts, aggregate.ts; tests/admin-analytics-fixtures.test.ts.
 
-Interfaces: createClinicDataset(scenario), analyseClinic(data, commands, filter), parseDemoCommands(value), clinicalSummary(...). События имеют устойчивый ID/ссылки/дату; выборка и предыдущий период используют общие правила.
+Interfaces: createClinicDataset(scenario), analyseClinic(projectedData, filter), clinicalSummary(...). События имеют устойчивый ID/ссылки/дату; выборка и предыдущий период используют общие правила.
 
-- [ ] Добавить RED для A01 и модели (200/12/3/180, сумма разрезов, фильтры, пары, дубли).
-- [ ] Реализовать строгие инварианты, воспроизводимый набор, агрегации; получить GREEN.
-- [ ] Закрепить изменения отдельным коммитом.
+- [x] Добавить RED для A01 и модели (200/12/3/180, сумма разрезов, фильтры, пары, дубли).
+- [x] Реализовать строгие инварианты, воспроизводимый набор, агрегации; получить GREEN.
+- [x] Закрепить изменения отдельным коммитом (9c39f43).
 
 ### Task 2: Управление сеансом и действия
 
@@ -41,9 +41,9 @@ Files: demo/analytics/session.ts, session.test.ts, useClinicSession.ts; инте
 
 Interfaces: reduceClinicSession(data,state,action), projectClinic(data,commands), serialize/restore; callbacks для трёх ролей. События отчёта, запроса связи, принятия/ответа, расписания, назначения ролей.
 
-- [ ] RED: однократная отправка и обработка, неизвестные ссылки, сохранение/повреждение/сброс, изменение агрегатов.
-- [ ] Реализовать переходы, локальное сохранение с понятной ошибкой, проекцию для оболочки и системного редактора.
-- [ ] GREEN и коммит.
+- [x] RED: однократная отправка и обработка, неизвестные ссылки, сохранение/повреждение/сброс, изменение агрегатов.
+- [x] Реализовать переходы, локальное сохранение с понятной ошибкой, проекцию для оболочки и системного редактора.
+- [x] GREEN и коммит (7b89678).
 
 ### Task 3: Дашборды, статистика и сценарии
 
@@ -51,14 +51,14 @@ Files: demo/analytics/{AnalyticsDashboard,Charts,Filters,MedicalStats,DemoJourne
 
 Interfaces: контролируемые filter/state/callbacks; Charts получает готовые ряды, Reports тот же результат analyseClinic. Детализация использует тот же predicate выборки.
 
-- [ ] RED пользовательских сценариев: фильтр/выборка, пациент→врач→KPI, роли/журнал, CSV/print, пустое состояние.
-- [ ] Построить согласованные графики/цвета, таблицы альтернатив, макет desktop/mobile, формы, отчёт и пульт жюри.
-- [ ] GREEN, браузерные примеры и коммит.
+- [x] RED пользовательских сценариев: фильтр/выборка, пациент→врач→KPI, роли/журнал, CSV/print, пустое состояние.
+- [x] Построить согласованные графики/цвета, таблицы альтернатив, макет desktop/mobile, формы, отчёт и пульт жюри.
+- [x] GREEN, браузерные примеры и коммит (5ec1216).
 
 ### Task 4: Завершение
 
 Files: README.md, docs/team/web-components.md, docs/verification/2026-10-22-admin-analytics.md, screenshots.
 
-- [ ] Техническое ревью; исправления замечаний с воспроизведением.
-- [ ] check, check:web, check:fixtures, diff --check; production preview и keyboard/responsive.
-- [ ] Записать фактические результаты, границы, запуск и откат; сохранить ветку без незапрошенной публикации.
+- [x] Техническое ревью; исправления замечаний с воспроизведением.
+- [x] check, check:web, check:fixtures, diff --check; production preview и keyboard/responsive. Системная пагинация PDF не подтверждена: ограничение браузера записано в отчёте.
+- [x] Записать фактические результаты, границы, запуск и откат; сохранить ветку без незапрошенной публикации.

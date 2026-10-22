@@ -140,7 +140,8 @@ export function createClinicDataset(
       }
     }
     if (i % 9 === 0 && i > 0) {
-      const day = addDays(DEMO_DAY, -i % 22);
+      const proposedDay = addDays(DEMO_DAY, -i % 22);
+      const day = closed && proposedDay > closed ? closed : proposedDay;
       const status =
         (i / 9) % 3 === 0 ? "closed" : (i / 9) % 3 === 1 ? "open" : "accepted";
       const createdAt = `${day}T08:00:00Z`;
@@ -162,5 +163,21 @@ export function createClinicDataset(
       });
     }
   }
+  // Prepared future appointments make the coordinator's roster useful while
+  // leaving two explicit gaps, including D-03 for the scheduling scenario.
+  data.doctors.forEach((doctor, index) => {
+    if (index === 0 || index === 2) return;
+    const patient = data.patients.find(
+      (p) => p.doctorId === doctor.id && !p.closed,
+    )!;
+    data.visits.push({
+      id: `visit-upcoming-${doctor.id}`,
+      patientId: patient.id,
+      day: addDays(DEMO_DAY, 1 + (index % 8)),
+      time: `${String(9 + (index % 8)).padStart(2, "0")}:30`,
+      status: "scheduled",
+      kind: "Повторный",
+    });
+  });
   return data;
 }

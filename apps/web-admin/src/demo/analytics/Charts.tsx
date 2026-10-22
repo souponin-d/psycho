@@ -221,6 +221,7 @@ export function TrendChart({
             min="0"
             max={rows.length - 1}
             value={selected ?? 0}
+            onFocus={(e) => setSelected(Number(e.currentTarget.value))}
             onChange={(e) => setSelected(Number(e.currentTarget.value))}
           />
         </label>

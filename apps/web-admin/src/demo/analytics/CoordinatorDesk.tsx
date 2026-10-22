@@ -121,7 +121,11 @@ export function CoordinatorDesk({
           </section>
           <section className={styles.panel}>
             <span className={styles.kicker}>Сопровождение</span>
-            <h2>Ожидается самоотчёт П-001</h2>
+            <h2>
+              {received
+                ? "Самоотчёт П-001 получен"
+                : "Ожидается самоотчёт П-001"}
+            </h2>
             <p className={styles.muted}>
               Запрос фиксируется в общем журнале. Ответ учебного пациента
               закрывает ожидание.

@@ -19,6 +19,21 @@ import {
 } from "../apps/web-admin/src/demo/analytics/aggregate";
 
 describe("событийная аналитика клиники", () => {
+  it("готовит реальные ближайшие встречи и оставляет кабинет Д-03 для сценария уточнения", () => {
+    const data = createClinicDataset("normal");
+    const upcoming = data.visits.filter(
+      (v) => v.status === "scheduled" && v.day > DEMO_DAY,
+    );
+    expect(upcoming).toHaveLength(10);
+    expect(
+      upcoming.every((v) => {
+        const patient = data.patients.find((p) => p.id === v.patientId);
+        return (
+          patient && !patient.closed && patient.doctorId !== "demo-doctor-03"
+        );
+      }),
+    ).toBe(true);
+  });
   it.each(["normal", "empty", "long"] as const)(
     "проекция %s согласована с оболочкой и кабинетами",
     (scenario) => {
@@ -54,6 +69,18 @@ describe("событийная аналитика клиники", () => {
     expect(clinical.rows.some((r) => r.change > 0)).toBe(true);
     expect(clinical.rows.some((r) => r.change < 0)).toBe(true);
     expect(clinical.rows.some((r) => r.change === 0)).toBe(true);
+  });
+  it("создаёт запросы связи только внутри эпизода сопровождения пациента", () => {
+    const data = createClinicDataset("normal");
+    expect(
+      data.signals.every((signal) => {
+        const patient = data.patients.find((p) => p.id === signal.patientId)!;
+        return (
+          signal.day >= patient.enrolled &&
+          (!patient.closed || signal.day <= patient.closed)
+        );
+      }),
+    ).toBe(true);
   });
   it("отклоняет несуществующую дату из ссылки вместо её нормализации JavaScript", () => {
     expect(

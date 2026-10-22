@@ -103,7 +103,10 @@ export function DemoJourney({ controller }: { controller: ClinicController }) {
               <span>1</span>
               <div>
                 <h2>Учебный пациент П-001</h2>
-                <p>{dateLabel(DEMO_DAY)} · ожидается форма</p>
+                <p>
+                  {dateLabel(DEMO_DAY)} ·{" "}
+                  {report ? "форма получена" : "ожидается форма"}
+                </p>
               </div>
             </div>
             <form
