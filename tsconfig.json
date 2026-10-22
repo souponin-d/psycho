@@ -17,6 +17,7 @@
     "skipLibCheck": true,
     "types": ["vite/client", "node"]
   },
+  "exclude": ["apps/mobile-patient"],
   "include": [
     "apps",
     "packages",

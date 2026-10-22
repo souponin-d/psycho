@@ -1,0 +1,42 @@
+{
+  "name": "@psycho/mobile-patient",
+  "version": "0.1.0",
+  "main": "expo-router/entry",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --max-warnings 0",
+    "prebuild:android": "expo prebuild --platform android --no-install",
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "expo": "55.0.32",
+    "expo-constants": "55.0.17",
+    "expo-font": "55.0.8",
+    "expo-haptics": "55.0.18",
+    "expo-linear-gradient": "55.0.18",
+    "expo-linking": "55.0.17",
+    "expo-navigation-bar": "55.0.17",
+    "expo-router": "55.0.18",
+    "expo-splash-screen": "55.0.25",
+    "expo-status-bar": "55.0.6",
+    "react": "19.2.0",
+    "react-native": "0.83.10",
+    "react-native-safe-area-context": "5.6.2",
+    "react-native-screens": "4.23.0",
+    "react-native-svg": "15.15.3",
+    "expo-system-ui": "55.0.22"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.2",
+    "eslint": "9.39.5",
+    "typescript": "5.9.2",
+    "@babel/eslint-parser": "7.28.5",
+    "eslint-plugin-react-hooks": "6.1.1"
+  },
+  "private": true,
+  "type": "module"
+}

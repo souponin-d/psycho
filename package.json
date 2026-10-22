@@ -6,6 +6,7 @@
   "workspaces": [
     "apps/web-doctor",
     "apps/web-admin",
+    "apps/mobile-patient",
     "packages/ui-web"
   ],
   "description": "Проверки и инструменты репозитория команды Клинического компаса",
@@ -13,6 +14,8 @@
     "node": ">=24 <25"
   },
   "scripts": {
+    "dev:mobile": "npm run start --workspace @psycho/mobile-patient",
+    "check:mobile": "npm run typecheck --workspace @psycho/mobile-patient && npm run lint --workspace @psycho/mobile-patient && node --test apps/mobile-patient/tests/*.test.ts",
     "dev": "vite site --host 127.0.0.1",
     "build": "vite build site --base ./ --outDir ../dist --emptyOutDir",
     "preview": "vite preview site --host 127.0.0.1 --outDir ../dist",

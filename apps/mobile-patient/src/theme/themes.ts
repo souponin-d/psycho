@@ -1,0 +1,73 @@
+import type { ThemeId } from "../core/model";
+
+const palette = {
+  ivory: "#F6F5ED",
+  forest: "#173C30",
+  sage: "#D6E5BE",
+  lime: "#D4EEA6",
+  lilac: "#DCD0ED",
+  night: "#102720",
+};
+export const themes = {
+  light: {
+    id: "light",
+    name: "Рассвет",
+    caption: "Свет и спокойствие",
+    dark: false,
+    page: palette.ivory,
+    text: "#17372C",
+    muted: "#586C5D",
+    surface: "#FFFFFF",
+    soft: "#E9EEDF",
+    accent: "#2C5740",
+    onAccent: "#FFFFFF",
+    tint: "#D6E5BE",
+    border: "#DCE2D3",
+    glass: "rgba(250,251,242,0.94)",
+    overlay: "rgba(246,245,237,0.12)",
+    context: palette.lilac,
+    landscape: require("../../assets/images/terrain-light.png"),
+  },
+  dark: {
+    id: "dark",
+    name: "Орбита",
+    caption: "Тихая сторона дня",
+    dark: true,
+    page: palette.night,
+    text: "#F4F5E9",
+    muted: "#B7C8BD",
+    surface: "#1C372F",
+    soft: "#244437",
+    accent: palette.lime,
+    onAccent: "#173126",
+    tint: "#35513D",
+    border: "#3B5548",
+    glass: "rgba(20,45,35,0.95)",
+    overlay: "rgba(7,22,17,0.08)",
+    context: "#BFB0DA",
+    landscape: require("../../assets/images/terrain-dark.png"),
+  },
+  lavender: {
+    id: "lavender",
+    name: "Лаванда",
+    caption: "Немного мягкости",
+    dark: false,
+    page: "#F4EFF7",
+    text: "#35354C",
+    muted: "#6C667D",
+    surface: "#FFFCFF",
+    soft: "#E8DFF0",
+    accent: "#625777",
+    onAccent: "#FFFFFF",
+    tint: "#DBCCE9",
+    border: "#DFD5E7",
+    glass: "rgba(249,243,252,0.95)",
+    overlay: "rgba(195,169,228,0.2)",
+    context: "#D1DDBB",
+    landscape: require("../../assets/images/terrain-light.png"),
+  },
+} as const;
+export type AppTheme = (typeof themes)[ThemeId];
+export const space = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 };
+export const radius = { control: 18, card: 28, sheet: 36, round: 999 };
+export const motion = { fast: 140, base: 220, screen: 380, welcome: 800 };

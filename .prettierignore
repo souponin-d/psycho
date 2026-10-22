@@ -1,4 +1,8 @@
 node_modules/
+apps/mobile-patient/android/
+apps/mobile-patient/ios/
+apps/mobile-patient/.expo/
+apps/mobile-patient/dist-android/
 .cache/
 .superpowers/
 .worktrees/
