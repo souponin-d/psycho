@@ -5,6 +5,13 @@ import {
 } from "../apps/web-admin/src/demo/data";
 
 describe("данные трёх рабочих пространств", () => {
+  it("отклоняет превышение суммы кабинета во вложенном периоде", () => {
+    const data = adminDemoSchema.parse(adminDemoSources.normal);
+    data.periods[1]!.officeReports.forEach((row, index) => {
+      row.count = index === 0 ? 19 : 0;
+    });
+    expect(adminDemoSchema.safeParse(data).success).toBe(false);
+  });
   it("отклоняет потерянный день, даже если его значение равно нулю", () => {
     const data = structuredClone(
       adminDemoSchema.parse(adminDemoSources.normal),
