@@ -129,19 +129,19 @@ describe("аналитическая демонстрация", () => {
       screen.getByRole("table", { name: "Команда отделения" }).textContent,
     ).toContain("16:30");
   });
-  it("пустой набор показывает отсутствие знаменателя, отчёт можно отправить на печать", async () => {
+  it("пустой набор объясняет отсутствие данных и не создаёт пустой отчёт", async () => {
     const user = userEvent.setup();
-    const print = vi.spyOn(window, "print").mockImplementation(() => {});
     render(<App />);
     await user.selectOptions(screen.getByLabelText("Набор данных"), "empty");
     expect(
       await screen.findByText("В клинике пока нет пациентов"),
     ).toBeTruthy();
     await user.click(screen.getByRole("link", { name: "Отчёт" }));
-    await user.click(
-      screen.getByRole("button", { name: "Печать / сохранить PDF" }),
-    );
-    expect(print).toHaveBeenCalledOnce();
-    print.mockRestore();
+    expect(
+      screen
+        .getByRole("button", { name: "Сформировать XLSX" })
+        .hasAttribute("disabled"),
+    ).toBe(true);
+    expect(screen.getByText(/В выбранной выборке нет пациентов/)).toBeTruthy();
   });
 });
