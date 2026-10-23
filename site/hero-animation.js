@@ -1,8 +1,8 @@
-// Approved green particle logo; geometry and timing match the HERO prototype.
+// Green particle logo with a soft pointer response and responsive composition.
 const vertex = `
  precision highp float;
  attribute vec4 a_seed;
- uniform float u_time,u_cycle,u_assembly,u_aspect,u_dpr,u_size,u_response,u_active,u_reduce,u_dispersion;
+ uniform float u_time,u_cycle,u_assembly,u_aspect,u_dpr,u_size,u_response,u_active,u_reduce,u_dispersion,u_compact;
  uniform vec2 u_pointer;
  varying float v_alpha,v_tone,v_hover;
  const float PI=3.14159265359;
@@ -18,7 +18,7 @@ const vertex = `
   else if(distance<arc+straight){p=vec2(-r,h-(distance-arc));n=vec2(-1.,0.);}
   else if(distance<2.*arc+straight){float a=PI+(distance-arc-straight)/r;p=vec2(r*cos(a),-h+r*sin(a));n=vec2(cos(a),sin(a));}
   else{p=vec2(r,-h+(distance-2.*arc-straight));n=vec2(1.,0.);}
-  float b=v*2.*PI;float thickness=.077;
+  float b=v*2.*PI;float thickness=.09;
   vec3 point=vec3(p+n*thickness*cos(b),thickness*sin(b));
   float side=group<.5?-1.:1.;point=ry(-side*.15)*point;
   point+=vec3(side*.279,-side*.31,side*.025);
@@ -41,7 +41,7 @@ const vertex = `
   float depth=clamp((1.05-p.z)/2.1,0.,1.);
   v_tone=.24+.36*depth+.18*hash(id+7.);
   v_alpha=(.2+.65*depth)*(.7+.3*hash(id+6.))*mix(.6,1.,binding);
-  if(u_aspect<1.1){p*=.67;p+=vec3(.06,-.8,0.);}else{p+=vec3(1.03,0.,0.);}
+  if(u_compact>.5){p*=.63;p+=vec3(.06,-.8,0.);}else{if(u_aspect<1.6){p*=.72;p+=vec3(1.04,0.,0.);}else{p+=vec3(1.03,0.,0.);}}
   vec4 clip=project(p);vec2 ndc=clip.xy/clip.w;
   vec2 delta=(ndc-u_pointer)*vec2(u_aspect,1.);float distance=length(delta);
   float influence=exp(-distance*distance/.009)*u_active*u_response*(1.-u_reduce);
@@ -60,10 +60,10 @@ export function mountHeroAnimation(root) {
   if (!root) return;
   const canvas = root.querySelector("canvas");
   const fallback = root.querySelector("[data-hero-fallback]");
-  const button = root.querySelector("[data-hero-toggle]");
-  if (!canvas || !fallback || !button) return;
+  if (!canvas || !fallback) return;
 
   const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+  const compact = matchMedia("(max-width: 760px)");
   let paused = reduced.matches;
   let phase = 0.35;
   let clock = 0;
@@ -106,12 +106,7 @@ export function mountHeroAnimation(root) {
     shaders = [];
     ready = false;
   }
-  function controls() {
-    button.hidden = !ready;
-    button.setAttribute("aria-pressed", String(paused));
-    button.textContent = paused
-      ? "Включить анимацию"
-      : "Приостановить анимацию";
+  function updatePresentation() {
     fallback.hidden = ready;
     canvas.hidden = !ready;
   }
@@ -171,6 +166,7 @@ export function mountHeroAnimation(root) {
         "dark",
         "soft",
         "dispersion",
+        "compact",
       ].forEach((name) => {
         uniforms[name] = gl.getUniformLocation(program, "u_" + name);
       });
@@ -178,7 +174,7 @@ export function mountHeroAnimation(root) {
     } catch {
       release();
     }
-    controls();
+    updatePresentation();
     draw();
     sync();
   }
@@ -209,9 +205,10 @@ export function mountHeroAnimation(root) {
       assembly: smooth(0.04, 0.34, phase) * (1 - smooth(0.68, 0.97, phase)),
       dispersion: 1.7,
       aspect: width / height,
+      compact: compact.matches ? 1 : 0,
       dpr,
       size: 1.3,
-      response: 1,
+      response: 0.65,
       active: pointer.active,
       reduce: reduced.matches ? 1 : 0,
     };
@@ -259,7 +256,7 @@ export function mountHeroAnimation(root) {
     last = now;
     clock += dt * 1.2;
     phase = (phase + (dt * 1.2) / 34) % 1;
-    const lerp = reduced.matches ? 1 : 1 - Math.exp(-dt * 7);
+    const lerp = reduced.matches ? 1 : 1 - Math.exp(-dt * 4.5);
     pointer.x += (pointer.targetX - pointer.x) * lerp;
     pointer.y += (pointer.targetY - pointer.y) * lerp;
     pointer.active += (pointer.targetActive - pointer.active) * lerp;
@@ -269,11 +266,6 @@ export function mountHeroAnimation(root) {
     }
     sync();
   }
-  listen(button, "click", () => {
-    paused = !paused;
-    controls();
-    sync();
-  });
   listen(root, "pointermove", (event) => {
     if (event.pointerType === "touch" || paused) return;
     const bounds = root.getBoundingClientRect();
@@ -288,7 +280,8 @@ export function mountHeroAnimation(root) {
     paused = reduced.matches;
     if (paused) phase = 0.35;
     pointer.x = pointer.y = pointer.active = 0;
-    controls();
+    pointer.targetX = pointer.targetY = pointer.targetActive = 0;
+    updatePresentation();
     draw();
     sync();
   });
@@ -301,7 +294,7 @@ export function mountHeroAnimation(root) {
     event.preventDefault();
     stop();
     ready = false;
-    controls();
+    updatePresentation();
   });
   listen(canvas, "webglcontextrestored", initialize);
   const resize = new ResizeObserver(draw);
