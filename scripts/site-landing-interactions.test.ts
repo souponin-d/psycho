@@ -45,7 +45,7 @@ it("сохраняет вкладки продукта и карусель по�
     }),
   ).toBeTruthy();
   product.getByRole("tab", { name: "Врачу" }).click();
-  expect(productLink.getAttribute("href")).toBe("demo/doctor/");
+  expect(productLink.getAttribute("href")).toBe("doctor/");
 
   expect(document.querySelector("#evidence")!.tagName).toBe("SECTION");
   expect(document.querySelector("#compare")!.closest("details")).toBeNull();

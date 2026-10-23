@@ -299,6 +299,9 @@ summary:focus-visible,
 .header nav a:hover:after {
   transform: scaleX(1);
 }
+.nav-doctor {
+  display: none;
+}
 .menu-toggle {
   display: none;
 }
@@ -3564,6 +3567,11 @@ dialog[open] {
   }
   .header nav.is-open {
     display: flex;
+  }
+  .header nav .nav-doctor {
+    display: block;
+    font-weight: 700;
+    color: #315e48;
   }
   .hero {
     padding-top: 35px;
