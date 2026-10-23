@@ -21,7 +21,6 @@ import { EncounterEditor, type RegisterGuard } from "./EncounterEditor";
 import { Events } from "./Events";
 import { formatDate, initials } from "./labels";
 import {
-  Badge,
   Button,
   Empty,
   ErrorNotice,
@@ -132,39 +131,31 @@ function LoginScreen({
   return (
     <div className={`${styles.root} ${styles.login}`}>
       <div className={styles.loginIntro}>
-        <div className={styles.brand}>
-          <span className={styles.brandMark}>
-            <Icon name="activity" size={23} />
-          </span>
-          синкли
+        <div className={styles.loginAtmosphere} aria-hidden="true">
+          <span className={styles.loginOrbit} />
+          <span className={styles.loginOrbit} />
+          <span className={styles.loginOrbit} />
+          <span className={styles.loginLight} />
+          <span className={styles.loginLight} />
+          <span className={styles.loginLight} />
         </div>
-        <h1>
-          Внимание пациенту.
-          <br />
-          Всё остальное —<br />
-          под рукой.
-        </h1>
-        <p>
-          Приёмы, история наблюдения и динамика состояния в одном рабочем
-          пространстве врача.
-        </p>
-        <div className={styles.loginIllustration}>
-          <div className={styles.between}>
-            <h3>Непрерывность наблюдения</h3>
-            <Badge tone="green">Один контекст</Badge>
+        <div className={styles.loginCopy}>
+          <div className={styles.brand}>
+            <span className={styles.brandMark}>
+              <Icon name="activity" size={23} />
+            </span>
+            синкли
           </div>
-          <div className={styles.timeline} style={{ marginTop: 25 }}>
-            {[
-              "Первичная оценка и цели",
-              "План и контрольные точки",
-              "Динамика и следующий приём",
-            ].map((label, i) => (
-              <div key={label} className={styles.timelineItem}>
-                <time>0{i + 1}</time>
-                <h3>{label}</h3>
-              </div>
-            ))}
-          </div>
+          <h1>
+            Внимание пациенту.
+            <br />
+            Всё остальное —<br />
+            под рукой.
+          </h1>
+          <p>
+            Приёмы, история наблюдения и динамика состояния в одном рабочем
+            пространстве врача.
+          </p>
         </div>
       </div>
       <div className={styles.loginForm}>
