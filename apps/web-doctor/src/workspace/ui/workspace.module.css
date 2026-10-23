@@ -946,86 +946,28 @@
   justify-content: center;
   border-right: 1px solid var(--ws-line);
 }
-.loginAtmosphere {
+.loginSphere {
   position: absolute;
   inset: 0;
   z-index: -1;
   overflow: hidden;
   pointer-events: none;
 }
-.loginOrbit {
-  position: absolute;
-  left: 50%;
-  top: 52%;
-  width: 105%;
-  height: 64%;
-  border: 1px solid rgb(83 127 78 / 21%);
-  border-radius: 50%;
-  transform: translate(-50%, -50%) rotate(-23deg);
-  animation: loginOrbitDrift 22s ease-in-out infinite alternate;
+.loginSphere canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
-.loginOrbit::after {
+.loginSphere::after {
   content: "";
   position: absolute;
-  left: 8%;
-  top: 17%;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: #7b9c70;
-  box-shadow:
-    0 0 0 9px rgb(112 156 99 / 10%),
-    0 0 28px #a8c894;
-}
-.loginOrbit:nth-child(2) {
-  width: 76%;
-  height: 92%;
-  border-color: rgb(83 127 78 / 15%);
-  transform: translate(-50%, -50%) rotate(32deg);
-  animation-delay: -8s;
-}
-.loginOrbit:nth-child(2)::after {
-  left: 82%;
-  top: 6%;
-  width: 7px;
-  height: 7px;
-}
-.loginOrbit:nth-child(3) {
-  width: 61%;
-  height: 115%;
-  border-color: rgb(83 127 78 / 12%);
-  transform: translate(-50%, -50%) rotate(-40deg);
-  animation-delay: -15s;
-}
-.loginOrbit:nth-child(3)::after {
-  left: 19%;
-  top: 82%;
-  width: 6px;
-  height: 6px;
-}
-.loginLight {
-  position: absolute;
-  width: 24vw;
-  height: 24vw;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgb(184 216 162 / 27%), transparent 70%);
-  filter: blur(12px);
-  opacity: 0.7;
-  animation: loginLightFloat 17s ease-in-out infinite alternate;
-}
-.loginLight:nth-child(4) {
-  left: -10%;
-  top: -8%;
-}
-.loginLight:nth-child(5) {
-  right: -14%;
-  bottom: -12%;
-  animation-delay: -7s;
-}
-.loginLight:nth-child(6) {
-  left: 30%;
-  bottom: -30%;
-  animation-delay: -12s;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgb(240 246 234 / 72%) 0%,
+    rgb(240 246 234 / 43%) 65%,
+    transparent 100%
+  );
 }
 .loginCopy {
   position: relative;
@@ -1054,17 +996,6 @@
   color: #6a765f;
   max-width: 440px;
   line-height: 1.9;
-}
-@keyframes loginOrbitDrift {
-  to {
-    transform: translate(-49%, -51%) rotate(-10deg);
-  }
-}
-@keyframes loginLightFloat {
-  to {
-    transform: translate3d(8%, -8%, 0);
-    opacity: 1;
-  }
 }
 .loginForm {
   min-height: 0;
@@ -1426,10 +1357,6 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .loginOrbit,
-  .loginLight {
-    animation: none;
-  }
   .root *,
   .root *:before,
   .root *:after,

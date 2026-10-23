@@ -20,6 +20,7 @@ import { PatientView } from "./PatientView";
 import { EncounterEditor, type RegisterGuard } from "./EncounterEditor";
 import { Events } from "./Events";
 import { formatDate, initials } from "./labels";
+import { LoginSphere } from "./LoginSphere";
 import {
   Button,
   Empty,
@@ -131,14 +132,7 @@ function LoginScreen({
   return (
     <div className={`${styles.root} ${styles.login}`}>
       <div className={styles.loginIntro}>
-        <div className={styles.loginAtmosphere} aria-hidden="true">
-          <span className={styles.loginOrbit} />
-          <span className={styles.loginOrbit} />
-          <span className={styles.loginOrbit} />
-          <span className={styles.loginLight} />
-          <span className={styles.loginLight} />
-          <span className={styles.loginLight} />
-        </div>
+        <LoginSphere />
         <div className={styles.loginCopy}>
           <div className={styles.brand}>
             <span className={styles.brandMark}>
