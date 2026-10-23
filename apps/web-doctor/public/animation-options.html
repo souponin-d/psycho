@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Пять вариантов фона · Синкли</title>
+    <style>
+      :root {
+        font-family: Onest, Arial, sans-serif;
+        color: #1c2924;
+        background: #f6f8f3;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+      }
+      button,
+      a {
+        font: inherit;
+      }
+      .bar {
+        min-height: 80px;
+        padding: 18px clamp(20px, 4vw, 64px);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+      .bar strong {
+        font-size: 18px;
+        letter-spacing: -0.03em;
+      }
+      .bar a {
+        color: #355e4a;
+        text-underline-offset: 4px;
+      }
+      .bar small {
+        color: #5d6b60;
+        display: block;
+        margin-top: 3px;
+      }
+      .chooser {
+        display: flex;
+        gap: 8px;
+        padding: 0 clamp(20px, 4vw, 64px) 18px;
+        overflow-x: auto;
+      }
+      .chooser button {
+        flex: none;
+        min-height: 44px;
+        border: 1px solid #cdd8ca;
+        background: white;
+        color: #355e4a;
+        padding: 8px 15px;
+        border-radius: 9px;
+        cursor: pointer;
+      }
+      .chooser button[aria-current="true"] {
+        background: #355e4a;
+        color: white;
+        border-color: #355e4a;
+      }
+      .chooser button:focus-visible,
+      .bar a:focus-visible {
+        outline: 3px solid #628a52;
+        outline-offset: 3px;
+      }
+      .frame {
+        margin: 0 clamp(20px, 4vw, 64px) 24px;
+        height: min(760px, calc(100dvh - 175px));
+        min-height: 440px;
+        display: grid;
+        grid-template-columns: 55% 45%;
+        overflow: hidden;
+        border: 1px solid #d9e3d4;
+        border-radius: 16px;
+        box-shadow: 0 16px 50px #294a3012;
+      }
+      .scene {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        display: grid;
+        align-items: center;
+        padding: 7%;
+        background: #eef3e9;
+      }
+      .art {
+        position: absolute;
+        z-index: -1;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .copy {
+        position: relative;
+        width: min(100%, 520px);
+        margin-inline: auto;
+        text-align: left;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        margin-bottom: 44px;
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: -0.06em;
+      }
+      .mark {
+        display: grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: #355e4a;
+        color: white;
+        font-size: 21px;
+        font-weight: 400;
+      }
+      h1 {
+        margin: 0 0 25px;
+        font-size: clamp(34px, 3.45vw, 52px);
+        line-height: 1.14;
+        letter-spacing: -0.055em;
+        font-weight: 550;
+      }
+      .copy p {
+        max-width: 440px;
+        font-size: 15px;
+        line-height: 1.85;
+        color: #566b5a;
+      }
+      .form {
+        align-self: center;
+        justify-self: center;
+        width: min(100%, 450px);
+        padding: 35px;
+      }
+      .form h2 {
+        font-size: 24px;
+        margin: 0 0 8px;
+      }
+      .form p {
+        font-size: 12px;
+        color: #657169;
+        margin: 0 0 30px;
+        line-height: 1.5;
+      }
+      .form label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        margin: 18px 0;
+      }
+      .form input {
+        display: block;
+        width: 100%;
+        height: 42px;
+        border: 1px solid #85917c;
+        border-radius: 8px;
+        background: #fff;
+        padding: 10px 12px;
+        margin-top: 8px;
+      }
+      .form button {
+        display: block;
+        width: 100%;
+        height: 42px;
+        margin-top: 18px;
+        border-radius: 8px;
+        border: 0;
+        background: #355e4a;
+        color: #fff;
+        font-weight: 600;
+      }
+      .form .secondary {
+        margin-top: 24px;
+        border: 1px solid #d5dfd2;
+        background: white;
+        color: #1c2924;
+        font-weight: 400;
+      }
+      .form hr {
+        border: 0;
+        border-top: 1px solid #e1e7dd;
+        margin-top: 24px;
+      }
+      .note {
+        margin: 0 clamp(20px, 4vw, 64px) 22px;
+        color: #5a685c;
+        font-size: 13px;
+      }
+
+      /* 1 — flowing ribbons, inspired by the site's kinetic softness. */
+      .v1 {
+        background: linear-gradient(135deg, #f8faf4, #e3edda);
+      }
+      .v1 .art::before,
+      .v1 .art::after {
+        content: "";
+        position: absolute;
+        width: 135%;
+        height: 55%;
+        left: -30%;
+        top: 10%;
+        border: 22px solid #9fbe8b44;
+        border-radius: 50%;
+        transform: rotate(-24deg);
+        animation: ribbon 13s ease-in-out infinite alternate;
+      }
+      .v1 .art::after {
+        top: 43%;
+        left: 8%;
+        width: 95%;
+        border-width: 10px;
+        border-color: #6d9c6b47;
+        animation-delay: -6s;
+      }
+      .v1 .art {
+        background: radial-gradient(
+          circle at 90% 10%,
+          #abc69d66,
+          transparent 38%
+        );
+      }
+      @keyframes ribbon {
+        to {
+          transform: translate3d(5%, -3%, 0) rotate(-15deg);
+        }
+      }
+
+      /* 2 — an editorial field of fine points and a travelling shimmer. */
+      .v2 {
+        background: #f1f4ec;
+      }
+      .v2 .art {
+        background-image: radial-gradient(#6f946a5e 1px, transparent 1px);
+        background-size: 24px 24px;
+        mask-image: radial-gradient(
+          ellipse at 70% 46%,
+          #000 9%,
+          transparent 68%
+        );
+      }
+      .v2 .art::before {
+        content: "";
+        position: absolute;
+        inset: -25%;
+        background: linear-gradient(
+          110deg,
+          transparent 37%,
+          #d8edc78c 49%,
+          transparent 61%
+        );
+        animation: shimmer 9s ease-in-out infinite alternate;
+      }
+      .v2 .art::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          circle at 75% 75%,
+          #a6c59654,
+          transparent 34%
+        );
+      }
+      @keyframes shimmer {
+        to {
+          transform: translate3d(35%, 0, 0);
+        }
+      }
+
+      /* 3 — warm aurora, no visible geometry. */
+      .v3 {
+        background: #f6f4eb;
+      }
+      .v3 .art::before,
+      .v3 .art::after {
+        content: "";
+        position: absolute;
+        width: 80%;
+        height: 72%;
+        border-radius: 50%;
+        filter: blur(36px);
+        opacity: 0.75;
+        animation: aurora 14s ease-in-out infinite alternate;
+      }
+      .v3 .art::before {
+        left: -20%;
+        top: -24%;
+        background: #a6c5a7;
+      }
+      .v3 .art::after {
+        right: -22%;
+        bottom: -23%;
+        background: #d3c6a0;
+        animation-delay: -7s;
+      }
+      .v3 .art {
+        background: radial-gradient(
+          circle at 57% 37%,
+          #f8f6eccc,
+          transparent 55%
+        );
+      }
+      @keyframes aurora {
+        to {
+          transform: translate3d(16%, 9%, 0) scale(1.1);
+        }
+      }
+
+      /* 4 — contour lines, a quiet cartographic motif. */
+      .v4 {
+        background: #eaf1e7;
+      }
+      .v4 .art {
+        opacity: 0.67;
+        background: repeating-radial-gradient(
+          ellipse 52% 35% at 83% 43%,
+          transparent 0 25px,
+          #80a18158 26px 27px,
+          transparent 28px 51px
+        );
+        animation: contours 18s ease-in-out infinite alternate;
+      }
+      .v4 .art::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, #eaf1e7 12%, transparent 85%);
+      }
+      @keyframes contours {
+        to {
+          transform: translate3d(-3%, 2%, 0) scale(1.08);
+        }
+      }
+
+      /* 5 — a minimal clinical trace crossing translucent panels. */
+      .v5 {
+        background: #ecf2eb;
+      }
+      .v5 .art::before {
+        content: "";
+        position: absolute;
+        width: 62%;
+        height: 68%;
+        right: -12%;
+        top: 16%;
+        border: 1px solid #8eae8b74;
+        border-radius: 28px;
+        transform: rotate(-13deg);
+        box-shadow:
+          -33px 33px 0 -1px #e3ece1,
+          -33px 33px 0 0 #9bb79a5c;
+        animation: panels 12s ease-in-out infinite alternate;
+      }
+      .v5 .art::after {
+        content: "";
+        position: absolute;
+        inset: 20% -20%;
+        background: linear-gradient(
+            90deg,
+            transparent 15%,
+            #86aa85a8 48%,
+            transparent 51%
+          )
+          center / 140% 2px no-repeat;
+        animation: trace 7s ease-in-out infinite alternate;
+      }
+      @keyframes panels {
+        to {
+          transform: translate3d(-3%, 2%, 0) rotate(-8deg);
+        }
+      }
+      @keyframes trace {
+        to {
+          transform: translate3d(17%, 0, 0);
+          opacity: 0.35;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .bar {
+          align-items: flex-start;
+        }
+        .frame {
+          height: auto;
+          min-height: 0;
+          grid-template-columns: 1fr;
+        }
+        .scene {
+          min-height: 320px;
+        }
+        .copy .brand {
+          margin-bottom: 24px;
+        }
+        h1 {
+          font-size: 34px;
+        }
+        .copy p {
+          font-size: 13px;
+        }
+        .form {
+          padding: 26px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .art,
+        .art::before,
+        .art::after {
+          animation: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="bar">
+      <div>
+        <strong>Синкли · варианты анимации входа</strong
+        ><small
+          >Текстовый блок расположен по центру левой части, строки выровнены
+          слева</small
+        >
+      </div>
+      <a href="/">Вернуться ко входу</a>
+    </header>
+    <nav class="chooser" aria-label="Варианты фона">
+      <button type="button" data-choice="1">1 · Ленты</button>
+      <button type="button" data-choice="2">2 · Поле точек</button>
+      <button type="button" data-choice="3">3 · Аврора</button>
+      <button type="button" data-choice="4">4 · Топография</button>
+      <button type="button" data-choice="5">5 · Клинический сигнал</button>
+    </nav>
+    <main class="frame">
+      <section class="scene v1" aria-labelledby="title">
+        <div class="art" aria-hidden="true"></div>
+        <div class="copy">
+          <div class="brand">
+            <span class="mark" aria-hidden="true">∿</span> синкли
+          </div>
+          <h1 id="title">
+            Внимание пациенту.<br />Всё остальное —<br />под рукой.
+          </h1>
+          <p>
+            Приёмы, история наблюдения и динамика состояния в одном рабочем
+            пространстве врача.
+          </p>
+        </div>
+      </section>
+      <aside class="form" aria-label="Предпросмотр формы входа">
+        <h2>Рабочее место врача</h2>
+        <p>
+          Войдите в клинику или познакомьтесь со всеми сценариями на учебных
+          данных.
+        </p>
+        <label
+          >Рабочая электронная почта<input
+            placeholder="doctor@clinic.ru"
+            disabled /></label
+        ><label>Пароль<input type="password" disabled /></label
+        ><button disabled>Войти в клинику</button>
+        <hr />
+        <button class="secondary" disabled>
+          Открыть учебное рабочее место
+        </button>
+      </aside>
+    </main>
+    <p class="note">
+      Это предпросмотр пяти направлений. Кнопки входа здесь отключены; рабочее
+      приложение доступно по ссылке «Вернуться ко входу».
+    </p>
+    <script>
+      const scene = document.querySelector(".scene");
+      const buttons = [...document.querySelectorAll("[data-choice]")];
+      function select(value) {
+        const choice = /^[1-5]$/.test(value) ? value : "1";
+        scene.className = "scene v" + choice;
+        buttons.forEach((button) =>
+          button.setAttribute(
+            "aria-current",
+            String(button.dataset.choice === choice),
+          ),
+        );
+      }
+      buttons.forEach((button) =>
+        button.addEventListener("click", () => {
+          location.hash = button.dataset.choice;
+          select(button.dataset.choice);
+        }),
+      );
+      addEventListener("hashchange", () => select(location.hash.slice(1)));
+      select(location.hash.slice(1));
+    </script>
+  </body>
+</html>
