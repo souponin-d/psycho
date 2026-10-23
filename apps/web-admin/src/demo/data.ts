@@ -178,6 +178,19 @@ export const adminDemoSchema = z
         );
       const ids = period.officeReports.map((row) => row.doctorId);
       if (
+        index > 0 &&
+        period.officeReports.some(
+          (row) =>
+            row.count >
+            (full.officeReports.find((item) => item.doctorId === row.doctorId)
+              ?.count ?? 0),
+        )
+      )
+        fail(
+          ["periods", index, "officeReports"],
+          "Количество кабинета за вложенный период превышает полную сводку",
+        );
+      if (
         new Set(ids).size !== ids.length ||
         ids.length !== offices.size ||
         ids.some((id) => !offices.has(id))

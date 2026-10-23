@@ -5,9 +5,10 @@ import { mountHeroAnimation } from "../site/hero-animation.js";
 let pending: Map<number, FrameRequestCallback>;
 let frameId: number;
 let media: EventTarget & { matches: boolean };
+let compactMedia: EventTarget & { matches: boolean };
 let intersection: IntersectionObserverCallback;
 
-// The browser GPU boundary is unavailable in jsdom; lifecycle and DOM remain real.
+// jsdom has no GPU; lifecycle events and DOM are real.
 function gpu() {
   return new Proxy(
     {},
@@ -17,32 +18,28 @@ function gpu() {
         if (key === "getShaderParameter" || key === "getProgramParameter")
           return () => true;
         if (key === "getAttribLocation") return () => 0;
-        if (key === "getExtension") return () => null;
         if (typeof key === "string" && key === key.toUpperCase()) return 1;
         return () => ({});
       },
     },
   );
 }
-
 function scene() {
-  document.body.innerHTML = `<section data-hero-animation>
-    <canvas aria-hidden="true"></canvas>
-    <div data-hero-fallback role="img" aria-label="Знак Синкли"></div>
-    <button data-hero-toggle hidden type="button">Приостановить анимацию</button>
-  </section>`;
+  document.body.innerHTML = `<section data-hero-animation><canvas aria-hidden="true"></canvas><div data-hero-fallback aria-hidden="true"></div></section>`;
   return {
     root: document.querySelector<HTMLElement>("section")!,
-    button: document.querySelector<HTMLButtonElement>("button")!,
     fallback: document.querySelector<HTMLElement>("[data-hero-fallback]")!,
+    canvas: document.querySelector("canvas")!,
   };
 }
-
 beforeEach(() => {
   pending = new Map();
   frameId = 0;
   media = Object.assign(new EventTarget(), { matches: false });
-  vi.stubGlobal("matchMedia", () => media);
+  compactMedia = Object.assign(new EventTarget(), { matches: false });
+  vi.stubGlobal("matchMedia", (query: string) =>
+    query.includes("prefers-reduced-motion") ? media : compactMedia,
+  );
   vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => {
     pending.set(++frameId, callback);
     return frameId;
@@ -70,61 +67,82 @@ beforeEach(() => {
     () => gpu() as never,
   );
 });
-
 afterEach(() => {
   window.dispatchEvent(new Event("pagehide"));
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
   document.body.innerHTML = "";
 });
-
-describe("жизненный цикл анимации HERO", () => {
-  it("сохраняет статичный знак при недоступном WebGL без неработающей кнопки", () => {
-    vi.mocked(HTMLCanvasElement.prototype.getContext).mockReturnValue(null);
-    const { root, button, fallback } = scene();
-    expect(() => mountHeroAnimation(root)).not.toThrow();
-    expect(fallback.hidden).toBe(false);
-    expect(button.hidden).toBe(true);
-    expect(pending.size).toBe(0);
-  });
-
-  it("показывает статичный знак после ошибки компиляции GPU", () => {
-    vi.mocked(HTMLCanvasElement.prototype.getContext).mockImplementation(
-      () => null,
-    );
-    const { root, button, fallback } = scene();
+describe("жизненный цикл HERO без кнопки управления", () => {
+  it("согласует планшетную композицию с CSS, несмотря на ширину полосы прокрутки", () => {
     const context = gpu();
-    Object.defineProperty(context, "getShaderParameter", {
-      value: () => false,
+    const sendUniform = vi.fn();
+    Object.defineProperties(context, {
+      getUniformLocation: { value: (_program: unknown, name: string) => name },
+      uniform1f: { value: sendUniform },
     });
     vi.mocked(HTMLCanvasElement.prototype.getContext).mockReturnValue(
       context as never,
     );
+    vi.stubGlobal("devicePixelRatio", 1);
+    const { root } = scene();
+    Object.defineProperties(root, {
+      clientWidth: { value: 753 },
+      clientHeight: { value: 540 },
+    });
+    compactMedia.matches = false; // 768px viewport, 15px scrollbar.
+    mountHeroAnimation(root);
+    expect(sendUniform).toHaveBeenCalledWith("u_compact", 0);
+  });
+
+  it("запускает сцену без удалённой кнопки и не дублирует очередь кадров", () => {
+    const { root, fallback } = scene();
+    mountHeroAnimation(root);
+    expect(fallback.hidden).toBe(true);
+    expect(pending.size).toBe(1);
+    document.dispatchEvent(new Event("visibilitychange"));
+    expect(pending.size).toBe(1);
+  });
+  it("сохраняет резервный знак без WebGL", () => {
+    vi.mocked(HTMLCanvasElement.prototype.getContext).mockReturnValue(null);
+    const { root, fallback } = scene();
     expect(() => mountHeroAnimation(root)).not.toThrow();
     expect(fallback.hidden).toBe(false);
-    expect(button.hidden).toBe(true);
+    expect(pending.size).toBe(0);
   });
-
-  it("соблюдает уменьшенное движение и позволяет явно включить анимацию", () => {
+  it("перехватывает ошибку шейдера и оставляет резервный знак", () => {
+    const context = gpu();
+    const compileStatus = vi.fn(() => false);
+    Object.defineProperty(context, "getShaderParameter", {
+      value: compileStatus,
+    });
+    vi.mocked(HTMLCanvasElement.prototype.getContext).mockReturnValue(
+      context as never,
+    );
+    const { root, fallback } = scene();
+    expect(() => mountHeroAnimation(root)).not.toThrow();
+    expect(compileStatus).toHaveBeenCalled();
+    expect(fallback.hidden).toBe(false);
+    expect(pending.size).toBe(0);
+  });
+  it("показывает статичную сцену при reduced motion и реагирует на смену настройки", () => {
     media.matches = true;
-    const { root, button } = scene();
+    const { root, fallback } = scene();
     mountHeroAnimation(root);
-    expect(button.hidden).toBe(false);
-    expect(button.getAttribute("aria-pressed")).toBe("true");
-    expect(button.textContent).toBe("Включить анимацию");
+    expect(fallback.hidden).toBe(true);
     expect(pending.size).toBe(0);
-    button.click();
-    expect(button.getAttribute("aria-pressed")).toBe("false");
-    expect(pending.size).toBe(1);
+    root.dispatchEvent(new Event("pointermove"));
+    expect(pending.size).toBe(0);
+    media.matches = false;
     media.dispatchEvent(new Event("change"));
-    expect(button.getAttribute("aria-pressed")).toBe("true");
+    expect(pending.size).toBe(1);
+    media.matches = true;
+    media.dispatchEvent(new Event("change"));
     expect(pending.size).toBe(0);
   });
-
-  it("останавливает кадры вне экрана и не отменяет пользовательскую паузу", () => {
-    const { root, button } = scene();
+  it("останавливается вне экрана и возобновляется без двойной очереди", () => {
+    const { root } = scene();
     mountHeroAnimation(root);
-    expect(pending.size).toBe(1);
     const visibility = (isIntersecting: boolean) =>
       intersection(
         [{ isIntersecting }] as IntersectionObserverEntry[],
@@ -135,17 +153,10 @@ describe("жизненный цикл анимации HERO", () => {
     visibility(true);
     visibility(true);
     expect(pending.size).toBe(1);
-    button.click();
-    expect(pending.size).toBe(0);
-    visibility(false);
-    visibility(true);
-    expect(pending.size).toBe(0);
   });
-
-  it("останавливает кадры в скрытой вкладке", () => {
+  it("не запрашивает кадры в скрытой вкладке", () => {
     const { root } = scene();
     mountHeroAnimation(root);
-    expect(pending.size).toBe(1);
     vi.spyOn(document, "hidden", "get").mockReturnValue(true);
     document.dispatchEvent(new Event("visibilitychange"));
     expect(pending.size).toBe(0);
@@ -153,30 +164,39 @@ describe("жизненный цикл анимации HERO", () => {
     document.dispatchEvent(new Event("visibilitychange"));
     expect(pending.size).toBe(1);
   });
-
-  it("сохраняет статичный знак при потере GPU и восстанавливает анимацию", () => {
-    const { root, button, fallback } = scene();
+  it("восстанавливает сцену после потери GPU", () => {
+    const { root, canvas, fallback } = scene();
     mountHeroAnimation(root);
-    const canvas = root.querySelector("canvas")!;
     const lost = new Event("webglcontextlost", { cancelable: true });
     canvas.dispatchEvent(lost);
     expect(lost.defaultPrevented).toBe(true);
     expect(pending.size).toBe(0);
     expect(fallback.hidden).toBe(false);
-    expect(button.hidden).toBe(true);
     canvas.dispatchEvent(new Event("webglcontextrestored"));
     expect(fallback.hidden).toBe(true);
-    expect(button.hidden).toBe(false);
     expect(pending.size).toBe(1);
   });
-
-  it("освобождает кадры и обработчики при уходе со страницы", () => {
-    const { root, button } = scene();
+  it("приостанавливается в bfcache и продолжает после возврата", () => {
+    const { root } = scene();
+    mountHeroAnimation(root);
+    window.dispatchEvent(
+      new PageTransitionEvent("pagehide", { persisted: true }),
+    );
+    expect(pending.size).toBe(0);
+    window.dispatchEvent(
+      new PageTransitionEvent("pageshow", { persisted: true }),
+    );
+    expect(pending.size).toBe(1);
+    window.dispatchEvent(
+      new PageTransitionEvent("pageshow", { persisted: true }),
+    );
+    expect(pending.size).toBe(1);
+  });
+  it("освобождает обработчики и кадры при уходе со страницы", () => {
+    const { root } = scene();
     mountHeroAnimation(root);
     expect(pending.size).toBe(1);
     window.dispatchEvent(new Event("pagehide"));
-    expect(pending.size).toBe(0);
-    button.click();
     media.dispatchEvent(new Event("change"));
     document.dispatchEvent(new Event("visibilitychange"));
     expect(pending.size).toBe(0);

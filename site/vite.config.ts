@@ -10,12 +10,18 @@ export default defineConfig({
     rolldownOptions: {
       input: {
         site: fileURLToPath(new URL("./index.html", import.meta.url)),
-        doctor: fileURLToPath(
-          new URL("./demo/doctor/index.html", import.meta.url),
-        ),
+        doctor: fileURLToPath(new URL("./doctor/index.html", import.meta.url)),
         admin: fileURLToPath(
           new URL("./demo/admin/index.html", import.meta.url),
         ),
+      },
+    },
+  },
+  server: {
+    proxy: {
+      "/api": {
+        target: process.env.DOCTOR_API_URL ?? "http://127.0.0.1:5080",
+        changeOrigin: false,
       },
     },
   },

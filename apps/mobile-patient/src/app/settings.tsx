@@ -1,0 +1,150 @@
+import { useState } from "react";
+import { Alert, View, Switch, TextInput } from "react-native";
+import { router } from "expo-router";
+import { Screen, T, Heading, Panel, Button } from "../components/UI";
+import { Touch } from "../components/Motion";
+import { ThemePicker } from "../components/ThemePicker";
+import { Icon } from "../components/Icon";
+import { Mascot } from "../components/Mascot";
+import { useApp } from "../state/AppProvider";
+import { mascotOptions } from "../config/content";
+export default function SettingsScreen() {
+  const { state, dispatch, theme } = useApp();
+  const [name, setName] = useState(state.name);
+  return (
+    <Screen title="Ваше пространство" back>
+      <Heading
+        title="Пусть будет\nпо-вашему"
+        body="Все изменения сохраняются на этом телефоне"
+      />
+      <T size={18} weight="500" style={{ marginBottom: 16 }}>
+        Оформление
+      </T>
+      <ThemePicker />
+      <T size={18} weight="500" style={{ marginTop: 30, marginBottom: 16 }}>
+        Ваш спутник
+      </T>
+      <View style={{ flexDirection: "row", gap: 12 }}>
+        {mascotOptions.map((item) => (
+          <View key={item.id} style={{ flex: 1 }}>
+            <Touch
+              accessibilityRole="button"
+              accessibilityLabel={`Спутник ${item.name}`}
+              accessibilityState={{ selected: state.mascot === item.id }}
+              onPress={() =>
+                dispatch({ type: "preferences", patch: { mascot: item.id } })
+              }
+              style={{
+                alignItems: "center",
+                gap: 10,
+                backgroundColor:
+                  state.mascot === item.id ? theme.soft : theme.surface,
+                borderRadius: 26,
+                padding: 16,
+                borderWidth: 1,
+                borderColor:
+                  state.mascot === item.id ? theme.accent : theme.border,
+              }}
+            >
+              <View
+                pointerEvents="none"
+                importantForAccessibility="no-hide-descendants"
+              >
+                <Mascot id={item.id} size={95} />
+              </View>
+              <T size={14}>{item.name}</T>
+              {state.mascot === item.id && (
+                <Icon name="check" color={theme.accent} size={20} />
+              )}
+            </Touch>
+          </View>
+        ))}
+      </View>
+      <Panel style={{ marginTop: 25, gap: 14 }}>
+        <T size={16} weight="500">
+          Как к вам обращаться
+        </T>
+        <TextInput
+          accessibilityLabel="Изменить имя"
+          value={name}
+          onChangeText={setName}
+          onEndEditing={() =>
+            dispatch({ type: "preferences", patch: { name } })
+          }
+          maxLength={30}
+          style={{
+            fontFamily: "Onest",
+            fontSize: 18,
+            padding: 14,
+            borderRadius: 15,
+            backgroundColor: theme.soft,
+            color: theme.text,
+          }}
+        />
+        <View
+          style={{
+            flexDirection: "row",
+            gap: 15,
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <View style={{ flex: 1 }}>
+            <T size={15}>Живые движения</T>
+            <T size={11} muted>
+              Дыхание спутника и плавные переходы
+            </T>
+          </View>
+          <Switch
+            accessibilityLabel="Живые движения"
+            value={state.motion}
+            onValueChange={(motion) =>
+              dispatch({ type: "preferences", patch: { motion } })
+            }
+            trackColor={{ true: theme.accent, false: theme.border }}
+            thumbColor={theme.surface}
+          />
+        </View>
+      </Panel>
+      <View style={{ gap: 12, marginTop: 24 }}>
+        <Button
+          secondary
+          title="Пройти знакомство ещё раз"
+          icon="spark"
+          onPress={() => {
+            dispatch({ type: "preferences", patch: { name } });
+            dispatch({ type: "onboard", value: false });
+            router.replace("/onboarding");
+          }}
+        />
+        <Button
+          secondary
+          title="Сбросить демонстрационные данные"
+          icon="history"
+          onPress={() =>
+            Alert.alert(
+              "Начать заново?",
+              "Удалятся только локальные настройки и демонстрационные записи Синкли.",
+              [
+                { text: "Отмена", style: "cancel" },
+                {
+                  text: "Сбросить",
+                  style: "destructive",
+                  onPress: () => {
+                    dispatch({ type: "reset" });
+                    router.replace("/onboarding");
+                  },
+                },
+              ],
+            )
+          }
+        />
+      </View>
+      <T muted size={11} style={{ marginTop: 24, lineHeight: 17 }}>
+        Синкли · прототип 0.1.0{"\n"}Настоящие назначения, отправка врачу, AI и
+        системные уведомления пока не подключены. Для знакомства используйте
+        вымышленные сведения.
+      </T>
+    </Screen>
+  );
+}

@@ -1,0 +1,2925 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Синкли — рабочее место врача",
+    "version": "1.0.0",
+    "description": "Схемы сгенерированы из model.ts. Сервер проверяет полномочия, клинические переходы и целостность отдельно от структурной схемы."
+  },
+  "security": [{ "session": [] }],
+  "paths": {
+    "/api/health": {
+      "get": {
+        "operationId": "health",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "application/json": { "schema": { "type": "object" } }
+            }
+          },
+          "400": {
+            "description": "Некорректные данные / CSRF",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нужен вход",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно полномочий",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Запись недоступна",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт версии / идентификатора",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Превышен лимит входов",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Сбой; повторить ту же команду",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/csrf": {
+      "get": {
+        "operationId": "csrf",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "token": { "type": "string" } }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные данные / CSRF",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нужен вход",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно полномочий",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Запись недоступна",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт версии / идентификатора",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Превышен лимит входов",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Сбой; повторить ту же команду",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/login": {
+      "post": {
+        "operationId": "login",
+        "security": [],
+        "parameters": [
+          {
+            "name": "X-CSRF-TOKEN",
+            "in": "header",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "application/json": { "schema": { "type": "object" } }
+            }
+          },
+          "400": {
+            "description": "Некорректные данные / CSRF",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нужен вход",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно полномочий",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Запись недоступна",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт версии / идентификатора",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Превышен лимит входов",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Сбой; повторить ту же команду",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/logout": {
+      "post": {
+        "operationId": "logout",
+        "parameters": [
+          {
+            "name": "X-CSRF-TOKEN",
+            "in": "header",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Сессия завершена" },
+          "400": {
+            "description": "Некорректные данные / CSRF",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нужен вход",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно полномочий",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Запись недоступна",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт версии / идентификатора",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Превышен лимит входов",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Сбой; повторить ту же команду",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/session": {
+      "get": {
+        "operationId": "session",
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["actor", "csrfToken"],
+                  "properties": {
+                    "actor": { "$ref": "#/components/schemas/Actor" },
+                    "csrfToken": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные данные / CSRF",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нужен вход",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно полномочий",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Запись недоступна",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт версии / идентификатора",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Превышен лимит входов",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Сбой; повторить ту же команду",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/patients": {
+      "get": {
+        "operationId": "patients",
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/PatientRecord" }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные данные / CSRF",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нужен вход",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно полномочий",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Запись недоступна",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт версии / идентификатора",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Превышен лимит входов",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Сбой; повторить ту же команду",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createPatient",
+        "description": "Повтор запроса с тем же id и содержимым не создаёт вторую карту.",
+        "parameters": [
+          {
+            "name": "X-CSRF-TOKEN",
+            "in": "header",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["id", "profile"],
+                "properties": {
+                  "id": { "type": "string", "format": "uuid" },
+                  "profile": {
+                    "type": "object",
+                    "required": ["name"],
+                    "properties": {
+                      "name": { "type": "string" },
+                      "birthDate": { "type": "string" },
+                      "sex": {
+                        "type": "string",
+                        "enum": ["female", "male", "unspecified"]
+                      },
+                      "phone": { "type": "string" },
+                      "email": { "type": "string" },
+                      "occupation": { "type": "string" },
+                      "address": { "type": "string" },
+                      "emergencyContact": { "type": "string" },
+                      "representative": { "type": "string" },
+                      "preferredContact": { "type": "string" },
+                      "allergies": { "type": "string" },
+                      "conditions": { "type": "string" },
+                      "currentMedication": { "type": "string" },
+                      "familyHistory": { "type": "string" },
+                      "pastEpisodes": { "type": "string" },
+                      "substanceUse": { "type": "string" },
+                      "socialContext": { "type": "string" },
+                      "reproductiveContext": { "type": "string" },
+                      "goals": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Создана / повтор ранее выполненного создания",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PatientRecord" }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные данные / CSRF",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нужен вход",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно полномочий",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Запись недоступна",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт версии / идентификатора",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Превышен лимит входов",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Сбой; повторить ту же команду",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/patients/{id}/commands": {
+      "post": {
+        "operationId": "execute",
+        "description": "commandId стабилен при повторе после сетевой ошибки; expectedRevision предотвращает потерю правок. Автор/клиника определяются сессией.",
+        "parameters": [
+          {
+            "name": "X-CSRF-TOKEN",
+            "in": "header",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Command" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PatientRecord" }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные данные / CSRF",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нужен вход",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно полномочий",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Запись недоступна",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт версии / идентификатора",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Превышен лимит входов",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Сбой; повторить ту же команду",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sources": {
+      "get": {
+        "operationId": "sources",
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/SourceDocument" }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные данные / CSRF",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нужен вход",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно полномочий",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Запись недоступна",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт версии / идентификатора",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Превышен лимит входов",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Сбой; повторить ту же команду",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/assessment-forms/{id}": {
+      "get": {
+        "operationId": "assessmentForm",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssessmentFormDefinition"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные данные / CSRF",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нужен вход",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно полномочий",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Запись недоступна",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт версии / идентификатора",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Превышен лимит входов",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Сбой; повторить ту же команду",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sources/{id}/file": {
+      "get": {
+        "operationId": "sourceFile",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Исходный файл, SHA-256 совпадает с реестром"
+          },
+          "400": {
+            "description": "Некорректные данные / CSRF",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нужен вход",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно полномочий",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Запись недоступна",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт версии / идентификатора",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Превышен лимит входов",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Сбой; повторить ту же команду",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/patient/session": {
+      "get": {
+        "operationId": "patientSession",
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["actor", "csrfToken"],
+                  "properties": {
+                    "actor": { "$ref": "#/components/schemas/Actor" },
+                    "csrfToken": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные данные / CSRF",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нужен вход",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно полномочий",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Запись недоступна",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт версии / идентификатора",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Превышен лимит входов",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Сбой; повторить ту же команду",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/patient/record": {
+      "get": {
+        "operationId": "patientRecord",
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "patientId": { "type": "string" },
+                    "name": { "type": "string" },
+                    "plan": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/PlanItem" }
+                    },
+                    "reports": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/SelfReport" }
+                    },
+                    "messages": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Message" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Некорректные данные / CSRF",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нужен вход",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно полномочий",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Запись недоступна",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт версии / идентификатора",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Превышен лимит входов",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Сбой; повторить ту же команду",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/patient/commands": {
+      "post": {
+        "operationId": "patientCommand",
+        "description": "Только report.add, message.patient, message.received. PatientId берётся из сессии; сервер устанавливает provenance=patient. Возвращается допустимая пациентская проекция.",
+        "parameters": [
+          {
+            "name": "X-CSRF-TOKEN",
+            "in": "header",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["commandId", "mutation"],
+                "properties": {
+                  "commandId": { "type": "string" },
+                  "mutation": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "required": ["type", "value"],
+                        "properties": {
+                          "type": { "const": "report.add" },
+                          "value": { "$ref": "#/components/schemas/SelfReport" }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "required": ["type", "text"],
+                        "properties": {
+                          "type": { "const": "message.patient" },
+                          "text": { "type": "string" }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "required": ["type", "id", "status"],
+                        "properties": {
+                          "type": { "const": "message.received" },
+                          "id": { "type": "string" },
+                          "status": {
+                            "type": "string",
+                            "enum": ["delivered", "read"]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешно",
+            "content": {
+              "application/json": { "schema": { "type": "object" } }
+            }
+          },
+          "400": {
+            "description": "Некорректные данные / CSRF",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нужен вход",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Недостаточно полномочий",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Запись недоступна",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Конфликт версии / идентификатора",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Превышен лимит входов",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Сбой; повторить ту же команду",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": { "type": "string" },
+                    "traceId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "session": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "syncli-doctor-session"
+      }
+    },
+    "schemas": {
+      "Provenance": {
+        "type": "string",
+        "enum": ["clinician", "document", "patient", "relative"]
+      },
+      "Urgency": {
+        "type": "string",
+        "enum": ["important", "routine", "urgent"]
+      },
+      "VisitStatus": {
+        "type": "string",
+        "enum": ["cancelled", "completed", "in-progress", "scheduled"]
+      },
+      "EventStatus": {
+        "type": "string",
+        "enum": ["acknowledged", "acted", "assessed", "closed", "created"]
+      },
+      "PlanKind": {
+        "type": "string",
+        "enum": [
+          "assessment",
+          "follow-up",
+          "lifestyle",
+          "medication",
+          "psychotherapy"
+        ]
+      },
+      "ScaleKey": {
+        "type": "string",
+        "enum": [
+          "C-SSRS",
+          "CGI",
+          "GAD-7",
+          "HARS",
+          "HCL-32",
+          "HCL-33",
+          "HDRS-17",
+          "KOP-25",
+          "MADRS",
+          "PHQ-9",
+          "YMRS",
+          "custom"
+        ]
+      },
+      "Actor": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "specialty": {
+            "type": "string",
+            "enum": ["physician", "psychiatrist"]
+          },
+          "clinicId": { "type": "string" }
+        },
+        "required": ["id", "name", "specialty", "clinicId"]
+      },
+      "Stamp": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "author": { "type": "string" }
+        },
+        "required": ["id", "createdAt", "author"]
+      },
+      "Evidence": {
+        "type": "object",
+        "properties": {
+          "sourceIds": { "type": "array", "items": { "type": "string" } },
+          "rationale": { "type": "string" }
+        },
+        "required": ["sourceIds", "rationale"]
+      },
+      "Profile": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "birthDate": { "type": "string" },
+          "sex": {
+            "type": "string",
+            "enum": ["female", "male", "unspecified"]
+          },
+          "phone": { "type": "string" },
+          "email": { "type": "string" },
+          "occupation": { "type": "string" },
+          "address": { "type": "string" },
+          "emergencyContact": { "type": "string" },
+          "representative": { "type": "string" },
+          "preferredContact": { "type": "string" },
+          "allergies": { "type": "string" },
+          "conditions": { "type": "string" },
+          "currentMedication": { "type": "string" },
+          "familyHistory": { "type": "string" },
+          "pastEpisodes": { "type": "string" },
+          "substanceUse": { "type": "string" },
+          "socialContext": { "type": "string" },
+          "reproductiveContext": { "type": "string" },
+          "goals": { "type": "string" }
+        },
+        "required": [
+          "name",
+          "birthDate",
+          "sex",
+          "phone",
+          "email",
+          "occupation",
+          "address",
+          "emergencyContact",
+          "representative",
+          "preferredContact",
+          "allergies",
+          "conditions",
+          "currentMedication",
+          "familyHistory",
+          "pastEpisodes",
+          "substanceUse",
+          "socialContext",
+          "reproductiveContext",
+          "goals"
+        ]
+      },
+      "Episode": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "startedOn": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["active", "closed", "remission"]
+          },
+          "phase": {
+            "type": "string",
+            "enum": ["acute", "assessment", "continuation", "maintenance"]
+          },
+          "diagnosis": { "type": "string" },
+          "diagnosisStatus": {
+            "type": "string",
+            "enum": ["confirmed", "hypothesis"]
+          },
+          "endDate": { "type": "string" },
+          "summary": { "type": "string" },
+          "id": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "author": { "type": "string" }
+        },
+        "required": [
+          "title",
+          "startedOn",
+          "status",
+          "phase",
+          "diagnosis",
+          "diagnosisStatus",
+          "endDate",
+          "summary",
+          "id",
+          "createdAt",
+          "author"
+        ]
+      },
+      "EncounterField": {
+        "type": "string",
+        "enum": [
+          "adherence",
+          "adverseEffects",
+          "complaints",
+          "conclusion",
+          "diagnosis",
+          "differential",
+          "functioning",
+          "history",
+          "intentAndPlan",
+          "mania",
+          "meansAccess",
+          "medicationReview",
+          "mentalState",
+          "onset",
+          "pastAttempts",
+          "patientPreference",
+          "physicalState",
+          "protectiveFactors",
+          "psychosis",
+          "recommendations",
+          "safetyAction",
+          "safetyConclusion",
+          "sleep",
+          "somaticCauses",
+          "substances",
+          "suicidalThoughts"
+        ]
+      },
+      "EncounterNotes": {
+        "type": "object",
+        "properties": {
+          "adherence": { "type": "string" },
+          "adverseEffects": { "type": "string" },
+          "complaints": { "type": "string" },
+          "conclusion": { "type": "string" },
+          "diagnosis": { "type": "string" },
+          "differential": { "type": "string" },
+          "functioning": { "type": "string" },
+          "history": { "type": "string" },
+          "intentAndPlan": { "type": "string" },
+          "mania": { "type": "string" },
+          "meansAccess": { "type": "string" },
+          "medicationReview": { "type": "string" },
+          "mentalState": { "type": "string" },
+          "onset": { "type": "string" },
+          "pastAttempts": { "type": "string" },
+          "patientPreference": { "type": "string" },
+          "physicalState": { "type": "string" },
+          "protectiveFactors": { "type": "string" },
+          "psychosis": { "type": "string" },
+          "recommendations": { "type": "string" },
+          "safetyAction": { "type": "string" },
+          "safetyConclusion": { "type": "string" },
+          "sleep": { "type": "string" },
+          "somaticCauses": { "type": "string" },
+          "substances": { "type": "string" },
+          "suicidalThoughts": { "type": "string" }
+        },
+        "required": [
+          "adherence",
+          "adverseEffects",
+          "complaints",
+          "conclusion",
+          "diagnosis",
+          "differential",
+          "functioning",
+          "history",
+          "intentAndPlan",
+          "mania",
+          "meansAccess",
+          "medicationReview",
+          "mentalState",
+          "onset",
+          "pastAttempts",
+          "patientPreference",
+          "physicalState",
+          "protectiveFactors",
+          "psychosis",
+          "recommendations",
+          "safetyAction",
+          "safetyConclusion",
+          "sleep",
+          "somaticCauses",
+          "substances",
+          "suicidalThoughts"
+        ]
+      },
+      "Visit": {
+        "type": "object",
+        "properties": {
+          "episodeId": { "type": "string" },
+          "scheduledAt": { "type": "string" },
+          "durationMinutes": { "type": "number" },
+          "kind": {
+            "type": "string",
+            "enum": ["follow-up", "initial", "unscheduled"]
+          },
+          "format": { "type": "string", "enum": ["in-person", "remote"] },
+          "status": { "$ref": "#/components/schemas/VisitStatus" },
+          "reason": { "type": "string" },
+          "notes": { "$ref": "#/components/schemas/EncounterNotes" },
+          "provenance": { "$ref": "#/components/schemas/Provenance" },
+          "nextVisitAt": { "type": "string" },
+          "completedAt": { "type": "string" },
+          "startedAt": { "type": "string" },
+          "confirmedBy": { "type": "string" },
+          "cancellationReason": { "type": "string" },
+          "addenda": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "createdAt": { "type": "string" },
+                "author": { "type": "string" },
+                "text": { "type": "string" },
+                "reason": { "type": "string" }
+              },
+              "required": ["id", "createdAt", "author", "text", "reason"]
+            }
+          },
+          "completionSnapshot": {
+            "anyOf": [
+              { "type": "null" },
+              {
+                "type": "object",
+                "properties": {
+                  "patientName": { "type": "string" },
+                  "measurements": {
+                    "type": "array",
+                    "items": { "$ref": "#/components/schemas/Measurement" }
+                  },
+                  "plan": {
+                    "type": "array",
+                    "items": { "$ref": "#/components/schemas/PlanItem" }
+                  },
+                  "referrals": {
+                    "type": "array",
+                    "items": { "$ref": "#/components/schemas/Referral" }
+                  }
+                },
+                "required": ["patientName", "measurements", "plan", "referrals"]
+              }
+            ]
+          },
+          "id": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "author": { "type": "string" },
+          "sourceIds": { "type": "array", "items": { "type": "string" } },
+          "rationale": { "type": "string" }
+        },
+        "required": [
+          "episodeId",
+          "scheduledAt",
+          "durationMinutes",
+          "kind",
+          "format",
+          "status",
+          "reason",
+          "notes",
+          "provenance",
+          "nextVisitAt",
+          "completedAt",
+          "startedAt",
+          "confirmedBy",
+          "cancellationReason",
+          "addenda",
+          "id",
+          "createdAt",
+          "author",
+          "sourceIds",
+          "rationale"
+        ]
+      },
+      "Measurement": {
+        "type": "object",
+        "properties": {
+          "visitId": { "type": "string" },
+          "scale": { "$ref": "#/components/schemas/ScaleKey" },
+          "title": { "type": "string" },
+          "version": { "type": "string" },
+          "measuredAt": { "type": "string" },
+          "score": { "anyOf": [{ "type": "null" }, { "type": "number" }] },
+          "maximum": { "anyOf": [{ "type": "null" }, { "type": "number" }] },
+          "answers": {
+            "type": "array",
+            "items": { "anyOf": [{ "type": "null" }, { "type": "number" }] }
+          },
+          "completeness": {
+            "type": "string",
+            "enum": ["complete", "not-assessed", "partial"]
+          },
+          "assessor": { "type": "string", "enum": ["clinician", "patient"] },
+          "window": { "type": "string" },
+          "sourceId": { "type": "string" },
+          "interpretation": { "type": "string" },
+          "provenance": { "$ref": "#/components/schemas/Provenance" },
+          "externalForm": { "type": "string" },
+          "id": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "author": { "type": "string" }
+        },
+        "required": [
+          "visitId",
+          "scale",
+          "title",
+          "version",
+          "measuredAt",
+          "score",
+          "maximum",
+          "answers",
+          "completeness",
+          "assessor",
+          "window",
+          "sourceId",
+          "interpretation",
+          "provenance",
+          "externalForm",
+          "id",
+          "createdAt",
+          "author"
+        ]
+      },
+      "PlanItem": {
+        "type": "object",
+        "properties": {
+          "visitId": { "type": "string" },
+          "kind": { "$ref": "#/components/schemas/PlanKind" },
+          "title": { "type": "string" },
+          "details": { "type": "string" },
+          "dose": { "type": "string" },
+          "schedule": { "type": "string" },
+          "startDate": { "type": "string" },
+          "endDate": { "type": "string" },
+          "dueDate": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["completed", "confirmed", "draft", "stopped"]
+          },
+          "confirmedAt": { "type": "string" },
+          "confirmedBy": { "type": "string" },
+          "changeReason": { "type": "string" },
+          "replacesId": { "type": "string" },
+          "instructionUrl": { "type": "string" },
+          "patientInstructions": { "type": "string" },
+          "id": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "author": { "type": "string" },
+          "sourceIds": { "type": "array", "items": { "type": "string" } },
+          "rationale": { "type": "string" }
+        },
+        "required": [
+          "visitId",
+          "kind",
+          "title",
+          "details",
+          "dose",
+          "schedule",
+          "startDate",
+          "endDate",
+          "dueDate",
+          "status",
+          "confirmedAt",
+          "confirmedBy",
+          "changeReason",
+          "replacesId",
+          "instructionUrl",
+          "patientInstructions",
+          "id",
+          "createdAt",
+          "author",
+          "sourceIds",
+          "rationale"
+        ]
+      },
+      "SelfReport": {
+        "type": "object",
+        "properties": {
+          "reportedAt": { "type": "string" },
+          "receivedAt": { "type": "string" },
+          "provenance": { "$ref": "#/components/schemas/Provenance" },
+          "state": {
+            "type": "string",
+            "enum": ["cannot", "completed", "declined"]
+          },
+          "mood": { "anyOf": [{ "type": "null" }, { "type": "number" }] },
+          "anxiety": { "anyOf": [{ "type": "null" }, { "type": "number" }] },
+          "sleepHours": { "anyOf": [{ "type": "null" }, { "type": "number" }] },
+          "functioning": { "type": "string" },
+          "medication": {
+            "type": "string",
+            "enum": ["missed", "no-mark", "not-applicable", "taken"]
+          },
+          "medicationReason": { "type": "string" },
+          "adverseEffects": { "type": "string" },
+          "note": { "type": "string" },
+          "safetyConcern": { "type": "boolean" },
+          "reviewedAt": { "type": "string" },
+          "id": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "author": { "type": "string" }
+        },
+        "required": [
+          "reportedAt",
+          "receivedAt",
+          "provenance",
+          "state",
+          "mood",
+          "anxiety",
+          "sleepHours",
+          "functioning",
+          "medication",
+          "medicationReason",
+          "adverseEffects",
+          "note",
+          "safetyConcern",
+          "reviewedAt",
+          "id",
+          "createdAt",
+          "author"
+        ]
+      },
+      "CareEvent": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "detail": { "type": "string" },
+          "urgency": { "$ref": "#/components/schemas/Urgency" },
+          "status": { "$ref": "#/components/schemas/EventStatus" },
+          "relatedId": { "type": "string" },
+          "dueAt": { "type": "string" },
+          "assignee": { "type": "string" },
+          "assessment": { "type": "string" },
+          "action": { "type": "string" },
+          "outcome": { "type": "string" },
+          "history": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "at": { "type": "string" },
+                "by": { "type": "string" },
+                "status": { "$ref": "#/components/schemas/EventStatus" },
+                "note": { "type": "string" }
+              },
+              "required": ["at", "by", "status", "note"]
+            }
+          },
+          "id": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "author": { "type": "string" },
+          "sourceIds": { "type": "array", "items": { "type": "string" } },
+          "rationale": { "type": "string" }
+        },
+        "required": [
+          "title",
+          "detail",
+          "urgency",
+          "status",
+          "relatedId",
+          "dueAt",
+          "assignee",
+          "assessment",
+          "action",
+          "outcome",
+          "history",
+          "id",
+          "createdAt",
+          "author",
+          "sourceIds",
+          "rationale"
+        ]
+      },
+      "Consent": {
+        "type": "object",
+        "properties": {
+          "purpose": {
+            "type": "string",
+            "enum": ["care", "communication", "data", "disclosure"]
+          },
+          "status": {
+            "type": "string",
+            "enum": ["documented", "refused", "withdrawn"]
+          },
+          "signedOn": { "type": "string" },
+          "documentReference": { "type": "string" },
+          "person": { "type": "string" },
+          "scope": { "type": "string" },
+          "informing": { "type": "string" },
+          "id": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "author": { "type": "string" }
+        },
+        "required": [
+          "purpose",
+          "status",
+          "signedOn",
+          "documentReference",
+          "person",
+          "scope",
+          "informing",
+          "id",
+          "createdAt",
+          "author"
+        ]
+      },
+      "Message": {
+        "type": "object",
+        "properties": {
+          "direction": { "type": "string", "enum": ["doctor", "patient"] },
+          "text": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["delivered", "read", "recorded"]
+          },
+          "deliveredAt": { "type": "string" },
+          "readAt": { "type": "string" },
+          "id": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "author": { "type": "string" }
+        },
+        "required": [
+          "direction",
+          "text",
+          "status",
+          "deliveredAt",
+          "readAt",
+          "id",
+          "createdAt",
+          "author"
+        ]
+      },
+      "Referral": {
+        "type": "object",
+        "properties": {
+          "visitId": { "type": "string" },
+          "destination": { "type": "string" },
+          "urgency": { "$ref": "#/components/schemas/Urgency" },
+          "category": { "type": "string", "enum": ["desirable", "required"] },
+          "reason": { "type": "string" },
+          "dueDate": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["attended", "declined", "draft", "issued"]
+          },
+          "outcome": { "type": "string" },
+          "id": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "author": { "type": "string" },
+          "sourceIds": { "type": "array", "items": { "type": "string" } },
+          "rationale": { "type": "string" }
+        },
+        "required": [
+          "visitId",
+          "destination",
+          "urgency",
+          "category",
+          "reason",
+          "dueDate",
+          "status",
+          "outcome",
+          "id",
+          "createdAt",
+          "author",
+          "sourceIds",
+          "rationale"
+        ]
+      },
+      "ClinicalDocument": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "documentDate": { "type": "string" },
+          "issuer": { "type": "string" },
+          "text": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["excluded", "unverified", "verified"]
+          },
+          "exclusionReason": { "type": "string" },
+          "facts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "field": { "type": "string" },
+                "quote": { "type": "string" },
+                "value": { "type": "string" },
+                "confirmed": { "type": "boolean" }
+              },
+              "required": ["id", "field", "quote", "value", "confirmed"]
+            }
+          },
+          "id": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "author": { "type": "string" }
+        },
+        "required": [
+          "title",
+          "documentDate",
+          "issuer",
+          "text",
+          "status",
+          "exclusionReason",
+          "facts",
+          "id",
+          "createdAt",
+          "author"
+        ]
+      },
+      "AuditEntry": {
+        "type": "object",
+        "properties": {
+          "action": { "type": "string" },
+          "targetId": { "type": "string" },
+          "detail": { "type": "string" },
+          "id": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "author": { "type": "string" }
+        },
+        "required": [
+          "action",
+          "targetId",
+          "detail",
+          "id",
+          "createdAt",
+          "author"
+        ]
+      },
+      "AssessmentDraft": {
+        "type": "object",
+        "properties": {
+          "sourceId": { "type": "string" },
+          "sourceHash": { "type": "string" },
+          "formVersion": { "type": "string" },
+          "measuredAt": { "type": "string" },
+          "assessor": { "type": "string", "enum": ["clinician", "patient"] },
+          "responses": {
+            "type": "object",
+            "additionalProperties": {
+              "anyOf": [
+                { "type": "null" },
+                { "type": "string" },
+                { "type": "number" }
+              ]
+            }
+          },
+          "note": { "type": "string" },
+          "status": { "type": "string", "const": "unapproved" },
+          "id": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "author": { "type": "string" }
+        },
+        "required": [
+          "sourceId",
+          "sourceHash",
+          "formVersion",
+          "measuredAt",
+          "assessor",
+          "responses",
+          "note",
+          "status",
+          "id",
+          "createdAt",
+          "author"
+        ]
+      },
+      "AssessmentFormDefinition": {
+        "type": "object",
+        "properties": {
+          "sourceId": { "type": "string" },
+          "sourceHash": { "type": "string" },
+          "title": { "type": "string" },
+          "sections": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "title": { "type": "string" },
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string" },
+                      "label": { "type": "string" },
+                      "options": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "value": {
+                                  "anyOf": [
+                                    { "type": "string" },
+                                    { "type": "number" }
+                                  ]
+                                },
+                                "label": { "type": "string" }
+                              },
+                              "required": ["value", "label"]
+                            }
+                          }
+                        ]
+                      },
+                      "min": { "anyOf": [{ "type": "number" }] },
+                      "max": { "anyOf": [{ "type": "number" }] }
+                    },
+                    "required": ["id", "label"]
+                  }
+                }
+              },
+              "required": ["id", "title", "items"]
+            }
+          },
+          "warnings": { "type": "array", "items": { "type": "string" } }
+        },
+        "required": ["sourceId", "sourceHash", "title", "sections", "warnings"]
+      },
+      "PatientRecord": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "code": { "type": "string" },
+          "clinicId": { "type": "string" },
+          "doctorId": { "type": "string" },
+          "revision": { "type": "number" },
+          "createdAt": { "type": "string" },
+          "updatedAt": { "type": "string" },
+          "archived": { "type": "boolean" },
+          "profile": { "$ref": "#/components/schemas/Profile" },
+          "episodes": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Episode" }
+          },
+          "visits": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Visit" }
+          },
+          "measurements": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Measurement" }
+          },
+          "plan": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/PlanItem" }
+          },
+          "reports": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/SelfReport" }
+          },
+          "events": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/CareEvent" }
+          },
+          "consents": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Consent" }
+          },
+          "messages": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Message" }
+          },
+          "referrals": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Referral" }
+          },
+          "documents": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ClinicalDocument" }
+          },
+          "audit": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/AuditEntry" }
+          },
+          "commandIds": { "type": "array", "items": { "type": "string" } },
+          "assessmentDrafts": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/AssessmentDraft" }
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "clinicId",
+          "doctorId",
+          "revision",
+          "createdAt",
+          "updatedAt",
+          "archived",
+          "profile",
+          "episodes",
+          "visits",
+          "measurements",
+          "plan",
+          "reports",
+          "events",
+          "consents",
+          "messages",
+          "referrals",
+          "documents",
+          "audit",
+          "commandIds"
+        ]
+      },
+      "Mutation": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "const": "assessment.save" },
+              "value": { "$ref": "#/components/schemas/AssessmentDraft" }
+            },
+            "required": ["type", "value"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "const": "profile.update" },
+              "value": { "$ref": "#/components/schemas/Profile" }
+            },
+            "required": ["type", "value"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "const": "episode.save" },
+              "value": { "$ref": "#/components/schemas/Episode" }
+            },
+            "required": ["type", "value"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "const": "visit.save" },
+              "value": { "$ref": "#/components/schemas/Visit" }
+            },
+            "required": ["type", "value"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "const": "visit.complete" },
+              "id": { "type": "string" }
+            },
+            "required": ["type", "id"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "const": "visit.print" },
+              "id": { "type": "string" },
+              "reason": { "type": "string" }
+            },
+            "required": ["type", "id", "reason"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "const": "visit.cancel" },
+              "id": { "type": "string" },
+              "reason": { "type": "string" }
+            },
+            "required": ["type", "id", "reason"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "const": "visit.addendum" },
+              "id": { "type": "string" },
+              "text": { "type": "string" },
+              "reason": { "type": "string" }
+            },
+            "required": ["type", "id", "text", "reason"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "const": "measurement.add" },
+              "value": { "$ref": "#/components/schemas/Measurement" }
+            },
+            "required": ["type", "value"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "const": "plan.save" },
+              "value": { "$ref": "#/components/schemas/PlanItem" }
+            },
+            "required": ["type", "value"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "const": "plan.confirm" },
+              "id": { "type": "string" }
+            },
+            "required": ["type", "id"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "const": "plan.status" },
+              "id": { "type": "string" },
+              "status": { "type": "string", "enum": ["completed", "stopped"] },
+              "reason": { "type": "string" }
+            },
+            "required": ["type", "id", "status", "reason"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "const": "report.add" },
+              "value": { "$ref": "#/components/schemas/SelfReport" }
+            },
+            "required": ["type", "value"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "const": "report.review" },
+              "id": { "type": "string" }
+            },
+            "required": ["type", "id"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "const": "event.add" },
+              "value": { "$ref": "#/components/schemas/CareEvent" }
+            },
+            "required": ["type", "value"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "const": "event.transition" },
+              "id": { "type": "string" },
+              "status": { "$ref": "#/components/schemas/EventStatus" },
+              "note": { "type": "string" }
+            },
+            "required": ["type", "id", "status", "note"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "const": "consent.add" },
+              "value": { "$ref": "#/components/schemas/Consent" }
+            },
+            "required": ["type", "value"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "const": "message.send" },
+              "text": { "type": "string" }
+            },
+            "required": ["type", "text"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "const": "referral.save" },
+              "value": { "$ref": "#/components/schemas/Referral" }
+            },
+            "required": ["type", "value"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "const": "document.add" },
+              "value": { "$ref": "#/components/schemas/ClinicalDocument" }
+            },
+            "required": ["type", "value"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "const": "document.facts" },
+              "id": { "type": "string" },
+              "facts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string" },
+                    "field": { "type": "string" },
+                    "quote": { "type": "string" },
+                    "value": { "type": "string" },
+                    "confirmed": { "type": "boolean" }
+                  },
+                  "required": ["id", "field", "quote", "value", "confirmed"]
+                }
+              }
+            },
+            "required": ["type", "id", "facts"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "const": "patient.archive" },
+              "archived": { "type": "boolean" },
+              "reason": { "type": "string" }
+            },
+            "required": ["type", "archived", "reason"]
+          }
+        ]
+      },
+      "Command": {
+        "type": "object",
+        "properties": {
+          "commandId": { "type": "string" },
+          "expectedRevision": { "type": "number" },
+          "mutation": { "$ref": "#/components/schemas/Mutation" }
+        },
+        "required": ["commandId", "expectedRevision", "mutation"]
+      },
+      "SourceDocument": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "edition": { "type": "string" },
+          "status": { "type": "string" },
+          "locator": { "type": "string" },
+          "relativePath": { "type": "string" },
+          "sha256": { "type": "string" },
+          "category": {
+            "type": "string",
+            "enum": ["guideline", "regulation", "scale"]
+          },
+          "activation": {
+            "type": "string",
+            "enum": ["conditional", "historical", "review-required"]
+          },
+          "officialUrl": { "type": "string" }
+        },
+        "required": [
+          "id",
+          "title",
+          "edition",
+          "status",
+          "locator",
+          "relativePath",
+          "sha256",
+          "category",
+          "activation",
+          "officialUrl"
+        ]
+      }
+    }
+  }
+}

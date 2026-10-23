@@ -8,6 +8,7 @@ import {
 } from "./workspaceState";
 import { Metrics } from "./WorkspaceParts";
 import styles from "./workspace.module.css";
+import { timeLabel } from "./analytics/model";
 
 export function SystemView({
   data,
@@ -24,6 +25,10 @@ export function SystemView({
   const editor = useRef<HTMLHeadingElement>(null);
   const selected = editableEmployee(data, state.employeeId);
   const draft = selected ? (state.drafts[selected.id] ?? []) : [];
+  const saved = selected ? (state.roles[selected.id] ?? []) : [];
+  const dirty =
+    draft.length !== saved.length ||
+    draft.some((role) => !saved.includes(role));
   const roleText = (roles: typeof draft) =>
     roles.map((role) => roleLabels[role]).join(", ");
   if (section === "matrix")
@@ -72,7 +77,8 @@ export function SystemView({
             {state.changes.map((change) => (
               <li key={change.id}>
                 <span className={styles.small}>
-                  Действие в этой вкладке ·{" "}
+                  {change.at ? timeLabel(change.at) : "Действие в этой вкладке"}{" "}
+                  ·{" "}
                   {
                     data.employees.find(
                       (employee) => employee.id === change.actorId,
@@ -106,7 +112,7 @@ export function SystemView({
           {
             label: "Учётные записи",
             value: data.employees.length,
-            caption: "Синтетические сотрудники отделения",
+            caption: "Сотрудники отделения",
           },
           {
             label: "Ваши рабочие роли",
@@ -180,6 +186,11 @@ export function SystemView({
               <p className={styles.small}>
                 Выберите одно или несколько рабочих пространств
               </p>
+              {dirty && (
+                <p className={styles.small}>
+                  Есть несохранённые изменения ролей
+                </p>
+              )}
               <form
                 onSubmit={(event) => {
                   event.preventDefault();
@@ -215,7 +226,21 @@ export function SystemView({
                     </label>
                   ))}
                 </fieldset>
-                <Button type="submit">Сохранить роли</Button>
+                <div className={styles.actions}>
+                  <Button type="submit" disabled={!dirty}>
+                    Сохранить роли
+                  </Button>
+                  {dirty && (
+                    <Button
+                      variant="secondary"
+                      onClick={() =>
+                        dispatch({ type: "draft", roles: [...saved] })
+                      }
+                    >
+                      Отменить изменения
+                    </Button>
+                  )}
+                </div>
                 {state.roleError ? (
                   <p id="roles-error" className={styles.error} role="alert">
                     {state.roleMessage}
@@ -227,8 +252,7 @@ export function SystemView({
                 )}
               </form>
               <p id="roles-hint" className={styles.note}>
-                Изменение действует только в этой вкладке. Медицинские карточки
-                здесь не открываются.
+                Изменение будет записано в журнал доступа.
               </p>
             </>
           ) : (
@@ -237,7 +261,7 @@ export function SystemView({
               <p>
                 Текущая учётная запись доступна только для просмотра.
                 Переключите набор на рабочий день, чтобы назначить несколько
-                ролей учебному сотруднику.
+                ролей сотруднику.
               </p>
             </div>
           )}

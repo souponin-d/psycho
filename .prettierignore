@@ -1,4 +1,8 @@
 node_modules/
+apps/mobile-patient/android/
+apps/mobile-patient/ios/
+apps/mobile-patient/.expo/
+apps/mobile-patient/dist-android/
 .cache/
 .superpowers/
 .worktrees/
@@ -6,6 +10,9 @@ scratch/
 dist/
 build/
 coverage/
+**/bin/
+**/obj/
+**/.data/
 package-lock.json
 
 # Preserve the original research document; its links are still checked.

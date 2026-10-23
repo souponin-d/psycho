@@ -1,0 +1,22 @@
+[
+  {
+    "asset": "fluffy.png",
+    "tool": "imagegen built-in",
+    "prompt": "Create a production-ready transparent-background cutout of exactly the same sage green fluffy spherical character shown in reference. Preserve its tiny dark glossy eyes, subtle smile, round furry silhouette, two stubby feet, no ears. Entire body fully visible, centered, character occupies about 85% canvas with small comfortable padding, front facing. Premium tactile 3D fur. Remove the entire background, floor, shadow, caption, all text. Real transparent alpha around fine fur, no baked checkerboard or white backdrop. No extra objects."
+  },
+  {
+    "asset": "cloud.png",
+    "tool": "imagegen built-in",
+    "prompt": "Create a production-ready transparent-background cutout of exactly the same three-lobed ivory-lavender fleece cloud character in reference. Keep its tiny forest green eyes, subtle smile and tiny sage feet. Entire body fully visible centered at 85% canvas, front facing, beautiful tactile plush. Remove background, floor, shadow, caption, all text. Real transparent alpha clean soft edges, no baked checkerboard, no extra objects."
+  },
+  {
+    "asset": "terrain-light.png",
+    "tool": "imagegen built-in",
+    "prompt": "Production background illustration for Android patient app Синкли. Tall portrait composition. Exquisite tactile 3D topographic landscape, mixture of contour-cut ivory ceramic terraces and winding translucent pale sage river, tiny lavender plants and moss. Landscape flows in elegant S curve from lower foreground to upper distant hills. Warm creamy sunrise sky in top third, open calm space. Adult premium art direction, beautiful soft global illumination, subtle paper and ceramic textures, not childish game art. Palette #F6F5EB ivory, sage green, subtle lavender. NO characters, NO text, NO interface, NO phones, NO icons, NO labels, NO buildings. Just stunning immersive minimal terrain illustration usable behind app controls, high detail but tranquil, low contrast background."
+  },
+  {
+    "asset": "terrain-dark.png",
+    "tool": "imagegen built-in",
+    "prompt": "Production background illustration for Android patient app Синкли. Tall portrait composition. Premium tactile abstract topographic landscape at night, deep forest-black space, smooth flowing emerald terraces in lower two thirds, winding reflective sage river, elegant subtle orbital arcs in dark sky, 5 tiny lavender and pale lime celestial points. Dark green ceramic and velvet materials, subtle mist, cinematic soft rim light, sophisticated high-end art direction. Lots of quiet dark negative space in top third for readable controls. Palette #102821 #19372E lavender accents and soft lime. NO characters, NO text, NO interface, NO phones, NO buildings, NO labels. Not neon cyberpunk, not generic star field. Beautiful coherent night counterpart to sage ceramic river landscape."
+  }
+]

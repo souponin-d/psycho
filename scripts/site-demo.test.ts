@@ -6,8 +6,8 @@ import { dirname, join, resolve } from "node:path";
 import { URL } from "node:url";
 import { build } from "vite";
 
-describe("общая публикация сайта и демо", () => {
-  it("собирает оба приложения и их ресурсы рядом с лендингом", async () => {
+describe("общая публикация сайта и приложений", () => {
+  it("собирает рабочее место врача и демо администратора рядом с лендингом", async () => {
     const output = await mkdtemp(join(tmpdir(), "psycho-site-demo-"));
     try {
       await build({
@@ -25,14 +25,14 @@ describe("общая публикация сайта и демо", () => {
         (link) =>
           new URL(link.getAttribute("href")!, "https://demo.test/project/"),
       );
-      for (const [role, title] of [
-        ["doctor", "Синкли · Веб врача"],
-        ["admin", "Синкли · Административный веб"],
+      for (const [path, title] of [
+        ["doctor", "Синкли · Рабочее место врача"],
+        ["demo/admin", "Синкли · Административный веб"],
       ] as const) {
-        expect(
-          hrefs.some((url) => url.pathname === `/project/demo/${role}/`),
-        ).toBe(true);
-        const entry = join(output, "demo", role, "index.html");
+        expect(hrefs.some((url) => url.pathname === `/project/${path}/`)).toBe(
+          true,
+        );
+        const entry = join(output, path, "index.html");
         const document = new DOMParser().parseFromString(
           await readFile(entry, "utf8"),
           "text/html",
@@ -45,16 +45,22 @@ describe("общая публикация сайта и демо", () => {
         for (const asset of assets) {
           const source =
             asset.getAttribute("src") ?? asset.getAttribute("href")!;
-          const url = new URL(
-            source,
-            `https://demo.test/project/demo/${role}/`,
-          );
+          const url = new URL(source, `https://demo.test/project/${path}/`);
           expect(url.origin).toBe("https://demo.test");
           expect(url.pathname.startsWith("/project/")).toBe(true);
           const file = resolve(dirname(entry), source);
           expect((await stat(file)).isFile()).toBe(true);
         }
       }
+      expect(
+        hrefs.some((url) => url.pathname === "/project/demo/doctor/"),
+      ).toBe(false);
+      expect(
+        await stat(join(output, "demo", "doctor", "index.html")).then(
+          () => true,
+          () => false,
+        ),
+      ).toBe(false);
     } finally {
       await rm(output, { recursive: true, force: true });
     }

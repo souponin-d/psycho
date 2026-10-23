@@ -3,6 +3,7 @@ node_modules/
 dist/
 build/
 coverage/
+artifacts/
 .cache/
 *.log
 
@@ -22,3 +23,8 @@ Thumbs.db
 .worktrees/
 .superpowers/
 scratch/
+
+# ASP.NET build output and local clinical-server state
+**/bin/
+**/obj/
+**/.data/

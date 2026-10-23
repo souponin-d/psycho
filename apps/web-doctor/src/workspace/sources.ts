@@ -1,0 +1,111 @@
+import data from "./source-data.json";
+import type { SourceDocument } from "./model";
+export const sources = data as SourceDocument[];
+export const sourceById = (id: string) =>
+  sources.find((source) => source.id === id);
+export const sourceSections = {
+  assessment: ["S01", "S02", "S03", "S04"],
+  safety: ["S02", "S03", "S10", "S25"],
+  consent: ["S10", "S11"],
+  plan: ["S03", "S04", "S11"],
+  monitoring: ["S03", "S04", "S18"],
+  documentation: ["S11", "S13", "S15"],
+};
+export const scales = [
+  {
+    key: "PHQ-9",
+    title: "PHQ-9 · депрессивные симптомы",
+    maximum: 27,
+    assessor: "patient",
+    sourceId: "",
+    window: "Последние 2 недели",
+  },
+  {
+    key: "GAD-7",
+    title: "GAD-7 · тревожные симптомы",
+    maximum: 21,
+    assessor: "patient",
+    sourceId: "S23",
+    window: "Последние 2 недели",
+  },
+  {
+    key: "HARS",
+    title: "HARS · тревога, экспертная оценка",
+    maximum: 56,
+    assessor: "clinician",
+    sourceId: "S28",
+    window: "Окно используемой формы",
+  },
+  {
+    key: "HDRS-17",
+    title: "HDRS-17 · депрессия, экспертная оценка",
+    maximum: 52,
+    assessor: "clinician",
+    sourceId: "S26",
+    window: "По пунктам используемой формы",
+  },
+  {
+    key: "MADRS",
+    title: "MADRS · депрессия, экспертная оценка",
+    maximum: 60,
+    assessor: "clinician",
+    sourceId: "S27",
+    window: "Последняя неделя",
+  },
+  {
+    key: "HCL-32",
+    title: "HCL-32 · скрининг гипомании",
+    maximum: 32,
+    assessor: "patient",
+    sourceId: "S21",
+    window: "Периоды подъёма в анамнезе",
+  },
+  {
+    key: "HCL-33",
+    title: "HCL-33 · скрининг гипомании",
+    maximum: 33,
+    assessor: "patient",
+    sourceId: "S24",
+    window: "Периоды подъёма в анамнезе",
+  },
+  {
+    key: "YMRS",
+    title: "YMRS · маниакальные симптомы",
+    maximum: 60,
+    assessor: "clinician",
+    sourceId: "S22",
+    window: "Последние 48 часов",
+  },
+  {
+    key: "C-SSRS",
+    title: "C-SSRS · структурированная оценка риска",
+    maximum: null,
+    assessor: "clinician",
+    sourceId: "S25",
+    window: "Укажите форму и давность",
+  },
+  {
+    key: "CGI",
+    title: "CGI · общее клиническое впечатление",
+    maximum: 7,
+    assessor: "clinician",
+    sourceId: "S34",
+    window: "На момент оценки",
+  },
+  {
+    key: "KOP-25",
+    title: "КОП-25 · готовность к лечению",
+    maximum: 100,
+    assessor: "patient",
+    sourceId: "S38",
+    window: "На момент заполнения",
+  },
+  {
+    key: "custom",
+    title: "Другая оценка",
+    maximum: null,
+    assessor: "clinician",
+    sourceId: "",
+    window: "",
+  },
+] as const;

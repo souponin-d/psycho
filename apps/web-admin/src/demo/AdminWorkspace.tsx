@@ -27,19 +27,45 @@ const sections: Record<
       title: "Организационные события",
       description: "Подготовленные события и действия в этой вкладке.",
     },
+    {
+      id: "journey",
+      label: "Путь пациента",
+      title: "Путь пациента",
+      description: "Пациент, врач и клиника в одном локальном сеансе.",
+    },
   ],
   director: [
     {
       id: "overview",
       label: "Обзор",
-      title: "Обзор отделения",
-      description: "Активность и распределение пациентов между кабинетами.",
+      title: "Обзор клиники",
+      description:
+        "Сопровождение, команда и полнота данных в одной управленческой картине.",
     },
     {
-      id: "offices",
-      label: "Кабинеты",
-      title: "Показатели кабинетов",
-      description: "Готовые показатели за выбранный период.",
+      id: "load",
+      label: "Нагрузка",
+      title: "Работа команды",
+      description: "Приёмы, распределение событий и ритм работы клиники.",
+    },
+    {
+      id: "medical",
+      label: "Медстатистика",
+      title: "Медицинская статистика",
+      description:
+        "Описательные наблюдения, сопоставимые пары и состав выборки.",
+    },
+    {
+      id: "quality",
+      label: "Сигналы и качество",
+      title: "Сигналы и качество данных",
+      description: "Стадии обработки, время принятия и ограничения сводки.",
+    },
+    {
+      id: "journey",
+      label: "Путь пациента",
+      title: "Путь пациента",
+      description: "От самоотчёта пациента до ответа врача и сводки клиники.",
     },
     {
       id: "report",
@@ -60,14 +86,19 @@ const sections: Record<
       id: "matrix",
       label: "Возможности ролей",
       title: "Возможности рабочих пространств",
-      description: "Какие задачи и данные доступны в каждом пространстве демо.",
+      description: "Задачи и данные каждого рабочего пространства.",
     },
     {
       id: "access",
       label: "Журнал доступа",
       title: "Журнал изменений доступа",
-      description:
-        "Автор, сотрудник и состав ролей до и после учебного изменения.",
+      description: "Автор, сотрудник и состав ролей до и после изменения.",
+    },
+    {
+      id: "journey",
+      label: "Путь пациента",
+      title: "Путь пациента",
+      description: "Локальные события, воспроизведение показа и явный сброс.",
     },
   ],
 };
@@ -103,7 +134,12 @@ export function AdminWorkspace({
     director: defaultPath("director"),
     system: defaultPath("system"),
   });
-  const path = !hash || hash === "/summary" ? defaultPath(first) : hash;
+  const path =
+    !hash || hash === "/summary"
+      ? defaultPath(first)
+      : hash === "/director/offices"
+        ? "/director/load"
+        : hash;
   const candidate = (Object.keys(sections) as AdminRole[]).find((role) =>
     sections[role].some((section) => path === `/${role}/${section.id}`),
   );
@@ -116,7 +152,7 @@ export function AdminWorkspace({
   const selected = allowed
     ? sections[role].find((section) => path === `/${role}/${section.id}`)
     : undefined;
-  const isExamples = path === "/examples";
+  const isExamples = import.meta.env.DEV && path === "/examples";
   const title = !data
     ? "Данные не загружены"
     : isExamples
@@ -153,7 +189,7 @@ export function AdminWorkspace({
             А-01
           </span>
           <div>
-            <strong>{current?.name ?? "Учебная учётная запись"}</strong>
+            <strong>{current?.name ?? "Учётная запись"}</strong>
             <span>Одна учётная запись · роли можно совмещать</span>
           </div>
         </div>
@@ -202,9 +238,8 @@ export function AdminWorkspace({
           ))}
         </nav>
         <div className={styles.sidebarFooter}>
-          <p>{data?.unit ?? "Демо администратора"}</p>
+          <p>{data?.unit ?? "Административный веб"}</p>
           {siteHref && <a href={siteHref}>← На сайт Синкли</a>}
-          <a href="#/examples">Примеры компонентов</a>
         </div>
       </aside>
       <main id="admin-main" className={styles.main}>
@@ -221,14 +256,14 @@ export function AdminWorkspace({
             </p>
           </div>
           <label className={styles.field}>
-            Набор демо-данных
+            Набор данных
             <select
               value={scenario}
               onChange={(event) =>
                 onScenario(event.currentTarget.value as Scenario)
               }
             >
-              <option value="normal">Рабочий день</option>
+              <option value="normal">Клиника · 180 дней</option>
               <option value="empty">Новое отделение</option>
               <option value="long">Длинные подписи</option>
             </select>
@@ -253,11 +288,6 @@ export function AdminWorkspace({
             <a href={`#${defaultPath(role)}`}>Открыть рабочее пространство</a>
           </section>
         )}
-        <footer className={styles.footer}>
-          Демо · только вымышленные данные. Действия сохраняются в памяти
-          вкладки до смены набора или перезагрузки. Назначение ролей здесь не
-          меняет серверные права.
-        </footer>
       </main>
     </div>
   );

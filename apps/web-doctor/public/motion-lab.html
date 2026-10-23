@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Motion-направления · Синкли</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        background: #071a22;
+        color: white;
+      }
+      canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      .controls {
+        position: fixed;
+        z-index: 2;
+        inset: 0 0 auto;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+        padding: clamp(18px, 3vw, 42px);
+        pointer-events: none;
+      }
+      .title {
+        max-width: 500px;
+        text-shadow: 0 1px 18px #0008;
+      }
+      .title span {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        opacity: 0.68;
+      }
+      .title strong {
+        display: block;
+        font-size: clamp(23px, 2.4vw, 38px);
+        letter-spacing: -0.04em;
+      }
+      .title p {
+        max-width: 340px;
+        font-size: 13px;
+        line-height: 1.5;
+        opacity: 0.72;
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px;
+        pointer-events: auto;
+      }
+      .actions a,
+      .actions button {
+        display: grid;
+        place-items: center;
+        min-width: 42px;
+        min-height: 42px;
+        padding: 9px 12px;
+        border: 1px solid currentColor;
+        border-radius: 9px;
+        color: inherit;
+        background: #111a1f60;
+        text-decoration: none;
+        font: inherit;
+        font-size: 13px;
+        cursor: pointer;
+        backdrop-filter: blur(12px);
+      }
+      .actions a[aria-current="true"] {
+        color: #0b1820;
+        background: white;
+        border-color: white;
+      }
+      .actions a:focus-visible,
+      .actions button:focus-visible {
+        outline: 3px solid white;
+        outline-offset: 3px;
+      }
+      .caption {
+        position: fixed;
+        z-index: 2;
+        left: clamp(18px, 3vw, 42px);
+        bottom: clamp(18px, 3vw, 42px);
+        max-width: 420px;
+        font-size: 12px;
+        line-height: 1.5;
+        opacity: 0.68;
+        pointer-events: none;
+      }
+      body[data-scene="4"] {
+        color: #2f2542;
+        background: #f4ede3;
+      }
+      body[data-scene="4"] .actions a,
+      body[data-scene="4"] .actions button {
+        background: #fff8;
+      }
+      body[data-scene="4"] .actions a[aria-current="true"] {
+        color: #fff;
+        background: #3c295b;
+        border-color: #3c295b;
+      }
+      @media (max-width: 720px) {
+        .controls {
+          flex-direction: column;
+        }
+        .actions {
+          justify-content: flex-start;
+        }
+        .title p,
+        .caption {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <canvas
+      aria-label="Анимированная сцена выбранного варианта"
+      role="img"
+    ></canvas>
+    <div class="controls">
+      <div class="title">
+        <span>Синкли · отдельные motion-сцены</span><strong id="name"></strong>
+        <p id="description"></p>
+      </div>
+      <nav class="actions" aria-label="Выбор анимации">
+        <a href="#1" data-scene="1" aria-label="Вариант 1">01</a
+        ><a href="#2" data-scene="2" aria-label="Вариант 2">02</a
+        ><a href="#3" data-scene="3" aria-label="Вариант 3">03</a
+        ><a href="#4" data-scene="4" aria-label="Вариант 4">04</a
+        ><a href="#5" data-scene="5" aria-label="Вариант 5">05</a
+        ><button type="button" id="pause">Пауза</button>
+      </nav>
+    </div>
+    <div class="caption">
+      Двигайте указатель по сцене. Выберите номер для сравнения движения и
+      цвета.
+    </div>
+    <script type="module" src="/motion-lab.js"></script>
+  </body>
+</html>
