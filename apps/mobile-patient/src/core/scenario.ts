@@ -1,10 +1,22 @@
 import { shiftDay, closeElapsedDays } from "./calendar.ts";
+import { PatientValidationError } from "./patientErrors.ts";
 import type {
   DayKey,
   JourneyState,
   PatientEvent,
   ReportFields,
 } from "./journeyModel.ts";
+
+export function connectScenario(
+  code: string,
+  existing: JourneyState,
+): JourneyState {
+  if (code.trim().toUpperCase() !== "SYNCLI-START")
+    throw new PatientValidationError(
+      "Проверьте код или войдите в демо-режиме.",
+    );
+  return existing.connected ? existing : { ...existing, connected: true };
+}
 
 export function seedScenario(seedDay: DayKey): JourneyState {
   const start = shiftDay(seedDay, -8);

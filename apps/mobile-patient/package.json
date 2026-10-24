@@ -1,7 +1,7 @@
 {
   "name": "@psycho/mobile-patient",
   "version": "0.2.0",
-  "main": "expo-router/entry",
+  "main": "./index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "lint": "eslint src --max-warnings 0",
@@ -29,6 +29,7 @@
     "expo-sqlite": "55.0.20",
     "expo-status-bar": "55.0.6",
     "expo-system-ui": "55.0.22",
+    "expo-task-manager": "55.0.20",
     "react": "19.2.0",
     "react-native": "0.83.10",
     "react-native-safe-area-context": "5.6.2",

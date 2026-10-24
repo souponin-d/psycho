@@ -3,6 +3,7 @@ import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { useApp } from "../../state/AppProvider";
+import { useJourney } from "../../state/JourneyProvider";
 import { Icon, type IconName } from "../../components/Icon";
 import { T } from "../../components/UI";
 import { Touch } from "../../components/Motion";
@@ -73,7 +74,9 @@ function Bar({ state, navigation }: BottomTabBarProps) {
 }
 export default function TabsLayout() {
   const { state, theme, reducedMotion } = useApp();
-  if (!state.onboarded) return <Redirect href="/onboarding" />;
+  const { journey } = useJourney();
+  if (!state.onboarded || !journey?.connected)
+    return <Redirect href="/onboarding" />;
   return (
     <Tabs
       tabBar={(props) => <Bar {...props} />}

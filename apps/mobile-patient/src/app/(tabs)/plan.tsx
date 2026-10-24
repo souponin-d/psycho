@@ -1,4 +1,6 @@
-import { View } from "react-native";
+import { useState } from "react";
+import { Alert, View } from "react-native";
+import * as Notifications from "expo-notifications";
 import { router, type Href } from "expo-router";
 import { Screen, Heading, T, Button } from "../../components/UI";
 import { Touch } from "../../components/Motion";
@@ -11,9 +13,13 @@ import {
   latestReports,
 } from "../../core/questionnaires";
 import { dayAt, instantNow, journeyProgress } from "../../core/calendar";
+import { handleNotificationAction } from "../../core/notifications";
+import { openPatientRepository } from "../../storage/sqlite";
+import { scheduleReminder } from "../../services/notificationTransport";
 export default function PlanScreen() {
-  const { theme, today } = useApp();
+  const { theme, today, state } = useApp();
   const { journey, act, saving } = useJourney();
+  const [reminding, setReminding] = useState(false);
   if (!journey) return null;
   const tasks = assignedTasks(journey, today),
     progress = journeyProgress(journey, today);
@@ -34,6 +40,58 @@ export default function PlanScreen() {
     });
   }
   const report = latestReports(journey, today).find((r) => r.required);
+  async function remind(slotId: string) {
+    if (!journey) return;
+    setReminding(true);
+    try {
+      if (!(await Notifications.getPermissionsAsync()).granted) {
+        Alert.alert(
+          "Разрешите уведомления",
+          "Это можно сделать в настройках Синкли.",
+          [
+            { text: "Позже" },
+            { text: "Настройки", onPress: () => router.push("/settings") },
+          ],
+        );
+        return;
+      }
+      const now = instantNow();
+      const result = await handleNotificationAction(
+        {
+          action: "snooze",
+          job: {
+            id: `syncli.snooze.${journey.plan.id}.${today}.${slotId}`,
+            planId: journey.plan.id,
+            day: today,
+            at: now.utcMs,
+            kind: "dose",
+            slotId,
+          },
+        },
+        await openPatientRepository(),
+        now,
+      );
+      if (result.kind === "snooze") {
+        await scheduleReminder(result.job);
+        Alert.alert(
+          "Напоминание добавлено",
+          "Через 15 минут придёт уведомление. Схема приёма не изменена.",
+        );
+      } else if (result.kind === "expired")
+        Alert.alert(
+          "День заканчивается",
+          "Напоминание не переносится на следующий день. План остаётся прежним.",
+        );
+      else Alert.alert("Приём уже отмечен", "Проверьте запись в плане.");
+    } catch {
+      Alert.alert(
+        "Не удалось добавить напоминание",
+        "Попробуйте ещё раз в настройках уведомлений.",
+      );
+    } finally {
+      setReminding(false);
+    }
+  }
   return (
     <Screen title="Синкли">
       <Heading
@@ -88,7 +146,13 @@ export default function PlanScreen() {
                 <Icon name="pill" color={theme.accent} />
                 <View style={{ flex: 1 }}>
                   <T size={19} weight="500">
-                    {slot.label} · {slot.time}
+                    {slot.label}
+                  </T>
+                  <T size={12} muted>
+                    Напоминание:{" "}
+                    {slot.id === journey.plan.medication.slots[0]?.id
+                      ? state.morning
+                      : slot.time}
                   </T>
                   <T muted size={12}>
                     {current?.status === "taken"
@@ -141,6 +205,14 @@ export default function PlanScreen() {
                   </Touch>
                 ))}
               </View>
+              {(!current || current.status === "unknown") && (
+                <Button
+                  title="Напомнить через 15 минут"
+                  secondary
+                  disabled={reminding || saving}
+                  onPress={() => void remind(slot.id)}
+                />
+              )}
               {current && current.status !== "unknown" && (
                 <Touch
                   accessibilityRole="button"

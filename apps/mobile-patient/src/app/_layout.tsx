@@ -5,6 +5,7 @@ import { ActivityIndicator, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { AppProvider, useApp } from "../state/AppProvider";
 import { JourneyProvider, useJourney } from "../state/JourneyProvider";
+import { ReminderProvider } from "../state/ReminderProvider";
 import { T } from "../components/UI";
 export { ErrorBoundary } from "expo-router";
 function Navigation() {
@@ -104,7 +105,9 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <AppProvider>
         <JourneyProvider>
-          <Navigation />
+          <ReminderProvider>
+            <Navigation />
+          </ReminderProvider>
         </JourneyProvider>
       </AppProvider>
     </SafeAreaProvider>

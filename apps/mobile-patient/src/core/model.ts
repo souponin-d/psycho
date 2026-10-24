@@ -36,6 +36,7 @@ export type AppState = {
   mascot: MascotId;
   name: string;
   morning: string;
+  reportTime: string;
   motion: boolean;
   haptics: boolean;
   gameplay: boolean;
@@ -56,6 +57,7 @@ export type Action =
           | "mascot"
           | "name"
           | "morning"
+          | "reportTime"
           | "motion"
           | "haptics"
           | "gameplay"
@@ -77,6 +79,7 @@ export function createDefaultState(): AppState {
     mascot: "fluffy",
     name: "Анна",
     morning: "09:00",
+    reportTime: "20:00",
     motion: true,
     haptics: true,
     gameplay: true,
@@ -169,9 +172,12 @@ export function restoreState(value: string | null): AppState {
         typeof r.name === "string"
           ? r.name.trim().slice(0, 30) || "Анна"
           : "Анна",
-      morning: ["08:00", "09:00", "10:00"].includes(String(r.morning))
+      morning: /^([01]\d|2[0-3]):[0-5]\d$/.test(String(r.morning))
         ? r.morning!
         : "09:00",
+      reportTime: /^([01]\d|2[0-3]):[0-5]\d$/.test(String(r.reportTime))
+        ? r.reportTime!
+        : "20:00",
       motion: r.motion !== false,
       haptics: r.haptics !== false,
       gameplay: r.gameplay !== false,

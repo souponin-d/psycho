@@ -8,6 +8,7 @@ import { Icon } from "../components/Icon";
 import { Mascot } from "../components/Mascot";
 import { useApp } from "../state/AppProvider";
 import { mascotOptions } from "../config/content";
+import { ReminderSettings } from "../components/ReminderSettings";
 export default function SettingsScreen() {
   const { state, dispatch, theme } = useApp();
   const [name, setName] = useState(state.name);
@@ -21,6 +22,7 @@ export default function SettingsScreen() {
         Оформление
       </T>
       <ThemePicker />
+      <ReminderSettings />
       <T size={18} weight="500" style={{ marginTop: 30, marginBottom: 16 }}>
         Ваш спутник
       </T>

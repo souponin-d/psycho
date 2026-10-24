@@ -3,6 +3,7 @@ import { isDay } from "./shore.ts";
 import { fieldComplete } from "./therapy.ts";
 import { completeQuestionnaire } from "./questionnaires.ts";
 import { PatientValidationError } from "./patientErrors.ts";
+import { connectScenario } from "./scenario.ts";
 import type {
   Instant,
   JourneyState,
@@ -20,13 +21,8 @@ export function applyPatientCommand(
   switch (command.type) {
     case "tick":
       return base;
-    case "connect": {
-      if (command.code.trim().toUpperCase() !== "SYNCLI-START")
-        throw new PatientValidationError(
-          "Проверьте код или войдите в демо-режиме.",
-        );
-      return base.connected ? base : { ...base, connected: true };
-    }
+    case "connect":
+      return connectScenario(command.code, base);
     case "goal":
       return {
         ...base,

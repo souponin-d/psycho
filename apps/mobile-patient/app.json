@@ -19,6 +19,7 @@
     "android": {
       "package": "ru.syncli.patient.demo",
       "versionCode": 2,
+      "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/fluffy.png",
         "backgroundColor": "#D6E5BE"
@@ -31,7 +32,14 @@
         "android.permission.SYSTEM_ALERT_WINDOW"
       ]
     },
-    "plugins": ["expo-router", "expo-font"],
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      [
+        "expo-notifications",
+        { "defaultChannel": "syncli_reminders", "color": "#2C5740" }
+      ]
+    ],
     "experiments": {
       "typedRoutes": true
     }
