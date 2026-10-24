@@ -2012,3 +2012,253 @@
     width: 100%;
   }
 }
+
+/* Visual parity with the accepted prototype, including narrow browser panels. */
+.tabs a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.tabs a svg {
+  flex-shrink: 0;
+}
+.briefPlanTitle {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.briefPlanTitle svg {
+  flex-shrink: 0;
+  color: var(--ws-accent);
+  margin-top: 2px;
+}
+.agreementRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 0;
+  font-size: 12px;
+}
+.agreementRow > svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--ws-muted);
+}
+.agreementRow > div {
+  flex: 1;
+}
+.agreementRow p {
+  margin: 5px 0;
+  line-height: 1.6;
+}
+.prescriptionIdentity {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+  padding: 10px 22px;
+  border-bottom: 1px solid var(--ws-line);
+  font-size: 12px;
+}
+.drugIdentity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.drugIdentity h3 {
+  font-size: 21px;
+  margin: 0;
+}
+.drugIdentity p {
+  margin: 4px 0 0;
+}
+.drugMark {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  color: var(--ws-accent);
+  background: var(--ws-soft);
+}
+.aviandrFlag > label {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 170px;
+  gap: 8px 16px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--ws-line);
+}
+.aviandrFlag > label > select {
+  grid-column: 2;
+  grid-row: 1;
+}
+.aviandrFlag > label > small {
+  grid-column: 1 / -1;
+}
+.workdaySchedule {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 12px;
+}
+.workdaySchedule th {
+  padding: 10px 8px;
+  color: var(--ws-muted);
+  border-bottom: 1px solid var(--ws-line);
+  font-size: 10px;
+  font-weight: 400;
+}
+.workdaySchedule td {
+  padding: 18px 8px;
+  border-bottom: 1px solid var(--ws-line);
+  vertical-align: middle;
+}
+.workdaySchedule td:first-child {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.workdaySchedule td p {
+  margin: 5px 0 0;
+}
+.workdaySchedule td:last-child {
+  text-align: right;
+}
+.workdaySchedule button {
+  white-space: nowrap;
+}
+.workdaySchedule tr:last-child td {
+  border-bottom: 0;
+}
+.workdaySchedule tbody tr:hover {
+  background: var(--ws-soft);
+}
+.schedulePatient {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.schedulePatient > .avatar {
+  flex-shrink: 0;
+}
+.attentionSignal {
+  color: #897343;
+  display: grid;
+  place-items: center;
+}
+.activityEntry {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.activityEntry > svg {
+  flex-shrink: 0;
+  color: var(--ws-muted);
+  margin-top: 3px;
+}
+@media (max-width: 1150px) {
+  .workdaySchedule .scheduleStatus {
+    display: none;
+  }
+  .workdaySchedule th:nth-child(3) {
+    display: none;
+  }
+}
+@media (max-width: 760px) {
+  .tabs {
+    gap: 20px;
+  }
+  .tabs a {
+    gap: 6px;
+  }
+  .workdaySchedule th,
+  .workdaySchedule td {
+    padding-left: 3px;
+    padding-right: 3px;
+  }
+  .workdaySchedule td {
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+  .workdaySchedule .avatar {
+    display: none;
+  }
+  .workdaySchedule .button {
+    font-size: 10px;
+    padding: 8px;
+    white-space: normal;
+  }
+  .workdaySchedule .button svg {
+    display: none;
+  }
+  .workdaySchedule .textButton {
+    font-size: 11px;
+  }
+  .workdaySchedule .subtext {
+    font-size: 10px;
+  }
+  .attentionSignal {
+    display: none;
+  }
+  .aviandrFlag > label {
+    grid-template-columns: minmax(0, 1fr) 145px;
+    gap: 8px;
+  }
+  .aviandrFlag > label > select {
+    font-size: 12px;
+  }
+  .prescriptionIdentity {
+    padding: 10px 16px;
+    font-size: 11px;
+  }
+  .agreementRow {
+    flex-wrap: wrap;
+  }
+}
+
+.patientBackLink {
+  min-height: 24px;
+  padding: 2px 0;
+  font-size: 11px;
+}
+
+.contextCompact {
+  gap: 8px;
+}
+.contextCompact .facts {
+  gap: 8px;
+  font-size: 11px;
+}
+.contextCompact h3 {
+  font-size: 13px;
+}
+.contextCompact .button {
+  min-height: 28px;
+  padding: 4px 0;
+  font-size: 11px;
+}
+.contextOrigin {
+  font-size: 10px;
+  color: var(--ws-muted);
+}
+.contextOrigin summary {
+  cursor: pointer;
+  padding: 5px 0;
+}
+@media (max-width: 760px) {
+  .contextCompact .button {
+    min-height: 44px;
+  }
+  .aviandrFlag > label > select {
+    font-size: 16px;
+  }
+}
+
+.aviandrEditor {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}

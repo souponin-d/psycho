@@ -1,7 +1,7 @@
 import type { PatientRecord } from "./model";
 import type { Navigate } from "./PatientDirectory";
 import { formatDate } from "./labels";
-import { Badge, Button, styles } from "./ui/Elements";
+import { Badge, Button, Icon, styles } from "./ui/Elements";
 
 export function PatientBrief({
   patient,
@@ -20,6 +20,12 @@ export function PatientBrief({
   const report = patient.reports
     .slice()
     .sort((a, b) => b.reportedAt.localeCompare(a.reportedAt))[0];
+  const next = patient.visits
+    .filter((v) => v.status === "scheduled" || v.status === "in-progress")
+    .sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt))[0];
+  const latest = patient.measurements
+    .slice()
+    .sort((a, b) => b.measuredAt.localeCompare(a.measuredAt))[0];
   const plan = patient.plan.filter((p) => p.status === "confirmed");
   return (
     <section
@@ -34,7 +40,16 @@ export function PatientBrief({
               ? "К повторному приёму"
               : "К приёму"}
         </h2>
-        <Badge>Из карты</Badge>
+        <Badge>
+          {!compact && next
+            ? formatDate(next.scheduledAt, {
+                day: "numeric",
+                month: "short",
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : "Из карты"}
+        </Badge>
       </div>
       <div className={styles.briefColumns}>
         <div>
@@ -73,7 +88,13 @@ export function PatientBrief({
           {plan.length ? (
             plan.slice(0, 3).map((p) => (
               <div className={styles.briefPlan} key={p.id}>
-                <strong>{p.title}</strong>
+                <div className={styles.briefPlanTitle}>
+                  <Icon
+                    name={p.kind === "medication" ? "pill" : "calendar"}
+                    size={16}
+                  />
+                  <strong>{p.title}</strong>
+                </div>
                 {p.dueDate && (
                   <p className={styles.subtext}>
                     Контроль {formatDate(p.dueDate)}
@@ -84,7 +105,8 @@ export function PatientBrief({
           ) : (
             <p className={styles.subtext}>Подтверждённых решений пока нет</p>
           )}
-          <p className={styles.subtext}>
+          <p className={`${styles.subtext} ${styles.briefPlanTitle}`}>
+            <Icon name="pill" size={16} />
             {patient.plan.some(
               (p) => p.kind === "medication" && p.status === "confirmed",
             )
@@ -101,6 +123,26 @@ export function PatientBrief({
           )}
         </div>
       </div>
+      {compact && latest && (
+        <section className={styles.briefPrevious} aria-label="Последняя оценка">
+          <h3>Последняя оценка</h3>
+          <div className={styles.latestScore}>
+            <strong>{latest.score ?? "—"}</strong>
+            <span>
+              {latest.maximum !== null ? `/ ${latest.maximum}` : ""} ·{" "}
+              {latest.scale}
+            </span>
+          </div>
+          <p className={styles.subtext}>
+            {formatDate(latest.measuredAt)} · {latest.version}
+          </p>
+          <p className={styles.subtext}>
+            {latest.completeness === "complete"
+              ? "Исходный результат. Интерпретация — врачом."
+              : "Неполная оценка"}
+          </p>
+        </section>
+      )}
       {compact && previous && (
         <div className={styles.briefPrevious}>
           <p className={styles.subtext}>

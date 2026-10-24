@@ -3,7 +3,13 @@ import type { CareEvent, EventStatus, PatientRecord } from "./model";
 import type { WorkspaceActions } from "./useWorkspace";
 import type { Navigate } from "./PatientDirectory";
 import { message } from "./useWorkspace";
-import { eventStatus, formatDate, localDateTime, today } from "./labels";
+import {
+  eventStatus,
+  formatDate,
+  localDateTime,
+  today,
+  initials,
+} from "./labels";
 import { SourceLinks } from "./SourceLibrary";
 import {
   Badge,
@@ -153,13 +159,20 @@ export function Events({
                 {rows.map(({ patient: p, event: e }) => (
                   <tr key={`${p.id}-${e.id}`}>
                     <td>
-                      <button
-                        className={styles.textButton}
-                        onClick={() => navigate(`/patients/${p.id}`)}
-                      >
-                        {p.profile.name}
-                      </button>
-                      <p className={styles.subtext}>{p.code}</p>
+                      <div className={styles.schedulePatient}>
+                        <span className={styles.avatar}>
+                          {initials(p.profile.name)}
+                        </span>
+                        <div>
+                          <button
+                            className={styles.textButton}
+                            onClick={() => navigate(`/patients/${p.id}`)}
+                          >
+                            {p.profile.name}
+                          </button>
+                          <p className={styles.subtext}>{p.code}</p>
+                        </div>
+                      </div>{" "}
                     </td>
                     <td>
                       <div className={styles.row}>
@@ -220,6 +233,7 @@ export function Events({
                         variant={
                           e.status === "closed" ? "secondary" : "primary"
                         }
+                        icon="arrow"
                         onClick={() => {
                           setSelected({ patientId: p.id, eventId: e.id });
                           setNote("");

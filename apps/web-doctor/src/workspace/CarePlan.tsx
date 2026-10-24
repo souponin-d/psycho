@@ -24,6 +24,7 @@ import {
   Button,
   Empty,
   ErrorNotice,
+  Icon,
   Field,
   Modal,
   Section,
@@ -235,6 +236,31 @@ export function PlanForm({
       setError(message(e));
     }
   }
+  const identityFields = (
+    <>
+      <Select
+        label="Тип назначения"
+        value={value.kind}
+        onChange={(e) => set("kind", e.target.value)}
+      >
+        {Object.entries(planKind).map(([id, label]) => (
+          <option key={id} value={id}>
+            {label}
+          </option>
+        ))}
+      </Select>
+      <Field
+        label={
+          value.kind === "medication"
+            ? "Препарат, форма и наименование"
+            : "Название"
+        }
+        value={value.title}
+        onChange={(e) => set("title", e.target.value)}
+        required
+      />
+    </>
+  );
   return (
     <Modal
       open
@@ -248,6 +274,12 @@ export function PlanForm({
       className={styles.planModal}
     >
       <form className={styles.planForm} onSubmit={save}>
+        <div className={styles.prescriptionIdentity}>
+          <span>
+            {patient.profile.name} · {patient.code}
+          </span>
+          <Badge>{locked ? "Сохранённая запись" : "Черновик"}</Badge>
+        </div>
         {error && <ErrorNotice>{error}</ErrorNotice>}
         <DraftConflict
           guard={guard}
@@ -279,27 +311,27 @@ export function PlanForm({
             style={{ margin: 0, padding: 0, border: 0, minWidth: 0 }}
             aria-label="Данные назначения"
           >
-            <Select
-              label="Тип назначения"
-              value={value.kind}
-              onChange={(e) => set("kind", e.target.value)}
-            >
-              {Object.entries(planKind).map(([id, label]) => (
-                <option key={id} value={id}>
-                  {label}
-                </option>
-              ))}
-            </Select>
-            <Field
-              label={
-                value.kind === "medication"
-                  ? "Препарат, форма и наименование"
-                  : "Название"
-              }
-              value={value.title}
-              onChange={(e) => set("title", e.target.value)}
-              required
-            />
+            {value.aviandrReview && (
+              <div className={styles.drugIdentity}>
+                <span className={styles.drugMark}>
+                  <Icon name="pill" size={20} />
+                </span>
+                <div>
+                  <h3>Авиандр</h3>
+                  <p className={styles.subtext}>
+                    {aviandr.title.split(" · ").slice(1).join(" · ")}
+                  </p>
+                </div>
+              </div>
+            )}
+            {value.aviandrReview ? (
+              <details className={styles.details}>
+                <summary>Изменить препарат или тип записи</summary>
+                <div className={styles.form}>{identityFields}</div>
+              </details>
+            ) : (
+              identityFields
+            )}
             {value.kind === "medication" && !isAviandr(value.title) && (
               <Button
                 variant="secondary"
@@ -575,14 +607,14 @@ export function CarePlan({
             aria-pressed={filter === "active"}
             onClick={() => setFilter("active")}
           >
-            Текущий план
+            Действующий план
           </button>
           <button
             type="button"
             aria-pressed={filter === "all"}
             onClick={() => setFilter("all")}
           >
-            Вся история
+            История решений
           </button>
         </div>
         {items.map((item) => (

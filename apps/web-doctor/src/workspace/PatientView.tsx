@@ -21,6 +21,7 @@ import {
   Button,
   Empty,
   ErrorNotice,
+  Icon,
   Modal,
   Section,
   Textarea,
@@ -29,12 +30,12 @@ import {
 import { PatientContext } from "./PatientContext";
 import { PatientBrief } from "./PatientBrief";
 const tabs = [
-  ["overview", "Обзор"],
-  ["visits", "Приёмы"],
-  ["plan", "Лечение и план"],
-  ["dynamics", "Наблюдение"],
-  ["documents", "Документы"],
-];
+  ["overview", "Обзор", "file"],
+  ["visits", "Приёмы", "calendar"],
+  ["plan", "Лечение и план", "pill"],
+  ["dynamics", "Наблюдение", "chart"],
+  ["documents", "Документы", "book"],
+] as const;
 const observationTabs = [
   ["dynamics", "Динамика"],
   ["journal", "Дневник"],
@@ -56,6 +57,15 @@ export function PatientView({
   tab?: string;
   server: boolean;
 }) {
+  const patientAge = age(patient.profile.birthDate);
+  const ageUnit = {
+    one: "год",
+    few: "года",
+    many: "лет",
+    other: "лет",
+    zero: "лет",
+    two: "года",
+  }[new Intl.PluralRules("ru").select(patientAge)];
   const [prescription, setPrescription] = useState(false);
   const observation = observationTabs.some(([id]) => id === tab);
   const [profile, setProfile] = useState(false);
@@ -116,7 +126,12 @@ export function PatientView({
   }
   return (
     <>
-      <Button variant="ghost" icon="back" onClick={() => navigate("/patients")}>
+      <Button
+        variant="ghost"
+        icon="back"
+        className={styles.patientBackLink}
+        onClick={() => navigate("/patients")}
+      >
         Все пациенты
       </Button>
       <div className={styles.patientHeader}>
@@ -127,7 +142,7 @@ export function PatientView({
           <div>
             <h1>{patient.profile.name}</h1>
             <p className={styles.subtext}>
-              {patient.code} · {age(patient.profile.birthDate)} лет ·{" "}
+              {patient.code} · {patientAge} {ageUnit} ·{" "}
               {formatDate(patient.profile.birthDate)}
               {patient.profile.occupation
                 ? ` · ${patient.profile.occupation}`
@@ -136,11 +151,7 @@ export function PatientView({
           </div>
         </div>
         <div className={styles.row}>
-          <Button
-            variant="secondary"
-            icon="edit"
-            onClick={() => setProfile(true)}
-          >
+          <Button variant="ghost" icon="edit" onClick={() => setProfile(true)}>
             Профиль
           </Button>
           <Button
@@ -172,7 +183,7 @@ export function PatientView({
         <div className={styles.notice}>Карта находится в архиве.</div>
       )}
       <nav className={styles.tabs} aria-label="Разделы карты">
-        {tabs.map(([id, label]) => (
+        {tabs.map(([id, label, icon]) => (
           <a
             key={id}
             href={`#/patients/${patient.id}/${id}`}
@@ -194,11 +205,8 @@ export function PatientView({
               navigate(`/patients/${patient.id}/${id}`);
             }}
           >
-            {label}
-            {id === "events" &&
-            patient.events.some((e) => e.status !== "closed")
-              ? ` · ${patient.events.filter((e) => e.status !== "closed").length}`
-              : ""}
+            <Icon name={icon} size={15} />
+            <span>{label}</span>
           </a>
         ))}
       </nav>
@@ -512,6 +520,72 @@ export function PatientView({
         {tab === "plan" && (
           <>
             <CarePlan patient={patient} actions={actions} />
+            <Section
+              title="Контроль и договорённости"
+              action={
+                <Button
+                  variant="ghost"
+                  icon="calendar"
+                  disabled={patient.archived}
+                  onClick={() => setAppointment(true)}
+                >
+                  Запланировать контакт
+                </Button>
+              }
+            >
+              {currentVisit ? (
+                <div className={styles.agreementRow}>
+                  <Icon name="calendar" size={18} />
+                  <div>
+                    <strong>Ближайший контакт</strong>
+                    <p className={styles.subtext}>
+                      {formatDate(currentVisit.scheduledAt, {
+                        day: "numeric",
+                        month: "long",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    icon="arrow"
+                    onClick={() =>
+                      navigate(
+                        `/patients/${patient.id}/visits/${currentVisit.id}`,
+                      )
+                    }
+                  >
+                    Открыть приём
+                  </Button>
+                </div>
+              ) : (
+                <p className={styles.subtext}>
+                  Следующий контакт не запланирован
+                </p>
+              )}
+              {patient.plan
+                .filter(
+                  (item) =>
+                    item.status === "confirmed" && item.patientInstructions,
+                )
+                .map((item) => (
+                  <div className={styles.agreementRow} key={item.id}>
+                    <Icon name="file" size={18} />
+                    <div>
+                      <strong>{item.title}</strong>
+                      <p>{item.patientInstructions}</p>
+                    </div>
+                  </div>
+                ))}
+              <Button
+                variant="ghost"
+                icon="book"
+                onClick={() => navigate(`/patients/${patient.id}/journal`)}
+              >
+                Дневник самочувствия
+              </Button>
+            </Section>
             <Referrals patient={patient} actions={actions} />
           </>
         )}

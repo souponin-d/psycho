@@ -111,3 +111,27 @@ it("uses local calendar days for Today and excludes equality and closed tasks fr
   fireEvent.click(screen.getByRole("button", { name: /^Срочно/ }));
   expect(screen.getByText("Завтра")).toBeTruthy();
 });
+
+it("opens real contact scheduling from the accepted treatment-plan agreements section", () => {
+  const patient = seedPatients(now)[0]!;
+  render(
+    <PatientView
+      patient={patient}
+      actor={demoActor}
+      actions={{ ...actions, patients: [patient] }}
+      navigate={vi.fn()}
+      server={false}
+      tab="plan"
+    />,
+  );
+  const agreements = screen
+    .getByRole("heading", { name: "Контроль и договорённости" })
+    .closest("section")!;
+  fireEvent.click(
+    within(agreements).getByRole("button", { name: "Запланировать контакт" }),
+  );
+  expect(
+    screen.getByRole("dialog", { name: "Запланировать приём" }),
+  ).toBeTruthy();
+  expect(actions.mutate).not.toHaveBeenCalled();
+});

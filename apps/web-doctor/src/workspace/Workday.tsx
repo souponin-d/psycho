@@ -9,7 +9,15 @@ import {
   today,
   visitStatus,
 } from "./labels";
-import { Badge, Button, Empty, Field, Section, styles } from "./ui/Elements";
+import {
+  Badge,
+  Button,
+  Empty,
+  Field,
+  Icon,
+  Section,
+  styles,
+} from "./ui/Elements";
 export function AppointmentRow({
   patient,
   visit,
@@ -135,6 +143,9 @@ export function Workday({
           className={styles.attentionBanner}
           aria-label="Требуют внимания"
         >
+          <span className={styles.attentionSignal}>
+            <Icon name="bell" size={19} />
+          </span>
           <Badge tone={first.event.urgency === "urgent" ? "red" : "amber"}>
             {first.event.urgency === "urgent"
               ? "Срочно"
@@ -178,9 +189,85 @@ export function Workday({
           }
         >
           {appointments.length ? (
-            appointments.map((a) => (
-              <AppointmentRow key={a.visit.id} {...a} navigate={navigate} />
-            ))
+            <div className={styles.tableWrap}>
+              <table className={styles.workdaySchedule}>
+                <thead>
+                  <tr>
+                    <th>Время</th>
+                    <th>Пациент</th>
+                    <th>Встреча</th>
+                    <th>
+                      <span className={styles.stepHeading}>Действие</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {appointments.map((a, i) => (
+                    <tr key={a.visit.id}>
+                      <td>
+                        <strong>{formatTime(a.visit.scheduledAt)}</strong>
+                        <p className={styles.subtext}>
+                          {a.visit.durationMinutes} мин
+                        </p>
+                      </td>
+                      <td>
+                        <div className={styles.schedulePatient}>
+                          <span className={styles.avatar}>
+                            {initials(a.patient.profile.name)}
+                          </span>
+                          <div>
+                            <button
+                              className={styles.textButton}
+                              onClick={() =>
+                                navigate(`/patients/${a.patient.id}`)
+                              }
+                            >
+                              {a.patient.profile.name}
+                            </button>
+                            <p className={styles.subtext}>
+                              {a.visit.kind === "initial"
+                                ? "Первичный"
+                                : a.visit.kind === "follow-up"
+                                  ? "Повторный"
+                                  : "Внеплановый"}{" "}
+                              ·{" "}
+                              {a.visit.format === "remote"
+                                ? "Дистанционно"
+                                : "Очно"}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className={styles.scheduleStatus}>
+                        <Badge>{visitStatus[a.visit.status]}</Badge>
+                      </td>
+                      <td>
+                        <Button
+                          variant={
+                            a.visit.status === "in-progress" ||
+                            (i === 0 && a.visit.status === "scheduled")
+                              ? "primary"
+                              : "secondary"
+                          }
+                          icon="arrow"
+                          onClick={() =>
+                            navigate(
+                              `/patients/${a.patient.id}/visits/${a.visit.id}`,
+                            )
+                          }
+                        >
+                          {a.visit.status === "in-progress"
+                            ? "Продолжить"
+                            : a.visit.status === "completed"
+                              ? "Итог приёма"
+                              : "Открыть приём"}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           ) : (
             <Empty
               icon="calendar"
@@ -211,19 +298,25 @@ export function Workday({
                 .slice()
                 .sort((a, b) => b.reportedAt.localeCompare(a.reportedAt))[0];
               return (
-                <div className={styles.inlineNote} key={p.id}>
-                  <button
-                    className={styles.textButton}
-                    onClick={() => navigate(`/patients/${p.id}`)}
-                  >
-                    {p.profile.name}
-                  </button>
-                  <p>{report?.note || "Текстовых записей пока нет"}</p>
-                  <p className={styles.subtext}>
-                    {report
-                      ? `Самоотчёт · ${formatDate(report.reportedAt)}`
-                      : "Из карты пациента"}
-                  </p>
+                <div
+                  className={`${styles.inlineNote} ${styles.activityEntry}`}
+                  key={p.id}
+                >
+                  <Icon name={report ? "message" : "file"} size={17} />
+                  <div>
+                    <button
+                      className={styles.textButton}
+                      onClick={() => navigate(`/patients/${p.id}`)}
+                    >
+                      {p.profile.name}
+                    </button>
+                    <p>{report?.note || "Текстовых записей пока нет"}</p>
+                    <p className={styles.subtext}>
+                      {report
+                        ? `Самоотчёт · ${formatDate(report.reportedAt)}`
+                        : "Из карты пациента"}
+                    </p>
+                  </div>
                 </div>
               );
             })}

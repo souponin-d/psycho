@@ -31,10 +31,23 @@ export function PatientContext({
         ["Лекарства", patient.profile.currentMedication],
         ["Поддержка", patient.profile.socialContext],
       ];
+  const provenance = (
+    <>
+      <p className={styles.subtext}>
+        {update
+          ? `Последнее изменение профиля: ${formatDate(update.createdAt)} · ${update.author}`
+          : "Из карты пациента · источник отдельных сведений требует уточнения"}
+      </p>
+      <p className={styles.subtext}>
+        Дата изменения профиля не подтверждает сверку анамнеза. Источник и дату
+        уточнения укажите в соответствующем поле.
+      </p>
+    </>
+  );
   return (
     <>
       <section
-        className={styles.contextCard}
+        className={`${styles.contextCard} ${compact ? styles.contextCompact : ""}`}
         aria-label="Общие сведения пациента"
       >
         <div className={styles.between}>
@@ -63,15 +76,14 @@ export function PatientContext({
             </div>
           ))}
         </dl>
-        <p className={styles.subtext}>
-          {update
-            ? `Последнее изменение профиля: ${formatDate(update.createdAt)} · ${update.author}`
-            : "Из карты пациента · источник отдельных сведений требует уточнения"}
-        </p>
-        <p className={styles.subtext}>
-          Дата изменения профиля не подтверждает сверку анамнеза. Источник и
-          дату уточнения укажите в соответствующем поле.
-        </p>
+        {compact ? (
+          <details className={styles.contextOrigin}>
+            <summary>Источник и давность сведений</summary>
+            {provenance}
+          </details>
+        ) : (
+          provenance
+        )}
       </section>
       {editing && actions && (
         <ProfileForm

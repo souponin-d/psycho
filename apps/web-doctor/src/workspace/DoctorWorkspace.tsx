@@ -330,8 +330,8 @@ function Workspace({
   const nav: { path: string; title: string; icon: IconName }[] = [
     { path: "workday", title: "Рабочий день", icon: "home" },
     { path: "patients", title: "Пациенты", icon: "people" },
-    { path: "calendar", title: "Календарь", icon: "calendar" },
     { path: "events", title: "Внимание", icon: "bell" },
+    { path: "calendar", title: "Календарь", icon: "calendar" },
     { path: "sources", title: "Источники", icon: "book" },
   ];
   const title = nav.find((n) => n.path === section)?.title ?? "Рабочий день";
