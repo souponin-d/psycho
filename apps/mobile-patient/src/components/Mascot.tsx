@@ -3,6 +3,7 @@ import { Animated, Easing, Image, Pressable, View } from "react-native";
 import { mascotOptions } from "../config/content";
 import type { MascotId } from "../core/model";
 import { useApp } from "../state/AppProvider";
+import { useSceneMotion } from "../hooks/useSceneMotion";
 export function Mascot({
   size = 160,
   id,
@@ -13,11 +14,12 @@ export function Mascot({
   quiet?: boolean;
 }) {
   const { state, reducedMotion } = useApp();
+  const motionActive = useSceneMotion();
   const float = useRef(new Animated.Value(0)).current;
   const delight = useRef(new Animated.Value(0)).current;
   const mascot = mascotOptions.find((m) => m.id === (id ?? state.mascot))!;
   useEffect(() => {
-    if (reducedMotion || quiet) {
+    if (!motionActive || quiet) {
       float.setValue(0);
       return;
     }
@@ -39,7 +41,7 @@ export function Mascot({
     );
     loop.start();
     return () => loop.stop();
-  }, [float, reducedMotion, quiet]);
+  }, [float, motionActive, quiet]);
   function react() {
     if (reducedMotion) return;
     Animated.sequence([

@@ -14,7 +14,7 @@ export default function SettingsScreen() {
   return (
     <Screen title="Ваше пространство" back>
       <Heading
-        title="Пусть будет\nпо-вашему"
+        title={"Пусть будет\nпо-вашему"}
         body="Все изменения сохраняются на этом телефоне"
       />
       <T size={18} weight="500" style={{ marginBottom: 16 }}>
@@ -106,7 +106,50 @@ export default function SettingsScreen() {
           />
         </View>
       </Panel>
+      <Panel style={{ marginTop: 16, gap: 18 }}>
+        {(
+          [
+            [
+              "haptics",
+              "Виброотклик",
+              "Лёгкие касания при выборе и сохранении",
+            ],
+            [
+              "gameplay",
+              "Живой берег",
+              "Предметы, воспоминания и личная цель недели",
+            ],
+          ] as const
+        ).map(([key, title, description]) => (
+          <View
+            key={key}
+            style={{ flexDirection: "row", alignItems: "center", gap: 15 }}
+          >
+            <View style={{ flex: 1 }}>
+              <T size={15}>{title}</T>
+              <T size={11} muted>
+                {description}
+              </T>
+            </View>
+            <Switch
+              accessibilityLabel={title}
+              value={state[key]}
+              onValueChange={(value) =>
+                dispatch({ type: "preferences", patch: { [key]: value } })
+              }
+              trackColor={{ true: theme.accent, false: theme.border }}
+              thumbColor={theme.surface}
+            />
+          </View>
+        ))}
+      </Panel>
       <View style={{ gap: 12, marginTop: 24 }}>
+        <Button
+          secondary
+          title="Украшения берега"
+          icon="home"
+          onPress={() => router.push("/shore-settings")}
+        />
         <Button
           secondary
           title="Пройти знакомство ещё раз"
@@ -119,12 +162,12 @@ export default function SettingsScreen() {
         />
         <Button
           secondary
-          title="Сбросить демонстрационные данные"
+          title="Сбросить данные на телефоне"
           icon="history"
           onPress={() =>
             Alert.alert(
               "Начать заново?",
-              "Удалятся только локальные настройки и демонстрационные записи Синкли.",
+              "Удалятся настройки, история, вопросы и украшения на этом телефоне.",
               [
                 { text: "Отмена", style: "cancel" },
                 {
@@ -141,9 +184,7 @@ export default function SettingsScreen() {
         />
       </View>
       <T muted size={11} style={{ marginTop: 24, lineHeight: 17 }}>
-        Синкли · прототип 0.1.0{"\n"}Настоящие назначения, отправка врачу, AI и
-        системные уведомления пока не подключены. Для знакомства используйте
-        вымышленные сведения.
+        Синкли · 0.2.0
       </T>
     </Screen>
   );

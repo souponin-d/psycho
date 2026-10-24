@@ -12,7 +12,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useApp } from "../state/AppProvider";
-import { T, Button, RoundButton, Chip, DemoBadge } from "../components/UI";
+import { T, Button, RoundButton, Chip } from "../components/UI";
 import { Enter, Touch } from "../components/Motion";
 import { Mascot } from "../components/Mascot";
 import { ThemePicker } from "../components/ThemePicker";
@@ -105,7 +105,6 @@ export default function Onboarding() {
               />
             ))}
           </View>
-          <DemoBadge />
         </View>
         <Enter
           key={`heading-${step}`}
@@ -158,7 +157,7 @@ export default function Onboarding() {
                     },
                     {
                       icon: "message" as const,
-                      text: "Поговорите с демо-помощником",
+                      text: "Освойтесь вместе со спутником",
                     },
                   ].map((item) => (
                     <View
@@ -292,7 +291,7 @@ export default function Onboarding() {
                   ))}
                 </View>
                 <T size={12} muted>
-                  Изменится время первого события в демо-плане.
+                  Время первого события в вашем плане.
                 </T>
               </View>
             </View>
