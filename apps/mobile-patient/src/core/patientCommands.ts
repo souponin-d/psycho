@@ -1,6 +1,8 @@
 import { dayAt, closeElapsedDays } from "./calendar.ts";
 import { isDay } from "./shore.ts";
 import { fieldComplete } from "./therapy.ts";
+import { completeQuestionnaire } from "./questionnaires.ts";
+import { PatientValidationError } from "./patientErrors.ts";
 import type {
   Instant,
   JourneyState,
@@ -20,7 +22,7 @@ export function applyPatientCommand(
       return base;
     case "connect": {
       if (command.code.trim().toUpperCase() !== "SYNCLI-START")
-        throw new Error("Проверьте код или войдите в демо-режиме.");
+        throw new PatientValidationError("Проверьте код или войдите в демо-режиме.");
       return base.connected ? base : { ...base, connected: true };
     }
     case "goal":
@@ -30,7 +32,7 @@ export function applyPatientCommand(
       };
     case "draft": {
       if (!isDay(command.draft.day) || command.draft.day > today)
-        throw new Error("Нельзя заполнить будущий день");
+        throw new PatientValidationError("Нельзя заполнить будущий день");
       return {
         ...base,
         drafts: { ...base.drafts, [command.draft.id]: command.draft },
@@ -45,21 +47,22 @@ export function applyPatientCommand(
       return { ...base, world: command.world };
     case "event": {
       const input = command.event;
+      let completion: ReturnType<typeof completeQuestionnaire> | undefined;
       if (!input.id || base.events.some((e) => e.id === input.id)) return base;
       if (!isDay(input.day) || input.day > today)
-        throw new Error("Нельзя выполнить будущий день");
+        throw new PatientValidationError("Нельзя выполнить будущий день");
       if (
         input.kind === "dose" &&
         !base.plan.medication.slots.some((s) => s.id === input.slotId)
       )
-        throw new Error("Приём не найден в плане");
+        throw new PatientValidationError("Приём не найден в плане");
       if (
         input.kind === "report" &&
         input.required &&
         !input.deleted &&
         !base.plan.reportFields.every((f) => fieldComplete(input.fields, f))
       )
-        throw new Error("Заполните обязательные поля самоотчёта");
+        throw new PatientValidationError("Заполните обязательные поля самоотчёта");
       if (input.kind === "questionnaire") {
         const assignment = base.plan.tests.find(
           (t) => t.id === input.assignmentId,
@@ -72,7 +75,7 @@ export function applyPatientCommand(
           assignment.questionCount !== input.answers.length ||
           input.answers.some((v) => !Number.isInteger(v) || v < 0 || v > 3)
         )
-          throw new Error(
+          throw new PatientValidationError(
             "Опрос не назначен на сегодня или заполнен не полностью",
           );
         if (
@@ -83,9 +86,15 @@ export function applyPatientCommand(
           )
         )
           return base;
+        completion = completeQuestionnaire(
+          assignment,
+          input.answers,
+          input.impact,
+        );
       }
       const event: PatientEvent = {
         ...input,
+        ...completion,
         at: now.utcMs,
         recordedDay: today,
       };

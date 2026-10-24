@@ -11,6 +11,7 @@ import { openPatientRepository } from "../storage/sqlite";
 import type { PatientRepository } from "../storage/database";
 import type { JourneyState, PatientCommand } from "../core/journeyModel";
 import { useApp } from "./AppProvider";
+import { PatientValidationError } from "../core/patientErrors";
 
 const Context = createContext<{
   journey: JourneyState | null;
@@ -75,7 +76,7 @@ export function JourneyProvider({ children }: PropsWithChildren) {
       }
       return true;
     } catch (e) {
-      failed.current = command;
+      if (!(e instanceof PatientValidationError)) failed.current = command;
       if (mounted.current)
         setError(
           e instanceof Error ? e.message : "Не удалось сохранить запись",
@@ -93,6 +94,7 @@ export function JourneyProvider({ children }: PropsWithChildren) {
     const command = failed.current;
     failed.current = null;
     if (command) void act(command);
+    else if (repository.current) setError("");
     else {
       setReady(false);
       setAttempt((n) => n + 1);

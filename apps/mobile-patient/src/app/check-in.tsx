@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   TextInput,
@@ -9,9 +9,14 @@ import {
   Platform,
   useWindowDimensions,
 } from "react-native";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { T, Button, Chip } from "../components/UI";
+import { T, Button } from "../components/UI";
+import { ReportFieldsEditor } from "../components/ReportFieldsEditor";
+import { useJourney } from "../state/JourneyProvider";
+import { latestReports } from "../core/questionnaires";
+import { fieldComplete } from "../core/therapy";
+import type { PatientDraft, ReportFields } from "../core/journeyModel";
 import { Touch, Enter } from "../components/Motion";
 import { Icon } from "../components/Icon";
 import { FeelingCharacter } from "../components/FeelingCharacter";
@@ -19,26 +24,69 @@ import { FeelingBackdrop } from "../components/FeelingBackdrop";
 import { FeelingGrid } from "../components/FeelingGrid";
 import { useApp } from "../state/AppProvider";
 import { useFeedback } from "../hooks/useFeedback";
-import {
-  feelingAt,
-  feelingHint,
-  legacyMood,
-  type FeelingPoint,
-} from "../core/feelings";
+import { feelingAt, feelingHint, type FeelingPoint } from "../core/feelings";
 import { dayKey } from "../config/content";
 export default function CheckInScreen() {
-  const { theme, state, dispatch } = useApp();
+  const { theme, state } = useApp();
+  const { journey, act, saving: persisting } = useJourney();
+  const params = useLocalSearchParams<{
+    day?: string;
+    reportId?: string;
+    personal?: string;
+  }>();
+  const day = params.day ?? dayKey();
+  const existing =
+    journey && params.reportId
+      ? latestReports(journey, day).find(
+          (r) => (r.entityId ?? r.id) === params.reportId,
+        )
+      : undefined;
+  const required = existing?.required ?? params.personal !== "1";
+  const draftKey = params.reportId
+    ? "edit:" + params.reportId
+    : (required ? "report:" : "moment:") + day;
+  const draft = journey?.drafts[draftKey];
+  const profileReady = !!journey;
   const safe = useSafeAreaInsets(),
     dimensions = useWindowDimensions(),
     { pulse } = useFeedback();
-  const [point, setPoint] = useState<FeelingPoint | null>(null);
-  const [label, setLabel] = useState(""),
-    [sleep, setSleep] = useState(""),
-    [note, setNote] = useState("");
+  const [point, setPoint] = useState<FeelingPoint | null>(
+    draft?.fields?.feeling ?? existing?.fields.feeling ?? null,
+  );
+  const [label, setLabel] = useState(draft?.label ?? existing?.label ?? ""),
+    [fields, setFields] = useState<ReportFields>(
+      draft?.fields ?? existing?.fields ?? {},
+    ),
+    [note, setNote] = useState(draft?.note ?? existing?.note ?? "");
   const [panel, setPanel] = useState<"note" | "controls" | null>(null);
   const [saved, setSaved] = useState(false),
     [firstMoment, setFirstMoment] = useState(false);
   const saving = useRef(false);
+  const savedRef = useRef(false);
+  const draftRef = useRef<PatientDraft | null>(null);
+  draftRef.current = {
+    id: draftKey,
+    kind: "report",
+    day,
+    fields: { ...fields, ...(point ? { feeling: point } : {}) },
+    note,
+    label,
+  };
+  useEffect(() => {
+    if (saved || !profileReady) return;
+    const timer = setTimeout(() => {
+      if (draftRef.current)
+        void act({ type: "draft", draft: draftRef.current });
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [point, fields, note, label, saved, act, profileReady]);
+  useEffect(
+    () => () => {
+      if (!savedRef.current && draftRef.current)
+        void act({ type: "draft", draft: draftRef.current });
+    },
+    [act],
+  );
   const choose = useCallback((next: FeelingPoint) => {
     setPoint(next);
   }, []);
@@ -48,28 +96,36 @@ export default function CheckInScreen() {
     size = Math.min(dimensions.width * 0.9, available * 0.44);
   const ink = theme.dark ? "#FFF7E9" : theme.text,
     muted = theme.dark ? "#C5BEC8" : theme.muted;
-  function save() {
-    if (!point || saving.current) return;
+  async function save() {
+    if (!point || saving.current || !journey) return;
+    const completeFields = { ...fields, feeling: point };
+    if (
+      required &&
+      !journey.plan.reportFields.every((f) => fieldComplete(completeFields, f))
+    ) {
+      setPanel("note");
+      return;
+    }
     saving.current = true;
-    const now = new Date(),
-      day = dayKey(now);
-    setFirstMoment(!state.memoryDays.includes(day));
-    dispatch({
-      type: "report",
-      report: {
-        id: `moment-${now.getTime()}-${Math.random().toString(36).slice(2, 8)}`,
+    setFirstMoment(!latestReports(journey, day).length);
+    const id = `moment-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const success = await act({
+      type: "event",
+      event: {
+        id,
+        entityId: params.reportId ?? (required ? "report:" + day : id),
+        kind: "report",
         day,
-        time: now.toLocaleTimeString("ru-RU", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        mood: legacyMood(point),
-        feeling: { ...point },
+        fields: completeFields,
         label: label.trim() || feeling.label,
-        sleep,
         note: note.trim(),
+        required,
       },
     });
+    saving.current = false;
+    if (!success) return;
+    savedRef.current = true;
+    await act({ type: "draft:remove", id: draftKey });
     pulse(true);
     setSaved(true);
   }
@@ -161,8 +217,8 @@ export default function CheckInScreen() {
                 haptic={false}
                 accessibilityRole="button"
                 accessibilityLabel="Сохранить момент"
-                accessibilityState={{ disabled: !point }}
-                disabled={!point}
+                accessibilityState={{ disabled: !point || persisting }}
+                disabled={!point || persisting}
                 onPress={save}
                 style={{
                   width: 48,
@@ -257,7 +313,9 @@ export default function CheckInScreen() {
                 style={{ minHeight: 44, padding: 10, justifyContent: "center" }}
               >
                 <T size={11} style={{ color: muted }}>
-                  Название, сон и заметка
+                  {required
+                    ? "Поля самоотчёта и заметка"
+                    : "Название и заметка"}
                 </T>
               </Touch>
               <Touch
@@ -427,21 +485,19 @@ export default function CheckInScreen() {
                       backgroundColor: theme.soft,
                     }}
                   />
-                  <T size={16} weight="500">
-                    Как прошла ночь? · необязательно
-                  </T>
-                  <View
-                    style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}
-                  >
-                    {["Плохо", "Обычно", "Хорошо"].map((s) => (
-                      <Chip
-                        key={s}
-                        label={s}
-                        active={sleep === s}
-                        onPress={() => setSleep(sleep === s ? "" : s)}
+                  {journey && required && (
+                    <>
+                      <T muted size={12}>
+                        Эти поля заданы в вашем плане. Для зачёта дня заполните
+                        каждое из них.
+                      </T>
+                      <ReportFieldsEditor
+                        fields={fields}
+                        required={journey.plan.reportFields}
+                        onChange={setFields}
                       />
-                    ))}
-                  </View>
+                    </>
+                  )}
                   <TextInput
                     accessibilityLabel="Заметка о моменте"
                     multiline

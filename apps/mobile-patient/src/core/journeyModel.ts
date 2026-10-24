@@ -58,6 +58,8 @@ export type QuestionnaireEvent = EventBase & {
   assignmentId: string;
   formId: FormId;
   answers: number[];
+  formVersion?: string;
+  impact?: number;
 };
 export type ContactEvent = EventBase & {
   kind: "contact";
@@ -97,6 +99,7 @@ export type PatientDraft = {
   note?: string;
   label?: string;
   answers?: (number | null)[];
+  impact?: number;
 };
 export type LegacyRecord = {
   id: string;
