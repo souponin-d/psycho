@@ -4,6 +4,8 @@ import { fieldComplete } from "./therapy.ts";
 import { completeQuestionnaire } from "./questionnaires.ts";
 import { PatientValidationError } from "./patientErrors.ts";
 import { connectScenario, seedScenario } from "./scenario.ts";
+import { validateWorld } from "./world.ts";
+import { grantRewards } from "./achievements.ts";
 import type {
   Instant,
   JourneyState,
@@ -50,7 +52,8 @@ export function applyPatientCommand(
       return { ...base, drafts };
     }
     case "world":
-      return { ...base, world: command.world };
+      validateWorld(base, command.world);
+      return grantRewards({ ...base, world: command.world });
     case "event": {
       const input = command.event;
       let completion: ReturnType<typeof completeQuestionnaire> | undefined;
@@ -111,7 +114,7 @@ export function applyPatientCommand(
         delete drafts["report:" + event.day];
       if (event.kind === "questionnaire")
         delete drafts["questionnaire:" + event.assignmentId];
-      return { ...base, events: [...base.events, event], drafts };
+      return grantRewards({ ...base, events: [...base.events, event], drafts });
     }
   }
 }

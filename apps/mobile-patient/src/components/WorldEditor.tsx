@@ -1,0 +1,284 @@
+import { useState } from "react";
+import { Alert, Modal, ScrollView, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useApp } from "../state/AppProvider";
+import type { JourneyState, WorldState } from "../core/journeyModel";
+import { achievementProgress } from "../core/achievements";
+import { findPlacement, ownsItem, validatePlacement } from "../core/world";
+import { scenes, worldItems } from "../config/worldCatalog";
+import { WorldItemArt } from "./WorldItemArt";
+import { Button, RoundButton, T } from "./UI";
+import { Touch } from "./Motion";
+
+export function WorldEditor({
+  visible,
+  journey,
+  world,
+  onChange,
+  onSelect,
+  onClose,
+}: {
+  visible: boolean;
+  journey: JourneyState;
+  world: WorldState;
+  onChange: (world: WorldState) => void;
+  onSelect: (id: string) => void;
+  onClose: () => void;
+}) {
+  const { theme, reducedMotion } = useApp();
+  const safe = useSafeAreaInsets();
+  const [tab, setTab] = useState("Предметы");
+  const profile = { ...journey, world };
+  const changeTerritory = (territory: WorldState["territory"]) => {
+    let next = {
+      ...world,
+      territory,
+      placements: [] as WorldState["placements"],
+    };
+    for (const p of world.placements) {
+      const item = worldItems.find((i) => i.id === p.itemId)!;
+      const candidate = validatePlacement(item, p, scenes[territory]).valid
+        ? p
+        : findPlacement({ ...journey, world: next }, p.itemId);
+      if (!candidate) {
+        Alert.alert(
+          "Не удалось перенести предметы",
+          "Уберите несколько украшений и попробуйте снова.",
+        );
+        return;
+      }
+      next = {
+        ...next,
+        placements: [
+          ...next.placements,
+          { ...candidate, instanceId: p.instanceId },
+        ],
+      };
+    }
+    onChange(next);
+    onClose();
+  };
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType={reducedMotion ? "none" : "slide"}
+      onRequestClose={onClose}
+    >
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "flex-end",
+          backgroundColor: "rgba(8,24,20,.45)",
+        }}
+      >
+        <View
+          style={{
+            backgroundColor: theme.page,
+            borderTopLeftRadius: 28,
+            borderTopRightRadius: 28,
+            maxHeight: "85%",
+            paddingBottom: Math.max(safe.bottom, 16),
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              padding: 20,
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <T size={24} weight="600">
+              Мой мир
+            </T>
+            <RoundButton
+              icon="close"
+              label="Закрыть мастерскую"
+              onPress={onClose}
+            />
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              paddingHorizontal: 16,
+              gap: 8,
+              flexWrap: "wrap",
+              paddingBottom: 16,
+            }}
+          >
+            {["Предметы", "Территории", "Достижения"].map((t) => (
+              <Touch
+                key={t}
+                accessibilityRole="tab"
+                accessibilityState={{ selected: tab === t }}
+                onPress={() => setTab(t)}
+                style={{
+                  padding: 12,
+                  borderRadius: 18,
+                  backgroundColor: tab === t ? theme.soft : theme.surface,
+                }}
+              >
+                <T size={13} weight="600">
+                  {t}
+                </T>
+              </Touch>
+            ))}
+          </View>
+          <ScrollView
+            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24 }}
+          >
+            {tab === "Предметы" && (
+              <>
+                <T size={13} muted>
+                  Выберите предмет, затем перетащите его на карте. Изменения
+                  сохранятся после кнопки «Готово». {world.placements.length} /
+                  20 предметов.
+                </T>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    flexWrap: "wrap",
+                    justifyContent: "space-between",
+                    marginTop: 16,
+                    gap: 12,
+                  }}
+                >
+                  {worldItems.map((item) => {
+                    const owned = ownsItem(profile, item.id);
+                    const remaining =
+                      item.max -
+                      world.placements.filter((p) => p.itemId === item.id)
+                        .length;
+                    return (
+                      <Touch
+                        key={item.id}
+                        accessibilityRole="button"
+                        accessibilityLabel={`${item.name}. ${owned ? (remaining ? "Поставить" : "Все экземпляры расставлены") : item.hint}`}
+                        onPress={() => {
+                          if (!owned) {
+                            Alert.alert(
+                              item.name,
+                              item.hint +
+                                ". Предмет откроется напрямую за достижение.",
+                            );
+                            return;
+                          }
+                          const p = findPlacement(profile, item.id);
+                          if (!p) {
+                            Alert.alert(
+                              "Пока нет места",
+                              remaining
+                                ? "В мире может быть до 20 предметов. Попробуйте убрать один."
+                                : "Все экземпляры этого предмета уже расставлены.",
+                            );
+                            return;
+                          }
+                          onChange({
+                            ...world,
+                            placements: [...world.placements, p],
+                          });
+                          onSelect(p.instanceId);
+                          onClose();
+                        }}
+                        style={{
+                          width: 148,
+                          minHeight: 156,
+                          padding: 12,
+                          alignItems: "center",
+                          borderRadius: 22,
+                          backgroundColor: theme.surface,
+                          opacity: owned ? 1 : 0.65,
+                        }}
+                      >
+                        <WorldItemArt id={item.id} size={74} />
+                        <T
+                          size={13}
+                          weight="600"
+                          style={{ textAlign: "center" }}
+                        >
+                          {item.name}
+                        </T>
+                        <T
+                          size={11}
+                          muted
+                          style={{ textAlign: "center", marginTop: 6 }}
+                        >
+                          {owned
+                            ? remaining
+                              ? "Поставить · " + remaining
+                              : "На карте"
+                            : item.hint}
+                        </T>
+                      </Touch>
+                    );
+                  })}
+                </View>
+              </>
+            )}
+            {tab === "Территории" && (
+              <View style={{ gap: 16 }}>
+                <T size={13} muted>
+                  Предметы и одежда сохраняются. Если украшение перекрывает
+                  новую площадку дня, подберём ему свободное место: вы сможете
+                  всё поправить перед сохранением.
+                </T>
+                {(["shore", "garden"] as const).map((id) => {
+                  const owned =
+                    id === "shore" ||
+                    journey.rewards.some((r) => r.itemId === "garden");
+                  return (
+                    <Button
+                      key={id}
+                      title={`${scenes[id].name}${world.territory === id ? " · выбран" : owned ? "" : " · 5 выполненных дней за неделю"}`}
+                      secondary
+                      onPress={() =>
+                        owned
+                          ? changeTerritory(id)
+                          : Alert.alert(
+                              "Тихий сад",
+                              "Откроется за пять выполненных дней в одной календарной неделе пути. Стрик может прерываться.",
+                            )
+                      }
+                    />
+                  );
+                })}
+              </View>
+            )}
+            {tab === "Достижения" && (
+              <View style={{ gap: 16 }}>
+                <T size={13} muted>
+                  Любые ощущения одинаково важны. Награды зависят от действий, а
+                  не от ответов. Открытые предметы остаются с вами после пауз.
+                </T>
+                {achievementProgress(journey).map((a) => (
+                  <View
+                    key={a.id}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 12,
+                      paddingVertical: 8,
+                    }}
+                  >
+                    <WorldItemArt id={a.itemId} size={56} />
+                    <View style={{ flex: 1 }}>
+                      <T size={16} weight="600">
+                        {a.name}
+                        {a.unlocked ? " · открыто" : ""}
+                      </T>
+                      <T size={12} muted>
+                        {worldItems.find((i) => i.id === a.itemId)?.hint} ·{" "}
+                        {Math.min(a.value, a.target)} / {a.target}
+                      </T>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+          </ScrollView>
+        </View>
+      </View>
+    </Modal>
+  );
+}

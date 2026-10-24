@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import {
   Image,
+  Alert,
   Modal,
   ScrollView,
   View,
   useWindowDimensions,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useApp } from "../state/AppProvider";
 import { useJourney } from "../state/JourneyProvider";
@@ -18,19 +19,12 @@ import { T, Button, RoundButton } from "./UI";
 import { Touch } from "./Motion";
 import { Icon } from "./Icon";
 import { Mascot } from "./Mascot";
+import { scenes, worldItems } from "../config/worldCatalog";
+import { cloneWorld, validatePlacement } from "../core/world";
+import type { Placement, WorldState } from "../core/journeyModel";
+import { WorldScene } from "./WorldScene";
+import { WorldEditor } from "./WorldEditor";
 
-// Stone centres in the illustrated landscape, from the first step upwards.
-const stones = [
-  [0.58, 0.875],
-  [0.49, 0.72],
-  [0.75, 0.585],
-  [0.31, 0.437],
-  [0.69, 0.34],
-  [0.38, 0.25],
-  [0.51, 0.175],
-  [0.69, 0.12],
-  [0.62, 0.067],
-];
 const statusLabels = {
   complete: "День выполнен",
   missed: "День пропущен",
@@ -38,15 +32,23 @@ const statusLabels = {
   future: "Впереди",
 };
 function dateLabel(day: string) {
-  return new Date(`${day}T12:00:00`).toLocaleDateString("ru-RU", {
-    day: "numeric",
-    month: "short",
-  });
+  return new Date(`${day}T12:00:00`)
+    .toLocaleDateString("ru-RU", {
+      day: "numeric",
+      month: "short",
+    })
+    .replace(/\.$/, "");
 }
 
 export function JourneyMap() {
   const { state, theme, today, reducedMotion } = useApp();
-  const { journey } = useJourney();
+  const { journey, act, saving } = useJourney();
+  const params = useLocalSearchParams<{ editWorld?: string }>();
+  const [draftWorld, setDraftWorld] = useState<WorldState | null>(null);
+  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const [tools, setTools] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const lastFocusedItem = useRef<string | null>(null);
   const safe = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const scroll = useRef<ScrollView>(null);
@@ -54,10 +56,14 @@ export function JourneyMap() {
   const [contentHeight, setContentHeight] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const map = journey ? journeyMap(journey, today) : null;
+  const world = draftWorld ?? journey?.world;
+  const stones = scenes[world?.territory ?? "shore"].stones;
   const tileHeight = width * 3;
   const tileCount = Math.ceil((map?.days.length ?? 0) / stones.length);
   const height = tileCount * tileHeight;
   const todayIndex = map?.todayIndex ?? 0;
+  const worldTileTop =
+    (tileCount - 1 - Math.floor(todayIndex / stones.length)) * tileHeight;
   const todayY =
     (tileCount -
       1 -
@@ -69,13 +75,41 @@ export function JourneyMap() {
     220 + todayY - Math.max(330, viewport * 0.58),
   );
   useEffect(() => {
+    if (params.editWorld && journey) {
+      setDraftWorld(cloneWorld(journey.world));
+      setTools(true);
+      router.setParams({ editWorld: undefined });
+    }
+  }, [params.editWorld, journey]);
+  useEffect(() => {
+    if (!selectedItem) {
+      lastFocusedItem.current = null;
+      return;
+    }
+    if (!draftWorld || lastFocusedItem.current === selectedItem) return;
+    const p = draftWorld.placements.find((p) => p.instanceId === selectedItem);
+    if (!p) return;
+    lastFocusedItem.current = selectedItem;
+    scroll.current?.scrollTo({
+      y: Math.max(0, 220 + worldTileTop + p.y * tileHeight - viewport * 0.48),
+      animated: !reducedMotion,
+    });
+  }, [
+    draftWorld,
+    selectedItem,
+    worldTileTop,
+    tileHeight,
+    viewport,
+    reducedMotion,
+  ]);
+  useEffect(() => {
     if (!contentHeight) return;
     const frame = requestAnimationFrame(() =>
       scroll.current?.scrollTo({ y: todayOffset, animated: false }),
     );
     return () => cancelAnimationFrame(frame);
   }, [contentHeight, todayOffset]);
-  if (!journey || !map) return null;
+  if (!journey || !map || !world) return null;
   const progress = journeyProgress(journey, today);
   const position = (index: number) => {
     const [x, y] = stones[index % stones.length];
@@ -92,13 +126,79 @@ export function JourneyMap() {
   };
   const selectedDay = map.days.find((d) => d.day === selected);
   const tasks = selected ? assignedTasks(journey, selected) : [];
+  const todayTasks = assignedTasks(journey, today);
+  const nextTask = todayTasks.find((t) => !t.completed);
+  const openNextTask = () => {
+    if (nextTask?.kind === "report") router.push("/check-in");
+    else if (nextTask?.kind === "questionnaire")
+      router.push({ pathname: "/questionnaire", params: { id: nextTask.id } });
+    else router.push("/(tabs)/plan");
+  };
   const dark = state.theme === "dark";
+  const selectedPlacement = world.placements.find(
+    (p) => p.instanceId === selectedItem,
+  );
+  const selectItem = (id: string) => {
+    setSelectedItem(id);
+    if (!draftWorld) {
+      const item = worldItems.find(
+        (i) =>
+          i.id === world.placements.find((p) => p.instanceId === id)?.itemId,
+      );
+      Alert.alert(
+        item?.name ?? "Ваш мир",
+        item?.interaction === "flowers"
+          ? "Любые ощущения имеют значение. Можно записать свой момент."
+          : item?.interaction === "read"
+            ? "Здесь можно собрать вопросы к следующему приёму."
+            : "Это ваш уголок. Его можно обустроить по-своему.",
+        item?.interaction === "flowers"
+          ? [
+              {
+                text: "Записать момент",
+                onPress: () => router.push("/check-in"),
+              },
+              { text: "Остаться", style: "cancel" },
+            ]
+          : item?.interaction === "read"
+            ? [
+                {
+                  text: "Мои вопросы",
+                  onPress: () => router.push("/questions"),
+                },
+                { text: "Остаться", style: "cancel" },
+              ]
+            : [{ text: "Хорошо" }],
+      );
+    }
+  };
+  const moveItem = (p: Placement) => {
+    if (!draftWorld) return;
+    const item = worldItems.find((i) => i.id === p.itemId)!;
+    const result = validatePlacement(item, p, scenes[world.territory]);
+    if (!result.valid) {
+      Alert.alert("Выберите свободное место", result.reason);
+      return;
+    }
+    setDraftWorld({
+      ...draftWorld,
+      placements: draftWorld.placements.map((i) =>
+        i.instanceId === p.instanceId ? p : i,
+      ),
+    });
+  };
+  const stopEditing = () => {
+    setDraftWorld(null);
+    setSelectedItem(null);
+    setDragging(false);
+  };
   return (
     <View style={{ flex: 1, backgroundColor: theme.page }}>
       <ScrollView
         ref={scroll}
         accessibilityLabel="Мой путь: вертикальная карта дней"
         showsVerticalScrollIndicator
+        scrollEnabled={!dragging}
         onLayout={(event) => setViewport(event.nativeEvent.layout.height)}
         onContentSizeChange={(_, measuredHeight) =>
           setContentHeight(measuredHeight)
@@ -117,7 +217,11 @@ export function JourneyMap() {
               }}
             >
               <Image
-                source={require("../../assets/images/journey-environment.png")}
+                source={
+                  world.territory === "shore"
+                    ? require("../../assets/images/journey-shore.png")
+                    : require("../../assets/images/journey-environment.png")
+                }
                 accessible={false}
                 style={{ width, height: tileHeight }}
                 resizeMode="stretch"
@@ -153,6 +257,26 @@ export function JourneyMap() {
               }}
             />
           ))}
+          <View
+            pointerEvents="box-none"
+            style={{
+              position: "absolute",
+              top: worldTileTop,
+              width,
+              height: tileHeight,
+            }}
+          >
+            <WorldScene
+              world={world}
+              width={width}
+              height={tileHeight}
+              editing={!!draftWorld}
+              selected={draftWorld ? selectedItem : null}
+              onSelect={selectItem}
+              onMove={moveItem}
+              onDrag={setDragging}
+            />
+          </View>
           {map.days.map((day) => {
             const p = position(day.index);
             const active = day.status === "today";
@@ -186,7 +310,9 @@ export function JourneyMap() {
                 <Touch
                   accessibilityRole="button"
                   accessibilityLabel={`${dateLabel(day.day)}. ${statusLabels[day.status]}. День пути ${day.index + 1}`}
-                  onPress={() => setSelected(day.day)}
+                  onPress={() => {
+                    if (!draftWorld) setSelected(day.day);
+                  }}
                   style={{
                     width: active ? 72 : 56,
                     height: active ? 64 : 48,
@@ -230,7 +356,11 @@ export function JourneyMap() {
                   }}
                 >
                   <T size={11} weight="600">
-                    {active ? "Сегодня" : dateLabel(day.day)}
+                    {active
+                      ? progress.today.complete
+                        ? "Сегодня · всё готово"
+                        : "Сегодня"
+                      : dateLabel(day.day)}
                     {day.status === "missed" ? " · пропуск" : ""}
                   </T>
                 </View>
@@ -271,7 +401,7 @@ export function JourneyMap() {
               Мой путь
             </T>
             <T size={12} weight="600">
-              Глава {progress.chapterIndex + 1} · стрик {progress.streak}
+              {scenes[world.territory].name} · стрик {progress.streak}
             </T>
           </View>
           <RoundButton
@@ -291,11 +421,12 @@ export function JourneyMap() {
           }}
         >
           <T size={13} weight="600">
-            {journey.goal}
+            {draftWorld ? "Обустройте свой мир" : journey.goal}
           </T>
           <T size={11} muted>
-            Недельная награда: {progress.successes} / {progress.goal}{" "}
-            выполненных дней
+            {draftWorld
+              ? "Выберите предмет и перетащите. Путь прокручивается свободным свайпом."
+              : `${todayTasks.filter((t) => t.completed).length} / ${todayTasks.length} дел сегодня · неделя: ${progress.successes} / ${progress.goal}`}
           </T>
           <View
             style={{
@@ -326,37 +457,232 @@ export function JourneyMap() {
           justifyContent: "space-between",
           alignItems: "center",
           gap: 12,
+          flexWrap: "wrap",
         }}
       >
-        <Touch
-          accessibilityRole="button"
-          accessibilityLabel="Вернуться к сегодняшнему дню"
-          onPress={() => goToday()}
-          style={{
-            padding: 14,
-            borderRadius: 22,
-            backgroundColor: theme.glass,
-          }}
-        >
-          <T size={13} weight="600">
-            К сегодняшнему дню
-          </T>
-        </Touch>
-        <Touch
-          accessibilityRole="button"
-          accessibilityLabel="Открыть план на сегодня"
-          onPress={() => router.push("/(tabs)/plan")}
-          style={{
-            padding: 14,
-            borderRadius: 22,
-            backgroundColor: theme.accent,
-          }}
-        >
-          <T size={13} weight="600" style={{ color: theme.onAccent }}>
-            План на сегодня
-          </T>
-        </Touch>
+        {draftWorld ? (
+          <>
+            {selectedPlacement && (
+              <View
+                style={{
+                  width: "100%",
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                  gap: 8,
+                  padding: 8,
+                  backgroundColor: theme.glass,
+                  borderRadius: 20,
+                }}
+              >
+                <T size={12} weight="600" style={{ width: "100%" }}>
+                  {
+                    worldItems.find((i) => i.id === selectedPlacement.itemId)
+                      ?.name
+                  }
+                </T>
+                {[
+                  {
+                    name: "↶ 15°",
+                    label: "Повернуть влево",
+                    patch: {
+                      rotation: Math.max(-180, selectedPlacement.rotation - 15),
+                    },
+                  },
+                  {
+                    name: "↷ 15°",
+                    label: "Повернуть вправо",
+                    patch: {
+                      rotation: Math.min(180, selectedPlacement.rotation + 15),
+                    },
+                  },
+                  {
+                    name: "−",
+                    label: "Уменьшить предмет",
+                    patch: {
+                      scale: Math.max(0.7, selectedPlacement.scale - 0.1),
+                    },
+                  },
+                  {
+                    name: "+",
+                    label: "Увеличить предмет",
+                    patch: {
+                      scale: Math.min(1.3, selectedPlacement.scale + 0.1),
+                    },
+                  },
+                ].map((b) => (
+                  <Touch
+                    key={b.label}
+                    accessibilityRole="button"
+                    accessibilityLabel={b.label}
+                    onPress={() =>
+                      moveItem({ ...selectedPlacement, ...b.patch })
+                    }
+                    style={{
+                      minWidth: 44,
+                      minHeight: 44,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderRadius: 16,
+                      backgroundColor: theme.surface,
+                    }}
+                  >
+                    <T size={13}>{b.name}</T>
+                  </Touch>
+                ))}
+                <Touch
+                  accessibilityRole="button"
+                  accessibilityLabel="Убрать выбранный предмет"
+                  onPress={() => {
+                    setDraftWorld({
+                      ...draftWorld,
+                      placements: world.placements.filter(
+                        (p) => p.instanceId !== selectedItem,
+                      ),
+                    });
+                    setSelectedItem(null);
+                  }}
+                  style={{
+                    minHeight: 44,
+                    padding: 12,
+                    backgroundColor: theme.surface,
+                    borderRadius: 16,
+                  }}
+                >
+                  <T size={12}>Убрать</T>
+                </Touch>
+              </View>
+            )}
+            <Touch
+              accessibilityRole="button"
+              onPress={() => setTools(true)}
+              style={{
+                padding: 14,
+                borderRadius: 22,
+                backgroundColor: theme.glass,
+              }}
+            >
+              <T size={13} weight="600">
+                Мастерская
+              </T>
+            </Touch>
+            <Touch
+              accessibilityRole="button"
+              onPress={() =>
+                Alert.alert(
+                  "Отменить изменения?",
+                  "Мир останется таким, каким был до обустройства.",
+                  [
+                    { text: "Продолжить", style: "cancel" },
+                    {
+                      text: "Отменить изменения",
+                      style: "destructive",
+                      onPress: stopEditing,
+                    },
+                  ],
+                )
+              }
+              style={{
+                padding: 14,
+                borderRadius: 22,
+                backgroundColor: theme.glass,
+              }}
+            >
+              <T size={13}>Отмена</T>
+            </Touch>
+            <Touch
+              accessibilityRole="button"
+              disabled={saving}
+              onPress={async () => {
+                if (await act({ type: "world", world: draftWorld }))
+                  stopEditing();
+              }}
+              style={{
+                padding: 14,
+                borderRadius: 22,
+                backgroundColor: theme.accent,
+              }}
+            >
+              <T size={13} weight="600" style={{ color: theme.onAccent }}>
+                {saving ? "Сохраняю…" : "Готово"}
+              </T>
+            </Touch>
+          </>
+        ) : (
+          <>
+            <Touch
+              accessibilityRole="button"
+              accessibilityLabel="Обустроить мой мир"
+              onPress={() => {
+                setDraftWorld(cloneWorld(journey.world));
+                setTools(true);
+              }}
+              style={{ width: "100%", alignItems: "flex-start" }}
+            >
+              <View
+                style={{
+                  padding: 12,
+                  borderRadius: 18,
+                  backgroundColor: theme.glass,
+                }}
+              >
+                <T size={13} weight="600">
+                  Обустроить мир · предметов: {world.placements.length}
+                </T>
+              </View>
+            </Touch>
+            <Touch
+              accessibilityRole="button"
+              accessibilityLabel="Вернуться к сегодняшнему дню"
+              onPress={() => goToday()}
+              style={{
+                padding: 14,
+                borderRadius: 22,
+                backgroundColor: theme.glass,
+              }}
+            >
+              <T size={13} weight="600">
+                К сегодняшнему дню
+              </T>
+            </Touch>
+            <Touch
+              accessibilityRole="button"
+              accessibilityLabel={
+                nextTask
+                  ? `Следующее дело: ${nextTask.title}`
+                  : "Открыть план на сегодня"
+              }
+              onPress={openNextTask}
+              style={{
+                padding: 14,
+                borderRadius: 22,
+                backgroundColor: theme.accent,
+              }}
+            >
+              <T size={13} weight="600" style={{ color: theme.onAccent }}>
+                {nextTask?.kind === "report"
+                  ? "Как я себя чувствую?"
+                  : nextTask?.kind === "questionnaire"
+                    ? "Пройти опрос"
+                    : nextTask
+                      ? "Приём препарата"
+                      : "Всё на сегодня ✓"}
+              </T>
+            </Touch>
+          </>
+        )}
       </View>
+      <WorldEditor
+        visible={tools}
+        journey={journey}
+        world={world}
+        onChange={setDraftWorld}
+        onSelect={(id) => {
+          setSelectedItem(id);
+        }}
+        onClose={() => {
+          setTools(false);
+        }}
+      />
       <Modal
         visible={!!selectedDay}
         transparent

@@ -46,7 +46,8 @@ export function closeElapsedDays(
   }
   const lastObservedDay =
     today > state.lastObservedDay ? today : state.lastObservedDay;
-  if (!changed && lastObservedDay === state.lastObservedDay) return state;
+  if (!changed && lastObservedDay === state.lastObservedDay)
+    return grantRewards(state);
   return grantRewards({ ...state, closedDays, lastObservedDay });
 }
 export function journeyProgress(state: JourneyState, today: DayKey) {
