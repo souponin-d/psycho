@@ -298,12 +298,14 @@ export function Modal({
   onClose,
   title,
   className,
+  wide = false,
   children,
 }: {
   open: boolean;
   onClose: () => void;
   title: string;
   className?: string;
+  wide?: boolean;
   children: ReactNode;
 }) {
   useLayoutEffect(() => {
@@ -330,7 +332,11 @@ export function Modal({
         if (!value) onClose();
       }}
     >
-      <DialogPanel title={title}>
+      <DialogPanel
+        title={title}
+        size={wide ? "wide" : "default"}
+        bodyClassName={wide ? styles.wideDialogBody : undefined}
+      >
         <div
           className={`${styles.root} ${styles.modalBody} ${className ?? ""}`}
         >

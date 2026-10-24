@@ -3,7 +3,7 @@ import type { CareEvent, EventStatus, PatientRecord } from "./model";
 import type { WorkspaceActions } from "./useWorkspace";
 import type { Navigate } from "./PatientDirectory";
 import { message } from "./useWorkspace";
-import { eventStatus, formatDate, localDateTime } from "./labels";
+import { eventStatus, formatDate, localDateTime, today } from "./labels";
 import { SourceLinks } from "./SourceLibrary";
 import {
   Badge,
@@ -36,18 +36,24 @@ export function Events({
   const [note, setNote] = useState("");
   const [error, setError] = useState("");
   const [add, setAdd] = useState(false);
-  const rows = (patient ? [patient] : patients.filter((p) => !p.archived))
-    .flatMap((p) =>
-      p.events
-        .filter((e) => filter === "all" || e.status !== "closed")
-        .map((event) => ({ patient: p, event })),
-    )
+  const allRows = (patient ? [patient] : patients.filter((p) => !p.archived))
+    .flatMap((p) => p.events.map((event) => ({ patient: p, event })))
     .sort(
       (a, b) =>
         ({ urgent: 0, important: 1, routine: 2 })[a.event.urgency] -
           { urgent: 0, important: 1, routine: 2 }[b.event.urgency] ||
         a.event.createdAt.localeCompare(b.event.createdAt),
     );
+  const matches = (e: CareEvent, kind: string) =>
+    kind === "all" ||
+    (e.status !== "closed" &&
+      (kind === "open" ||
+        (kind === "urgent" && e.urgency === "urgent") ||
+        (kind === "overdue" && !!e.dueAt && Date.parse(e.dueAt) < Date.now()) ||
+        (kind === "today" &&
+          !!e.dueAt &&
+          localDateTime(e.dueAt).slice(0, 10) === today())));
+  const rows = allRows.filter(({ event }) => matches(event, filter));
   const record = selected
     ? patients.find((p) => p.id === selected.patientId)
     : undefined;
@@ -84,8 +90,8 @@ export function Events({
       {!patient && (
         <div className={styles.pageHeading}>
           <div>
-            <h1>События и внимание</h1>
-            <p>От исходного сообщения до зафиксированного результата</p>
+            <h1>Внимание и контроль</h1>
+            <p>Что требует решения врача и к какому сроку</p>
           </div>
         </div>
       )}
@@ -104,87 +110,148 @@ export function Events({
         }
       >
         <div
-          className={styles.segmented}
-          style={{ width: "fit-content", marginBottom: 15 }}
+          className={`${styles.segmented} ${styles.eventFilters}`}
+          role="group"
+          aria-label="Фильтр событий"
         >
-          <button
-            aria-pressed={filter === "open"}
-            onClick={() => setFilter("open")}
-          >
-            В работе
-          </button>
-          <button
-            aria-pressed={filter === "all"}
-            onClick={() => setFilter("all")}
-          >
-            Вся история
-          </button>
+          {[
+            ["open", "В работе"],
+            ["urgent", "Срочно"],
+            ["overdue", "Просрочено"],
+            ["today", "Сегодня"],
+            ["all", "Все"],
+          ].map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              aria-pressed={filter === id}
+              onClick={() => setFilter(id!)}
+            >
+              {label} ·{" "}
+              {allRows.filter(({ event }) => matches(event, id!)).length}
+            </button>
+          ))}
         </div>
-        {rows.map(({ patient: p, event: e }) => (
-          <article className={styles.eventCard} key={e.id}>
-            <div className={styles.between}>
-              <div className={styles.row}>
-                <Badge
-                  tone={
-                    e.urgency === "urgent"
-                      ? "red"
-                      : e.urgency === "important"
-                        ? "amber"
-                        : "neutral"
-                  }
-                >
-                  {
-                    {
-                      urgent: "Срочно",
-                      important: "Приоритетно",
-                      routine: "Планово",
-                    }[e.urgency]
-                  }
-                </Badge>
-                <Badge>{eventStatus[e.status]}</Badge>
-              </div>
-              <span className={styles.subtext}>
-                {formatDate(e.createdAt, {
-                  day: "numeric",
-                  month: "short",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </span>
-            </div>
-            <h3 style={{ marginTop: 12 }}>{e.title}</h3>
-            {!patient && (
-              <button
-                className={styles.textButton}
-                onClick={() => navigate(`/patients/${p.id}`)}
-              >
-                {p.profile.name}
-              </button>
-            )}
-            <p>{e.detail}</p>
-            <div className={styles.between}>
-              <span className={styles.subtext}>
-                {e.assignee}
-                {e.dueAt ? ` · срок: ${formatDate(e.dueAt)}` : ""}
-              </span>
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  setSelected({ patientId: p.id, eventId: e.id });
-                  setNote("");
-                  setError("");
-                }}
-              >
-                {e.status === "closed"
-                  ? "История обработки"
-                  : "Разобрать событие"}
-              </Button>
-            </div>
-            <SourceLinks ids={e.sourceIds} />
-          </article>
-        ))}
+        <p className={styles.subtext}>
+          Срок задачи и клиническая срочность показаны отдельно. Просрочка не
+          меняет оценку риска.
+        </p>
+        {rows.length > 0 && (
+          <div className={styles.tableWrap}>
+            <table className={styles.eventQueue}>
+              <thead>
+                <tr>
+                  <th>Пациент</th>
+                  <th>Вопрос и следующий шаг</th>
+                  <th>Срок и ответственный</th>
+                  <th>
+                    <span className={styles.stepHeading}>Действие</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map(({ patient: p, event: e }) => (
+                  <tr key={`${p.id}-${e.id}`}>
+                    <td>
+                      <button
+                        className={styles.textButton}
+                        onClick={() => navigate(`/patients/${p.id}`)}
+                      >
+                        {p.profile.name}
+                      </button>
+                      <p className={styles.subtext}>{p.code}</p>
+                    </td>
+                    <td>
+                      <div className={styles.row}>
+                        <Badge
+                          tone={
+                            e.urgency === "urgent"
+                              ? "red"
+                              : e.urgency === "important"
+                                ? "amber"
+                                : "neutral"
+                          }
+                        >
+                          {
+                            {
+                              urgent: "Срочно",
+                              important: "Требует оценки",
+                              routine: "Планово",
+                            }[e.urgency]
+                          }
+                        </Badge>
+                        <Badge>{eventStatus[e.status]}</Badge>
+                      </div>
+                      <h3>{e.title}</h3>
+                      <p>{e.detail}</p>
+                      <p className={styles.subtext}>
+                        Создано{" "}
+                        {formatDate(e.createdAt, {
+                          day: "numeric",
+                          month: "short",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                      <SourceLinks ids={e.sourceIds} />
+                    </td>
+                    <td>
+                      <p>
+                        {e.dueAt
+                          ? formatDate(e.dueAt, {
+                              day: "numeric",
+                              month: "short",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
+                          : "Срок не указан"}
+                      </p>
+                      {e.status !== "closed" &&
+                        e.dueAt &&
+                        Date.parse(e.dueAt) < Date.now() && (
+                          <p className={styles.overdue}>Срок прошёл</p>
+                        )}
+                      <p className={styles.subtext}>
+                        {e.assignee || "Ответственный не указан"}
+                      </p>
+                    </td>
+                    <td>
+                      <Button
+                        variant={
+                          e.status === "closed" ? "secondary" : "primary"
+                        }
+                        onClick={() => {
+                          setSelected({ patientId: p.id, eventId: e.id });
+                          setNote("");
+                          setError("");
+                        }}
+                      >
+                        {e.status === "closed"
+                          ? "История обработки"
+                          : "Разобрать событие"}
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
         {!rows.length && (
-          <Empty icon="check" title="Открытых событий нет">
+          <Empty
+            icon="check"
+            title={
+              filter === "urgent"
+                ? "Срочных событий нет"
+                : filter === "overdue"
+                  ? "Просроченных событий нет"
+                  : filter === "today"
+                    ? "Событий на сегодня нет"
+                    : filter === "all"
+                      ? "История событий пуста"
+                      : "Открытых событий нет"
+            }
+          >
             Новые сообщения о переносимости и явно отмеченные вопросы
             безопасности появятся здесь. Событие можно создать вручную.
           </Empty>

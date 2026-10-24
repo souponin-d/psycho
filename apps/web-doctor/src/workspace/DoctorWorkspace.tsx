@@ -331,7 +331,7 @@ function Workspace({
     { path: "workday", title: "Рабочий день", icon: "home" },
     { path: "patients", title: "Пациенты", icon: "people" },
     { path: "calendar", title: "Календарь", icon: "calendar" },
-    { path: "events", title: "События", icon: "bell" },
+    { path: "events", title: "Внимание", icon: "bell" },
     { path: "sources", title: "Источники", icon: "book" },
   ];
   const title = nav.find((n) => n.path === section)?.title ?? "Рабочий день";
@@ -573,6 +573,26 @@ function Workspace({
             )}
           </section>
         </main>
+        <nav className={styles.mobileBottomNav} aria-label="Быстрая навигация">
+          {nav
+            .filter((n) => n.path !== "sources")
+            .map((n) => (
+              <button
+                key={n.path}
+                type="button"
+                aria-current={section === n.path ? "page" : undefined}
+                onClick={() => navigate(`/${n.path}`)}
+              >
+                <Icon name={n.icon} size={20} />
+                <span>
+                  {n.path === "workday" ? "День" : n.title}
+                  {n.path === "events" && eventCount > 0
+                    ? ` · ${eventCount}`
+                    : ""}
+                </span>
+              </button>
+            ))}
+        </nav>
         <NewPatient
           open={newPatient}
           onClose={() => setNewPatient(false)}

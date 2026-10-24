@@ -357,6 +357,9 @@ export function Dynamics({
   const values = patient.measurements.filter(
     (m) => seriesKey(m) === key && Date.parse(m.measuredAt) >= since,
   );
+  const latest = values
+    .slice()
+    .sort((a, b) => b.measuredAt.localeCompare(a.measuredAt))[0];
   const [detail, setDetail] = useState<Measurement | null>(null);
   return (
     <>
@@ -373,33 +376,50 @@ export function Dynamics({
           </Button>
         }
       >
-        {keys.length > 0 && (
-          <div className={styles.toolbar}>
-            <Select
-              label="Ряд измерений"
-              value={key}
-              onChange={(e) => setSelected(e.target.value)}
-            >
-              {keys.map((k) => {
-                const m = patient.measurements.find((m) => seriesKey(m) === k)!;
-                return (
-                  <option key={k} value={k}>
-                    {m.scale} · {m.version}
-                  </option>
-                );
-              })}
-            </Select>
-            <Select
-              label="Период"
-              value={period}
-              onChange={(e) => setPeriod(e.target.value)}
-            >
-              <option value="all">Весь период</option>
-              <option value="30">30 дней</option>
-              <option value="90">90 дней</option>
-              <option value="180">180 дней</option>
-            </Select>
+        {compact && latest && (
+          <div className={styles.latestScore}>
+            <strong>{latest.score ?? "—"}</strong>
+            <span>
+              {latest.maximum !== null ? `/ ${latest.maximum}` : ""} ·{" "}
+              {latest.scale}
+            </span>
+            <span>
+              {formatDate(latest.measuredAt)} · {latest.version}
+            </span>
           </div>
+        )}
+        {keys.length > 0 && (
+          <details className={styles.details} open={!compact || undefined}>
+            <summary>Ряд и период сравнения</summary>
+            <div className={styles.toolbar}>
+              <Select
+                label="Ряд измерений"
+                value={key}
+                onChange={(e) => setSelected(e.target.value)}
+              >
+                {keys.map((k) => {
+                  const m = patient.measurements.find(
+                    (m) => seriesKey(m) === k,
+                  )!;
+                  return (
+                    <option key={k} value={k}>
+                      {m.scale} · {m.version}
+                    </option>
+                  );
+                })}
+              </Select>
+              <Select
+                label="Период"
+                value={period}
+                onChange={(e) => setPeriod(e.target.value)}
+              >
+                <option value="all">Весь период</option>
+                <option value="30">30 дней</option>
+                <option value="90">90 дней</option>
+                <option value="180">180 дней</option>
+              </Select>
+            </div>
+          </details>
         )}
         <TrendChart values={values} />
         {!compact && (

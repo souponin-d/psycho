@@ -103,6 +103,7 @@ export function ProfileForm({
     setValue({ ...value, [key]: v });
   async function save(e: FormEvent) {
     e.preventDefault();
+    e.stopPropagation();
     try {
       if (guard.conflict)
         throw new Error(

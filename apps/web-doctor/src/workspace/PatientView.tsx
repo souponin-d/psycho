@@ -11,7 +11,7 @@ import {
 } from "./PatientForms";
 import { AppointmentRow } from "./Workday";
 import { Dynamics } from "./Dynamics";
-import { CarePlan, Referrals } from "./CarePlan";
+import { PlanForm, CarePlan, Referrals } from "./CarePlan";
 import { PatientJournal, Messages } from "./PatientJournal";
 import { Events } from "./Events";
 import { Documents } from "./Documents";
@@ -26,15 +26,20 @@ import {
   Textarea,
   styles,
 } from "./ui/Elements";
+import { PatientContext } from "./PatientContext";
+import { PatientBrief } from "./PatientBrief";
 const tabs = [
   ["overview", "Обзор"],
   ["visits", "Приёмы"],
+  ["plan", "Лечение и план"],
+  ["dynamics", "Наблюдение"],
+  ["documents", "Документы"],
+];
+const observationTabs = [
   ["dynamics", "Динамика"],
-  ["plan", "План ведения"],
   ["journal", "Дневник"],
   ["events", "События"],
   ["messages", "Сообщения"],
-  ["documents", "Документы"],
 ];
 export function PatientView({
   patient,
@@ -51,6 +56,8 @@ export function PatientView({
   tab?: string;
   server: boolean;
 }) {
+  const [prescription, setPrescription] = useState(false);
+  const observation = observationTabs.some(([id]) => id === tab);
   const [profile, setProfile] = useState(false);
   const [appointment, setAppointment] = useState(false);
   const [episode, setEpisode] = useState<Episode | "new" | null>(null);
@@ -63,6 +70,7 @@ export function PatientView({
   const next = patient.visits
     .filter((v) => v.status === "scheduled" || v.status === "in-progress")
     .sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt));
+  const currentVisit = next.find((v) => v.status === "in-progress") || next[0];
   const recent = patient.visits
     .filter((v) => v.status === "completed")
     .sort((a, b) => b.completedAt.localeCompare(a.completedAt));
@@ -136,11 +144,27 @@ export function PatientView({
             Профиль
           </Button>
           <Button
+            variant="secondary"
             icon="plus"
-            onClick={() => setAppointment(true)}
+            onClick={() => setPrescription(true)}
             disabled={patient.archived}
           >
-            Создать приём
+            Назначить препарат
+          </Button>
+          <Button
+            icon="arrow"
+            onClick={() =>
+              currentVisit
+                ? navigate(`/patients/${patient.id}/visits/${currentVisit.id}`)
+                : setAppointment(true)
+            }
+            disabled={patient.archived}
+          >
+            {currentVisit
+              ? currentVisit.status === "in-progress"
+                ? "Продолжить приём"
+                : "Открыть приём"
+              : "Запланировать приём"}
           </Button>
         </div>
       </div>
@@ -152,7 +176,11 @@ export function PatientView({
           <a
             key={id}
             href={`#/patients/${patient.id}/${id}`}
-            aria-current={tab === id ? "page" : undefined}
+            aria-current={
+              tab === id || (id === "dynamics" && observation)
+                ? "page"
+                : undefined
+            }
             onClick={(event) => {
               if (
                 event.button !== 0 ||
@@ -174,44 +202,39 @@ export function PatientView({
           </a>
         ))}
       </nav>
+      {observation && (
+        <nav className={styles.observationTabs} aria-label="Разделы наблюдения">
+          {observationTabs.map(([id, label]) => (
+            <a
+              key={id}
+              href={`#/patients/${patient.id}/${id}`}
+              aria-current={tab === id ? "page" : undefined}
+              onClick={(event) => {
+                if (
+                  event.button ||
+                  event.metaKey ||
+                  event.ctrlKey ||
+                  event.shiftKey ||
+                  event.altKey
+                )
+                  return;
+                event.preventDefault();
+                navigate(`/patients/${patient.id}/${id}`);
+              }}
+            >
+              {label}
+              {id === "events" && openEvents > 0 ? ` · ${openEvents}` : ""}
+            </a>
+          ))}
+        </nav>
+      )}
       <div className={styles.stack}>
+        {tab === "overview" && (
+          <PatientBrief patient={patient} navigate={navigate} />
+        )}
         {tab === "overview" && (
           <div className={styles.twoColumns}>
             <div className={styles.stack}>
-              <Section
-                title="Ближайший приём"
-                action={
-                  <Button
-                    variant="ghost"
-                    onClick={() => navigate(`/patients/${patient.id}/visits`)}
-                  >
-                    Вся история
-                  </Button>
-                }
-              >
-                {next[0] ? (
-                  <AppointmentRow
-                    patient={patient}
-                    visit={next[0]}
-                    navigate={navigate}
-                  />
-                ) : (
-                  <Empty
-                    title="Следующий приём не назначен"
-                    icon="calendar"
-                    action={
-                      <Button
-                        variant="secondary"
-                        onClick={() => setAppointment(true)}
-                      >
-                        Выбрать время
-                      </Button>
-                    }
-                  >
-                    Согласуйте контрольную точку и добавьте её в расписание.
-                  </Empty>
-                )}
-              </Section>
               <Dynamics patient={patient} actions={actions} compact />
               <Section
                 title="История наблюдения"
@@ -273,29 +296,42 @@ export function PatientView({
               </Section>
             </div>
             <div className={styles.stack}>
-              <Section title="Контекст пациента">
-                <dl className={styles.facts}>
-                  {[
-                    ["Цели", patient.profile.goals],
-                    ["Аллергии", patient.profile.allergies],
-                    ["Сопутствующие заболевания", patient.profile.conditions],
-                    ["Текущие препараты", patient.profile.currentMedication],
-                    ["Поддержка", patient.profile.socialContext],
-                  ].map(([label, value]) => (
-                    <div key={label}>
-                      <dt>{label}</dt>
-                      <dd>
-                        {value || (
-                          <span className={styles.subtext}>
-                            Нет сведений · уточнить
-                          </span>
-                        )}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-                <SourceLinks ids={["S02", "S03", "S04"]} />
+              <PatientContext patient={patient} actions={actions} />
+              <Section
+                title="Ближайший приём"
+                action={
+                  <Button
+                    variant="ghost"
+                    onClick={() => navigate(`/patients/${patient.id}/visits`)}
+                  >
+                    Вся история
+                  </Button>
+                }
+              >
+                {next[0] ? (
+                  <AppointmentRow
+                    patient={patient}
+                    visit={next[0]}
+                    navigate={navigate}
+                  />
+                ) : (
+                  <Empty
+                    title="Следующий приём не назначен"
+                    icon="calendar"
+                    action={
+                      <Button
+                        variant="secondary"
+                        onClick={() => setAppointment(true)}
+                      >
+                        Выбрать время
+                      </Button>
+                    }
+                  >
+                    Согласуйте контрольную точку и добавьте её в расписание.
+                  </Empty>
+                )}
               </Section>
+
               <Section
                 title="Согласия и волеизъявление"
                 action={
@@ -497,6 +533,14 @@ export function PatientView({
           <Documents patient={patient} actions={actions} />
         )}
       </div>
+      {prescription && (
+        <PlanForm
+          patient={patient}
+          actions={actions}
+          initialKind="medication"
+          onClose={() => setPrescription(false)}
+        />
+      )}
       {profile && (
         <ProfileForm
           patient={patient}
