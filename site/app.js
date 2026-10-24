@@ -71,21 +71,26 @@ const platforms = {
     markup: () => workspaceMarkup(),
   },
   clinic: {
-    kicker: "ДЛЯ РУКОВОДИТЕЛЯ И КОМАНДЫ КЛИНИКИ",
-    title: "Команда клиники.<br /> В общей картине.",
-    copy: "Показатели отделения, нагрузка команды и события сопровождения — в одной сводке. Доступ к данным определяется полномочиями.",
-    tags: ["Показатели отделения", "Работа команды", "События сопровождения"],
+    kicker: "ДЛЯ РУКОВОДИТЕЛЕЙ КЛИНИКИ",
+    title: "Эффективное управление клиникой на основе данных",
+    copy: "Получайте полную картину работы клиники, выявляйте проблемы и принимайте обоснованные решения на основе данных.",
+    tags: [
+      "Нагрузка врачей",
+      "Статистика отделения",
+      "Сопровождение пациентов",
+    ],
     href: "demo/admin/",
-    link: "Открыть демо администратора",
+    link: "Посмотреть кабинет руководителя",
     markup: () => clinicPreviewMarkup(),
   },
   patient: {
-    kicker: "ДЛЯ ПОВСЕДНЕВНОЙ ЖИЗНИ ПАЦИЕНТА",
-    title: "Небольшие отметки.<br />Важная связь.",
-    copy: "Самоотчёты, личная динамика, задачи врача и диалог. Пациент понимает план, а его наблюдения становятся частью клинической картины.",
-    tags: ["Личная динамика", "План сопровождения", "Прямой диалог"],
+    kicker: "ДЛЯ ПАЦИЕНТА",
+    title:
+      "Лучше понимать своё состояние. Легче следовать рекомендациям врача.",
+    copy: "Отмечайте самочувствие и симптомы, отслеживайте изменения и держите рекомендации врача под рукой. Всё важное — в одном приложении, чтобы вам было проще следить за своим состоянием и оставаться на связи с врачом между приёмами. Ваши личные данные остаются конфиденциальными и недоступными для посторонних.",
+    tags: ["Дневник самочувствия", "План лечения", "Конфиденциальность данных"],
     href: null,
-    link: "",
+    unavailableLink: "Посмотреть приложение пациента",
     markup: () =>
       `<div class="mobile-device-group"><div class="phone"><div class="phone-island"></div><div class="phone-status"><b>9:41</b><span>••• ▰</span></div><div class="phone-app"><div class="phone-app-brand">синкли</div><h3>Небольшой шаг.<br />Каждый день.</h3><p>Состояние, сон и самочувствие.<br />В контексте вашего лечения.</p><div class="phone-checkin"><span>Ваш план на сегодня</span><b>Отметить самочувствие ✓</b><div class="sleep-bars"><i></i><i></i><i></i><i></i><i></i></div></div><div class="phone-button">Написать врачу ↗</div><div class="phone-tabbar"><span>⌂<small>Сегодня</small></span><span>⌁<small>Динамика</small></span><span>□<small>Диалог</small></span></div></div></div><div class="mobile-summary"><span class="mini-pill mint">Связано с лечащим врачом</span><h4>Ваши наблюдения<br />имеют значение.</h4><p>Самоотчёт попадает в вашу карточку. Вы видите собственную динамику и задачи.</p><div class="review-stamp">${icon("shield")} Доступ только к своим данным</div></div></div>`,
   },
@@ -99,13 +104,15 @@ function renderPlatform(name) {
     .map((tag) => `<span>${tag}</span>`)
     .join("");
   const link = $("#platform-link");
+  const unavailable = $("#platform-unavailable");
   link.hidden = !data.href;
-  $("#platform-unavailable").hidden = Boolean(data.href);
+  unavailable.hidden = Boolean(data.href);
   if (data.href) {
     link.setAttribute("href", data.href);
     link.innerHTML = data.link + " " + icon("arrow");
   } else {
     link.removeAttribute("href");
+    unavailable.innerHTML = data.unavailableLink + " " + icon("arrow");
   }
   $("#ecosystem-visual").innerHTML = data.markup();
   $("#platform-panel").setAttribute("aria-labelledby", `platform-${name}`);

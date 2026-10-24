@@ -27,7 +27,9 @@ it("сохраняет вкладки продукта и карусель по�
     document.querySelector<HTMLAnchorElement>("#platform-link")!;
   product.getByRole("tab", { name: "Пациенту" }).click();
   expect(productLink.hidden).toBe(true);
-  const patientDemo = product.getByRole("button", { name: "Демо пациента" });
+  const patientDemo = product.getByRole("button", {
+    name: "Посмотреть приложение пациента",
+  });
   expect(patientDemo).toHaveProperty("disabled", true);
 
   product
@@ -41,7 +43,7 @@ it("сохраняет вкладки продукта и карусель по�
   expect(productLink.getAttribute("href")).toBe("demo/admin/");
   expect(
     product.getByRole("heading", {
-      name: "Команда клиники. В общей картине.",
+      name: "Эффективное управление клиникой на основе данных",
     }),
   ).toBeTruthy();
   product.getByRole("tab", { name: "Врачу" }).click();
