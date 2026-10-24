@@ -185,7 +185,7 @@ export function restoreState(value: string | null): AppState {
       completed,
       reports: [
         ...new Map(reports.map((report) => [report.id, report])).values(),
-      ].slice(-180),
+      ],
     };
   } catch {
     return base;
@@ -218,7 +218,7 @@ export function reduceState(state: AppState, action: Action): AppState {
         return state;
       return {
         ...state,
-        reports: [...state.reports, report].slice(-180),
+        reports: [...state.reports, report],
         memoryDays: [...new Set([...state.memoryDays, report.day])].sort(),
         completed: {
           ...state.completed,
