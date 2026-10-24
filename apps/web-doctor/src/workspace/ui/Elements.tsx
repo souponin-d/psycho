@@ -37,7 +37,8 @@ export type IconName =
   | "menu"
   | "refresh"
   | "activity"
-  | "print";
+  | "print"
+  | "pill";
 const paths: Record<IconName, ReactNode> = {
   home: (
     <>
@@ -65,6 +66,9 @@ const paths: Record<IconName, ReactNode> = {
     <>
       <path d="M12 5C8 2 5 3 3 4v16c3-2 6-1 9 1 3-2 6-3 9-1V4c-2-1-5-2-9 1Zm0 0v16" />
     </>
+  ),
+  pill: (
+    <path d="m8 16 8-8 M7 3a6 6 0 0 1 8 0l6 6a6 6 0 0 1-8 8l-6-6a6 6 0 0 1 0-8Z" />
   ),
   plus: <path d="M12 5v14M5 12h14" />,
   search: (
@@ -298,12 +302,14 @@ export function Modal({
   onClose,
   title,
   className,
+  wide = false,
   children,
 }: {
   open: boolean;
   onClose: () => void;
   title: string;
   className?: string;
+  wide?: boolean;
   children: ReactNode;
 }) {
   useLayoutEffect(() => {
@@ -330,7 +336,11 @@ export function Modal({
         if (!value) onClose();
       }}
     >
-      <DialogPanel title={title}>
+      <DialogPanel
+        title={title}
+        size={wide ? "wide" : "default"}
+        bodyClassName={wide ? styles.wideDialogBody : undefined}
+      >
         <div
           className={`${styles.root} ${styles.modalBody} ${className ?? ""}`}
         >

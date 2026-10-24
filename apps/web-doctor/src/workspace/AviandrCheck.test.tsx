@@ -151,3 +151,34 @@ it("does not attach an Aviandr review to another drug", async () => {
   await waitFor(() => expect(f.onClose).toHaveBeenCalledOnce());
   expect(f.patient.plan.at(-1)?.aviandrReview).toBeUndefined();
 });
+
+it("updates the shared profile from Aviandr without submitting or losing the medication draft", async () => {
+  const f = fixture();
+  const props = { actions: f.actions, onClose: f.onClose };
+  const view = render(<PlanForm patient={f.patient} {...props} />);
+  openDrug();
+  fireEvent.change(screen.getByLabelText("Содержание назначения"), {
+    target: { value: "Сохранить мой текст" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Уточнить в карте" }));
+  fireEvent.change(screen.getByLabelText("Текущие препараты"), {
+    target: { value: "Со слов пациента: учебное уточнение" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Сохранить профиль" }));
+  await waitFor(() =>
+    expect(
+      screen.queryByRole("dialog", { name: "Профиль и контекст пациента" }),
+    ).toBeNull(),
+  );
+  expect(f.mutate.mock.calls.map((call) => call[1].type)).toEqual([
+    "profile.update",
+  ]);
+  expect(f.onClose).not.toHaveBeenCalled();
+  view.rerender(<PlanForm patient={f.patient} {...props} />);
+  expect(
+    (screen.getByLabelText("Содержание назначения") as HTMLTextAreaElement)
+      .value,
+  ).toBe("Сохранить мой текст");
+  expect(screen.getByText("Данные карты изменились")).toBeTruthy();
+  expect(screen.getByText("Со слов пациента: учебное уточнение")).toBeTruthy();
+});
