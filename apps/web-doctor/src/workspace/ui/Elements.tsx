@@ -239,14 +239,24 @@ export function Textarea({
 }
 export function Select({
   label,
+  hint,
   children,
   ...props
-}: SelectHTMLAttributes<HTMLSelectElement> & { label: string }) {
+}: SelectHTMLAttributes<HTMLSelectElement> & { label: string; hint?: string }) {
   const id = useId();
   return (
     <label className={styles.field} htmlFor={id}>
       <span>{label}</span>
-      <select {...props} id={id}>
+      {hint && <small id={`${id}-hint`}>{hint}</small>}
+      <select
+        {...props}
+        id={id}
+        aria-describedby={
+          [props["aria-describedby"], hint && `${id}-hint`]
+            .filter(Boolean)
+            .join(" ") || undefined
+        }
+      >
         {children}
       </select>
     </label>

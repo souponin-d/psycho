@@ -10,6 +10,7 @@
     <PackageReference Include="Npgsql" Version="10.0.3" />
     <Content Include="Migrations/*.sql" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../web-doctor/src/workspace/source-data.json" Link="Sources.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../web-doctor/src/workspace/aviandr-rules.json" Link="AviandrRules.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../../docs/contracts/doctor.openapi.json" Link="doctor.openapi.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
