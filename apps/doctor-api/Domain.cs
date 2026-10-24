@@ -135,12 +135,14 @@ public static class Domain
         {
           var old = Array(doc, "plan").FirstOrDefault(p => S(p!, "id") == S(value!, "id")); Check(old is null || S(old, "status") == "draft", "Подтверждённый план нельзя переписать. Создайте новую версию."); Enum(value!, "status", "draft"); Enum(value!, "kind", "medication", "psychotherapy", "assessment", "lifestyle", "follow-up"); Required(value!, "title");
           WritableVisit(doc, S(value!, "visitId")); if (old is not null) WritableVisit(doc, S(old, "visitId")); if (S(value!, "replacesId") != "") { Find(doc, "plan", S(value!, "replacesId")); Required(value!, "changeReason"); }
+          AviandrChecks.Prepare(doc, value!, actor, now);
           value!["confirmedAt"] = ""; value["confirmedBy"] = ""; Upsert(doc, "plan", value, actor, now); break;
         }
       case "plan.confirm":
         {
           var item = Find(doc, "plan", id); Enum(item, "status", "draft"); WritableVisit(doc, S(item, "visitId")); Required(item, "rationale"); Required(item, "patientInstructions");
           if (S(item, "kind") == "medication") { Required(item, "dose"); Required(item, "schedule"); Check(Uri.TryCreate(S(item, "instructionUrl"), UriKind.Absolute, out var uri) && uri.Scheme == "https", "Добавьте HTTPS-ссылку на проверенную инструкцию."); }
+          AviandrChecks.Prepare(doc, item, actor, now);
           item["status"] = "confirmed"; item["confirmedAt"] = now; item["confirmedBy"] = actor.Name;
           if (S(item, "replacesId") != "") { var old = Find(doc, "plan", S(item, "replacesId")); Check(S(old, "status") == "confirmed", "Изменяемая запись уже не действует.", 409); old["status"] = "stopped"; old["changeReason"] = item["changeReason"]!.DeepClone(); }
           break;
@@ -264,7 +266,8 @@ public static class Domain
       "measurement.add" => "score,maximum,answers",
       "report.add" => "mood,anxiety,sleepHours,safetyConcern",
       "event.add" => "sourceIds,history",
-      "plan.save" or "referral.save" => "sourceIds",
+      "plan.save" => "sourceIds,aviandrReview",
+      "referral.save" => "sourceIds",
       "document.add" => "facts",
       "assessment.save" => "responses",
       _ => ""
@@ -305,6 +308,7 @@ public static class Domain
         var score = Number(value, "score"); var maximum = Number(value, "maximum"); Check(maximum is null || maximum >= 0, "Максимум шкалы не может быть отрицательным."); Check(score is null || score >= 0 && (maximum is null || score <= maximum), "Некорректный итоговый балл.");
         var answers = Array(value, "answers"); Check(answers.Count <= 1000, "Слишком много ответов."); foreach (var answer in answers) Check(answer is null || answer is JsonValue a && a.TryGetValue<double>(out var number) && double.IsFinite(number) && number >= 0, "Ожидался неотрицательный числовой ответ или null."); break;
       case "plan.save":
+        if (value.ContainsKey("aviandrReview")) AviandrChecks.Validate(Object(value, "aviandrReview"));
         foreach (var key in new[] { "startDate", "endDate", "dueDate" }) CalendarDate(value, key, true);
         Check(S(value, "startDate") == "" || S(value, "endDate") == "" || string.CompareOrdinal(S(value, "endDate"), S(value, "startDate")) >= 0, "Конец назначения раньше начала."); break;
       case "report.add":

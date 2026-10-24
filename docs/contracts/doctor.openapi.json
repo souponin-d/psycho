@@ -2208,6 +2208,9 @@
           "replacesId": { "type": "string" },
           "instructionUrl": { "type": "string" },
           "patientInstructions": { "type": "string" },
+          "aviandrReview": {
+            "anyOf": [{ "$ref": "#/components/schemas/AviandrReview" }]
+          },
           "id": { "type": "string" },
           "createdAt": { "type": "string" },
           "author": { "type": "string" },
@@ -2236,6 +2239,139 @@
           "author",
           "sourceIds",
           "rationale"
+        ]
+      },
+      "ReviewAnswer": { "type": "string", "enum": ["no", "unknown", "yes"] },
+      "AviandrInputs": {
+        "type": "object",
+        "properties": {
+          "indication": {
+            "type": "string",
+            "enum": ["gad", "other", "post-covid", "unknown"]
+          },
+          "hypersensitivity": { "$ref": "#/components/schemas/ReviewAnswer" },
+          "epilepsy": { "$ref": "#/components/schemas/ReviewAnswer" },
+          "organicBrainDisease": {
+            "$ref": "#/components/schemas/ReviewAnswer"
+          },
+          "liverFailure": { "$ref": "#/components/schemas/ReviewAnswer" },
+          "pregnancy": { "$ref": "#/components/schemas/ReviewAnswer" },
+          "breastfeeding": { "$ref": "#/components/schemas/ReviewAnswer" },
+          "galactoseDisorder": { "$ref": "#/components/schemas/ReviewAnswer" },
+          "cardiovascularDisease": {
+            "$ref": "#/components/schemas/ReviewAnswer"
+          },
+          "maoUse": { "$ref": "#/components/schemas/ReviewAnswer" },
+          "lastMaoDate": { "type": "string" },
+          "serotonergic": { "$ref": "#/components/schemas/ReviewAnswer" },
+          "sedative": { "$ref": "#/components/schemas/ReviewAnswer" },
+          "cyp2d6": { "$ref": "#/components/schemas/ReviewAnswer" },
+          "alcohol": { "$ref": "#/components/schemas/ReviewAnswer" },
+          "medicationListVerified": {
+            "$ref": "#/components/schemas/ReviewAnswer"
+          },
+          "egfr": { "anyOf": [{ "type": "null" }, { "type": "number" }] },
+          "egfrUnit": {
+            "type": "string",
+            "enum": ["ml/min", "ml/min/1.73m2", "unknown"]
+          },
+          "egfrDate": { "type": "string" },
+          "evidence": { "type": "string" }
+        },
+        "required": [
+          "indication",
+          "hypersensitivity",
+          "epilepsy",
+          "organicBrainDisease",
+          "liverFailure",
+          "pregnancy",
+          "breastfeeding",
+          "galactoseDisorder",
+          "cardiovascularDisease",
+          "maoUse",
+          "lastMaoDate",
+          "serotonergic",
+          "sedative",
+          "cyp2d6",
+          "alcohol",
+          "medicationListVerified",
+          "egfr",
+          "egfrUnit",
+          "egfrDate",
+          "evidence"
+        ]
+      },
+      "AviandrContext": {
+        "type": "object",
+        "properties": {
+          "birthDate": { "type": "string" },
+          "allergies": { "type": "string" },
+          "conditions": { "type": "string" },
+          "currentMedication": { "type": "string" },
+          "reproductiveContext": { "type": "string" },
+          "substanceUse": { "type": "string" },
+          "diagnoses": { "type": "array", "items": { "type": "string" } },
+          "medicines": { "type": "array", "items": { "type": "string" } }
+        },
+        "required": [
+          "birthDate",
+          "allergies",
+          "conditions",
+          "currentMedication",
+          "reproductiveContext",
+          "substanceUse",
+          "diagnoses",
+          "medicines"
+        ]
+      },
+      "AviandrFinding": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": [
+              "caution",
+              "contraindication",
+              "missing",
+              "not-identified",
+              "review"
+            ]
+          },
+          "title": { "type": "string" },
+          "detail": { "type": "string" },
+          "section": { "type": "string" }
+        },
+        "required": ["id", "status", "title", "detail", "section"]
+      },
+      "AviandrReview": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "const": "unapproved" },
+          "sourceVersion": { "type": "string" },
+          "sourceHash": { "type": "string" },
+          "sourceDate": { "type": "string" },
+          "sourceUrl": { "type": "string" },
+          "context": { "$ref": "#/components/schemas/AviandrContext" },
+          "inputs": { "$ref": "#/components/schemas/AviandrInputs" },
+          "findings": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/AviandrFinding" }
+          },
+          "checkedAt": { "type": "string" },
+          "checkedBy": { "type": "string" }
+        },
+        "required": [
+          "status",
+          "sourceVersion",
+          "sourceHash",
+          "sourceDate",
+          "sourceUrl",
+          "context",
+          "inputs",
+          "findings",
+          "checkedAt",
+          "checkedBy"
         ]
       },
       "SelfReport": {

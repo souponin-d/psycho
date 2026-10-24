@@ -1,10 +1,18 @@
 import { useState, type FormEvent } from "react";
-import type { PatientRecord, PlanItem, Referral } from "./model";
+import type { AviandrReview, PatientRecord, PlanItem, Referral } from "./model";
 import type { WorkspaceActions } from "./useWorkspace";
 import { message } from "./useWorkspace";
 import { formatDate, planKind, today } from "./labels";
 import { SourceLinks, SourcePicker } from "./SourceLibrary";
 import { TherapyReference } from "./TherapyReference";
+import { AviandrCheck, AviandrSummary } from "./AviandrCheck";
+import {
+  aviandr,
+  aviandrContext,
+  isAviandr,
+  newAviandrReview,
+  sameAviandrContext,
+} from "./aviandr";
 import {
   CurrentDraftValues,
   DraftConflict,
@@ -40,10 +48,14 @@ const planLabels: Record<string, string> = {
   patientInstructions: "Указания пациенту",
   sourceIds: "Источники",
   rationale: "Обоснование решения врача",
+  aviandrReview: "Подготовительная проверка Авиандра",
 };
 function planValues(item: PlanItem) {
   return {
     ...item,
+    aviandrReview: item.aviandrReview
+      ? reviewComparison(item.aviandrReview)
+      : "Не выполнялась",
     kind: planKind[item.kind],
     status: {
       draft: "Черновик",
@@ -52,6 +64,53 @@ function planValues(item: PlanItem) {
       stopped: "Прекращено",
     }[item.status],
   };
+}
+function reviewComparison(review: AviandrReview) {
+  const labels: Record<string, string> = {
+    ...Object.fromEntries(aviandr.rules.map((rule) => [rule.id, rule.title])),
+    indication: "Основание назначения",
+    maoUse: "Приём ингибиторов МАО",
+    lastMaoDate: "Дата отмены МАО",
+    medicationListVerified: "Лекарственный анамнез сверен",
+    egfr: "СКФ",
+    egfrUnit: "Единицы СКФ",
+    egfrDate: "Дата СКФ",
+    evidence: "Основание уточнений",
+  };
+  const values: Record<string, string> = {
+    yes: "да",
+    no: "нет",
+    unknown: "не уточнено",
+    gad: "ГТР",
+    "post-covid": "Контекст после COVID-19",
+    other: "Другое основание",
+    "ml/min": "мл/мин",
+    "ml/min/1.73m2": "мл/мин/1,73 м²",
+  };
+  const contextLabels: Record<string, string> = {
+    birthDate: "Дата рождения",
+    allergies: "Аллергии",
+    conditions: "Заболевания",
+    currentMedication: "Текущие препараты",
+    reproductiveContext: "Репродуктивный контекст",
+    substanceUse: "Вещества и алкоголь",
+    diagnoses: "Эпизоды и диагнозы",
+    medicines: "История назначений",
+  };
+  return [
+    "Не утверждено",
+    review.sourceVersion,
+    `Источник: ${review.sourceDate} · ${review.sourceHash}`,
+    ...Object.entries(review.inputs).map(
+      ([key, value]) =>
+        `${labels[key]}: ${value === null || value === "" ? "не заполнено" : (values[String(value)] ?? String(value))}`,
+    ),
+    ...Object.entries(review.context).map(
+      ([key, value]) =>
+        `${contextLabels[key]}: ${Array.isArray(value) ? value.join("; ") || "нет сведений" : value || "нет сведений"}`,
+    ),
+    `Сохранено: ${review.checkedAt || "черновик"} · ${review.checkedBy}`,
+  ].join("\n");
 }
 function samePlanRecord(current: PlanItem | undefined, visible: PlanItem) {
   return (
@@ -137,7 +196,21 @@ export function PlanForm({
   const guard = useDraftGuard(current, patient.revision);
   const locked = !!current && current.status !== "draft";
   const set = (key: keyof PlanItem, v: string | string[]) =>
-    setValue({ ...value, [key]: v });
+    setValue((previous) => {
+      const next = { ...previous, [key]: v };
+      if (next.kind !== "medication" || !isAviandr(next.title))
+        delete next.aviandrReview;
+      else if (
+        next.aviandrReview &&
+        ["startDate", "dose", "schedule"].includes(key)
+      )
+        next.aviandrReview = {
+          ...next.aviandrReview,
+          checkedAt: "",
+          checkedBy: "",
+        };
+      return next;
+    });
   async function save(e: FormEvent) {
     e.preventDefault();
     try {
@@ -211,6 +284,22 @@ export function PlanForm({
             onChange={(e) => set("title", e.target.value)}
             required
           />
+          {value.kind === "medication" && !isAviandr(value.title) && (
+            <Button
+              variant="secondary"
+              icon="book"
+              onClick={() =>
+                setValue((previous) => ({
+                  ...previous,
+                  title: aviandr.title,
+                  instructionUrl: aviandr.url,
+                  aviandrReview: newAviandrReview(patient, previous.id),
+                }))
+              }
+            >
+              Выбрать Авиандр
+            </Button>
+          )}
           {value.kind === "medication" && (
             <>
               <div className={styles.formPair}>
@@ -241,6 +330,34 @@ export function PlanForm({
               <SourceLinks ids={["S04", "S11"]} />
             </>
           )}
+          {value.kind === "medication" &&
+            isAviandr(value.title) &&
+            (value.aviandrReview ? (
+              <AviandrCheck
+                patient={patient}
+                planId={value.id}
+                startDate={value.startDate}
+                review={value.aviandrReview}
+                onChange={(review) =>
+                  setValue((previous) => ({
+                    ...previous,
+                    aviandrReview: review,
+                  }))
+                }
+              />
+            ) : (
+              <Button
+                variant="secondary"
+                onClick={() =>
+                  setValue((previous) => ({
+                    ...previous,
+                    aviandrReview: newAviandrReview(patient, previous.id),
+                  }))
+                }
+              >
+                Начать проверку Авиандра
+              </Button>
+            ))}
           <Textarea
             label="Содержание назначения"
             value={value.details}
@@ -467,6 +584,18 @@ export function CarePlan({
               </a>
             )}
             <SourceLinks ids={item.sourceIds} />
+            {item.aviandrReview && (
+              <AviandrSummary
+                review={item.aviandrReview}
+                stale={
+                  item.status === "draft" &&
+                  !sameAviandrContext(
+                    item.aviandrReview.context,
+                    aviandrContext(patient, item.id),
+                  )
+                }
+              />
+            )}
             <div className={styles.row} style={{ marginTop: 12 }}>
               {item.status === "draft" ? (
                 <>
@@ -557,6 +686,17 @@ export function CarePlan({
               {confirmation.rationale || "Обоснование не внесено"}
             </p>
             <SourceLinks ids={confirmation.sourceIds} />
+            {confirmation.aviandrReview && (
+              <AviandrSummary
+                review={confirmation.aviandrReview}
+                stale={
+                  !sameAviandrContext(
+                    confirmation.aviandrReview.context,
+                    aviandrContext(patient, confirmation.id),
+                  )
+                }
+              />
+            )}
             <p className={styles.subtext}>
               Подтверждение сохраняет автора и время. Последующие изменения
               оформляются новой версией.

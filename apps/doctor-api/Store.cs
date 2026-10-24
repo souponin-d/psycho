@@ -101,7 +101,9 @@ public sealed class Store(NpgsqlDataSource dataSource)
     await using var command = dataSource.CreateCommand("SELECT document FROM patient_records WHERE id=$1 AND clinic_id=$2"); command.Parameters.AddWithValue(actor.PatientId!); command.Parameters.AddWithValue(actor.ClinicId);
     var raw = (string?)await command.ExecuteScalarAsync(); if (raw is null) throw new DomainException("Карта недоступна.", 404);
     var doc = JsonNode.Parse(raw)!.AsObject(); await Audit(actor, actor.PatientId, "patient.read");
-    return new() { ["patientId"] = actor.PatientId, ["name"] = doc["profile"]!["name"]!.DeepClone(), ["plan"] = new JsonArray(Domain.Array(doc, "plan").Where(n => Domain.S(n!, "status") == "confirmed").Select(n => n!.DeepClone()).ToArray()), ["messages"] = doc["messages"]!.DeepClone(), ["reports"] = doc["reports"]!.DeepClone() };
+    var plan = new JsonArray();
+    foreach (var item in Domain.Array(doc, "plan").Where(n => Domain.S(n!, "status") == "confirmed")) { var visible = item!.DeepClone().AsObject(); visible.Remove("aviandrReview"); plan.Add(visible); }
+    return new() { ["patientId"] = actor.PatientId, ["name"] = doc["profile"]!["name"]!.DeepClone(), ["plan"] = plan, ["messages"] = doc["messages"]!.DeepClone(), ["reports"] = doc["reports"]!.DeepClone() };
   }
   public async Task Audit(Actor actor, string? patientId, string action)
   {

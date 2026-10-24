@@ -11,6 +11,10 @@ import {
 } from "./doctor-runtime.mjs";
 import path from "node:path";
 import {
+  newAviandrReview,
+  evaluateAviandr,
+} from "../apps/web-doctor/src/workspace/aviandr.ts";
+import {
   createPatient,
   createVisit,
   blankNotes,
@@ -486,6 +490,190 @@ assert.equal(
   400,
 );
 ok("withdrawn communication consent prevents new outbound message");
+const aviandrId = randomUUID();
+const aviandrDraft = {
+  id: aviandrId,
+  createdAt: "",
+  author: "forged",
+  visitId: "",
+  kind: "medication",
+  title: "Авиандр · таблетки 20 мг",
+  details: "Синтетическая проверка",
+  dose: "20 мг",
+  schedule: "Схема врача",
+  startDate: new Date().toISOString().slice(0, 10),
+  endDate: "",
+  dueDate: "",
+  status: "draft",
+  confirmedAt: "",
+  confirmedBy: "",
+  changeReason: "",
+  replacesId: "",
+  instructionUrl: "https://example.test/instruction",
+  patientInstructions: "Синтетические указания",
+  sourceIds: [],
+  rationale: "Технический сценарий, без клинической активации",
+  aviandrReview: newAviandrReview(patient, aviandrId),
+};
+aviandrDraft.aviandrReview.inputs.epilepsy = "yes";
+aviandrDraft.aviandrReview.inputs.serotonergic = "yes";
+aviandrDraft.aviandrReview.checkedBy = "forged";
+aviandrDraft.aviandrReview.findings = [];
+const aviandrCommandId = randomUUID();
+result = await command(
+  { type: "plan.save", value: aviandrDraft },
+  aviandrCommandId,
+);
+assert.equal(result.status, 200, JSON.stringify(result.body));
+let storedReview = patient.plan.find((p) => p.id === aviandrId).aviandrReview;
+assert.equal(storedReview.status, "unapproved");
+assert.equal(storedReview.checkedBy, actor.name);
+assert.ok(storedReview.checkedAt);
+assert.deepEqual(
+  storedReview.findings.map((f) => [f.id, f.status]),
+  evaluateAviandr(aviandrDraft.aviandrReview, aviandrDraft.startDate).map(
+    (f) => [f.id, f.status],
+  ),
+);
+const reviewTime = storedReview.checkedAt;
+assert.equal(
+  (await command({ type: "plan.save", value: aviandrDraft }, aviandrCommandId))
+    .status,
+  200,
+);
+assert.equal(
+  patient.plan.find((p) => p.id === aviandrId).aviandrReview.checkedAt,
+  reviewTime,
+);
+ok("Aviandr review recomputed on server, unapproved and idempotent");
+const day = (offset) =>
+  new Date(Date.now() + offset * 86400000).toISOString().slice(0, 10);
+for (const [inputPatch, ruleId, expected] of [
+  [
+    { egfr: 59, egfrUnit: "ml/min", egfrDate: day(0) },
+    "renal",
+    "contraindication",
+  ],
+  [{ egfr: 60, egfrUnit: "ml/min", egfrDate: day(0) }, "renal", "review"],
+  [
+    { egfr: 59, egfrUnit: "ml/min/1.73m2", egfrDate: day(0) },
+    "renal",
+    "review",
+  ],
+  [{ maoUse: "no", lastMaoDate: day(-13) }, "mao", "contraindication"],
+  [{ maoUse: "no", lastMaoDate: day(-14) }, "mao", "not-identified"],
+  [{ indication: "other", serotonergic: "yes" }, "indication", "review"],
+]) {
+  const value = {
+    ...aviandrDraft,
+    aviandrReview: {
+      ...aviandrDraft.aviandrReview,
+      inputs: { ...aviandrDraft.aviandrReview.inputs, ...inputPatch },
+    },
+  };
+  assert.equal((await command({ type: "plan.save", value })).status, 200);
+  const rows = patient.plan.find((p) => p.id === aviandrId).aviandrReview
+    .findings;
+  assert.equal(rows.find((f) => f.id === ruleId).status, expected);
+  assert.deepEqual(rows, evaluateAviandr(value.aviandrReview, value.startDate));
+}
+assert.equal(
+  (
+    await command({
+      type: "plan.save",
+      value: {
+        ...aviandrDraft,
+        startDate: day(20),
+        aviandrReview: {
+          ...aviandrDraft.aviandrReview,
+          inputs: {
+            ...aviandrDraft.aviandrReview.inputs,
+            maoUse: "no",
+            lastMaoDate: day(1),
+          },
+        },
+      },
+    })
+  ).status,
+  400,
+);
+ok("Aviandr server/demo parity covers renal units and MAOI date boundaries");
+for (const patch of [
+  { status: "approved" },
+  { sourceVersion: "forged" },
+  { sourceHash: "forged" },
+  { sourceUrl: "https://example.test/forged" },
+  { inputs: { ...aviandrDraft.aviandrReview.inputs, epilepsy: false } },
+  { unexpected: true },
+]) {
+  assert.equal(
+    (
+      await command({
+        type: "plan.save",
+        value: {
+          ...aviandrDraft,
+          aviandrReview: { ...aviandrDraft.aviandrReview, ...patch },
+        },
+      })
+    ).status,
+    400,
+  );
+}
+assert.equal(
+  (
+    await command({
+      type: "plan.save",
+      value: { ...aviandrDraft, title: "Другой препарат" },
+    })
+  ).status,
+  400,
+);
+ok("Aviandr approval, source and drug identity cannot be forged");
+assert.equal(
+  (
+    await command({
+      type: "profile.update",
+      value: {
+        ...patient.profile,
+        currentMedication: "Новое лекарство в карте",
+      },
+    })
+  ).status,
+  200,
+);
+assert.equal(
+  (await command({ type: "plan.confirm", id: aviandrId })).status,
+  409,
+);
+aviandrDraft.aviandrReview = newAviandrReview(patient, aviandrId);
+aviandrDraft.aviandrReview.inputs.epilepsy = "yes";
+assert.equal(
+  (await command({ type: "plan.save", value: aviandrDraft })).status,
+  200,
+);
+assert.equal(
+  (await command({ type: "plan.confirm", id: aviandrId })).status,
+  200,
+);
+assert.equal(
+  patient.plan.find((p) => p.id === aviandrId).aviandrReview.status,
+  "unapproved",
+);
+assert.equal(
+  patient.plan
+    .find((p) => p.id === aviandrId)
+    .aviandrReview.findings.find((f) => f.id === "epilepsy").status,
+  "contraindication",
+);
+ok(
+  "changed chart invalidates review; unapproved findings never activate clinical blocking",
+);
+const patientView = (await patientClient.call("/patient/record")).body;
+assert.equal(
+  patientView.plan.find((p) => p.id === aviandrId).aviandrReview,
+  undefined,
+);
+ok("preparatory clinician review is not disclosed through patient API");
 console.log(
   JSON.stringify(
     { passed, patientId: patient.id, revision: patient.revision },

@@ -10,6 +10,7 @@ import {
   type Visit,
 } from "./model.ts";
 import sourceData from "./source-data.json" with { type: "json" };
+import { reviewForPlan, validateAviandrReview } from "./aviandr.ts";
 export class DomainError extends Error {
   public code: string;
   constructor(message: string, code = "validation") {
@@ -156,7 +157,7 @@ function validateMutation(mutation: Mutation) {
     "assessment.save": "responses",
     "visit.save": "notes,durationMinutes,addenda,sourceIds,completionSnapshot",
     "measurement.add": "score,maximum,answers",
-    "plan.save": "sourceIds",
+    "plan.save": "sourceIds,aviandrReview",
     "report.add": "mood,anxiety,sleepHours,safetyConcern",
     "event.add": "sourceIds,history",
     "referral.save": "sourceIds",
@@ -211,6 +212,10 @@ function validateMutation(mutation: Mutation) {
       "Неизвестный источник.",
     );
   switch (mutation.type) {
+    case "plan.save":
+      if (mutation.value.aviandrReview !== undefined)
+        validateAviandrReview(mutation.value.aviandrReview);
+      break;
     case "assessment.save": {
       option(raw.status, ["unapproved"]);
       option(raw.assessor, ["patient", "clinician"]);
@@ -723,7 +728,14 @@ export function applyCommand(
       }
       upsert(
         p.plan,
-        { ...m.value, confirmedAt: "", confirmedBy: "" },
+        {
+          ...m.value,
+          ...(m.value.aviandrReview
+            ? { aviandrReview: reviewForPlan(p, m.value, now, actor.name) }
+            : {}),
+          confirmedAt: "",
+          confirmedBy: "",
+        },
         actor,
         now,
       );
@@ -743,6 +755,8 @@ export function applyCommand(
           "Добавьте HTTPS-ссылку на проверенную инструкцию препарата.",
         );
       }
+      if (item.aviandrReview)
+        item.aviandrReview = reviewForPlan(p, item, now, actor.name);
       item.status = "confirmed";
       item.confirmedAt = now;
       item.confirmedBy = actor.name;
