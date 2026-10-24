@@ -5799,3 +5799,18 @@ summary:focus-visible {
     font-size: 18px;
   }
 }
+
+/* Утверждённый мокап экосистемы: сохраняем пропорции исходного изображения. */
+.hero .hero-stage.hero-product-image {
+  height: auto;
+  aspect-ratio: 3 / 2;
+  display: flex;
+  align-items: center;
+  overflow: visible;
+}
+.product-ecosystem-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
