@@ -6,7 +6,11 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const icon = (name) => `<svg aria-hidden="true"><use href="#i-${name}"/></svg>`;
 
-let dialogTrigger;
+$$(".audience-survey-mosaic").forEach((mosaic) => {
+  $$(".is-filled", mosaic).forEach((cell, index) => {
+    cell.style.setProperty("--cell-delay", `${80 + index * 28}ms`);
+  });
+});
 
 if ("IntersectionObserver" in window) {
   const observer = new IntersectionObserver(
@@ -129,33 +133,6 @@ function renderPlatform(name) {
 setupTabs("[data-platform]", (tab) => renderPlatform(tab.dataset.platform));
 renderPlatform("doctor");
 
-function openDialog(dialog) {
-  dialogTrigger = document.activeElement;
-  dialog.showModal();
-  document.body.classList.add("modal-open");
-}
-$$("[data-privacy]").forEach((button) =>
-  button.addEventListener("click", () => openDialog($("#privacy-dialog"))),
-);
-$$("dialog").forEach((dialog) => {
-  $("[data-close]", dialog).addEventListener("click", () => dialog.close());
-  dialog.addEventListener("close", () => {
-    document.body.classList.remove("modal-open");
-    if (dialogTrigger?.isConnected)
-      dialogTrigger.focus({ preventScroll: true });
-  });
-  dialog.addEventListener("click", (event) => {
-    const bounds = dialog.getBoundingClientRect();
-    if (
-      event.target === dialog &&
-      (event.clientX < bounds.left ||
-        event.clientX > bounds.right ||
-        event.clientY < bounds.top ||
-        event.clientY > bounds.bottom)
-    )
-      dialog.close();
-  });
-});
 const menuButton = $(".menu-toggle");
 const navigation = $("#navigation");
 function closeMenu() {
@@ -194,53 +171,3 @@ syncHeaderHeight();
 if ("ResizeObserver" in window)
   new ResizeObserver(syncHeaderHeight).observe(header);
 window.addEventListener("resize", syncHeaderHeight);
-
-const surveyData = [
-  {
-    percent: 80,
-    count: 64,
-    label: "Сталкиваются с разрозненностью информации о лечении.",
-  },
-  {
-    percent: 70,
-    count: 56,
-    label: "Сложно восстановить изменения самочувствия между приёмами.",
-  },
-  {
-    percent: 75,
-    count: 60,
-    label: "Хотели бы видеть план и динамику в одном месте.",
-  },
-];
-const chartNames = { rings: "Кольца", bars: "Полосы", mosaic: "Мозаика" };
-const chartTabs = $$("[data-survey-chart]");
-let chartIndex = 0;
-function renderSurveyChart(type) {
-  chartIndex = Object.keys(chartNames).indexOf(type);
-  const chart = $("#survey-chart");
-  chart.setAttribute("aria-labelledby", "chart-" + type);
-  chart.className = "survey-chart chart-" + type;
-  chart.innerHTML = surveyData
-    .map((data, index) => {
-      const visual =
-        type === "rings"
-          ? `<div class="survey-ring" aria-hidden="true" style="--value:${data.percent}%"><span>${data.percent}<small>%</small></span></div>`
-          : type === "mosaic"
-            ? `<div class="survey-mosaic" aria-hidden="true">${Array.from({ length: 80 }, (_, i) => `<i class="${i < data.count ? "filled" : ""}" style="--delay:${(i % 8) * 25}ms"></i>`).join("")}</div>`
-            : `<div class="survey-track" aria-hidden="true"><span style="--value:${data.percent}%"></span></div>`;
-      return `<article class="survey-chart-item" style="--series:${index}"><div class="survey-stat"><strong>${data.percent}<span>%</span></strong><small>${data.count} из 80</small></div>${visual}<p>${data.label}</p></article>`;
-    })
-    .join("");
-  $("#chart-position").textContent =
-    chartIndex + 1 + " / 3 · " + chartNames[type];
-}
-setupTabs("[data-survey-chart]", (tab) =>
-  renderSurveyChart(tab.dataset.surveyChart),
-);
-$("[data-chart-prev]").addEventListener("click", () =>
-  chartTabs[(chartIndex + 2) % 3].click(),
-);
-$("[data-chart-next]").addEventListener("click", () =>
-  chartTabs[(chartIndex + 1) % 3].click(),
-);
-renderSurveyChart("rings");
