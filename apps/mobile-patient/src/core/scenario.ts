@@ -128,7 +128,7 @@ export function seedScenario(seedDay: DayKey): JourneyState {
       at,
       slotId: "morning",
       status: i === 2 ? "missed" : "taken",
-      occurredAt: "09:00",
+      ...(i === 2 ? {} : { occurredAt: "09:00" }),
       note: i === 2 ? "Забыла утром" : "",
     };
     state.events.push(event);

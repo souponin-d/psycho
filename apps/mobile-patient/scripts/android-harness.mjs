@@ -19,8 +19,21 @@ export const shell = (...args) => run("shell", ...args).toString();
 export const pause = (ms = 600) =>
   Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
 export function nodes() {
-  shell("uiautomator", "dump", "--compressed", "/sdcard/journey-care.xml");
-  const xml = run("exec-out", "cat", "/sdcard/journey-care.xml").toString();
+  let xml;
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const path = `/data/local/tmp/syncli-ui-${Date.now()}-${attempt}.xml`;
+    const output = shell("uiautomator", "dump", "--compressed", path);
+    if (output.includes("dumped")) {
+      xml = run("exec-out", "cat", path).toString();
+      shell("rm", path);
+      break;
+    }
+    pause(350);
+  }
+  if (!xml)
+    throw Error(
+      "Android не вернул новое дерево интерфейса; прежний снимок не используется",
+    );
   writeFileSync(join(dir, "latest.xml"), xml);
   return [...xml.matchAll(/<node\b([^>]+)>/g)].map((m) =>
     Object.fromEntries(
@@ -68,12 +81,13 @@ export function screen(name) {
   writeFileSync(join(dir, name + ".png"), run("exec-out", "screencap", "-p"));
 }
 export function seek(label) {
-  const [, w, h] = shell("wm", "size")
-    .match(/(\d+)x(\d+)/)
-    .map(Number);
+  const [w, h] = screenSize();
   for (let i = 0; i < 12; i++) {
-    const n = find(label);
-    if (n && bounds(n)[1] >= 90 && bounds(n)[3] < h - 100) return n;
+    const list = nodes();
+    const n = find(label, list);
+    const hasTabs = !!find("Путь", list) && !!find("История", list);
+    const center = n ? (bounds(n)[1] + bounds(n)[3]) / 2 : -1;
+    if (n && center >= 100 && center < h - (hasTabs ? 280 : 60)) return n;
     shell(
       "input",
       "swipe",
@@ -92,8 +106,15 @@ export function fill(label, text) {
   shell("input", "keyevent", "123");
   for (let i = 0; i < 40; i++) shell("input", "keyevent", "67");
   shell("input", "text", text);
-  shell("input", "keyevent", "4");
+  hideKeyboard();
   pause();
+}
+export function hideKeyboard() {
+  const state = shell("dumpsys", "input_method");
+  if (/mIsInputViewShown=true/.test(state)) {
+    shell("input", "keyevent", "4");
+    pause(600);
+  }
 }
 export function open(path) {
   shell(
@@ -109,9 +130,7 @@ export function open(path) {
   pause();
 }
 export function scrollTop() {
-  const [, w, h] = shell("wm", "size")
-    .match(/(\d+)x(\d+)/)
-    .map(Number);
+  const [w, h] = screenSize();
   for (let i = 0; i < 5; i++)
     shell(
       "input",
@@ -123,4 +142,8 @@ export function scrollTop() {
       "300",
     );
   pause();
+}
+export function screenSize() {
+  const matches = [...shell("wm", "size").matchAll(/(\d+)x(\d+)/g)];
+  return matches.at(-1).slice(1).map(Number);
 }

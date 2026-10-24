@@ -421,6 +421,19 @@ export function JourneyMap() {
                     }}
                   />
                 )}
+                {selectedDay && selectedDay.day < today && (
+                  <Button
+                    title="История этого дня"
+                    secondary
+                    onPress={() => {
+                      setSelected(null);
+                      router.push({
+                        pathname: "/(tabs)/history",
+                        params: { day: selectedDay.day },
+                      });
+                    }}
+                  />
+                )}
                 <Button
                   title="Вернуться на путь"
                   secondary

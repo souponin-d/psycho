@@ -3,7 +3,7 @@ import { isDay } from "./shore.ts";
 import { fieldComplete } from "./therapy.ts";
 import { completeQuestionnaire } from "./questionnaires.ts";
 import { PatientValidationError } from "./patientErrors.ts";
-import { connectScenario } from "./scenario.ts";
+import { connectScenario, seedScenario } from "./scenario.ts";
 import type {
   Instant,
   JourneyState,
@@ -19,6 +19,14 @@ export function applyPatientCommand(
   const base = closeElapsedDays(state, now);
   const today = dayAt(now);
   switch (command.type) {
+    case "reset": {
+      const fresh = seedScenario(today);
+      return {
+        ...fresh,
+        connected: false,
+        plan: { ...fresh.plan, id: fresh.plan.id + ":" + now.utcMs },
+      };
+    }
     case "tick":
       return base;
     case "connect":

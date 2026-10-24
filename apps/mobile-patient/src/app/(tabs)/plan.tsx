@@ -32,10 +32,13 @@ export default function PlanScreen() {
         day: dayAt(instantNow()),
         slotId,
         status,
-        occurredAt: new Date().toLocaleTimeString("ru-RU", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
+        occurredAt:
+          status === "taken"
+            ? new Date().toLocaleTimeString("ru-RU", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : undefined,
       },
     });
   }

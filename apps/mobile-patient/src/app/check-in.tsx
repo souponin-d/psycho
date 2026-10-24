@@ -25,9 +25,9 @@ import { FeelingGrid } from "../components/FeelingGrid";
 import { useApp } from "../state/AppProvider";
 import { useFeedback } from "../hooks/useFeedback";
 import { feelingAt, feelingHint, type FeelingPoint } from "../core/feelings";
-import { dayKey } from "../config/content";
+import { dayKey, moodOptions } from "../config/content";
 export default function CheckInScreen() {
-  const { theme, state } = useApp();
+  const { theme, today } = useApp();
   const { journey, act, saving: persisting } = useJourney();
   const params = useLocalSearchParams<{
     day?: string;
@@ -41,7 +41,22 @@ export default function CheckInScreen() {
           (r) => (r.entityId ?? r.id) === params.reportId,
         )
       : undefined;
-  const required = existing?.required ?? params.personal !== "1";
+  const legacy = params.reportId?.startsWith("legacy:")
+    ? journey?.legacyArchive.find((r) => r.id === params.reportId!.slice(7))
+    : undefined;
+  const initialFields: ReportFields =
+    existing?.fields ??
+    (legacy
+      ? {
+          sleep: legacy.sleep,
+          ...(legacy.feeling ? { feeling: legacy.feeling } : {}),
+        }
+      : {});
+  const required =
+    existing?.required ??
+    (!legacy &&
+      day >= (journey?.plan.startedAt ?? day) &&
+      params.personal !== "1");
   const draftKey = params.reportId
     ? "edit:" + params.reportId
     : (required ? "report:" : "moment:") + day;
@@ -51,16 +66,25 @@ export default function CheckInScreen() {
     dimensions = useWindowDimensions(),
     { pulse } = useFeedback();
   const [point, setPoint] = useState<FeelingPoint | null>(
-    draft?.fields?.feeling ?? existing?.fields.feeling ?? null,
+    draft?.fields?.feeling ?? initialFields.feeling ?? null,
   );
-  const [label, setLabel] = useState(draft?.label ?? existing?.label ?? ""),
-    [fields, setFields] = useState<ReportFields>(
-      draft?.fields ?? existing?.fields ?? {},
+  const [label, setLabel] = useState(
+      draft?.label ??
+        existing?.label ??
+        legacy?.label ??
+        (legacy ? moodOptions.find((m) => m.id === legacy.mood)?.label : "") ??
+        "",
     ),
-    [note, setNote] = useState(draft?.note ?? existing?.note ?? "");
-  const [panel, setPanel] = useState<"note" | "controls" | null>(null);
-  const [saved, setSaved] = useState(false),
-    [firstMoment, setFirstMoment] = useState(false);
+    [fields, setFields] = useState<ReportFields>(
+      draft?.fields ?? initialFields,
+    ),
+    [note, setNote] = useState(
+      draft?.note ?? existing?.note ?? legacy?.note ?? "",
+    );
+  const [panel, setPanel] = useState<"note" | "controls" | null>(
+    legacy ? "note" : null,
+  );
+  const [saved, setSaved] = useState(false);
   const saving = useRef(false);
   const savedRef = useRef(false);
   const draftRef = useRef<PatientDraft | null>(null);
@@ -97,8 +121,8 @@ export default function CheckInScreen() {
   const ink = theme.dark ? "#FFF7E9" : theme.text,
     muted = theme.dark ? "#C5BEC8" : theme.muted;
   async function save() {
-    if (!point || saving.current || !journey) return;
-    const completeFields = { ...fields, feeling: point };
+    if ((!point && !legacy) || saving.current || !journey) return;
+    const completeFields = { ...fields, ...(point ? { feeling: point } : {}) };
     if (
       required &&
       !journey.plan.reportFields.every((f) => fieldComplete(completeFields, f))
@@ -107,7 +131,6 @@ export default function CheckInScreen() {
       return;
     }
     saving.current = true;
-    setFirstMoment(!latestReports(journey, day).length);
     const id = `moment-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     const success = await act({
       type: "event",
@@ -117,7 +140,7 @@ export default function CheckInScreen() {
         kind: "report",
         day,
         fields: completeFields,
-        label: label.trim() || feeling.label,
+        label: label.trim() || (point ? feeling.label : "Архивная запись"),
         note: note.trim(),
         required,
       },
@@ -151,25 +174,27 @@ export default function CheckInScreen() {
           >
             <Enter>
               <View style={{ alignItems: "center", gap: 18 }}>
-                <FeelingCharacter point={preview} size={175} />
+                {point ? (
+                  <FeelingCharacter point={point} size={175} />
+                ) : (
+                  <Icon name="check" size={80} color={ink} />
+                )}
                 <T
                   size={30}
                   weight="500"
                   style={{ color: ink, textAlign: "center", letterSpacing: -1 }}
                 >
-                  Момент сохранён
+                  {params.reportId ? "Изменения сохранены" : "Запись сохранена"}
                 </T>
                 <T size={14} style={{ color: muted, textAlign: "center" }}>
-                  {state.gameplay
-                    ? firstMoment
-                      ? "На вашем берегу появился камешек воспоминания."
-                      : "Ещё один момент остался в истории вашего дня."
-                    : "Запись уже в вашей истории."}
+                  {day < today
+                    ? "Запись обновлена в истории. Стрик закрытого дня и награды не пересчитываются."
+                    : "Запись уже в вашей истории. Зачёт дня учитывает все задания плана."}
                 </T>
               </View>
             </Enter>
             <Button
-              title="Вернуться на берег"
+              title="Вернуться на путь"
               onPress={() => router.dismissTo("/")}
             />
             <Button
@@ -217,8 +242,10 @@ export default function CheckInScreen() {
                 haptic={false}
                 accessibilityRole="button"
                 accessibilityLabel="Сохранить момент"
-                accessibilityState={{ disabled: !point || persisting }}
-                disabled={!point || persisting}
+                accessibilityState={{
+                  disabled: (!point && !legacy) || persisting,
+                }}
+                disabled={(!point && !legacy) || persisting}
                 onPress={save}
                 style={{
                   width: 48,

@@ -140,4 +140,5 @@ export type PatientCommand =
   | { type: "connect"; code: string }
   | { type: "goal"; goal: string }
   | { type: "world"; world: WorldState }
-  | { type: "tick" };
+  | { type: "tick" }
+  | { type: "reset" };

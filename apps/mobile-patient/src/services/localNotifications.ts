@@ -1,6 +1,10 @@
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
-import { registerNotificationTask } from "./notificationTask";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  registerNotificationTask,
+  notificationOutcomeKey,
+} from "./notificationTask";
 import { readReminderJob, scheduleReminder } from "./notificationTransport";
 export { readReminderJob, scheduleReminder } from "./notificationTransport";
 import { instantNow } from "../core/calendar";
@@ -126,4 +130,19 @@ export async function scheduleNotificationProbe() {
       channelId: reminderChannel,
     },
   });
+}
+export async function clearReminderNotifications() {
+  await queue.catch(() => {});
+  const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+  for (const request of scheduled)
+    if (request.identifier.startsWith("syncli."))
+      await Notifications.cancelScheduledNotificationAsync(request.identifier);
+  const shown = await Notifications.getPresentedNotificationsAsync();
+  for (const notification of shown)
+    if (notification.request.identifier.startsWith("syncli."))
+      await Notifications.dismissNotificationAsync(
+        notification.request.identifier,
+      );
+  await Notifications.clearLastNotificationResponseAsync();
+  await AsyncStorage.removeItem(notificationOutcomeKey);
 }

@@ -9,8 +9,12 @@ import { Mascot } from "../components/Mascot";
 import { useApp } from "../state/AppProvider";
 import { mascotOptions } from "../config/content";
 import { ReminderSettings } from "../components/ReminderSettings";
+import { useJourney } from "../state/JourneyProvider";
+import { clearReminderNotifications } from "../services/localNotifications";
+import { clearSavedHistoryExports } from "../services/historyExport";
 export default function SettingsScreen() {
   const { state, dispatch, theme } = useApp();
+  const { act, saving } = useJourney();
   const [name, setName] = useState(state.name);
   return (
     <Screen title="Ваше пространство" back>
@@ -165,17 +169,31 @@ export default function SettingsScreen() {
         <Button
           secondary
           title="Сбросить данные на телефоне"
+          disabled={saving}
           icon="history"
           onPress={() =>
             Alert.alert(
               "Начать заново?",
-              "Удалятся настройки, история, вопросы и украшения на этом телефоне.",
+              "Удалятся ваши локальные записи, файлы истории внутри Синкли, вопросы, настройки и расстановка. Внешние копии файлов останутся. Снова откроется учебный сценарий с восемью прошлыми днями.",
               [
                 { text: "Отмена", style: "cancel" },
                 {
                   text: "Сбросить",
                   style: "destructive",
-                  onPress: () => {
+                  onPress: async () => {
+                    if (!(await act({ type: "reset" }))) return;
+                    const cleanup = await Promise.allSettled([
+                      clearReminderNotifications(),
+                      Promise.resolve().then(clearSavedHistoryExports),
+                    ]);
+                    if (
+                      cleanup.some((result) => result.status === "rejected")
+                    ) {
+                      Alert.alert(
+                        "Очистка завершена частично",
+                        "Профиль сброшен, но часть файлов или прежних сигналов удалить не удалось. Повторите сброс после знакомства.",
+                      );
+                    }
                     dispatch({ type: "reset" });
                     router.replace("/onboarding");
                   },
