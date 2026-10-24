@@ -7,7 +7,7 @@ import { Icon, type IconName } from "../../components/Icon";
 import { T } from "../../components/UI";
 import { Touch } from "../../components/Motion";
 const items: Record<string, { title: string; icon: IconName }> = {
-  index: { title: "День", icon: "sun" },
+  index: { title: "Путь", icon: "sun" },
   plan: { title: "План", icon: "leaf" },
   history: { title: "История", icon: "history" },
   chat: { title: "Рядом", icon: "message" },

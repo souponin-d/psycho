@@ -1,4 +1,4 @@
-import { LivingShore } from "../../components/LivingShore";
+import { JourneyMap } from "../../components/JourneyMap";
 export default function TodayScreen() {
-  return <LivingShore />;
+  return <JourneyMap />;
 }

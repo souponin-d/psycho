@@ -22,7 +22,9 @@ export function applyPatientCommand(
       return base;
     case "connect": {
       if (command.code.trim().toUpperCase() !== "SYNCLI-START")
-        throw new PatientValidationError("Проверьте код или войдите в демо-режиме.");
+        throw new PatientValidationError(
+          "Проверьте код или войдите в демо-режиме.",
+        );
       return base.connected ? base : { ...base, connected: true };
     }
     case "goal":
@@ -62,7 +64,9 @@ export function applyPatientCommand(
         !input.deleted &&
         !base.plan.reportFields.every((f) => fieldComplete(input.fields, f))
       )
-        throw new PatientValidationError("Заполните обязательные поля самоотчёта");
+        throw new PatientValidationError(
+          "Заполните обязательные поля самоотчёта",
+        );
       if (input.kind === "questionnaire") {
         const assignment = base.plan.tests.find(
           (t) => t.id === input.assignmentId,

@@ -16,7 +16,15 @@ const now = {
 };
 
 test("ошибка пользовательского ввода отделена от ошибки хранилища для исправления без блокировки", () => {
-  assert.throws(() => applyPatientCommand(seedScenario("2026-10-24"), { type: "connect", code: "wrong" }, now), PatientValidationError);
+  assert.throws(
+    () =>
+      applyPatientCommand(
+        seedScenario("2026-10-24"),
+        { type: "connect", code: "wrong" },
+        now,
+      ),
+    PatientValidationError,
+  );
 });
 
 test("полные русские формы имеют 7/9 симптомных вопросов и собственный паспорт", () => {
