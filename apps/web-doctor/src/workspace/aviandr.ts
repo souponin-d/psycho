@@ -20,7 +20,7 @@ export function aviandrContext(
   const {
     birthDate,
     allergies,
-    conditions,
+    clinicalContext,
     currentMedication,
     reproductiveContext,
     substanceUse,
@@ -28,7 +28,9 @@ export function aviandrContext(
   return {
     birthDate,
     allergies,
-    conditions,
+    conditions: clinicalContext.somaticConditions
+      .map((item) => `${item.code} ${item.title}`)
+      .join("; "),
     currentMedication,
     reproductiveContext,
     substanceUse,
@@ -36,7 +38,22 @@ export function aviandrContext(
       .filter((e) => e.status !== "closed")
       .slice()
       .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
-      .map((e) => `${e.title} | ${e.diagnosis} | ${e.diagnosisStatus}`),
+      .map((e) => `${e.title} | ${e.diagnosis} | ${e.diagnosisStatus}`)
+      .concat(
+        patient.visits
+          .filter((v) => v.status !== "cancelled")
+          .slice()
+          .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
+          .flatMap((v) =>
+            v.diagnoses
+              .slice()
+              .sort((a, b) => (a.code < b.code ? -1 : a.code > b.code ? 1 : 0))
+              .map(
+                (d) =>
+                  `${v.id} | ${d.code} | ${d.title} | ${d.status} | ${d.sourceVersion}`,
+              ),
+          ),
+      ),
     medicines: patient.plan
       .filter(
         (p) =>

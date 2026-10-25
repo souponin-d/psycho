@@ -110,14 +110,13 @@ export function Workday({
     <>
       <div className={styles.pageHeading}>
         <div>
-          <h1>Рабочий день</h1>
+          <h1>Ваш рабочий день</h1>
           <p>
             {formatDate(new Date().toISOString(), {
               weekday: "long",
               day: "numeric",
               month: "long",
-            })}{" "}
-            · главное перед приёмами
+            })}
           </p>
         </div>
         <Button icon="plus" onClick={onCreate}>

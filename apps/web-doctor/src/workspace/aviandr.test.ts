@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { seedPatients, demoActor } from "./seed";
+import { ICD10_CATALOG } from "./terminology";
 import { applyCommand } from "./commands";
 import {
   aviandrContext,
@@ -186,7 +187,9 @@ describe("Подготовительная проверка Авиандра", (
     expect(confirmed.plan.at(-1)?.status).toBe("confirmed");
     expect(confirmed.plan.at(-1)?.aviandrReview?.status).toBe("unapproved");
     const changed = structuredClone(saved);
-    changed.profile.conditions = "Новое обстоятельство";
+    changed.profile.clinicalContext.somaticConditions = [
+      ICD10_CATALOG.find((item) => item.code === "G40")!,
+    ];
     expect(() =>
       applyCommand(
         changed,
@@ -200,4 +203,29 @@ describe("Подготовительная проверка Авиандра", (
       ),
     ).toThrow(/карты/);
   });
+});
+
+it("включает выбранные соматические состояния в снимок проверки", () => {
+  const p = patient();
+  p.profile.clinicalContext.somaticConditions = [
+    ICD10_CATALOG.find((item) => item.code === "G40")!,
+  ];
+  expect(aviandrContext(p, "new-plan").conditions).toBe("G40 Эпилепсия");
+});
+
+it("считает проверку устаревшей после изменения выбранного диагноза приёма", () => {
+  const p = patient();
+  const diagnosis = {
+    ...ICD10_CATALOG.find((d) => d.code === "F41.1")!,
+    status: "hypothesis" as const,
+  };
+  p.visits[0]!.diagnoses = [diagnosis];
+  const review = newAviandrReview(p, "new-plan");
+  expect(review.context.diagnoses.some((row) => row.includes("F41.1"))).toBe(
+    true,
+  );
+  p.visits[0]!.diagnoses = [];
+  expect(() =>
+    prepareAviandrReview(p, "new-plan", review, now, "Врач", "2026-10-24"),
+  ).toThrow(/изменил/);
 });

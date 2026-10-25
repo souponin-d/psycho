@@ -1,3 +1,5 @@
+import type { TerminologySelection } from "./terminology";
+
 export type Provenance = "patient" | "clinician" | "relative" | "document";
 export type Urgency = "routine" | "important" | "urgent";
 export type VisitStatus =
@@ -47,7 +49,6 @@ export interface Profile {
   representative: string;
   preferredContact: string;
   allergies: string;
-  conditions: string;
   currentMedication: string;
   familyHistory: string;
   pastEpisodes: string;
@@ -55,6 +56,12 @@ export interface Profile {
   socialContext: string;
   reproductiveContext: string;
   goals: string;
+  clinicalContext: PatientClinicalContext;
+}
+export interface PatientClinicalContext {
+  complaints: string;
+  illnessHistory: string;
+  somaticConditions: TerminologySelection[];
 }
 export interface Episode extends Stamp {
   title: string;
@@ -67,20 +74,12 @@ export interface Episode extends Stamp {
   summary: string;
 }
 export const encounterFields = [
-  "complaints",
-  "history",
-  "onset",
-  "functioning",
-  "mentalState",
-  "physicalState",
-  "sleep",
+  "mentalStatus",
+  "somaticStatus",
   "substances",
   "medicationReview",
   "adverseEffects",
   "adherence",
-  "mania",
-  "psychosis",
-  "somaticCauses",
   "suicidalThoughts",
   "intentAndPlan",
   "pastAttempts",
@@ -88,7 +87,6 @@ export const encounterFields = [
   "protectiveFactors",
   "safetyConclusion",
   "safetyAction",
-  "diagnosis",
   "differential",
   "conclusion",
   "recommendations",
@@ -96,8 +94,10 @@ export const encounterFields = [
 ] as const;
 export type EncounterField = (typeof encounterFields)[number];
 export type EncounterNotes = Record<EncounterField, string>;
+export interface DiagnosisSelection extends TerminologySelection {
+  status: "hypothesis" | "confirmed";
+}
 export interface Visit extends Stamp, Evidence {
-  episodeId: string;
   scheduledAt: string;
   durationMinutes: number;
   kind: "initial" | "follow-up" | "unscheduled";
@@ -105,6 +105,7 @@ export interface Visit extends Stamp, Evidence {
   status: VisitStatus;
   reason: string;
   notes: EncounterNotes;
+  diagnoses: DiagnosisSelection[];
   provenance: Provenance;
   nextVisitAt: string;
   completedAt: string;

@@ -758,14 +758,16 @@
                       "representative": { "type": "string" },
                       "preferredContact": { "type": "string" },
                       "allergies": { "type": "string" },
-                      "conditions": { "type": "string" },
                       "currentMedication": { "type": "string" },
                       "familyHistory": { "type": "string" },
                       "pastEpisodes": { "type": "string" },
                       "substanceUse": { "type": "string" },
                       "socialContext": { "type": "string" },
                       "reproductiveContext": { "type": "string" },
-                      "goals": { "type": "string" }
+                      "goals": { "type": "string" },
+                      "clinicalContext": {
+                        "$ref": "#/components/schemas/PatientClinicalContext"
+                      }
                     }
                   }
                 }
@@ -1891,14 +1893,16 @@
           "representative": { "type": "string" },
           "preferredContact": { "type": "string" },
           "allergies": { "type": "string" },
-          "conditions": { "type": "string" },
           "currentMedication": { "type": "string" },
           "familyHistory": { "type": "string" },
           "pastEpisodes": { "type": "string" },
           "substanceUse": { "type": "string" },
           "socialContext": { "type": "string" },
           "reproductiveContext": { "type": "string" },
-          "goals": { "type": "string" }
+          "goals": { "type": "string" },
+          "clinicalContext": {
+            "$ref": "#/components/schemas/PatientClinicalContext"
+          }
         },
         "required": [
           "name",
@@ -1912,15 +1916,43 @@
           "representative",
           "preferredContact",
           "allergies",
-          "conditions",
           "currentMedication",
           "familyHistory",
           "pastEpisodes",
           "substanceUse",
           "socialContext",
           "reproductiveContext",
-          "goals"
+          "goals",
+          "clinicalContext"
         ]
+      },
+      "PatientClinicalContext": {
+        "type": "object",
+        "properties": {
+          "complaints": { "type": "string" },
+          "illnessHistory": { "type": "string" },
+          "somaticConditions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "system": { "type": "string", "const": "ICD-10-RU" },
+                "sourceOid": { "type": "string" },
+                "sourceVersion": { "type": "string" },
+                "code": { "type": "string" },
+                "title": { "type": "string" }
+              },
+              "required": [
+                "system",
+                "sourceOid",
+                "sourceVersion",
+                "code",
+                "title"
+              ]
+            }
+          }
+        },
+        "required": ["complaints", "illnessHistory", "somaticConditions"]
       },
       "Episode": {
         "type": "object",
@@ -1965,28 +1997,19 @@
         "enum": [
           "adherence",
           "adverseEffects",
-          "complaints",
           "conclusion",
-          "diagnosis",
           "differential",
-          "functioning",
-          "history",
           "intentAndPlan",
-          "mania",
           "meansAccess",
           "medicationReview",
-          "mentalState",
-          "onset",
+          "mentalStatus",
           "pastAttempts",
           "patientPreference",
-          "physicalState",
           "protectiveFactors",
-          "psychosis",
           "recommendations",
           "safetyAction",
           "safetyConclusion",
-          "sleep",
-          "somaticCauses",
+          "somaticStatus",
           "substances",
           "suicidalThoughts"
         ]
@@ -1996,64 +2019,64 @@
         "properties": {
           "adherence": { "type": "string" },
           "adverseEffects": { "type": "string" },
-          "complaints": { "type": "string" },
           "conclusion": { "type": "string" },
-          "diagnosis": { "type": "string" },
           "differential": { "type": "string" },
-          "functioning": { "type": "string" },
-          "history": { "type": "string" },
           "intentAndPlan": { "type": "string" },
-          "mania": { "type": "string" },
           "meansAccess": { "type": "string" },
           "medicationReview": { "type": "string" },
-          "mentalState": { "type": "string" },
-          "onset": { "type": "string" },
+          "mentalStatus": { "type": "string" },
           "pastAttempts": { "type": "string" },
           "patientPreference": { "type": "string" },
-          "physicalState": { "type": "string" },
           "protectiveFactors": { "type": "string" },
-          "psychosis": { "type": "string" },
           "recommendations": { "type": "string" },
           "safetyAction": { "type": "string" },
           "safetyConclusion": { "type": "string" },
-          "sleep": { "type": "string" },
-          "somaticCauses": { "type": "string" },
+          "somaticStatus": { "type": "string" },
           "substances": { "type": "string" },
           "suicidalThoughts": { "type": "string" }
         },
         "required": [
           "adherence",
           "adverseEffects",
-          "complaints",
           "conclusion",
-          "diagnosis",
           "differential",
-          "functioning",
-          "history",
           "intentAndPlan",
-          "mania",
           "meansAccess",
           "medicationReview",
-          "mentalState",
-          "onset",
+          "mentalStatus",
           "pastAttempts",
           "patientPreference",
-          "physicalState",
           "protectiveFactors",
-          "psychosis",
           "recommendations",
           "safetyAction",
           "safetyConclusion",
-          "sleep",
-          "somaticCauses",
+          "somaticStatus",
           "substances",
           "suicidalThoughts"
+        ]
+      },
+      "DiagnosisSelection": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "enum": ["confirmed", "hypothesis"] },
+          "system": { "type": "string", "const": "ICD-10-RU" },
+          "sourceOid": { "type": "string" },
+          "sourceVersion": { "type": "string" },
+          "code": { "type": "string" },
+          "title": { "type": "string" }
+        },
+        "required": [
+          "status",
+          "system",
+          "sourceOid",
+          "sourceVersion",
+          "code",
+          "title"
         ]
       },
       "Visit": {
         "type": "object",
         "properties": {
-          "episodeId": { "type": "string" },
           "scheduledAt": { "type": "string" },
           "durationMinutes": { "type": "number" },
           "kind": {
@@ -2064,6 +2087,10 @@
           "status": { "$ref": "#/components/schemas/VisitStatus" },
           "reason": { "type": "string" },
           "notes": { "$ref": "#/components/schemas/EncounterNotes" },
+          "diagnoses": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/DiagnosisSelection" }
+          },
           "provenance": { "$ref": "#/components/schemas/Provenance" },
           "nextVisitAt": { "type": "string" },
           "completedAt": { "type": "string" },
@@ -2115,7 +2142,6 @@
           "rationale": { "type": "string" }
         },
         "required": [
-          "episodeId",
           "scheduledAt",
           "durationMinutes",
           "kind",
@@ -2123,6 +2149,7 @@
           "status",
           "reason",
           "notes",
+          "diagnoses",
           "provenance",
           "nextVisitAt",
           "completedAt",

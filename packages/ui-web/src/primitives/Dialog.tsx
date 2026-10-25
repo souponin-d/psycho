@@ -10,11 +10,13 @@ export function DialogPanel({
   children,
   size = "default",
   bodyClassName,
+  showCloseButton = true,
 }: {
   title: string;
   size?: "default" | "wide";
   bodyClassName?: string;
   children: ReactNode;
+  showCloseButton?: boolean;
 }) {
   return (
     <Dialog.Portal>
@@ -25,9 +27,11 @@ export function DialogPanel({
       >
         <header className={styles.dialogHeader}>
           <Dialog.Title className={styles.dialogTitle}>{title}</Dialog.Title>
-          <Dialog.Close asChild>
-            <Button variant="secondary">Закрыть</Button>
-          </Dialog.Close>
+          {showCloseButton && (
+            <Dialog.Close asChild>
+              <Button variant="secondary">Закрыть</Button>
+            </Dialog.Close>
+          )}
         </header>
         <div className={`${styles.dialogBody} ${bodyClassName ?? ""}`}>
           {children}

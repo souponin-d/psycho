@@ -267,6 +267,12 @@ async function scenario(currentMode) {
           .inputValue(),
         "Учебная цель: подготовить вопросы к следующему приёму",
       );
+      await profile
+        .getByLabel("Жалобы", { exact: true })
+        .fill("Синтетическая жалоба для проверки сохранения");
+      await profile
+        .getByLabel("Анамнез заболевания", { exact: true })
+        .fill("Учебная запись; клиническое решение не моделируется.");
       await closeSaved(profile, "Сохранить профиль");
       await visible(
         page.getByText(
@@ -326,7 +332,7 @@ async function scenario(currentMode) {
         .getByLabel("Дата и время", { exact: false })
         .fill(localDateTime(now));
       await appointment
-        .getByLabel("Причина обращения / повестка", { exact: false })
+        .getByLabel("Причина обращения", { exact: false })
         .fill("Синтетическая проверка рабочего места врача");
       await closeSaved(appointment, "Создать приём");
       await visible(
@@ -339,14 +345,13 @@ async function scenario(currentMode) {
       await page
         .getByRole("button", { name: "Начать приём", exact: true })
         .waitFor({ state: "hidden" });
-      await page
-        .getByLabel("Жалобы и причина обращения", { exact: false })
-        .fill("Синтетическая жалоба для проверки сохранения");
-      await page
-        .getByLabel("История текущего состояния", { exact: false })
-        .fill("Учебная запись; клиническое решение не моделируется.");
-      await saveVisit(page);
       await page.getByRole("button", { name: /Оценка состояния/ }).click();
+      await page
+        .getByLabel("Психический статус", { exact: false })
+        .fill("Синтетическое описание для технической проверки.");
+      await page
+        .getByLabel("Соматический статус", { exact: false })
+        .fill("Учебная запись; клиническое решение не моделируется.");
       await page
         .getByLabel("Заключение врача по безопасности", { exact: false })
         .fill("Синтетическая оценка безопасности для технического сценария.");

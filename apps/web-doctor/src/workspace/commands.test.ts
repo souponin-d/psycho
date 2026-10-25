@@ -14,6 +14,7 @@ import type {
   Referral,
 } from "./model";
 import sourceData from "./source-data.json";
+import { ICD10_CATALOG } from "./terminology";
 
 const actor: Actor = {
   id: "doctor-1",
@@ -86,6 +87,40 @@ function patient() {
     "patient-1",
   );
 }
+
+it("создаёт контекст пациента и приём без обязательного эпизода", () => {
+  const p = patient();
+  const visit = createVisit("visit-context", now, actor);
+  expect(p.profile.clinicalContext).toMatchObject({
+    complaints: "",
+    illnessHistory: "",
+    somaticConditions: [],
+  });
+  expect(visit).not.toHaveProperty("episodeId");
+  expect(visit.diagnoses).toEqual([]);
+});
+
+it("отклоняет диагноз, которого нет в текущем учебном каталоге", () => {
+  const visit = createVisit("visit-diagnosis", now, actor);
+  const known = ICD10_CATALOG.find((entry) => entry.code === "F32.1")!;
+  expect(
+    run(patient(), {
+      type: "visit.save",
+      value: { ...visit, diagnoses: [{ ...known, status: "hypothesis" }] },
+    }),
+  ).toBeTruthy();
+  expect(() =>
+    run(patient(), {
+      type: "visit.save",
+      value: {
+        ...visit,
+        diagnoses: [
+          { ...known, title: "Подменённое название", status: "hypothesis" },
+        ],
+      },
+    }),
+  ).toThrow(/МКБ-10/);
+});
 function run(p: PatientRecord, mutation: Mutation, id = crypto.randomUUID()) {
   return applyCommand(
     p,
@@ -102,7 +137,6 @@ function ready() {
   let p = scheduled(patient());
   const visit = structuredClone(p.visits[0]!);
   for (const key of [
-    "complaints",
     "safetyConclusion",
     "conclusion",
     "recommendations",
@@ -421,7 +455,7 @@ describe("рабочий путь врача", () => {
     );
     const v = structuredClone(p.visits[0]!);
     v.status = "in-progress";
-    v.notes.complaints = "Тревога";
+    v.notes.mentalStatus = "Тревога";
     v.notes.safetyConclusion = "Оценка проведена врачом";
     v.notes.conclusion = "Обсуждён индивидуальный план";
     v.notes.recommendations = "Контроль на приёме";
@@ -630,4 +664,23 @@ describe("рабочий путь врача", () => {
       }),
     ).toThrow(/исключён/i);
   });
+});
+
+it("сохраняет ограничение подтверждения диагноза в новой модели приёма", () => {
+  const p = patient();
+  const visit = createVisit("diagnosis-access", now, actor);
+  visit.diagnoses = [
+    { ...ICD10_CATALOG.find((d) => d.code === "F41.1")!, status: "confirmed" },
+  ];
+  const command = {
+    commandId: "diagnosis-access",
+    expectedRevision: p.revision,
+    mutation: { type: "visit.save" as const, value: visit },
+  };
+  expect(() =>
+    applyCommand(p, command, { ...actor, specialty: "physician" }, now),
+  ).toThrow(/психиатру/);
+  expect(
+    applyCommand(p, command, actor, now).visits.at(-1)?.diagnoses[0]?.status,
+  ).toBe("confirmed");
 });

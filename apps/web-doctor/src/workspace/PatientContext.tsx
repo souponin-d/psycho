@@ -27,7 +27,14 @@ export function PatientContext({
     : [
         ["Цели", patient.profile.goals],
         ["Аллергии", patient.profile.allergies],
-        ["Заболевания", patient.profile.conditions],
+        ["Жалобы", patient.profile.clinicalContext.complaints],
+        ["Анамнез заболевания", patient.profile.clinicalContext.illnessHistory],
+        [
+          "Соматические заболевания",
+          patient.profile.clinicalContext.somaticConditions
+            .map((item) => `${item.code} ${item.title}`)
+            .join("; "),
+        ],
         ["Лекарства", patient.profile.currentMedication],
         ["Поддержка", patient.profile.socialContext],
       ];

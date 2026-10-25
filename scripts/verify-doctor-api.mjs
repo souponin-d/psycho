@@ -10,6 +10,7 @@ import {
   apiDirectory,
 } from "./doctor-runtime.mjs";
 import path from "node:path";
+import { ICD10_CATALOG } from "../apps/web-doctor/src/workspace/terminology.ts";
 import {
   newAviandrReview,
   evaluateAviandr,
@@ -194,7 +195,7 @@ for (const value of [
   null,
   { ...visit, durationMinutes: "45" },
   { ...visit, durationMinutes: 1.5 },
-  { ...visit, notes: { ...visit.notes, complaints: null } },
+  { ...visit, notes: { ...visit.notes, mentalStatus: null } },
   { ...visit, scheduledAt: "2026-02-30T12:00:00Z" },
   { ...visit, unknownField: "unexpected" },
 ]) {
@@ -227,7 +228,7 @@ visit = {
   ...visit,
   notes: {
     ...blankNotes(),
-    complaints: "Синтетическая жалоба",
+    mentalStatus: "Синтетический психический статус",
     safetyConclusion: "Синтетическая оценка безопасности",
     conclusion: "Синтетическое заключение",
     recommendations: "Повторный контроль",
@@ -362,6 +363,63 @@ function provision({
     stdio: "pipe",
   });
 }
+const physician = client();
+const physicianEmail = `physician-${suffix}@example.test`;
+const physicianPassword = randomUUID();
+provision({
+  id: `physician-${suffix}`,
+  clinicId: actor.clinicId,
+  email: physicianEmail,
+  password: physicianPassword,
+  specialty: "physician",
+});
+const physicianActor = await physician.login(physicianEmail, physicianPassword);
+const physicianPatient = await physician.call("/patients", "POST", {
+  id: randomUUID(),
+  profile: {
+    name: "Синтетический пациент проверки роли",
+    birthDate: "1990-01-01",
+  },
+});
+assert.equal(physicianPatient.status, 201);
+const physicianVisit = createVisit(
+  randomUUID(),
+  new Date().toISOString(),
+  physicianActor,
+);
+physicianVisit.diagnoses = [
+  { ...ICD10_CATALOG.find((d) => d.code === "F41.1"), status: "confirmed" },
+];
+assert.equal(
+  (
+    await physician.call(
+      `/patients/${physicianPatient.body.id}/commands`,
+      "POST",
+      {
+        commandId: randomUUID(),
+        expectedRevision: 0,
+        mutation: { type: "visit.save", value: physicianVisit },
+      },
+    )
+  ).status,
+  403,
+);
+physicianVisit.diagnoses[0].status = "hypothesis";
+assert.equal(
+  (
+    await physician.call(
+      `/patients/${physicianPatient.body.id}/commands`,
+      "POST",
+      {
+        commandId: randomUUID(),
+        expectedRevision: 0,
+        mutation: { type: "visit.save", value: physicianVisit },
+      },
+    )
+  ).status,
+  200,
+);
+ok("visit diagnosis confirmation preserves psychiatrist-only access");
 for (const sameClinic of [true, false]) {
   const other = client();
   const id = `other-${sameClinic}-${suffix}`,
@@ -490,6 +548,34 @@ assert.equal(
   400,
 );
 ok("withdrawn communication consent prevents new outbound message");
+const somatic = ICD10_CATALOG.find((d) => d.code === "G40");
+assert.equal(
+  (
+    await command({
+      type: "profile.update",
+      value: {
+        ...patient.profile,
+        clinicalContext: {
+          ...patient.profile.clinicalContext,
+          somaticConditions: [somatic],
+        },
+      },
+    })
+  ).status,
+  200,
+);
+const diagnosisVisit = createVisit(
+  randomUUID(),
+  new Date().toISOString(),
+  actor,
+);
+diagnosisVisit.diagnoses = [
+  { ...ICD10_CATALOG.find((d) => d.code === "F41.1"), status: "hypothesis" },
+];
+assert.equal(
+  (await command({ type: "visit.save", value: diagnosisVisit })).status,
+  200,
+);
 const aviandrId = randomUUID();
 const aviandrDraft = {
   id: aviandrId,
@@ -527,6 +613,9 @@ result = await command(
 assert.equal(result.status, 200, JSON.stringify(result.body));
 let storedReview = patient.plan.find((p) => p.id === aviandrId).aviandrReview;
 assert.equal(storedReview.status, "unapproved");
+assert.deepEqual(storedReview.context, aviandrDraft.aviandrReview.context);
+assert.equal(storedReview.context.conditions, "G40 Эпилепсия");
+assert.ok(storedReview.context.diagnoses.some((row) => row.includes("F41.1")));
 assert.equal(storedReview.checkedBy, actor.name);
 assert.ok(storedReview.checkedAt);
 assert.deepEqual(

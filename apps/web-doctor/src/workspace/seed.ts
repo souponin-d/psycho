@@ -97,14 +97,16 @@ export function seedPatients(reference = new Date()): PatientRecord[] {
     });
     if (i !== 4) {
       const past = createVisit(`visit-past-${i}`, day(-14), demoActor);
-      past.episodeId = `ep-${i}`;
       past.status = "completed";
       past.completedAt = day(-14);
       past.confirmedBy = demoActor.name;
       past.kind = "initial";
-      past.notes.complaints = complaint!;
-      past.notes.history =
+      p.profile.clinicalContext.complaints = complaint!;
+      p.profile.clinicalContext.illnessHistory =
         "Симптомы влияют на работу и сон. Обсуждены обстоятельства появления и предыдущий опыт помощи.";
+      past.notes.mentalStatus = "Синтетическое описание психического статуса.";
+      past.notes.somaticStatus =
+        "Синтетическое описание соматического статуса.";
       past.notes.safetyConclusion =
         "Синтетическая запись оценки, не клиническое заключение.";
       past.notes.conclusion =
@@ -167,7 +169,6 @@ export function seedPatients(reference = new Date()): PatientRecord[] {
       day(i < 3 ? 0 : i === 4 ? 1 : 3, 9 + i),
       demoActor,
     );
-    next.episodeId = `ep-${i}`;
     next.kind = i === 4 ? "initial" : "follow-up";
     next.reason = complaint!;
     p.visits.push(next);
@@ -198,7 +199,7 @@ export function seedPatients(reference = new Date()): PatientRecord[] {
       p.events.push({
         id: "event-demo-1",
         ...stamp(day(-1, 19)),
-        title: "Новый вопрос о переносимости",
+        title: "Уведомление от пациента",
         detail:
           "Пациент оставил запись о дискомфорте. Требуется уточнить обстоятельства.",
         urgency: "important",

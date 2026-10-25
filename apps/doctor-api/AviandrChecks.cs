@@ -20,7 +20,11 @@ public static class AviandrChecks
     var profile = Domain.Object(patient, "profile");
     var context = new JsonObject();
     foreach (var field in ContextFields.Take(6)) context[field] = S(profile, field);
-    context["diagnoses"] = new JsonArray(Domain.Array(patient, "episodes").Where(e => S(e, "status") != "closed").OrderBy(e => S(e, "id"), StringComparer.Ordinal).Select(e => (JsonNode?)JsonValue.Create($"{S(e, "title")} | {S(e, "diagnosis")} | {S(e, "diagnosisStatus")}")).ToArray());
+    context["conditions"] = string.Join("; ", Domain.Array(Domain.Object(profile, "clinicalContext"), "somaticConditions").Select(item => $"{S(item, "code")} {S(item, "title")}"));
+    context["diagnoses"] = new JsonArray(Domain.Array(patient, "episodes").Where(e => S(e, "status") != "closed").OrderBy(e => S(e, "id"), StringComparer.Ordinal).Select(e => $"{S(e, "title")} | {S(e, "diagnosis")} | {S(e, "diagnosisStatus")}")
+      .Concat(Domain.Array(patient, "visits").Where(v => S(v, "status") != "cancelled").OrderBy(v => S(v, "id"), StringComparer.Ordinal)
+        .SelectMany(v => Domain.Array(v!, "diagnoses").OrderBy(d => S(d, "code"), StringComparer.Ordinal).Select(d => $"{S(v, "id")} | {S(d, "code")} | {S(d, "title")} | {S(d, "status")} | {S(d, "sourceVersion")}")))
+      .Select(value => (JsonNode?)JsonValue.Create(value)).ToArray());
     context["medicines"] = new JsonArray(Domain.Array(patient, "plan").Where(p => S(p, "id") != planId && S(p, "kind") == "medication" && S(p, "status") != "draft").OrderBy(p => S(p, "id"), StringComparer.Ordinal).Select(p => (JsonNode?)JsonValue.Create($"{S(p, "title")} | {S(p, "dose")} | {S(p, "schedule")} | {S(p, "startDate")} | {S(p, "endDate")} | {S(p, "status")} | {S(p, "changeReason")}")).ToArray());
     return context;
   }

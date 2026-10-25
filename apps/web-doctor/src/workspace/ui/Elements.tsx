@@ -304,6 +304,7 @@ export function Modal({
   className,
   wide = false,
   children,
+  showCloseButton = true,
 }: {
   open: boolean;
   onClose: () => void;
@@ -311,6 +312,7 @@ export function Modal({
   className?: string;
   wide?: boolean;
   children: ReactNode;
+  showCloseButton?: boolean;
 }) {
   useLayoutEffect(() => {
     if (!open) return;
@@ -338,6 +340,7 @@ export function Modal({
     >
       <DialogPanel
         title={title}
+        showCloseButton={showCloseButton}
         size={wide ? "wide" : "default"}
         bodyClassName={wide ? styles.wideDialogBody : undefined}
       >

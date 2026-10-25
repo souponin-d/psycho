@@ -44,7 +44,6 @@ export function createPatient(
       representative?: string;
       preferredContact?: string;
       allergies?: string;
-      conditions?: string;
       currentMedication?: string;
       familyHistory?: string;
       pastEpisodes?: string;
@@ -52,6 +51,7 @@ export function createPatient(
       socialContext?: string;
       reproductiveContext?: string;
       goals?: string;
+      clinicalContext?: models.PatientClinicalContext;
     };
   },
 ): Promise<models.PatientRecord> {

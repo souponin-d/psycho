@@ -87,7 +87,7 @@ export function serverRepository(actor: Actor): Repository {
 }
 function database(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open("syncli-doctor-synthetic-v1", 1);
+    const request = indexedDB.open("syncli-doctor-synthetic-v2", 1);
     request.onupgradeneeded = () =>
       request.result.createObjectStore("patients", { keyPath: "id" });
     request.onsuccess = () => resolve(request.result);
