@@ -78,7 +78,9 @@ public static class Domain
   {
     Only(request, ["id", "profile"]);
     var id = Required(request, "id"); Check(Guid.TryParse(id, out _), "Идентификатор карты должен быть UUID.");
-    var now = DateTimeOffset.UtcNow.ToString("O"); var doc = new JsonObject { ["id"] = id, ["code"] = $"П-{id.Replace("-", "")[^6..].ToUpperInvariant()}", ["clinicId"] = actor.ClinicId, ["doctorId"] = actor.Id, ["revision"] = 0, ["createdAt"] = now, ["updatedAt"] = now, ["archived"] = false, ["profile"] = Profile(Object(request, "profile")) };
+    var inputProfile = Object(request, "profile").DeepClone().AsObject();
+    if (!inputProfile.ContainsKey("clinicalContext")) inputProfile["clinicalContext"] = new JsonObject { ["complaints"] = "", ["illnessHistory"] = "", ["somaticConditions"] = new JsonArray() };
+    var now = DateTimeOffset.UtcNow.ToString("O"); var doc = new JsonObject { ["id"] = id, ["code"] = $"П-{id.Replace("-", "")[^6..].ToUpperInvariant()}", ["clinicId"] = actor.ClinicId, ["doctorId"] = actor.Id, ["revision"] = 0, ["createdAt"] = now, ["updatedAt"] = now, ["archived"] = false, ["profile"] = Profile(inputProfile) };
     foreach (var key in Collections) doc[key] = new JsonArray(); return doc;
   }
   public static JsonObject Apply(JsonObject original, JsonObject command, Actor actor, bool patientAction = false)
@@ -108,6 +110,7 @@ public static class Domain
         {
           var old = Array(doc, "visits").OfType<JsonObject>().FirstOrDefault(v => S(v, "id") == S(value!, "id"));
           Check(old is null || S(old, "status") is not ("completed" or "cancelled"), "Завершённый или отменённый приём нельзя переписать."); Enum(value!, "status", "scheduled", "in-progress"); Enum(value!, "kind", "initial", "follow-up", "unscheduled"); Enum(value!, "format", "in-person", "remote"); Enum(value!, "provenance", "patient", "clinician", "relative", "document"); Date(value!, "scheduledAt"); Date(value!, "nextVisitAt", true);
+          if (Array(value!, "diagnoses").Any(d => S(d, "status") == "confirmed")) Check(actor.Specialty == "psychiatrist", "Подтверждение диагноза доступно психиатру.", 403);
           var duration = value!["durationMinutes"]!.GetValue<int>(); Check(duration >= 5 && duration <= 240, "Продолжительность: от 5 до 240 минут.");
           var notes = Object(value, "notes"); var clean = new JsonObject(); foreach (var key in Notes) clean[key] = S(notes, key); value["notes"] = clean; value["completionSnapshot"] = null; value["addenda"] = new JsonArray(); value["completedAt"] = ""; value["confirmedBy"] = ""; value["startedAt"] = old is not null && S(old, "startedAt") != "" ? S(old, "startedAt") : S(value, "status") == "in-progress" ? now : ""; Upsert(doc, "visits", value, actor, now); break;
         }
@@ -141,12 +144,14 @@ public static class Domain
         {
           var old = Array(doc, "plan").FirstOrDefault(p => S(p!, "id") == S(value!, "id")); Check(old is null || S(old, "status") == "draft", "Подтверждённый план нельзя переписать. Создайте новую версию."); Enum(value!, "status", "draft"); Enum(value!, "kind", "medication", "psychotherapy", "assessment", "lifestyle", "follow-up"); Required(value!, "title");
           WritableVisit(doc, S(value!, "visitId")); if (old is not null) WritableVisit(doc, S(old, "visitId")); if (S(value!, "replacesId") != "") { Find(doc, "plan", S(value!, "replacesId")); Required(value!, "changeReason"); }
+          AviandrChecks.Prepare(doc, value!, actor, now);
           value!["confirmedAt"] = ""; value["confirmedBy"] = ""; Upsert(doc, "plan", value, actor, now); break;
         }
       case "plan.confirm":
         {
           var item = Find(doc, "plan", id); Enum(item, "status", "draft"); WritableVisit(doc, S(item, "visitId")); Required(item, "rationale"); Required(item, "patientInstructions");
           if (S(item, "kind") == "medication") { Required(item, "dose"); Required(item, "schedule"); Check(Uri.TryCreate(S(item, "instructionUrl"), UriKind.Absolute, out var uri) && uri.Scheme == "https", "Добавьте HTTPS-ссылку на проверенную инструкцию."); }
+          AviandrChecks.Prepare(doc, item, actor, now);
           item["status"] = "confirmed"; item["confirmedAt"] = now; item["confirmedBy"] = actor.Name;
           if (S(item, "replacesId") != "") { var old = Find(doc, "plan", S(item, "replacesId")); Check(S(old, "status") == "confirmed", "Изменяемая запись уже не действует.", 409); old["status"] = "stopped"; old["changeReason"] = item["changeReason"]!.DeepClone(); }
           break;
@@ -270,7 +275,8 @@ public static class Domain
       "measurement.add" => "score,maximum,answers",
       "report.add" => "mood,anxiety,sleepHours,safetyConcern",
       "event.add" => "sourceIds,history",
-      "plan.save" or "referral.save" => "sourceIds",
+      "plan.save" => "sourceIds,aviandrReview",
+      "referral.save" => "sourceIds",
       "document.add" => "facts",
       "assessment.save" => "responses",
       _ => ""
@@ -312,6 +318,7 @@ public static class Domain
         var score = Number(value, "score"); var maximum = Number(value, "maximum"); Check(maximum is null || maximum >= 0, "Максимум шкалы не может быть отрицательным."); Check(score is null || score >= 0 && (maximum is null || score <= maximum), "Некорректный итоговый балл.");
         var answers = Array(value, "answers"); Check(answers.Count <= 1000, "Слишком много ответов."); foreach (var answer in answers) Check(answer is null || answer is JsonValue a && a.TryGetValue<double>(out var number) && double.IsFinite(number) && number >= 0, "Ожидался неотрицательный числовой ответ или null."); break;
       case "plan.save":
+        if (value.ContainsKey("aviandrReview")) AviandrChecks.Validate(Object(value, "aviandrReview"));
         foreach (var key in new[] { "startDate", "endDate", "dueDate" }) CalendarDate(value, key, true);
         Check(S(value, "startDate") == "" || S(value, "endDate") == "" || string.CompareOrdinal(S(value, "endDate"), S(value, "startDate")) >= 0, "Конец назначения раньше начала."); break;
       case "report.add":

@@ -10,12 +10,14 @@ import {
   localDateTime,
   visitStatus,
 } from "./labels";
+import { PatientContext } from "./PatientContext";
+import { PatientBrief } from "./PatientBrief";
+import { TerminologyPicker } from "./TerminologyPicker";
 import { CarePlan, Referrals } from "./CarePlan";
 import { MeasurementForm } from "./Dynamics";
 import { AppointmentForm, ConsentForm } from "./PatientForms";
 import { ApiError } from "./repository";
 import { SourceLinks, SourcePicker } from "./SourceLibrary";
-import { TerminologyPicker } from "./TerminologyPicker";
 import {
   Badge,
   Button,
@@ -28,12 +30,7 @@ import {
   styles,
 } from "./ui/Elements";
 export type RegisterGuard = (guard: (() => Promise<boolean>) | null) => void;
-const steps = [
-  "Контекст",
-  "Оценка состояния",
-  "Заключение и план",
-  "Итог приёма",
-];
+const steps = ["Контекст", "Оценка состояния", "Лечение и план", "Итог приёма"];
 const assessmentFields: EncounterField[] = [
   "mentalStatus",
   "somaticStatus",
@@ -51,6 +48,7 @@ const safetyFields: EncounterField[] = [
 ];
 const summaryFields: EncounterField[] = [
   "mentalStatus",
+  "somaticStatus",
   "safetyConclusion",
   "conclusion",
   "recommendations",
@@ -261,7 +259,7 @@ export function EncounterEditor({
               ? "Итог приёма"
               : visit.kind === "initial"
                 ? "Первичный приём"
-                : "Приём пациента"}
+                : "Повторный приём"}
           </h1>
           <p>
             {formatDate(visit.scheduledAt, {
@@ -275,6 +273,11 @@ export function EncounterEditor({
           </p>
         </div>
         <div className={styles.row}>
+          {visit.status === "scheduled" && (
+            <Button onClick={() => void begin()} disabled={saving}>
+              Начать приём
+            </Button>
+          )}
           <Badge tone={visit.status === "completed" ? "green" : "neutral"}>
             {visitStatus[visit.status]}
           </Badge>
@@ -387,16 +390,6 @@ export function EncounterEditor({
           </div>
         </Section>
       )}
-      {visit.status === "scheduled" && (
-        <div className={styles.notice} style={{ marginBottom: 22 }}>
-          <div className={styles.between}>
-            <span>Приём запланирован. Черновик можно подготовить заранее.</span>
-            <Button onClick={() => void begin()} disabled={saving}>
-              Начать приём
-            </Button>
-          </div>
-        </div>
-      )}
       {visit.status === "cancelled" ? (
         <Section title="Приём отменён">
           <p className={styles.reviewText}>{visit.cancellationReason}</p>
@@ -427,7 +420,7 @@ export function EncounterEditor({
             )}
           </nav>
           <div className={styles.stack}>
-            <h2 ref={stepHeading} tabIndex={-1}>
+            <h2 className={styles.stepHeading} ref={stepHeading} tabIndex={-1}>
               {steps[step]}
             </h2>
             {readOnly && step !== 3 && (
@@ -436,112 +429,82 @@ export function EncounterEditor({
                 создайте дополнение к итогу.
               </div>
             )}
-            {step === 0 &&
-              (readOnly ? (
-                <NoteSummary visit={visit} fields={[]} />
-              ) : (
-                <>
-                  <Section
-                    title="Контекст обращения"
-                    description="Что изменилось, что беспокоит и что важно пациенту"
-                  >
-                    <div className={styles.form}>
-                      <details className={styles.details}>
-                        <summary>Дата, тип и формат встречи</summary>
-                        <div className={styles.form}>
-                          <Field
-                            label="Дата и время"
-                            type="datetime-local"
-                            value={localDateTime(draft.scheduledAt)}
-                            onChange={(e) => {
-                              if (e.target.value)
-                                setDraft({
-                                  ...draft,
-                                  scheduledAt: new Date(
-                                    e.target.value,
-                                  ).toISOString(),
-                                });
-                            }}
-                          />
-                          <Select
-                            label="Формат"
-                            value={draft.format}
-                            onChange={(e) =>
+            {step === 0 && (
+              <div className={styles.encounterColumns}>
+                <div className={styles.stack}>
+                  <PatientContext
+                    patient={patient}
+                    actions={readOnly ? undefined : actions}
+                  />
+                  {!readOnly && (
+                    <Section title="Данные встречи и источник сведений">
+                      <div className={styles.form}>
+                        <Field
+                          label="Дата и время"
+                          type="datetime-local"
+                          value={localDateTime(draft.scheduledAt)}
+                          onChange={(e) => {
+                            if (e.target.value)
                               setDraft({
                                 ...draft,
-                                format: e.target.value as Visit["format"],
-                              })
-                            }
-                          >
-                            <option value="in-person">Очно</option>
-                            <option value="remote">Дистанционно</option>
-                          </Select>
-                        </div>
-                      </details>
-                      <Select
-                        label="Источник сведений"
-                        value={draft.provenance}
-                        onChange={(e) =>
-                          setDraft({
-                            ...draft,
-                            provenance: e.target.value as Visit["provenance"],
-                          })
-                        }
-                      >
-                        <option value="patient">Со слов пациента</option>
-                        <option value="clinician">Оценка врача</option>
-                        <option value="relative">Со слов близкого</option>
-                        <option value="document">Из документа</option>
-                      </Select>
-                    </div>
-                    <SourceLinks ids={["S01", "S02", "S03", "S04"]} />
-                  </Section>
-                  <Section title="Известный контекст">
-                    <dl className={styles.facts}>
-                      <div>
-                        <dt>Аллергии</dt>
-                        <dd>{patient.profile.allergies || "Нет сведений"}</dd>
+                                scheduledAt: new Date(
+                                  e.target.value,
+                                ).toISOString(),
+                              });
+                          }}
+                        />
+                        <Select
+                          label="Формат"
+                          value={draft.format}
+                          onChange={(e) =>
+                            setDraft({
+                              ...draft,
+                              format: e.target.value as Visit["format"],
+                            })
+                          }
+                        >
+                          <option value="in-person">Очно</option>
+                          <option value="remote">Дистанционно</option>
+                        </Select>
+                        <Select
+                          label="Источник сведений"
+                          value={draft.provenance}
+                          onChange={(e) =>
+                            setDraft({
+                              ...draft,
+                              provenance: e.target.value as Visit["provenance"],
+                            })
+                          }
+                        >
+                          <option value="patient">Со слов пациента</option>
+                          <option value="clinician">Оценка врача</option>
+                          <option value="relative">Со слов близкого</option>
+                          <option value="document">Из документа</option>
+                        </Select>
+                        {fields([
+                          "medicationReview",
+                          "adverseEffects",
+                          "adherence",
+                        ])}
                       </div>
-                      <div>
-                        <dt>Жалобы</dt>
-                        <dd>
-                          {patient.profile.clinicalContext.complaints ||
-                            "Нет сведений"}
-                        </dd>
-                      </div>
-                      <div>
-                        <dt>Анамнез заболевания</dt>
-                        <dd>
-                          {patient.profile.clinicalContext.illnessHistory ||
-                            "Нет сведений"}
-                        </dd>
-                      </div>
-                      <div>
-                        <dt>Соматические заболевания</dt>
-                        <dd>
-                          {patient.profile.clinicalContext.somaticConditions
-                            .map((item) => `${item.code} ${item.title}`)
-                            .join("; ") || "Нет сведений"}
-                        </dd>
-                      </div>
-                      <div>
-                        <dt>Препараты</dt>
-                        <dd>
-                          {patient.profile.currentMedication || "Нет сведений"}
-                        </dd>
-                      </div>
-                      <div>
-                        <dt>Цели</dt>
-                        <dd>{patient.profile.goals || "Не уточнены"}</dd>
-                      </div>
-                      <div>
-                        <dt>Последний самоотчёт</dt>
-                        <dd>{patient.reports.at(-1)?.note || "Нет записей"}</dd>
-                      </div>
-                    </dl>
-                  </Section>
-                </>
-              ))}
+                      <SourceLinks ids={["S01", "S02", "S03", "S04"]} />
+                    </Section>
+                  )}
+                  <p className={styles.subtext}>
+                    Прошлые записи не переносятся как новые. Укажите изменения и
+                    источник текущих сведений.
+                  </p>
+                </div>
+                <aside className={styles.encounterContext}>
+                  <PatientBrief
+                    patient={patient}
+                    navigate={navigate}
+                    visitId={visit.id}
+                    compact
+                  />
+                </aside>
+              </div>
+            )}
             {step === 1 &&
               (readOnly ? (
                 <NoteSummary
@@ -625,6 +588,7 @@ export function EncounterEditor({
                           setDraft({ ...draft, diagnoses })
                         }
                         diagnosis
+                        canConfirm={actions.actor.specialty === "psychiatrist"}
                       />
                       {fields([
                         "conclusion",
@@ -966,6 +930,21 @@ export function VisitSummary({
       description={`${snapshot?.patientName ?? patient.profile.name} · ${formatDate(visit.scheduledAt)}`}
     >
       <div className={styles.stack}>
+        <div>
+          <h3>Диагнозы / рабочие гипотезы</h3>
+          {visit.diagnoses.length ? (
+            visit.diagnoses.map((diagnosis) => (
+              <p className={styles.reviewText} key={diagnosis.code}>
+                {diagnosis.code} · {diagnosis.title} ·{" "}
+                {diagnosis.status === "confirmed"
+                  ? "Подтверждён"
+                  : "Рабочая гипотеза"}
+              </p>
+            ))
+          ) : (
+            <p className={styles.reviewText}>Не внесено</p>
+          )}
+        </div>
         {summaryFields.map((field) => (
           <div key={field}>
             <h3>{encounterLabels[field]}</h3>

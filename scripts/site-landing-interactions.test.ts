@@ -13,7 +13,7 @@ afterEach(() => {
   document.documentElement.classList.remove("js-ready");
 });
 
-it("сохраняет вкладки продукта и карусель после сокращения лендинга", async () => {
+it("сохраняет вкладки продукта и показывает три мозаики опроса", async () => {
   vi.useFakeTimers();
   const source = readFileSync(resolve("site/index.html"), "utf8");
   document.body.innerHTML = new DOMParser().parseFromString(
@@ -27,7 +27,9 @@ it("сохраняет вкладки продукта и карусель по�
     document.querySelector<HTMLAnchorElement>("#platform-link")!;
   product.getByRole("tab", { name: "Пациенту" }).click();
   expect(productLink.hidden).toBe(true);
-  const patientDemo = product.getByRole("button", { name: "Демо пациента" });
+  const patientDemo = product.getByRole("button", {
+    name: "Посмотреть приложение пациента",
+  });
   expect(patientDemo).toHaveProperty("disabled", true);
 
   product
@@ -41,7 +43,7 @@ it("сохраняет вкладки продукта и карусель по�
   expect(productLink.getAttribute("href")).toBe("demo/admin/");
   expect(
     product.getByRole("heading", {
-      name: "Команда клиники. В общей картине.",
+      name: "Эффективное управление клиникой на основе данных",
     }),
   ).toBeTruthy();
   product.getByRole("tab", { name: "Врачу" }).click();
@@ -49,26 +51,18 @@ it("сохраняет вкладки продукта и карусель по�
 
   expect(document.querySelector("#evidence")!.tagName).toBe("SECTION");
   expect(document.querySelector("#compare")!.closest("details")).toBeNull();
-  const survey = within(document.querySelector<HTMLElement>(".survey-panel")!);
-  survey.getByRole("button", { name: "Следующий вид графика" }).click();
-  expect(
-    document.querySelector("#survey-chart")!.getAttribute("aria-labelledby"),
-  ).toBe("chart-bars");
-  survey
-    .getByRole("tab", { name: "Полосы" })
-    .dispatchEvent(
-      new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }),
-    );
-  expect(document.querySelectorAll(".survey-mosaic i")).toHaveLength(240);
-  expect(document.querySelectorAll(".survey-mosaic .filled")).toHaveLength(180);
-  survey.getByRole("button", { name: "Следующий вид графика" }).click();
-  expect(
-    survey.getByRole("tab", { name: "Кольца" }).getAttribute("aria-selected"),
-  ).toBe("true");
-  survey.getByRole("button", { name: "Предыдущий вид графика" }).click();
-  expect(
-    survey.getByRole("tab", { name: "Мозаика" }).getAttribute("aria-selected"),
-  ).toBe("true");
+  const survey = within(
+    document.querySelector<HTMLElement>(".audience-survey")!,
+  );
+  const mosaics = survey.getAllByRole("img");
+  expect(mosaics).toHaveLength(3);
+  for (const [index, count] of [46, 39, 31].entries()) {
+    const mosaic = mosaics[index]!;
+    expect(mosaic.getAttribute("aria-label")).toContain(`${count} из 107`);
+    expect(mosaic.children).toHaveLength(107);
+    expect(mosaic.querySelectorAll(".is-filled")).toHaveLength(count);
+  }
+  expect(survey.queryByRole("tablist")).toBeNull();
 
   expect(document.querySelector("#ecosystem-demo")).toBeNull();
   expect(document.querySelector(".clinical-showcase")).toBeNull();

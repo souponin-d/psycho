@@ -1,0 +1,83 @@
+{
+  "version": "aviandr-2026-07-16-draft-1",
+  "status": "unapproved",
+  "title": "Авиандр · маритупирдин · таблетки 20 мг",
+  "url": "https://disk.360.yandex.ru/i/n-l5OQc0Fbsojw",
+  "sourceDate": "2026-07-16",
+  "sha256": "4e535418cfb0153018812148e988cc5adc230c2e926605c72828d4dab80158a4",
+  "limitation": "ОХЛП получена по ссылке с сайта производителя. Сверка редакции в ГРЛС и клиническое утверждение не выполнены. Результаты не разрешают и не запрещают назначение.",
+  "rules": [
+    {
+      "id": "hypersensitivity",
+      "title": "Гиперчувствительность к веществу или компонентам",
+      "section": "4.3, 6.1",
+      "positive": "contraindication"
+    },
+    {
+      "id": "epilepsy",
+      "title": "Эпилепсия",
+      "section": "4.3",
+      "positive": "contraindication"
+    },
+    {
+      "id": "organicBrainDisease",
+      "title": "Органические заболевания головного мозга",
+      "section": "4.3",
+      "positive": "contraindication"
+    },
+    {
+      "id": "liverFailure",
+      "title": "Печёночная недостаточность (Чайлд–Пью A/B/C)",
+      "section": "4.2, 4.3",
+      "positive": "contraindication"
+    },
+    {
+      "id": "pregnancy",
+      "title": "Беременность",
+      "section": "4.6",
+      "positive": "contraindication"
+    },
+    {
+      "id": "breastfeeding",
+      "title": "Грудное вскармливание",
+      "section": "4.6",
+      "positive": "contraindication"
+    },
+    {
+      "id": "galactoseDisorder",
+      "title": "Наследственная непереносимость галактозы, дефицит лактазы или мальабсорбция",
+      "section": "4.4",
+      "positive": "contraindication"
+    },
+    {
+      "id": "cardiovascularDisease",
+      "title": "Сердечно-сосудистые заболевания",
+      "section": "4.4",
+      "positive": "caution"
+    },
+    {
+      "id": "serotonergic",
+      "title": "Серотонинергические средства в лекарственном анамнезе",
+      "section": "4.5",
+      "positive": "caution"
+    },
+    {
+      "id": "sedative",
+      "title": "Средства с седативными свойствами",
+      "section": "4.5",
+      "positive": "caution"
+    },
+    {
+      "id": "cyp2d6",
+      "title": "Ингибиторы CYP2D6",
+      "section": "4.5",
+      "positive": "caution"
+    },
+    {
+      "id": "alcohol",
+      "title": "Алкоголь и этанолсодержащие средства",
+      "section": "4.5",
+      "positive": "caution"
+    }
+  ]
+}

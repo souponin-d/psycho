@@ -18,5 +18,15 @@
     "asset": "terrain-dark.png",
     "tool": "imagegen built-in",
     "prompt": "Production background illustration for Android patient app Синкли. Tall portrait composition. Premium tactile abstract topographic landscape at night, deep forest-black space, smooth flowing emerald terraces in lower two thirds, winding reflective sage river, elegant subtle orbital arcs in dark sky, 5 tiny lavender and pale lime celestial points. Dark green ceramic and velvet materials, subtle mist, cinematic soft rim light, sophisticated high-end art direction. Lots of quiet dark negative space in top third for readable controls. Palette #102821 #19372E lavender accents and soft lime. NO characters, NO text, NO interface, NO phones, NO buildings, NO labels. Not neon cyberpunk, not generic star field. Beautiful coherent night counterpart to sage ceramic river landscape."
+  },
+  {
+    "asset": "shore-light.png",
+    "tool": "imagegen built-in",
+    "prompt": "Согласованное окружение из исследования v3: тактильный известняковый берег, река, круглый пруд и пустая площадка, скамейка и домик на дереве. Без текста, UI, персонажей и интерактивных объектов: они отдельными слоями приложения."
+  },
+  {
+    "asset": "shore-dark.png",
+    "tool": "imagegen built-in",
+    "prompt": "Nighttime lighting edit of shore-light.png. Preserve EXACT camera, framing, aspect, landforms, stairs, bench, circular pond, empty platform and treehouse positions. Moonlit dark emerald landscape, muted lavender flowers, warm treehouse window. No new objects, characters, UI or text."
   }
 ]

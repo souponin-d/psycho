@@ -665,3 +665,22 @@ describe("рабочий путь врача", () => {
     ).toThrow(/исключён/i);
   });
 });
+
+it("сохраняет ограничение подтверждения диагноза в новой модели приёма", () => {
+  const p = patient();
+  const visit = createVisit("diagnosis-access", now, actor);
+  visit.diagnoses = [
+    { ...ICD10_CATALOG.find((d) => d.code === "F41.1")!, status: "confirmed" },
+  ];
+  const command = {
+    commandId: "diagnosis-access",
+    expectedRevision: p.revision,
+    mutation: { type: "visit.save" as const, value: visit },
+  };
+  expect(() =>
+    applyCommand(p, command, { ...actor, specialty: "physician" }, now),
+  ).toThrow(/психиатру/);
+  expect(
+    applyCommand(p, command, actor, now).visits.at(-1)?.diagnoses[0]?.status,
+  ).toBe("confirmed");
+});

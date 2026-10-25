@@ -8,16 +8,23 @@ export const DialogTrigger = Dialog.Trigger;
 export function DialogPanel({
   title,
   children,
+  size = "default",
+  bodyClassName,
   showCloseButton = true,
 }: {
   title: string;
+  size?: "default" | "wide";
+  bodyClassName?: string;
   children: ReactNode;
   showCloseButton?: boolean;
 }) {
   return (
     <Dialog.Portal>
       <Dialog.Overlay className={styles.overlay} />
-      <Dialog.Content className={styles.dialog} aria-describedby={undefined}>
+      <Dialog.Content
+        className={`${styles.dialog} ${size === "wide" ? styles.dialogWide : ""}`}
+        aria-describedby={undefined}
+      >
         <header className={styles.dialogHeader}>
           <Dialog.Title className={styles.dialogTitle}>{title}</Dialog.Title>
           {showCloseButton && (
@@ -26,7 +33,9 @@ export function DialogPanel({
             </Dialog.Close>
           )}
         </header>
-        <div className={styles.dialogBody}>{children}</div>
+        <div className={`${styles.dialogBody} ${bodyClassName ?? ""}`}>
+          {children}
+        </div>
       </Dialog.Content>
     </Dialog.Portal>
   );

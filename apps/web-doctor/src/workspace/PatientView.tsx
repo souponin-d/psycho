@@ -11,7 +11,7 @@ import {
 } from "./PatientForms";
 import { AppointmentRow } from "./Workday";
 import { Dynamics } from "./Dynamics";
-import { CarePlan, Referrals } from "./CarePlan";
+import { PlanForm, CarePlan, Referrals } from "./CarePlan";
 import { PatientJournal, Messages } from "./PatientJournal";
 import { Events } from "./Events";
 import { Documents } from "./Documents";
@@ -21,20 +21,26 @@ import {
   Button,
   Empty,
   ErrorNotice,
+  Icon,
   Modal,
   Section,
   Textarea,
   styles,
 } from "./ui/Elements";
+import { PatientContext } from "./PatientContext";
+import { PatientBrief } from "./PatientBrief";
 const tabs = [
-  ["overview", "Обзор"],
-  ["visits", "Приёмы"],
+  ["overview", "Обзор", "file"],
+  ["visits", "Приёмы", "calendar"],
+  ["plan", "Лечение и план", "pill"],
+  ["dynamics", "Наблюдение", "chart"],
+  ["documents", "Документы", "book"],
+] as const;
+const observationTabs = [
   ["dynamics", "Динамика"],
-  ["plan", "План ведения"],
   ["journal", "Дневник"],
   ["events", "События"],
   ["messages", "Сообщения"],
-  ["documents", "Документы"],
 ];
 export function PatientView({
   patient,
@@ -51,6 +57,17 @@ export function PatientView({
   tab?: string;
   server: boolean;
 }) {
+  const patientAge = age(patient.profile.birthDate);
+  const ageUnit = {
+    one: "год",
+    few: "года",
+    many: "лет",
+    other: "лет",
+    zero: "лет",
+    two: "года",
+  }[new Intl.PluralRules("ru").select(patientAge)];
+  const [prescription, setPrescription] = useState(false);
+  const observation = observationTabs.some(([id]) => id === tab);
   const [profile, setProfile] = useState(false);
   const [appointment, setAppointment] = useState(false);
   const [episode, setEpisode] = useState<Episode | "new" | null>(null);
@@ -63,6 +80,7 @@ export function PatientView({
   const next = patient.visits
     .filter((v) => v.status === "scheduled" || v.status === "in-progress")
     .sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt));
+  const currentVisit = next.find((v) => v.status === "in-progress") || next[0];
   const recent = patient.visits
     .filter((v) => v.status === "completed")
     .sort((a, b) => b.completedAt.localeCompare(a.completedAt));
@@ -108,7 +126,12 @@ export function PatientView({
   }
   return (
     <>
-      <Button variant="ghost" icon="back" onClick={() => navigate("/patients")}>
+      <Button
+        variant="ghost"
+        icon="back"
+        className={styles.patientBackLink}
+        onClick={() => navigate("/patients")}
+      >
         Все пациенты
       </Button>
       <div className={styles.patientHeader}>
@@ -119,7 +142,7 @@ export function PatientView({
           <div>
             <h1>{patient.profile.name}</h1>
             <p className={styles.subtext}>
-              {patient.code} · {age(patient.profile.birthDate)} лет ·{" "}
+              {patient.code} · {patientAge} {ageUnit} ·{" "}
               {formatDate(patient.profile.birthDate)}
               {patient.profile.occupation
                 ? ` · ${patient.profile.occupation}`
@@ -128,19 +151,31 @@ export function PatientView({
           </div>
         </div>
         <div className={styles.row}>
-          <Button
-            variant="secondary"
-            icon="edit"
-            onClick={() => setProfile(true)}
-          >
+          <Button variant="ghost" icon="edit" onClick={() => setProfile(true)}>
             Профиль
           </Button>
           <Button
+            variant="secondary"
             icon="plus"
-            onClick={() => setAppointment(true)}
+            onClick={() => setPrescription(true)}
             disabled={patient.archived}
           >
-            Создать приём
+            Назначить препарат
+          </Button>
+          <Button
+            icon="arrow"
+            onClick={() =>
+              currentVisit
+                ? navigate(`/patients/${patient.id}/visits/${currentVisit.id}`)
+                : setAppointment(true)
+            }
+            disabled={patient.archived}
+          >
+            {currentVisit
+              ? currentVisit.status === "in-progress"
+                ? "Продолжить приём"
+                : "Открыть приём"
+              : "Запланировать приём"}
           </Button>
         </div>
       </div>
@@ -148,11 +183,15 @@ export function PatientView({
         <div className={styles.notice}>Карта находится в архиве.</div>
       )}
       <nav className={styles.tabs} aria-label="Разделы карты">
-        {tabs.map(([id, label]) => (
+        {tabs.map(([id, label, icon]) => (
           <a
             key={id}
             href={`#/patients/${patient.id}/${id}`}
-            aria-current={tab === id ? "page" : undefined}
+            aria-current={
+              tab === id || (id === "dynamics" && observation)
+                ? "page"
+                : undefined
+            }
             onClick={(event) => {
               if (
                 event.button !== 0 ||
@@ -166,52 +205,44 @@ export function PatientView({
               navigate(`/patients/${patient.id}/${id}`);
             }}
           >
-            {label}
-            {id === "events" &&
-            patient.events.some((e) => e.status !== "closed")
-              ? ` · ${patient.events.filter((e) => e.status !== "closed").length}`
-              : ""}
+            <Icon name={icon} size={15} />
+            <span>{label}</span>
           </a>
         ))}
       </nav>
+      {observation && (
+        <nav className={styles.observationTabs} aria-label="Разделы наблюдения">
+          {observationTabs.map(([id, label]) => (
+            <a
+              key={id}
+              href={`#/patients/${patient.id}/${id}`}
+              aria-current={tab === id ? "page" : undefined}
+              onClick={(event) => {
+                if (
+                  event.button ||
+                  event.metaKey ||
+                  event.ctrlKey ||
+                  event.shiftKey ||
+                  event.altKey
+                )
+                  return;
+                event.preventDefault();
+                navigate(`/patients/${patient.id}/${id}`);
+              }}
+            >
+              {label}
+              {id === "events" && openEvents > 0 ? ` · ${openEvents}` : ""}
+            </a>
+          ))}
+        </nav>
+      )}
       <div className={styles.stack}>
+        {tab === "overview" && (
+          <PatientBrief patient={patient} navigate={navigate} />
+        )}
         {tab === "overview" && (
           <div className={styles.twoColumns}>
             <div className={styles.stack}>
-              <Section
-                title="Ближайший приём"
-                action={
-                  <Button
-                    variant="ghost"
-                    onClick={() => navigate(`/patients/${patient.id}/visits`)}
-                  >
-                    Вся история
-                  </Button>
-                }
-              >
-                {next[0] ? (
-                  <AppointmentRow
-                    patient={patient}
-                    visit={next[0]}
-                    navigate={navigate}
-                  />
-                ) : (
-                  <Empty
-                    title="Следующий приём не назначен"
-                    icon="calendar"
-                    action={
-                      <Button
-                        variant="secondary"
-                        onClick={() => setAppointment(true)}
-                      >
-                        Выбрать время
-                      </Button>
-                    }
-                  >
-                    Согласуйте контрольную точку и добавьте её в расписание.
-                  </Empty>
-                )}
-              </Section>
               <Dynamics patient={patient} actions={actions} compact />
               <Section
                 title="История наблюдения"
@@ -273,34 +304,42 @@ export function PatientView({
               </Section>
             </div>
             <div className={styles.stack}>
-              <Section title="Контекст пациента">
-                <dl className={styles.facts}>
-                  {[
-                    ["Цели", patient.profile.goals],
-                    ["Аллергии", patient.profile.allergies],
-                    [
-                      "Сопутствующие заболевания",
-                      patient.profile.clinicalContext.somaticConditions
-                        .map((item) => `${item.code} ${item.title}`)
-                        .join(", "),
-                    ],
-                    ["Текущие препараты", patient.profile.currentMedication],
-                    ["Поддержка", patient.profile.socialContext],
-                  ].map(([label, value]) => (
-                    <div key={label}>
-                      <dt>{label}</dt>
-                      <dd>
-                        {value || (
-                          <span className={styles.subtext}>
-                            Нет сведений · уточнить
-                          </span>
-                        )}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-                <SourceLinks ids={["S02", "S03", "S04"]} />
+              <PatientContext patient={patient} actions={actions} />
+              <Section
+                title="Ближайший приём"
+                action={
+                  <Button
+                    variant="ghost"
+                    onClick={() => navigate(`/patients/${patient.id}/visits`)}
+                  >
+                    Вся история
+                  </Button>
+                }
+              >
+                {next[0] ? (
+                  <AppointmentRow
+                    patient={patient}
+                    visit={next[0]}
+                    navigate={navigate}
+                  />
+                ) : (
+                  <Empty
+                    title="Следующий приём не назначен"
+                    icon="calendar"
+                    action={
+                      <Button
+                        variant="secondary"
+                        onClick={() => setAppointment(true)}
+                      >
+                        Выбрать время
+                      </Button>
+                    }
+                  >
+                    Согласуйте контрольную точку и добавьте её в расписание.
+                  </Empty>
+                )}
               </Section>
+
               <Section
                 title="Согласия и волеизъявление"
                 action={
@@ -481,6 +520,72 @@ export function PatientView({
         {tab === "plan" && (
           <>
             <CarePlan patient={patient} actions={actions} />
+            <Section
+              title="Контроль и договорённости"
+              action={
+                <Button
+                  variant="ghost"
+                  icon="calendar"
+                  disabled={patient.archived}
+                  onClick={() => setAppointment(true)}
+                >
+                  Запланировать контакт
+                </Button>
+              }
+            >
+              {currentVisit ? (
+                <div className={styles.agreementRow}>
+                  <Icon name="calendar" size={18} />
+                  <div>
+                    <strong>Ближайший контакт</strong>
+                    <p className={styles.subtext}>
+                      {formatDate(currentVisit.scheduledAt, {
+                        day: "numeric",
+                        month: "long",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    icon="arrow"
+                    onClick={() =>
+                      navigate(
+                        `/patients/${patient.id}/visits/${currentVisit.id}`,
+                      )
+                    }
+                  >
+                    Открыть приём
+                  </Button>
+                </div>
+              ) : (
+                <p className={styles.subtext}>
+                  Следующий контакт не запланирован
+                </p>
+              )}
+              {patient.plan
+                .filter(
+                  (item) =>
+                    item.status === "confirmed" && item.patientInstructions,
+                )
+                .map((item) => (
+                  <div className={styles.agreementRow} key={item.id}>
+                    <Icon name="file" size={18} />
+                    <div>
+                      <strong>{item.title}</strong>
+                      <p>{item.patientInstructions}</p>
+                    </div>
+                  </div>
+                ))}
+              <Button
+                variant="ghost"
+                icon="book"
+                onClick={() => navigate(`/patients/${patient.id}/journal`)}
+              >
+                Дневник самочувствия
+              </Button>
+            </Section>
             <Referrals patient={patient} actions={actions} />
           </>
         )}
@@ -502,6 +607,14 @@ export function PatientView({
           <Documents patient={patient} actions={actions} />
         )}
       </div>
+      {prescription && (
+        <PlanForm
+          patient={patient}
+          actions={actions}
+          initialKind="medication"
+          onClose={() => setPrescription(false)}
+        />
+      )}
       {profile && (
         <ProfileForm
           patient={patient}

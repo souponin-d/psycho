@@ -126,10 +126,13 @@
           <a href="#ecosystem">Продукт</a>
           <a href="#reviews">Отзывы</a>
           <a href="#team">Команда</a>
-          <a class="nav-doctor" href="doctor/">Войти врачу</a>
+          <a class="nav-doctor" href="#product-intro">Попробовать</a>
         </nav>
-        <a class="button button-small button-dark header-cta" href="doctor/">
-          Войти врачу <svg><use href="#i-diagonal" /></svg>
+        <a
+          class="button button-small button-dark header-cta"
+          href="#product-intro"
+        >
+          Попробовать <svg><use href="#i-diagonal" /></svg>
         </a>
       </div>
     </header>
@@ -162,27 +165,26 @@
         <div class="container hero-layout">
           <div class="hero-top reveal">
             <div class="hero-intro">
+              <h2 class="product-intro-title">Синкли</h2>
               <p>
-                Синкли — цифровая экосистема для сопровождения пациентов с
-                тревожной и депрессивной симптоматикой. Рабочее пространство
-                врача, приложение пациента и аналитика клиники — в одной среде.
+                Цифровая платформа для сопровождения пациентов с тревожной и
+                депрессивной симптоматикой между приёмами.
               </p>
               <div
                 class="demo-entry"
                 id="demo-apps"
                 role="group"
-                aria-label="Веб-приложения"
+                aria-label="Демонстрации приложений"
               >
                 <a class="button button-dark" href="doctor/">
-                  Открыть приложение врача <svg><use href="#i-diagonal" /></svg>
+                  Демо врача <svg><use href="#i-diagonal" /></svg>
                 </a>
                 <a class="button button-mint" href="demo/admin/">
                   Демо администратора <svg><use href="#i-diagonal" /></svg>
                 </a>
-                <div class="mobile-entry">
-                  <span>Мобильное приложение</span
-                  ><small>Демо пока недоступно</small>
-                </div>
+                <button class="button button-outline" type="button">
+                  Мобильное приложение
+                </button>
               </div>
             </div>
           </div>
@@ -202,150 +204,290 @@
       <section class="section product-section" id="product">
         <div class="container">
           <div class="section-heading reveal">
-            <p class="eyebrow">01 / Наш подход</p>
+            <p class="eyebrow">01 / Исследование аудитории</p>
             <div>
-              <h2>
-                От отдельных данных —<br /><span
-                  >к непрерывному сопровождению.</span
-                >
-              </h2>
+              <h2>Что важно пациенту</h2>
               <p class="section-intro">
-                Связываем наблюдения пациента, решения врача и аналитику
-                клиники, чтобы между приёмами сохранялся общий контекст.
+                В основе Синкли – работа с аудиторией. Мы провели опрос
+                пациентов и разобрали их опыт прохождения терапии: что помогает
+                следовать плану, а что мешает оставаться включёнными в лечение.
+                <br /><br />
+                Собранная обратная связь помогла определить приоритеты продукта.
+                Вовлечённость пациента – важная часть результата терапии,
+                поэтому Синкли создаётся вокруг его повседневного опыта.
               </p>
             </div>
           </div>
-          <div class="approach-layout">
-            <div class="approach-principles reveal">
-              <article>
-                <span>01</span>
-                <div>
-                  <h3>Одна история между приёмами</h3>
-                  <p>
-                    Самоотчёты, динамика и решения связаны с карточкой пациента
-                    у его врача. К следующей встрече сохраняется контекст
-                    изменений.
-                  </p>
+          <div class="audience-survey">
+            <div class="audience-survey-columns">
+              <article class="audience-survey-card reveal">
+                <div class="audience-survey-stat">
+                  <strong>43<span>%</span></strong>
+                  <p>46 из 107</p>
                 </div>
+                <h3>Не хватает сил</h3>
+                <div
+                  class="audience-survey-mosaic"
+                  role="img"
+                  aria-label="46 из 107 участников: Нет сил или желания регулярно отмечать самочувствие."
+                >
+                  <i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i>
+                </div>
+                <p class="audience-survey-copy">
+                  Нет сил или желания регулярно отмечать самочувствие.
+                </p>
               </article>
-              <article>
-                <span>02</span>
-                <div>
-                  <h3>Не нужно вспоминать всё в день приёма</h3>
-                  <p>
-                    Отмечает самочувствие, видит свою динамику и согласованный
-                    план. Повседневные наблюдения становятся частью общей
-                    картины.
-                  </p>
+              <article class="audience-survey-card reveal">
+                <div class="audience-survey-stat">
+                  <strong>36<span>%</span></strong>
+                  <p>39 из 107</p>
                 </div>
+                <h3>Забываю возвращаться</h3>
+                <div
+                  class="audience-survey-mosaic"
+                  role="img"
+                  aria-label="39 из 107 участников: Забывают отвечать на вопросы о своём состоянии."
+                >
+                  <i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i>
+                </div>
+                <p class="audience-survey-copy">
+                  Забывают отвечать на вопросы о своём состоянии.
+                </p>
               </article>
-              <article>
-                <span>03</span>
-                <div>
-                  <h3>Врач видит основания решения</h3>
-                  <p>
-                    Источники, изменения и сведения, которые нужно уточнить,
-                    доступны в контексте пациента. Клиническое решение остаётся
-                    за врачом.
-                  </p>
+              <article class="audience-survey-card reveal">
+                <div class="audience-survey-stat">
+                  <strong>29<span>%</span></strong>
+                  <p>31 из 107</p>
                 </div>
-              </article>
-              <article>
-                <span>04</span>
-                <div>
-                  <h3>Клиника получает общую картину</h3>
-                  <p>
-                    Аналитика сопровождения и работы команды — в пределах
-                    полномочий. Доступ к медицинской информации определяется
-                    отдельно.
-                  </p>
+                <h3>Не вижу пользы</h3>
+                <div
+                  class="audience-survey-mosaic"
+                  role="img"
+                  aria-label="31 из 107 участников: Не понимают цели опросов или не верят, что ответы используют."
+                >
+                  <i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true" class="is-filled"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i
+                  ><i aria-hidden="true"></i><i aria-hidden="true"></i>
                 </div>
+                <p class="audience-survey-copy">
+                  Не понимают цели опросов или не верят, что ответы используют.
+                </p>
               </article>
             </div>
-            <aside class="survey-panel reveal" aria-labelledby="survey-title">
-              <p class="survey-label">Опрос Синкли · макет результатов</p>
-              <h3 id="survey-title">Что важно<br />в сопровождении</h3>
-              <p class="survey-sample">Условная выборка — 80 человек</p>
-              <div class="survey-carousel" aria-label="Виды графиков опроса">
-                <div
-                  class="survey-chart-tabs"
-                  role="tablist"
-                  aria-label="Тип графика"
-                >
-                  <button
-                    role="tab"
-                    id="chart-rings"
-                    data-survey-chart="rings"
-                    aria-controls="survey-chart"
-                    aria-selected="true"
-                  >
-                    Кольца
-                  </button>
-                  <button
-                    role="tab"
-                    id="chart-bars"
-                    data-survey-chart="bars"
-                    aria-controls="survey-chart"
-                    aria-selected="false"
-                    tabindex="-1"
-                  >
-                    Полосы
-                  </button>
-                  <button
-                    role="tab"
-                    id="chart-mosaic"
-                    data-survey-chart="mosaic"
-                    aria-controls="survey-chart"
-                    aria-selected="false"
-                    tabindex="-1"
-                  >
-                    Мозаика
-                  </button>
-                </div>
-                <div
-                  id="survey-chart"
-                  class="survey-chart"
-                  role="tabpanel"
-                  aria-labelledby="chart-rings"
-                  tabindex="0"
-                >
-                  <div class="survey-chart-fallback">
-                    <p>
-                      <b>80% · 64 из 80</b> — сталкиваются с разрозненностью
-                      информации о лечении.
-                    </p>
-                    <p>
-                      <b>70% · 56 из 80</b> — сложно восстановить изменения
-                      самочувствия между приёмами.
-                    </p>
-                    <p>
-                      <b>75% · 60 из 80</b> — хотели бы видеть план и динамику в
-                      одном месте.
-                    </p>
-                  </div>
-                </div>
-                <div class="survey-carousel-controls">
-                  <button
-                    type="button"
-                    data-chart-prev
-                    aria-label="Предыдущий вид графика"
-                  >
-                    ←</button
-                  ><span id="chart-position" role="status" aria-live="polite"
-                    >1 / 3 · Кольца</span
-                  ><button
-                    type="button"
-                    data-chart-next
-                    aria-label="Следующий вид графика"
-                  >
-                    →
-                  </button>
-                </div>
-              </div>
-              <p class="survey-note">
-                Данные условные: пример визуализации опроса.
-              </p>
-            </aside>
           </div>
         </div>
       </section>
@@ -356,86 +498,283 @@
         aria-labelledby="evidence-title"
       >
         <div class="container">
+          <div class="evidence-heading reveal">
+            <h2 id="evidence-title">
+              Научная основа<br /><span>подхода</span>
+            </h2>
+            <p>
+              Мы проанализировали научную литературу и выделили проблемы,
+              которые обсуждает профессиональное сообщество, чтобы сосредоточить
+              Синкли на реальных задачах пациентов и врачей.
+            </p>
+          </div>
+          <ol class="evidence-rows">
+            <li class="evidence-row reveal">
+              <h3>Состояние бывает трудно описать словами</h3>
+              <div class="evidence-copy">
+                <p>
+                  Российское исследование описывает трудности выражения
+                  эмоциональных переживаний при депрессии, особенно у молодых
+                  пациентов.
+                </p>
+                <p class="evidence-caveat">
+                  Работа описывает проблему; пользу опросников для её решения в
+                  ней не проверяли.
+                </p>
+                <a
+                  href="https://doi.org/10.17116/jnevro202312311230"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Краснов и соавт., 2023
+                  <svg aria-hidden="true"><use href="#i-diagonal" /></svg
+                ></a>
+              </div>
+            </li>
+            <li class="evidence-row reveal">
+              <h3>Сохранять участие в наблюдении бывает сложно</h3>
+              <div class="evidence-copy">
+                <p>
+                  В российском исследовании постстационарного сопровождения
+                  41,7% из 60 пациентов с депрессивными состояниями не дошли до
+                  последней контрольной точки через три месяца.
+                </p>
+                <p class="evidence-caveat">
+                  Выбывание из исследования не обязательно означает прекращение
+                  лечения.
+                </p>
+                <a
+                  href="https://psychiatr.ru/files/magazines/2024_12_scp_2475.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Бобров и соавт., 2024
+                  <svg aria-hidden="true"><use href="#i-diagonal" /></svg
+                ></a>
+              </div>
+            </li>
+            <li class="evidence-row reveal">
+              <h3>Дневник помогает отслеживать состояние</h3>
+              <div class="evidence-copy">
+                <p>
+                  В исследовании 77 пациентов с биполярным расстройством
+                  показатели электронного дневника настроения были связаны с
+                  врачебной оценкой депрессивных симптомов.
+                </p>
+                <p class="evidence-caveat">
+                  Изучалась конкретная система при БАР; результаты требуют
+                  проверки для других систем и групп пациентов.
+                </p>
+                <a
+                  href="https://doi.org/10.48612/psyph/14gz-nazk-r2re"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Мосолов и соавт., 2026
+                  <svg aria-hidden="true"><use href="#i-diagonal" /></svg
+                ></a>
+              </div>
+            </li>
+            <li class="evidence-row reveal">
+              <h3>Регулярная оценка может ускорять достижение ремиссии</h3>
+              <div class="evidence-copy">
+                <p>
+                  В рандомизированном исследовании 154 взрослых с депрессией
+                  медианное время до ремиссии составило 4 недели при регулярной
+                  оценке симптомов и коррекции лечения против 8 недель при
+                  стандартной помощи.
+                </p>
+                <p class="evidence-caveat">
+                  К 24-й неделе различие в доле пациентов с ремиссией не было
+                  статистически значимым.
+                </p>
+                <a
+                  href="https://doi.org/10.1001/jamanetworkopen.2025.29427"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Husain и соавт., 2025
+                  <svg aria-hidden="true"><use href="#i-diagonal" /></svg
+                ></a>
+              </div>
+            </li>
+          </ol>
+          <div class="evidence-conclusion reveal">
+            <p>
+              Синкли создаётся с опорой на исследования регулярной оценки
+              симптомов и дистанционного наблюдения. Мы связываем отметки
+              пациента с информацией для врача, чтобы поддерживать сопровождение
+              между консультациями.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section ecosystem-section" id="ecosystem">
+        <div class="container">
           <div class="section-heading reveal">
-            <p class="eyebrow">Научная основа</p>
+            <p class="eyebrow">02 / Экосистема</p>
             <div>
-              <h2 id="evidence-title">
-                Научная основа<br /><span>и источники.</span>
-              </h2>
+              <h2>Врач. Пациент. Клиника.<br /><span>Одна экосистема</span></h2>
               <p class="section-intro">
-                Регулярные измерения помогают обсуждать изменения с врачом.
-                Исследования подхода не подтверждают эффективность самого
-                Синкли.
+                Пациент фиксирует своё самочувствие и симптомы в приложении,
+                врач отслеживает изменения состояния между приёмами, а клиника
+                анализирует процесс сопровождения пациентов. У каждого — свои
+                функции и уровень доступа к данным.
               </p>
             </div>
           </div>
-          <div class="evidence-cards reveal">
-            <article>
-              <div class="paper-top">
-                <span>РАНДОМИЗИРОВАННОЕ ИССЛЕДОВАНИЕ</span><span>2015</span>
-              </div>
-              <div class="paper-number">120<span>участников</span></div>
-              <h3>Измерения, включённые<br />в решения врача</h3>
-              <p>
-                Guo и соавт. сравнили ведение депрессии на основе измерений со
-                стандартной помощью в течение 24 недель.
+          <div
+            class="ecosystem-tabs reveal"
+            role="tablist"
+            aria-label="Для кого Синкли"
+          >
+            <button
+              role="tab"
+              aria-selected="true"
+              aria-controls="platform-panel"
+              id="platform-doctor"
+              data-platform="doctor"
+            >
+              <svg><use href="#i-role-doctor" /></svg> Врачу</button
+            ><button
+              role="tab"
+              aria-selected="false"
+              aria-controls="platform-panel"
+              id="platform-patient"
+              tabindex="-1"
+              data-platform="patient"
+            >
+              <svg><use href="#i-role-patient" /></svg> Пациенту</button
+            ><button
+              role="tab"
+              aria-selected="false"
+              aria-controls="platform-panel"
+              id="platform-clinic"
+              tabindex="-1"
+              data-platform="clinic"
+            >
+              <svg><use href="#i-role-clinic" /></svg> Клинике
+            </button>
+          </div>
+          <div
+            class="platform-panel reveal"
+            id="platform-panel"
+            role="tabpanel"
+            aria-labelledby="platform-doctor"
+            tabindex="0"
+          >
+            <div class="platform-description">
+              <h3 id="platform-title">
+                Меньше времени на поиск информации.<br />Больше — на пациента.
+              </h3>
+              <p id="platform-copy">
+                История наблюдений, результаты опросников и динамика состояния в
+                одном рабочем пространстве. Быстро готовьтесь к приёмам,
+                замечайте изменения между визитами и определяйте, кому из
+                пациентов требуется ваше внимание.
               </p>
-              <a
-                href="https://pubmed.ncbi.nlm.nih.gov/26315978/"
-                target="_blank"
-                rel="noopener noreferrer"
-                >American Journal of Psychiatry
-                <svg><use href="#i-diagonal" /></svg
-              ></a>
-            </article>
-            <article>
-              <div class="paper-top">
-                <span>СИСТЕМАТИЧЕСКИЙ ОБЗОР И МЕТААНАЛИЗ</span><span>2021</span>
+              <div class="platform-tags" id="platform-tags">
+                <span>Карточки пациентов</span><span>Динамика состояния</span
+                ><span>Мониторинг рисков</span>
               </div>
-              <div class="paper-number">
-                7<span>рандомизированных исследований</span>
-              </div>
-              <h3>Подход изучен<br />в нескольких испытаниях</h3>
+
+              <a class="button button-dark" id="platform-link" href="doctor/">
+                Перейти в кабинет врача <svg><use href="#i-arrow" /></svg>
+              </a>
+              <button
+                class="button button-dark platform-unavailable"
+                id="platform-unavailable"
+                type="button"
+                disabled
+                hidden
+                title="Мобильное демо пока недоступно"
+              >
+                Посмотреть приложение пациента
+                <svg><use href="#i-arrow" /></svg>
+              </button>
+            </div>
+            <div class="ecosystem-visual" id="ecosystem-visual"></div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="section technology-section"
+        id="privacy"
+        aria-labelledby="technology-title"
+      >
+        <div class="container">
+          <div class="technology-heading reveal">
+            <h2 id="technology-title">
+              Технологии.<br /><span>Российский контур.</span>
+            </h2>
+            <p>
+              Строим Синкли на открытом технологическом стеке. Размещение и
+              обработка медицинских данных в России — базовый принцип
+              архитектуры.
+            </p>
+          </div>
+          <dl class="technology-stack reveal">
+            <div>
+              <dt>Веб-приложения</dt>
+              <dd>
+                React · TypeScript · Vite
+                <p>Интерфейсы врача и клиники в браузере.</p>
+              </dd>
+            </div>
+            <div>
+              <dt>Мобильное приложение</dt>
+              <dd>
+                React Native · Expo
+                <p>Одна кодовая база для Android и iOS.</p>
+              </dd>
+            </div>
+            <div>
+              <dt>Сервер</dt>
+              <dd>
+                ASP.NET Core 10
+                <p>Модульная архитектура, REST API и OpenAPI.</p>
+              </dd>
+            </div>
+            <div>
+              <dt>База данных</dt>
+              <dd>
+                PostgreSQL
+                <p>Хранение истории, связей и данных сопровождения.</p>
+              </dd>
+            </div>
+          </dl>
+          <div class="deployment-layout reveal">
+            <div class="deployment-intro">
+              <h3>Данные остаются<br />в России</h3>
               <p>
-                Zhu и соавт. объединили данные 2 019 пациентов. Результаты
-                поддерживают MBC, при ограничениях качества и неоднородности
-                исследований.
+                Для целевого развёртывания предусматриваем российские серверы,
+                базы данных и резервные копии. Обработка медицинских данных не
+                требует передачи зарубежным облачным сервисам.
               </p>
-              <a
-                href="https://pubmed.ncbi.nlm.nih.gov/34587377/"
-                target="_blank"
-                rel="noopener noreferrer"
-                >Journal of Clinical Psychiatry
-                <svg><use href="#i-diagonal" /></svg
-              ></a>
-            </article>
-            <article>
-              <div class="paper-top">
-                <span>ПСИХОМЕТРИЧЕСКИЕ ИССЛЕДОВАНИЯ</span><span>2023</span>
-              </div>
-              <div class="paper-number paper-letters">
-                RU<span>русскоязычные версии шкал</span>
-              </div>
-              <h3>Измерения должны<br />подходить пациенту</h3>
-              <p>
-                Публикации о русских версиях PHQ-9 и GAD-7 описывают
-                психометрические свойства. Шкала помогает оценке, но не
-                устанавливает диагноз.
-              </p>
-              <div class="paper-links">
-                <a
-                  href="https://psyjournals.ru/en/journals/cpse/archive/2023_n4/Zolotareva"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  >PHQ-9 <svg><use href="#i-diagonal" /></svg></a
-                ><a
-                  href="https://psyjournals.ru/en/journals/cpp/archive/2023_n4/Zolotareva"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  >GAD-7 <svg><use href="#i-diagonal" /></svg
-                ></a>
-              </div>
-            </article>
+            </div>
+            <div class="deployment-options">
+              <article>
+                <span>01</span>
+                <div>
+                  <h3>В контуре клиники</h3>
+                  <p>
+                    API, база данных и веб-приложения могут размещаться на
+                    инфраструктуре клиники. Доступ сотрудников организуется
+                    внутри её сети, а внешний доступ пациентов — через
+                    согласованные защищённые каналы.
+                  </p>
+                </div>
+              </article>
+              <article>
+                <span>02</span>
+                <div>
+                  <h3>В российском дата-центре</h3>
+                  <p>
+                    Альтернативный вариант — размещение в России на выделенной
+                    инфраструктуре с согласованными правилами доступа,
+                    резервного копирования и сопровождения.
+                  </p>
+                </div>
+              </article>
+            </div>
           </div>
         </div>
       </section>
@@ -446,7 +785,7 @@
         aria-labelledby="compare-title"
       >
         <div class="container">
-          <h2 id="compare-title">Сравнение платформ</h2>
+          <h2 id="compare-title">Рынок</h2>
 
           <div
             class="comparison-wrap reveal"
@@ -564,156 +903,251 @@
         </div>
       </section>
 
-      <section class="section ecosystem-section" id="ecosystem">
+      <section
+        class="section monetization-section"
+        id="monetization"
+        aria-labelledby="monetization-title"
+        data-monetization
+      >
         <div class="container">
-          <div class="section-heading reveal">
-            <p class="eyebrow">02 / Экосистема</p>
-            <div>
-              <h2>Врач. Пациент. Клиника.<br /><span>Одна экосистема</span></h2>
-              <p class="section-intro">
-                У каждого — свои задачи и доступ. Наблюдения пациента становятся
-                контекстом для врача, а клиника видит аналитику сопровождения.
-              </p>
-            </div>
-          </div>
-          <div
-            class="ecosystem-tabs reveal"
-            role="tablist"
-            aria-label="Для кого Синкли"
-          >
-            <button
-              role="tab"
-              aria-selected="true"
-              aria-controls="platform-panel"
-              id="platform-doctor"
-              data-platform="doctor"
-            >
-              <svg><use href="#i-role-doctor" /></svg> Врачу</button
-            ><button
-              role="tab"
-              aria-selected="false"
-              aria-controls="platform-panel"
-              id="platform-patient"
-              tabindex="-1"
-              data-platform="patient"
-            >
-              <svg><use href="#i-role-patient" /></svg> Пациенту</button
-            ><button
-              role="tab"
-              aria-selected="false"
-              aria-controls="platform-panel"
-              id="platform-clinic"
-              tabindex="-1"
-              data-platform="clinic"
-            >
-              <svg><use href="#i-role-clinic" /></svg> Клинике
-            </button>
-          </div>
-          <div
-            class="platform-panel reveal"
-            id="platform-panel"
-            role="tabpanel"
-            aria-labelledby="platform-doctor"
-            tabindex="0"
-          >
-            <div class="platform-description">
-              <span class="eyebrow" id="platform-kicker">ДЛЯ ВРАЧА</span>
-              <h3 id="platform-title">Рабочий день.<br />Собранный воедино.</h3>
-              <p id="platform-copy">
-                Карточки пациентов, динамика и очередь внимания. Единая среда в
-                браузере — от индивидуальной практики до команды клиники.
-              </p>
-              <div class="platform-tags" id="platform-tags">
-                <span>Карточка пациента</span><span>Общий контекст</span
-                ><span>Разделение доступа</span>
-              </div>
-
-              <a class="button button-dark" id="platform-link" href="doctor/">
-                Открыть приложение врача <svg><use href="#i-arrow" /></svg>
-              </a>
-              <button
-                class="button button-dark platform-unavailable"
-                id="platform-unavailable"
-                type="button"
-                disabled
-                hidden
-                title="Мобильное демо пока недоступно"
-              >
-                Демо пациента
-              </button>
-            </div>
-            <div class="ecosystem-visual" id="ecosystem-visual"></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="section privacy-section" id="privacy">
-        <div class="container">
-          <div class="privacy-shell reveal">
-            <div class="privacy-heading">
-              <p class="eyebrow">
-                <svg><use href="#i-shield" /></svg> Данные под контролем клиники
-              </p>
-              <h2>Доверие начинается<br /><span>с архитектуры.</span></h2>
-              <p>
-                Медицинские данные требуют большего, чем российского сервера. В
-                основе — разделение доступа, правовые основания обработки и
-                управляемый жизненный цикл данных.
-              </p>
-              <button class="button button-mint" data-privacy>
-                Как устроен контур <svg><use href="#i-diagonal" /></svg>
-              </button>
-            </div>
-            <div class="privacy-diagram">
-              <div class="privacy-orbit orbit-one"></div>
-              <div class="privacy-orbit orbit-two"></div>
-              <div class="privacy-core">
-                <svg><use href="#i-shield" /></svg
-                ><b>Российский<br />контур данных</b
-                ><span>Доступ по роли и основанию</span>
-              </div>
-              <span class="diagram-node node-doctor"
-                ><svg><use href="#i-person" /></svg> Врач</span
-              ><span class="diagram-node node-patient"
-                ><svg><use href="#i-phone" /></svg> Пациент</span
-              ><span class="diagram-node node-clinic"
-                ><svg><use href="#i-grid" /></svg> Клиника</span
-              >
-            </div>
-            <div class="privacy-principles">
-              <div>
-                <span>01 / ЛОКАЛИЗАЦИЯ</span>
-                <h3>Хранение и обработка в РФ</h3>
-                <p>
-                  Данные, резервные копии и сервисы обработки — в российском
-                  контуре.
-                </p>
-              </div>
-              <div>
-                <span>02 / ПРАВА И ОСНОВАНИЯ</span>
-                <h3>Видно только необходимое</h3>
-                <p>
-                  Привязка к лечащему врачу, роли, согласия и учёт правовых
-                  оснований.
-                </p>
-              </div>
-              <div>
-                <span>03 / ПРОСЛЕЖИВАЕМОСТЬ</span>
-                <h3>Каждое действие учитывается</h3>
-                <p>Журнал доступа, изменения плана и обработка инцидентов.</p>
-              </div>
-            </div>
-            <p class="privacy-legal">
-              Проектирование с учётом
-              <a
-                href="https://mintrud.gov.ru/docs/laws/130"
-                target="_blank"
-                rel="noopener noreferrer"
-                >152-ФЗ</a
-              >
-              и врачебной тайны. Соответствие внедрения подтверждается после
-              реализации, определения ролей оператора и оценки мер защиты.
+          <div class="monetization-heading reveal">
+            <h2 id="monetization-title">Монетизация</h2>
+            <p>
+              Клиника оплачивает врачебные места. Приложение пациента входит в
+              подписку. Слева — предлагаемые тарифы, справа — оценка рынка и
+              сценарий роста.
             </p>
+          </div>
+          <div class="monetization-board">
+            <div class="monetization-panel monetization-pricing reveal">
+              <div class="monetization-panel-heading">
+                <h3>Тарифы подписки</h3>
+                <span>За врачебные места</span>
+              </div>
+              <div
+                class="monetization-billing"
+                role="group"
+                aria-label="Период оплаты подписки"
+              >
+                <button
+                  type="button"
+                  data-billing="month"
+                  aria-pressed="false"
+                  disabled
+                >
+                  Помесячно
+                </button>
+                <button
+                  type="button"
+                  data-billing="year"
+                  aria-pressed="true"
+                  disabled
+                >
+                  За 12 месяцев
+                </button>
+              </div>
+              <div class="monetization-plans">
+                <article class="monetization-plan" data-plan="screening">
+                  <div class="monetization-plan-top">
+                    <div>
+                      <h4>Скрининг</h4>
+                      <p>Для терапевтов</p>
+                    </div>
+                    <div class="monetization-plan-price">
+                      <strong data-plan-price>9 900 ₽</strong
+                      ><span data-plan-unit>за врача в год</span>
+                    </div>
+                  </div>
+                  <p class="monetization-plan-description">
+                    Шкалы, оценка первичного риска и подсказки по маршрутизации.
+                  </p>
+                </article>
+                <article class="monetization-plan" data-plan="clinical">
+                  <div class="monetization-plan-top">
+                    <div>
+                      <h4>Клинический</h4>
+                      <p>Для психиатров и психотерапевтов</p>
+                    </div>
+                    <div class="monetization-plan-price">
+                      <strong data-plan-price>29 900 ₽</strong
+                      ><span data-plan-unit>за врача в год</span>
+                    </div>
+                  </div>
+                  <p class="monetization-plan-description">
+                    Скрининг, динамика, мониторинг нежелательных явлений,
+                    алерты, кабинет пациента и справочная поддержка лечения.
+                  </p>
+                </article>
+                <article class="monetization-plan" data-plan="clinic">
+                  <div class="monetization-plan-top">
+                    <div>
+                      <h4>Клиника</h4>
+                      <p>Команда до 5 врачей</p>
+                    </div>
+                    <div class="monetization-plan-price">
+                      <strong data-plan-price>149 000 ₽</strong
+                      ><span data-plan-unit>за команду в год</span>
+                    </div>
+                  </div>
+                  <p class="monetization-plan-description">
+                    Командный доступ, администрирование, мониторинг и
+                    отчётность. Интеграция с МИС — отдельно.
+                  </p>
+                </article>
+              </div>
+              <div class="monetization-patient-note">
+                <svg aria-hidden="true"><use href="#i-role-patient" /></svg>
+                <p>
+                  Пациент не оплачивает мобильное приложение отдельно: оно
+                  предоставляется в рамках подписки клиники.
+                </p>
+              </div>
+            </div>
+            <div class="monetization-panel monetization-forecast reveal">
+              <div class="monetization-panel-heading">
+                <h3>Оценка рынка</h3>
+                <span>Подписная выручка в год</span>
+              </div>
+              <dl class="monetization-market">
+                <div class="monetization-market-row">
+                  <dt><b>TAM</b> Весь рынок</dt>
+                  <dd>
+                    <strong>1,16 млрд ₽</strong>
+                    <div
+                      class="monetization-bar"
+                      data-market="tam"
+                      aria-hidden="true"
+                    ></div>
+                    <span
+                      >11 559 профильных специалистов + 82 400 терапевтов</span
+                    >
+                  </dd>
+                </div>
+                <div class="monetization-market-row">
+                  <dt><b>SAM</b> Доступный сегмент</dt>
+                  <dd>
+                    <strong>138,25 млн ₽</strong>
+                    <div
+                      class="monetization-bar"
+                      data-market="sam"
+                      aria-hidden="true"
+                    ></div>
+                    <span>40% профильных специалистов × 29 900 ₽ в год</span>
+                  </dd>
+                </div>
+                <div class="monetization-market-row">
+                  <dt><b>SOM</b> Цель к 3-му году</dt>
+                  <dd>
+                    <strong data-som-revenue>7,18 млн ₽</strong>
+                    <div
+                      class="monetization-bar"
+                      data-market="som"
+                      aria-hidden="true"
+                    ></div>
+                    <span
+                      ><span data-formula-clinics>40</span> клиник ×
+                      <span data-formula-doctors>6</span> врачей × 29 900 ₽ в
+                      год</span
+                    >
+                  </dd>
+                </div>
+              </dl>
+              <div class="monetization-calculator">
+                <div class="monetization-calculator-heading">
+                  <h4>Калькулятор рынка</h4>
+                  <span>К концу 3-го года</span>
+                </div>
+                <div
+                  class="monetization-result"
+                  aria-live="polite"
+                  aria-atomic="true"
+                >
+                  <p class="monetization-revenue">
+                    <span data-annual-revenue>7,18</span><span>млн ₽ ARR</span>
+                  </p>
+                  <p class="monetization-monthly">
+                    <span data-monthly-revenue>598 000</span> ₽ MRR ·
+                    <span data-seats>240</span> врачебных мест
+                  </p>
+                </div>
+                <div class="monetization-slider">
+                  <div class="monetization-slider-label">
+                    <label for="monetization-clinics">Клиник</label
+                    ><output for="monetization-clinics" data-clinics-output
+                      >40</output
+                    >
+                  </div>
+                  <input
+                    id="monetization-clinics"
+                    type="range"
+                    min="10"
+                    max="100"
+                    step="5"
+                    value="40"
+                    disabled
+                    aria-describedby="monetization-calculation-basis"
+                  />
+                  <div class="monetization-slider-bounds" aria-hidden="true">
+                    <span>10</span><span>100</span>
+                  </div>
+                </div>
+                <div class="monetization-slider">
+                  <div class="monetization-slider-label">
+                    <label for="monetization-doctors">Врачей в клинике</label
+                    ><output for="monetization-doctors" data-doctors-output
+                      >6</output
+                    >
+                  </div>
+                  <input
+                    id="monetization-doctors"
+                    type="range"
+                    min="1"
+                    max="20"
+                    step="1"
+                    value="6"
+                    disabled
+                    aria-describedby="monetization-calculation-basis"
+                  />
+                  <div class="monetization-slider-bounds" aria-hidden="true">
+                    <span>1</span><span>20</span>
+                  </div>
+                </div>
+                <p
+                  class="monetization-calculation-basis"
+                  id="monetization-calculation-basis"
+                >
+                  Расчёт по тарифу «Клинический»: 29 900 ₽ за место в год. ARR —
+                  годовая подписная выручка; MRR — её месячный эквивалент при
+                  годовой оплате.
+                </p>
+              </div>
+              <details class="monetization-method">
+                <summary>
+                  Как рассчитаны TAM и SAM <span aria-hidden="true">+</span>
+                </summary>
+                <p>
+                  TAM: 11 559 × 29 900 + 82 400 × 9 900 = 1 161 374 100 ₽ в год.
+                  SAM: 11 559 × 40% × 29 900 = 138 245 640 ₽ в год. Доля 40% —
+                  сценарное допущение. Диаграммы показаны в общем масштабе.
+                </p>
+                <p>
+                  Численность специалистов: 10 239 психиатров и 1 320
+                  психотерапевтов —
+                  <a
+                    href="https://www.interfax.ru/russia/1090736"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >данные Минздрава за 2025 год</a
+                  >; 82 400 терапевтов —
+                  <a
+                    href="https://rosstat.gov.ru/storage/mediabank/Rossia_2025.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >Росстат, данные за 2024 год</a
+                  >.
+                </p>
+              </details>
+            </div>
           </div>
         </div>
       </section>
@@ -776,6 +1210,11 @@
         <div class="container">
           <div class="section-heading reveal">
             <h2 id="team-title">Команда</h2>
+            <p class="team-description">
+              Мы студенты Пироговского университета 5-го курса направления
+              «Медицинская кибернетика», специализируемся на разработке
+              IT-решений для медицины.
+            </p>
           </div>
           <ul class="team-grid">
             <li class="team-card reveal">
@@ -791,6 +1230,11 @@
               </div>
               <h3>Ксения Резвова</h3>
               <p>Медицинский консультант</p>
+              <ul class="team-contributions">
+                <li>Подготовка интерфейса списка пациентов</li>
+                <li>Проработка отображения карточек</li>
+                <li>Сбор обратной связи по прототипу</li>
+              </ul>
             </li>
             <li class="team-card reveal">
               <div class="team-photo">
@@ -805,6 +1249,11 @@
               </div>
               <h3>Елизавета Федорцова</h3>
               <p>Специалист по клинической кибернетике</p>
+              <ul class="team-contributions">
+                <li>Подготовка сводки для клиники</li>
+                <li>Оформление показателей команды</li>
+                <li>Проработка представления аналитики</li>
+              </ul>
             </li>
             <li class="team-card reveal">
               <div class="team-photo">
@@ -819,6 +1268,11 @@
               </div>
               <h3>Дарья Мисник</h3>
               <p>Специалист по клинической кибернетике</p>
+              <ul class="team-contributions">
+                <li>Подготовка синтетических примеров</li>
+                <li>Проверка отображения пустых состояний</li>
+                <li>Сбор замечаний по интерфейсу</li>
+              </ul>
             </li>
             <li class="team-card reveal">
               <div class="team-photo">
@@ -833,6 +1287,11 @@
               </div>
               <h3>Елизавета Лихачева</h3>
               <p>Специалист по связям с общественностью</p>
+              <ul class="team-contributions">
+                <li>Подготовка материалов о продукте</li>
+                <li>Оформление информационных блоков</li>
+                <li>Работа над презентацией проекта</li>
+              </ul>
             </li>
             <li class="team-card reveal">
               <div class="team-photo">
@@ -847,6 +1306,11 @@
               </div>
               <h3>Дмитрий Супонин</h3>
               <p>Глава разработки продукта</p>
+              <ul class="team-contributions">
+                <li>Проектирование архитектуры</li>
+                <li>Разработка серверной части</li>
+                <li>Сборка и интеграция приложений</li>
+              </ul>
             </li>
           </ul>
         </div>
@@ -855,7 +1319,6 @@
       <section class="section faq-section">
         <div class="container faq-grid">
           <div class="reveal">
-            <p class="eyebrow">Коротко о главном</p>
             <h2>Вопросы<br /><span>и ответы</span></h2>
           </div>
           <div class="faq-list reveal">
@@ -866,63 +1329,61 @@
                 </svg>
               </summary>
               <p>
-                Синкли собирает контекст и предлагает варианты для рассмотрения.
-                Назначение, изменение и отмена терапии, направление к психиатру
-                и изменение плана требуют подтверждения врачом.
+                Нет. Синкли анализирует данные о состоянии пациента, помогает
+                врачу замечать важные изменения и предлагает возможные варианты
+                действий. Но все решения о назначении, изменении или отмене
+                лечения остаются за врачом.
               </p>
             </details>
             <details>
               <summary>
-                Как разделены роли врача и пациента?<svg>
+                Кто и какие данные видит в Синкли?<svg>
                   <use href="#i-plus" />
                 </svg>
               </summary>
               <p>
-                Пациент видит собственные данные, задачи, динамику и диалог.
-                Врач работает с клинической карточкой связанных с ним пациентов.
-                Доступ клиники определяется полномочиями, а не просто наличием
-                учётной записи.
+                Пациенту доступны дневник самочувствия, результаты опросников,
+                история изменений состояния, рекомендации врача и переписка с
+                ним. Лечащему врачу доступны медицинские карточки пациентов,
+                которых он ведёт. Руководитель клиники получает сводную
+                аналитику и информацию о нагрузке врачей, а администратор —
+                инструменты для организации работы клиники. Каждый пользователь
+                получает доступ только к данным, необходимым для его задач.
               </p>
             </details>
             <details>
               <summary>
-                На чём основаны рекомендации?<svg><use href="#i-plus" /></svg>
-              </summary>
-              <p>
-                В целевом продукте — на действующих рекомендациях Минздрава РФ,
-                актуальных инструкциях ГРЛС и валидированных русскоязычных
-                инструментах. Для каждого вывода предусмотрены источник, версия
-                и исходные данные. Международные материалы обозначаются
-                отдельно.
-              </p>
-            </details>
-            <details>
-              <summary>
-                Как рассматривается лекарственная терапия?<svg>
+                На чём основаны рекомендации Синкли?<svg>
                   <use href="#i-plus" />
                 </svg>
               </summary>
               <p>
-                Врач рассматривает препараты в рамках зарегистрированных
-                показаний и действующей инструкции. В демонстрационных сценариях
-                есть рассмотрение «Авиандра», как предусмотрено кейсом. Лендинг
-                не назначает лечение и не содержит персональных рекомендаций или
-                дозировок.
+                В основе Синкли — клинические рекомендации Минздрава России,
+                актуальные инструкции к лекарственным препаратам из
+                Государственного реестра лекарственных средств (ГРЛС) и
+                валидированные диагностические шкалы. Каждая рекомендация
+                сопровождается ссылкой на первоисточник, чтобы врач мог
+                проверить информацию и принять обоснованное решение.
               </p>
             </details>
             <details>
               <summary>
-                Что требуется для соответствия 152-ФЗ?<svg>
+                Как Синкли защищает медицинские данные пациентов?<svg>
                   <use href="#i-plus" />
                 </svg>
               </summary>
               <p>
-                Российская локализация — лишь одна часть. Нужны правовые
-                основания обработки сведений о здоровье, документы оператора,
-                поручения обработчикам, необходимые согласия, оценка угроз и
-                меры защиты. Полный состав определяется для конкретного
-                внедрения. На этом сайте используются только вымышленные данные;
-                формы сбора медицинских данных отсутствуют.
+                Медицинские данные пациентов будут храниться на российских
+                серверах, а доступ к ним получат только сотрудники клиники в
+                пределах своих обязанностей. При подключении клиники учитываются
+                требования 152-ФЗ, включая необходимые согласия и меры защиты
+                информации.
+              </p>
+              <p>
+                Пациенты могут быть уверены в конфиденциальности своих данных —
+                информация об их здоровье не будет доступна посторонним. На
+                демонстрационном сайте используются только вымышленные данные,
+                медицинскую информацию посетителей мы не собираем.
               </p>
             </details>
           </div>
@@ -938,76 +1399,5 @@
         </div>
       </div>
     </footer>
-    <dialog
-      class="privacy-dialog"
-      id="privacy-dialog"
-      aria-labelledby="privacy-title"
-    >
-      <div class="dialog-top">
-        <div>
-          <p class="eyebrow">АРХИТЕКТУРА ДОВЕРИЯ</p>
-          <h2 id="privacy-title">152-ФЗ — система требований.</h2>
-        </div>
-        <button
-          class="icon-button"
-          data-close
-          aria-label="Закрыть сведения о данных"
-        >
-          <svg><use href="#i-close" /></svg>
-        </button>
-      </div>
-      <div class="privacy-dialog-content">
-        <p class="dialog-lead">
-          Для будущей экосистемы закладывается российский контур без передачи
-          медицинских данных внешним зарубежным сервисам.
-        </p>
-        <div class="privacy-checklist">
-          <article>
-            <span>01</span>
-            <div>
-              <h3>Роли и основания</h3>
-              <p>
-                Определение оператора и обработчиков. Сведения о здоровье —
-                специальная категория. Основания обработки определяются для
-                каждого процесса; согласие не подменяет остальные обязанности.
-              </p>
-            </div>
-          </article>
-          <article>
-            <span>02</span>
-            <div>
-              <h3>Локализация и доступ</h3>
-              <p>
-                Российские базы, обработка и резервные копии. Раздельные
-                полномочия, привязка к лечащему врачу, многофакторный доступ для
-                сотрудников и журнал действий.
-              </p>
-            </div>
-          </article>
-          <article>
-            <span>03</span>
-            <div>
-              <h3>Жизненный цикл и инциденты</h3>
-              <p>
-                Сроки хранения, права субъектов, процедуры удаления,
-                реагирование на инциденты и проверка восстановления из резервных
-                копий.
-              </p>
-            </div>
-          </article>
-        </div>
-        <p class="dialog-limit">
-          Внедрение требует правовой и технической оценки. На текущем лендинге
-          нет аккаунтов, аналитики, трекеров или сбора сведений о здоровье.
-        </p>
-        <a
-          class="text-button"
-          href="https://mintrud.gov.ru/docs/laws/130"
-          target="_blank"
-          rel="noopener noreferrer"
-          >Текст 152-ФЗ на сайте Минтруда <svg><use href="#i-diagonal" /></svg
-        ></a>
-      </div>
-    </dialog>
   </body>
 </html>

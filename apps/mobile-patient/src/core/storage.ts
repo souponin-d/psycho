@@ -11,6 +11,8 @@ export function createStorage(port: StoragePort) {
     async read(): Promise<AppState> {
       readSucceeded = false;
       const raw = await port.getItem(key);
+      // A damaged snapshot must not be silently replaced by defaults on the next effect.
+      if (raw !== null) JSON.parse(raw);
       readSucceeded = true;
       return restoreState(raw);
     },

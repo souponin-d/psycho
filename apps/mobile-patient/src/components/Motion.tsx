@@ -7,7 +7,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import * as Haptics from "expo-haptics";
+import { useFeedback } from "../hooks/useFeedback";
 import { useApp } from "../state/AppProvider";
 export function Enter({
   children,
@@ -52,10 +52,12 @@ export function Touch({
   children,
   style,
   onPress,
+  haptic = true,
   ...props
-}: PressableProps & { style?: StyleProp<ViewStyle> }) {
+}: PressableProps & { style?: StyleProp<ViewStyle>; haptic?: boolean }) {
   const scale = useRef(new Animated.Value(1)).current;
   const { reducedMotion } = useApp();
+  const { pulse } = useFeedback();
   const animate = (toValue: number) =>
     Animated.timing(scale, {
       toValue,
@@ -70,7 +72,7 @@ export function Touch({
         onPressIn={() => animate(0.97)}
         onPressOut={() => animate(1)}
         onPress={(e) => {
-          void Haptics.selectionAsync().catch(() => {});
+          if (haptic) pulse();
           onPress?.(e);
         }}
         style={style}

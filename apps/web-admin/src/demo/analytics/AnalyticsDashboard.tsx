@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import { analyseClinic } from "./aggregate";
-import { Bars, Heatmap, MiniLine, TrendChart, number, percent } from "./Charts";
+import { Bars, Heatmap, MiniLine, number, percent } from "./Charts";
+import { ReportCalendar } from "./ReportCalendar";
 import { Filters } from "./Filters";
 import { Drilldown, type Selection } from "./Drilldown";
 import { MedicalStats } from "./MedicalStats";
@@ -164,20 +165,22 @@ export function AnalyticsDashboard({
                 <section className={styles.panel}>
                   <div className={styles.panelHeading}>
                     <div>
-                      <h2>Активность сопровождения</h2>
+                      <h2>Ритм самоотчётов</h2>
                       <p className={styles.muted}>
-                        Известные самоотчёты, шт. · одинаковая длина периодов
+                        Каждый день выбранного периода — отдельная плитка
                       </p>
                     </div>
-                    <span className={styles.contextNumber}>
-                      {number(result.summary.reports)} <small>записей</small>
-                    </span>
                   </div>
-                  <TrendChart
-                    key={result.filter.from + result.filter.to}
-                    rows={result.daily}
+                  <ReportCalendar
+                    result={result}
                     onDay={(day) => open({ kind: "reports", day })}
                   />
+                  {previous && (
+                    <p className={styles.muted}>
+                      {compare(result.summary.reports, previous.reports)} ·
+                      периоды одинаковой длины
+                    </p>
+                  )}
                   {result.summary.missingDays > 0 && (
                     <p className={styles.warning}>
                       Нет сводки:{" "}

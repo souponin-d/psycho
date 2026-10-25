@@ -1,0 +1,12 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'ru.syncli'
+version = '1.0.0'
+
+android {
+  namespace 'ru.syncli.alarm'
+  defaultConfig { versionCode 1; versionName '1.0.0' }
+}

@@ -95,7 +95,7 @@ export default function ChatScreen() {
               Я рядом
             </T>
             <T muted size={12}>
-              Ваш демонстрационный помощник
+              Ваш спутник в Синкли
             </T>
           </View>
         </View>
@@ -103,8 +103,8 @@ export default function ChatScreen() {
           style={{ backgroundColor: theme.soft, borderRadius: 15, padding: 12 }}
         >
           <T size={11} muted>
-            Демо-ответы · без AI и связи с врачом.{"\n"}Не вводите настоящие
-            медицинские данные.
+            Помогу найти план и сохранить мысли. Связь с врачом здесь пока
+            недоступна.
           </T>
         </View>
       </View>

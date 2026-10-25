@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import type { DiagnosisSelection } from "./model";
 import { searchIcd10, type TerminologySelection } from "./terminology";
-import { Button, Field, styles } from "./ui/Elements";
+import { Button, Field, Select, styles } from "./ui/Elements";
 
 type Selection = TerminologySelection | DiagnosisSelection;
 
@@ -10,11 +10,13 @@ export function TerminologyPicker<T extends Selection>({
   value,
   onChange,
   diagnosis = false,
+  canConfirm = false,
 }: {
   label: string;
   value: T[];
   onChange: (value: T[]) => void;
   diagnosis?: boolean;
+  canConfirm?: boolean;
 }) {
   const [query, setQuery] = useState("");
   const results = useMemo(() => searchIcd10(query).slice(0, 12), [query]);
@@ -34,7 +36,7 @@ export function TerminologyPicker<T extends Selection>({
         hint="Учебный срез МКБ-10: поиск по коду или названию"
       />
       {query && (
-        <div className={styles.inlineNote} role="listbox" aria-label={label}>
+        <div className={styles.inlineNote} role="group" aria-label={label}>
           {results.length ? (
             results.map((item) => (
               <Button
@@ -52,10 +54,32 @@ export function TerminologyPicker<T extends Selection>({
         </div>
       )}
       {value.map((item) => (
-        <div className={styles.between} key={item.code}>
+        <div className={styles.stack} key={item.code}>
           <span>
             {item.code} · {item.title}
           </span>
+          {diagnosis && "status" in item && (
+            <Select
+              label={`Статус диагноза ${item.code}`}
+              value={item.status}
+              disabled={!canConfirm}
+              onChange={(event) => {
+                if (!canConfirm) return;
+                const status = event.target
+                  .value as DiagnosisSelection["status"];
+                onChange(
+                  value.map((current) =>
+                    current.code === item.code
+                      ? { ...current, status }
+                      : current,
+                  ),
+                );
+              }}
+            >
+              <option value="hypothesis">Рабочая гипотеза</option>
+              <option value="confirmed">Подтверждён</option>
+            </Select>
+          )}
           <Button
             type="button"
             variant="ghost"
