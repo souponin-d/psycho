@@ -278,7 +278,12 @@ export function PatientView({
                   {[
                     ["Цели", patient.profile.goals],
                     ["Аллергии", patient.profile.allergies],
-                    ["Сопутствующие заболевания", patient.profile.conditions],
+                    [
+                      "Сопутствующие заболевания",
+                      patient.profile.clinicalContext.somaticConditions
+                        .map((item) => `${item.code} ${item.title}`)
+                        .join(", "),
+                    ],
                     ["Текущие препараты", patient.profile.currentMedication],
                     ["Поддержка", patient.profile.socialContext],
                   ].map(([label, value]) => (

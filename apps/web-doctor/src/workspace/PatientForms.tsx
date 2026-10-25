@@ -6,6 +6,7 @@ import { createVisit } from "./commands";
 import { formatDate, localDateTime, today } from "./labels";
 import type { Navigate } from "./PatientDirectory";
 import { SourceLinks } from "./SourceLibrary";
+import { TerminologyPicker } from "./TerminologyPicker";
 import {
   CurrentDraftValues,
   DraftConflict,
@@ -21,9 +22,9 @@ import {
   styles,
 } from "./ui/Elements";
 
-const profileFields: { key: keyof Profile; label: string }[] = [
+type TextProfileKey = Exclude<keyof Profile, "clinicalContext">;
+const profileFields: { key: TextProfileKey; label: string }[] = [
   { key: "allergies", label: "Аллергии и непереносимость" },
-  { key: "conditions", label: "Соматические заболевания" },
   { key: "currentMedication", label: "Текущие препараты" },
   { key: "pastEpisodes", label: "Предыдущие эпизоды и лечение" },
   { key: "familyHistory", label: "Семейный анамнез" },
@@ -48,9 +49,18 @@ const profileLabels: Record<string, string> = {
   ...Object.fromEntries(profileFields.map(({ key, label }) => [key, label])),
 };
 function profileValues(profile: Profile) {
-  const { representative: _representative, ...visibleProfile } = profile;
+  const {
+    representative: _representative,
+    clinicalContext,
+    ...visibleProfile
+  } = profile;
   return {
     ...visibleProfile,
+    complaints: clinicalContext.complaints,
+    illnessHistory: clinicalContext.illnessHistory,
+    somaticConditions: clinicalContext.somaticConditions
+      .map((item) => `${item.code} ${item.title}`)
+      .join(", "),
     sex: { unspecified: "Не указан", female: "Женский", male: "Мужской" }[
       profile.sex
     ],
@@ -203,6 +213,44 @@ export function ProfileForm({
             rows={2}
           />
         ))}
+        <Textarea
+          label="Жалобы"
+          value={value.clinicalContext.complaints}
+          onChange={(e) =>
+            setValue({
+              ...value,
+              clinicalContext: {
+                ...value.clinicalContext,
+                complaints: e.target.value,
+              },
+            })
+          }
+          rows={3}
+        />
+        <Textarea
+          label="Анамнез заболевания"
+          value={value.clinicalContext.illnessHistory}
+          onChange={(e) =>
+            setValue({
+              ...value,
+              clinicalContext: {
+                ...value.clinicalContext,
+                illnessHistory: e.target.value,
+              },
+            })
+          }
+          rows={4}
+        />
+        <TerminologyPicker
+          label="Соматические заболевания (МКБ-10)"
+          value={value.clinicalContext.somaticConditions}
+          onChange={(somaticConditions) =>
+            setValue({
+              ...value,
+              clinicalContext: { ...value.clinicalContext, somaticConditions },
+            })
+          }
+        />
         <SourceLinks ids={["S01", "S02", "S03", "S04"]} />
         <div className={styles.formActions}>
           <Button variant="secondary" onClick={onClose}>
@@ -244,9 +292,6 @@ export function AppointmentForm({
   const [format, setFormat] = useState<"in-person" | "remote">("in-person");
   const [duration, setDuration] = useState("45");
   const [reason, setReason] = useState("");
-  const [episodeId, setEpisodeId] = useState(
-    patient.episodes.find((e) => e.status === "active")?.id ?? "",
-  );
   const [error, setError] = useState("");
   const startsAt = Date.parse(when);
   const durationMinutes = Number(duration);
@@ -290,7 +335,6 @@ export function AppointmentForm({
           format,
           durationMinutes: Number(duration),
           reason,
-          episodeId,
         },
       });
       onClose();
@@ -378,18 +422,6 @@ export function AppointmentForm({
             <SourceLinks ids={["S11", "S15"]} />
           </>
         )}
-        <Select
-          label="Эпизод наблюдения"
-          value={episodeId}
-          onChange={(e) => setEpisodeId(e.target.value)}
-        >
-          <option value="">Пока не определён</option>
-          {patient.episodes.map((ep) => (
-            <option key={ep.id} value={ep.id}>
-              {ep.title}
-            </option>
-          ))}
-        </Select>
         <Textarea
           label="Причина обращения"
           value={reason}

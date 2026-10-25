@@ -1,5 +1,5 @@
 import { afterEach, expect, it, vi } from "vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { AppointmentForm, ProfileForm } from "./PatientForms";
 import { Workday } from "./Workday";
 import { demoActor, seedPatients } from "./seed";
@@ -39,6 +39,11 @@ it("не показывает поле представителя в профи�
   expect(
     screen.queryByText(/Пустое поле означает отсутствие сведений/),
   ).toBeNull();
+  expect(screen.getByLabelText("Жалобы")).toBeTruthy();
+  expect(screen.getByLabelText("Анамнез заболевания")).toBeTruthy();
+  expect(
+    screen.getByRole("textbox", { name: /Соматические заболевания/ }),
+  ).toBeTruthy();
 });
 
 it("оставляет отмену, но не показывает верхнюю кнопку закрытия при планировании", () => {
@@ -57,4 +62,19 @@ it("оставляет отмену, но не показывает верхню
   expect(screen.getByLabelText("Причина обращения")).toBeTruthy();
   expect(screen.queryByRole("button", { name: "Закрыть" })).toBeNull();
   expect(screen.getByRole("button", { name: "Отмена" })).toBeTruthy();
+  expect(screen.queryByLabelText("Эпизод наблюдения")).toBeNull();
+});
+
+it("предлагает код МКБ-10 по поиску в контексте пациента", () => {
+  const { actions, patient } = fixture();
+  render(<ProfileForm patient={patient} actions={actions} onClose={vi.fn()} />);
+  fireEvent.change(
+    screen.getByRole("textbox", { name: /Соматические заболевания/ }),
+    {
+      target: { value: "I10" },
+    },
+  );
+  expect(
+    screen.getByRole("button", { name: /I10.*гипертензия/i }),
+  ).toBeTruthy();
 });

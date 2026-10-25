@@ -10,6 +10,7 @@ import {
   type Visit,
 } from "./model.ts";
 import sourceData from "./source-data.json" with { type: "json" };
+import { isCurrentIcd10Selection } from "./terminology";
 export class DomainError extends Error {
   public code: string;
   constructor(message: string, code = "validation") {
@@ -71,11 +72,11 @@ function validateMutation(mutation: Mutation) {
     "assessment.save":
       "id,sourceId,sourceHash,formVersion,measuredAt,assessor,note,status",
     "profile.update":
-      "name,birthDate,sex,phone,email,occupation,address,emergencyContact,representative,preferredContact,allergies,conditions,currentMedication,familyHistory,pastEpisodes,substanceUse,socialContext,reproductiveContext,goals",
+      "name,birthDate,sex,phone,email,occupation,address,emergencyContact,representative,preferredContact,allergies,currentMedication,familyHistory,pastEpisodes,substanceUse,socialContext,reproductiveContext,goals,clinicalContext",
     "episode.save":
       "id,title,startedOn,status,phase,diagnosis,diagnosisStatus,endDate,summary",
     "visit.save":
-      "id,episodeId,scheduledAt,kind,format,status,reason,provenance,nextVisitAt,completedAt,startedAt,confirmedBy,cancellationReason,rationale",
+      "id,scheduledAt,kind,format,status,reason,provenance,nextVisitAt,completedAt,startedAt,confirmedBy,cancellationReason,rationale",
     "measurement.add":
       "id,visitId,scale,title,version,measuredAt,completeness,assessor,window,sourceId,interpretation,provenance,externalForm",
     "plan.save":
@@ -154,7 +155,8 @@ function validateMutation(mutation: Mutation) {
   record(raw);
   const extras: Record<string, string> = {
     "assessment.save": "responses",
-    "visit.save": "notes,durationMinutes,addenda,sourceIds,completionSnapshot",
+    "visit.save":
+      "notes,diagnoses,durationMinutes,addenda,sourceIds,completionSnapshot",
     "measurement.add": "score,maximum,answers",
     "plan.save": "sourceIds",
     "report.add": "mood,anxiety,sleepHours,safetyConcern",
@@ -174,10 +176,12 @@ function validateMutation(mutation: Mutation) {
     "Запись содержит неизвестные поля.",
   );
   for (const field of fields)
-    requireValue(
-      typeof raw[field] === "string" && (raw[field] as string).length <= 20000,
-      `Ожидалось текстовое поле: ${field}.`,
-    );
+    if (field !== "clinicalContext")
+      requireValue(
+        typeof raw[field] === "string" &&
+          (raw[field] as string).length <= 20000,
+        `Ожидалось текстовое поле: ${field}.`,
+      );
   if (mutation.type !== "profile.update") {
     text(raw.id as string, "идентификатор");
     requireValue(
@@ -211,6 +215,21 @@ function validateMutation(mutation: Mutation) {
       "Неизвестный источник.",
     );
   switch (mutation.type) {
+    case "profile.update": {
+      record(raw.clinicalContext);
+      const context = raw.clinicalContext;
+      for (const key of ["complaints", "illnessHistory"])
+        requireValue(
+          typeof context[key] === "string" && context[key].length <= 20000,
+          `Ожидалось текстовое поле контекста: ${key}.`,
+        );
+      requireValue(
+        Array.isArray(context.somaticConditions) &&
+          context.somaticConditions.every(isCurrentIcd10Selection),
+        "Соматические заболевания выбираются из текущего учебного каталога МКБ-10.",
+      );
+      break;
+    }
     case "assessment.save": {
       option(raw.status, ["unapproved"]);
       option(raw.assessor, ["patient", "clinician"]);
@@ -265,6 +284,18 @@ function validateMutation(mutation: Mutation) {
             (raw.notes[key] as string).length <= 20000,
           `Ожидалось текстовое поле: ${key}.`,
         );
+      requireValue(
+        array("diagnoses").every(
+          (diagnosis) =>
+            diagnosis &&
+            typeof diagnosis === "object" &&
+            isCurrentIcd10Selection(diagnosis) &&
+            ["hypothesis", "confirmed"].includes(
+              (diagnosis as { status?: unknown }).status as string,
+            ),
+        ),
+        "Диагноз выбирается из текущего учебного каталога МКБ-10.",
+      );
       requireValue(
         raw.completionSnapshot == null && array("addenda").length === 0,
         "Снимок и дополнения создаются отдельным подтверждением.",
@@ -398,7 +429,6 @@ export function createPatient(
     representative: "",
     preferredContact: "",
     allergies: "",
-    conditions: "",
     currentMedication: "",
     familyHistory: "",
     pastEpisodes: "",
@@ -406,6 +436,11 @@ export function createPatient(
     socialContext: "",
     reproductiveContext: "",
     goals: "",
+    clinicalContext: {
+      complaints: "",
+      illnessHistory: "",
+      somaticConditions: [],
+    },
     ...input,
   };
   validateProfile(profile, now);
@@ -437,12 +472,22 @@ export function createPatient(
   };
 }
 function validateProfile(profile: Profile, now: string) {
-  for (const value of Object.values(profile))
-    requireValue(
-      typeof value === "string" && value.length <= 20000,
-      "Профиль должен содержать текстовые поля не длиннее 20 000 символов.",
-    );
+  for (const [key, value] of Object.entries(profile))
+    if (key !== "clinicalContext")
+      requireValue(
+        typeof value === "string" && value.length <= 20000,
+        "Профиль должен содержать текстовые поля не длиннее 20 000 символов.",
+      );
   option(profile.sex, ["female", "male", "unspecified"]);
+  requireValue(
+    profile.clinicalContext &&
+      typeof profile.clinicalContext.complaints === "string" &&
+      typeof profile.clinicalContext.illnessHistory === "string" &&
+      profile.clinicalContext.complaints.length <= 20000 &&
+      profile.clinicalContext.illnessHistory.length <= 20000 &&
+      profile.clinicalContext.somaticConditions.every(isCurrentIcd10Selection),
+    "Контекст пациента содержит недопустимые данные МКБ-10.",
+  );
   text(profile.name, "имя пациента");
   date(profile.birthDate, "дата рождения");
   requireValue(
@@ -468,7 +513,6 @@ export function createVisit(id: string, now: string, actor: Actor): Visit {
     id,
     createdAt: now,
     author: actor.name,
-    episodeId: "",
     scheduledAt: now,
     durationMinutes: 45,
     kind: "initial",
@@ -476,6 +520,7 @@ export function createVisit(id: string, now: string, actor: Actor): Visit {
     status: "scheduled",
     reason: "",
     notes: blankNotes(),
+    diagnoses: [],
     provenance: "patient",
     nextVisitAt: "",
     completedAt: "",
@@ -492,8 +537,6 @@ export function completionErrors(
   visit: Visit,
 ): string[] {
   const errors: string[] = [];
-  if (!visit.notes.complaints.trim())
-    errors.push("Заполните жалобы или причину обращения");
   if (!visit.notes.safetyConclusion.trim())
     errors.push("Зафиксируйте заключение по безопасности");
   if (!visit.notes.conclusion.trim()) errors.push("Заполните заключение врача");
@@ -603,7 +646,6 @@ export function applyCommand(
         m.value.durationMinutes >= 5 && m.value.durationMinutes <= 240,
         "Продолжительность приёма: от 5 до 240 минут.",
       );
-      if (m.value.episodeId) find(p.episodes, m.value.episodeId);
       const value = {
         ...m.value,
         completionSnapshot: null,

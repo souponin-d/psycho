@@ -15,6 +15,7 @@ import { MeasurementForm } from "./Dynamics";
 import { AppointmentForm, ConsentForm } from "./PatientForms";
 import { ApiError } from "./repository";
 import { SourceLinks, SourcePicker } from "./SourceLibrary";
+import { TerminologyPicker } from "./TerminologyPicker";
 import {
   Badge,
   Button,
@@ -33,23 +34,10 @@ const steps = [
   "Заключение и план",
   "Итог приёма",
 ];
-const contextFields: EncounterField[] = [
-  "complaints",
-  "history",
-  "onset",
-  "functioning",
-  "sleep",
-  "medicationReview",
-  "adverseEffects",
-  "adherence",
-];
 const assessmentFields: EncounterField[] = [
-  "mentalState",
-  "physicalState",
-  "mania",
-  "psychosis",
+  "mentalStatus",
+  "somaticStatus",
   "substances",
-  "somaticCauses",
   "differential",
 ];
 const safetyFields: EncounterField[] = [
@@ -62,10 +50,8 @@ const safetyFields: EncounterField[] = [
   "safetyAction",
 ];
 const summaryFields: EncounterField[] = [
-  "complaints",
-  "mentalState",
+  "mentalStatus",
   "safetyConclusion",
-  "diagnosis",
   "conclusion",
   "recommendations",
   "patientPreference",
@@ -251,8 +237,8 @@ export function EncounterEditor({
         label={encounterLabels[key]}
         value={draft.notes[key]}
         onChange={(e) => setNote(key, e.target.value)}
-        rows={key === "mentalState" || key === "history" ? 4 : 3}
-        required={key === "complaints" || key === "safetyConclusion"}
+        rows={key === "mentalStatus" ? 4 : 3}
+        required={key === "safetyConclusion"}
       />
     ));
   const errors = completionErrors(patient, draft);
@@ -452,7 +438,7 @@ export function EncounterEditor({
             )}
             {step === 0 &&
               (readOnly ? (
-                <NoteSummary visit={visit} fields={contextFields} />
+                <NoteSummary visit={visit} fields={[]} />
               ) : (
                 <>
                   <Section
@@ -507,7 +493,6 @@ export function EncounterEditor({
                         <option value="relative">Со слов близкого</option>
                         <option value="document">Из документа</option>
                       </Select>
-                      {fields(contextFields)}
                     </div>
                     <SourceLinks ids={["S01", "S02", "S03", "S04"]} />
                   </Section>
@@ -518,8 +503,26 @@ export function EncounterEditor({
                         <dd>{patient.profile.allergies || "Нет сведений"}</dd>
                       </div>
                       <div>
-                        <dt>Заболевания</dt>
-                        <dd>{patient.profile.conditions || "Нет сведений"}</dd>
+                        <dt>Жалобы</dt>
+                        <dd>
+                          {patient.profile.clinicalContext.complaints ||
+                            "Нет сведений"}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>Анамнез заболевания</dt>
+                        <dd>
+                          {patient.profile.clinicalContext.illnessHistory ||
+                            "Нет сведений"}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>Соматические заболевания</dt>
+                        <dd>
+                          {patient.profile.clinicalContext.somaticConditions
+                            .map((item) => `${item.code} ${item.title}`)
+                            .join("; ") || "Нет сведений"}
+                        </dd>
                       </div>
                       <div>
                         <dt>Препараты</dt>
@@ -606,7 +609,6 @@ export function EncounterEditor({
                 <NoteSummary
                   visit={visit}
                   fields={[
-                    "diagnosis",
                     "conclusion",
                     "recommendations",
                     "patientPreference",
@@ -616,11 +618,13 @@ export function EncounterEditor({
                 <>
                   <Section title="Заключение и договорённости">
                     <div className={styles.form}>
-                      <Textarea
-                        label={encounterLabels.diagnosis}
-                        value={draft.notes.diagnosis}
-                        onChange={(e) => setNote("diagnosis", e.target.value)}
-                        hint="Рабочая гипотеза не равнозначна подтверждённому психиатрическому диагнозу"
+                      <TerminologyPicker
+                        label="Диагноз / рабочая гипотеза"
+                        value={draft.diagnoses}
+                        onChange={(diagnoses) =>
+                          setDraft({ ...draft, diagnoses })
+                        }
+                        diagnosis
                       />
                       {fields([
                         "conclusion",

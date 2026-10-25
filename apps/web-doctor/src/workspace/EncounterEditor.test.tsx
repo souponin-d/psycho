@@ -31,7 +31,7 @@ function fixture(completed = false) {
   );
   const visit = createVisit("visit-editor-test", now, actor);
   visit.status = "in-progress";
-  visit.notes.complaints = "Начальная запись";
+  visit.notes.mentalStatus = "Начальная запись";
   visit.notes.safetyConclusion = "Оценка проведена";
   visit.notes.conclusion = "Обсуждён план";
   visit.notes.recommendations = "Контрольный приём";
@@ -138,7 +138,7 @@ async function mountEditor(
     },
     updateFromAnotherSession: async (complaints: string) => {
       const visit = structuredClone(stored.visits[0]!);
-      visit.notes.complaints = complaints;
+      visit.notes.mentalStatus = complaints;
       stored = applyCommand(
         stored,
         {
@@ -157,8 +157,9 @@ async function mountEditor(
 }
 
 function complaints() {
+  fireEvent.click(screen.getByRole("button", { name: /Оценка состояния/ }));
   return screen.getByRole("textbox", {
-    name: encounterLabels.complaints,
+    name: encounterLabels.mentalStatus,
   }) as HTMLTextAreaElement;
 }
 async function advance(milliseconds: number) {
@@ -190,7 +191,7 @@ describe("редактор приёма: сохранение и восстан�
       "Сервер недоступен",
     );
     expect(complaints().value).toBe("Текст при потере связи");
-    expect(editor.stored().visits[0]!.notes.complaints).toBe(
+    expect(editor.stored().visits[0]!.notes.mentalStatus).toBe(
       "Начальная запись",
     );
     await advance(6000);
@@ -201,7 +202,7 @@ describe("редактор приёма: сохранение и восстан�
         screen.getByRole("button", { name: "Повторить сохранение" }),
       );
     });
-    expect(editor.stored().visits[0]!.notes.complaints).toBe(
+    expect(editor.stored().visits[0]!.notes.mentalStatus).toBe(
       "Текст при потере связи",
     );
     expect(screen.getByRole("status").textContent).toContain(
@@ -231,7 +232,7 @@ describe("редактор приёма: сохранение и восстан�
     });
     expect(complaints().value).toBe("Первый фрагмент и продолжение");
     await advance(2400);
-    expect(editor.stored().visits[0]!.notes.complaints).toBe(
+    expect(editor.stored().visits[0]!.notes.mentalStatus).toBe(
       "Первый фрагмент и продолжение",
     );
     expect(screen.getByRole("status").textContent).toContain(
@@ -266,7 +267,7 @@ describe("редактор приёма: сохранение и восстан�
     expect(complaints().value).toBe("Запись другой сессии");
     expect(await editor.canLeave()).toBe(true);
     expect(editor.commands).toHaveLength(0);
-    expect(editor.stored().visits[0]!.notes.complaints).toBe(
+    expect(editor.stored().visits[0]!.notes.mentalStatus).toBe(
       "Запись другой сессии",
     );
   });
@@ -285,7 +286,7 @@ describe("редактор приёма: сохранение и восстан�
     await advance(1200);
     expect(editor.commands[0]?.expectedRevision).toBe(remoteRevision);
     expect(editor.stored().revision).toBe(remoteRevision + 1);
-    expect(editor.stored().visits[0]!.notes.complaints).toBe(
+    expect(editor.stored().visits[0]!.notes.mentalStatus).toBe(
       "Мой согласованный вариант",
     );
     expect(

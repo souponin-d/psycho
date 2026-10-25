@@ -57,17 +57,23 @@ public static class Domain
     var list = Array(doc, collection); var old = list.OfType<JsonObject>().FirstOrDefault(n => S(n, "id") == S(value, "id"));
     if (old is null) Add(doc, collection, value, actor, now); else { value["author"] = old["author"]!.DeepClone(); value["createdAt"] = old["createdAt"]!.DeepClone(); list[list.IndexOf(old)] = value; }
   }
-  private static readonly string[] ProfileFields = ["name", "birthDate", "sex", "phone", "email", "occupation", "address", "emergencyContact", "representative", "preferredContact", "allergies", "conditions", "currentMedication", "familyHistory", "pastEpisodes", "substanceUse", "socialContext", "reproductiveContext", "goals"];
-  private static readonly string[] Notes = ["complaints", "history", "onset", "functioning", "mentalState", "physicalState", "sleep", "substances", "medicationReview", "adverseEffects", "adherence", "mania", "psychosis", "somaticCauses", "suicidalThoughts", "intentAndPlan", "pastAttempts", "meansAccess", "protectiveFactors", "safetyConclusion", "safetyAction", "diagnosis", "differential", "conclusion", "recommendations", "patientPreference"];
+  private static readonly string[] ProfileFields = ["name", "birthDate", "sex", "phone", "email", "occupation", "address", "emergencyContact", "representative", "preferredContact", "allergies", "currentMedication", "familyHistory", "pastEpisodes", "substanceUse", "socialContext", "reproductiveContext", "goals", "clinicalContext"];
+  private static readonly string[] Notes = ["mentalStatus", "somaticStatus", "substances", "medicationReview", "adverseEffects", "adherence", "suicidalThoughts", "intentAndPlan", "pastAttempts", "meansAccess", "protectiveFactors", "safetyConclusion", "safetyAction", "differential", "conclusion", "recommendations", "patientPreference"];
+  private const string Icd10Oid = "1.2.643.5.1.13.13.11.1005";
+  private const string Icd10Version = "educational-subset-2026-10-25";
+  private static readonly HashSet<string> Icd10Entries = ["F20|Шизофрения", "F30|Маниакальный эпизод", "F31|Биполярное аффективное расстройство", "F32.0|Депрессивный эпизод лёгкой степени", "F32.1|Депрессивный эпизод средней степени", "F32.2|Депрессивный эпизод тяжёлой степени без психотических симптомов", "F33|Рекуррентное депрессивное расстройство", "F41.0|Паническое расстройство", "F41.1|Генерализованное тревожное расстройство", "F43.1|Посттравматическое стрессовое расстройство", "F60|Специфические расстройства личности", "D50|Железодефицитная анемия", "E03|Другие формы гипотиреоза", "E11|Сахарный диабет 2 типа", "G40|Эпилепсия", "G47|Расстройства сна", "I10|Эссенциальная (первичная) гипертензия"];
   private static readonly string[] Collections = ["episodes", "visits", "measurements", "plan", "reports", "events", "consents", "messages", "referrals", "documents", "audit", "commandIds"];
   private static JsonObject Profile(JsonObject value)
   {
-    Only(value, ProfileFields); foreach (var field in value) { Check(field.Value is JsonValue, $"Ожидалось текстовое поле: {field.Key}."); Check(S(value, field.Key).Length <= 20000, $"Поле {field.Key} слишком длинное."); }
-    var result = new JsonObject(); foreach (var key in ProfileFields) result[key] = S(value, key); if (S(result, "sex") == "") result["sex"] = "unspecified";
+    Only(value, ProfileFields); foreach (var field in value.Where(field => field.Key != "clinicalContext")) { Check(field.Value is JsonValue, $"Ожидалось текстовое поле: {field.Key}."); Check(S(value, field.Key).Length <= 20000, $"Поле {field.Key} слишком длинное."); }
+    var context = Object(value, "clinicalContext"); Only(context, ["complaints", "illnessHistory", "somaticConditions"]); TextFields(context, ["complaints", "illnessHistory"]); var conditions = Array(context, "somaticConditions"); foreach (var item in conditions) { if (item is not JsonObject selection) throw new DomainException("Ожидалась запись МКБ-10."); Terminology(selection); }
+    var result = new JsonObject(); foreach (var key in ProfileFields.Where(key => key != "clinicalContext")) result[key] = S(value, key); result["clinicalContext"] = context.DeepClone(); if (S(result, "sex") == "") result["sex"] = "unspecified";
     Required(result, "name"); Check(S(result, "name").Length <= 200, "Имя: не более 200 символов."); CalendarDate(result, "birthDate"); Check(DateOnly.ParseExact(S(result, "birthDate"), "yyyy-MM-dd", CultureInfo.InvariantCulture) <= DateOnly.FromDateTime(DateTime.UtcNow), "Дата рождения не может быть в будущем."); Enum(result, "sex", "female", "male", "unspecified");
     if (S(result, "email") != "") Check(System.Net.Mail.MailAddress.TryCreate(S(result, "email"), out _), "Проверьте адрес электронной почты.");
     return result;
   }
+  private static void Terminology(JsonObject value)
+  { Only(value, ["system", "sourceOid", "sourceVersion", "code", "title"]); TextFields(value, ["system", "sourceOid", "sourceVersion", "code", "title"]); Check(S(value, "system") == "ICD-10-RU" && S(value, "sourceOid") == Icd10Oid && S(value, "sourceVersion") == Icd10Version && Icd10Entries.Contains($"{S(value, "code")}|{S(value, "title")}"), "Запись МКБ-10 отсутствует в текущем учебном каталоге."); }
   public static JsonObject Create(JsonObject request, Actor actor)
   {
     Only(request, ["id", "profile"]);
@@ -102,13 +108,13 @@ public static class Domain
         {
           var old = Array(doc, "visits").OfType<JsonObject>().FirstOrDefault(v => S(v, "id") == S(value!, "id"));
           Check(old is null || S(old, "status") is not ("completed" or "cancelled"), "Завершённый или отменённый приём нельзя переписать."); Enum(value!, "status", "scheduled", "in-progress"); Enum(value!, "kind", "initial", "follow-up", "unscheduled"); Enum(value!, "format", "in-person", "remote"); Enum(value!, "provenance", "patient", "clinician", "relative", "document"); Date(value!, "scheduledAt"); Date(value!, "nextVisitAt", true);
-          var duration = value!["durationMinutes"]!.GetValue<int>(); Check(duration >= 5 && duration <= 240, "Продолжительность: от 5 до 240 минут."); if (S(value, "episodeId") != "") Find(doc, "episodes", S(value, "episodeId"));
+          var duration = value!["durationMinutes"]!.GetValue<int>(); Check(duration >= 5 && duration <= 240, "Продолжительность: от 5 до 240 минут.");
           var notes = Object(value, "notes"); var clean = new JsonObject(); foreach (var key in Notes) clean[key] = S(notes, key); value["notes"] = clean; value["completionSnapshot"] = null; value["addenda"] = new JsonArray(); value["completedAt"] = ""; value["confirmedBy"] = ""; value["startedAt"] = old is not null && S(old, "startedAt") != "" ? S(old, "startedAt") : S(value, "status") == "in-progress" ? now : ""; Upsert(doc, "visits", value, actor, now); break;
         }
       case "visit.complete":
         {
           var visit = Find(doc, "visits", id); Enum(visit, "status", "scheduled", "in-progress"); var notes = Object(visit, "notes");
-          Check(new[] { "complaints", "safetyConclusion", "conclusion", "recommendations" }.All(k => !string.IsNullOrWhiteSpace(S(notes, k))), "Заполните жалобы, заключение по безопасности, заключение врача и рекомендации.");
+          Check(new[] { "safetyConclusion", "conclusion", "recommendations" }.All(k => !string.IsNullOrWhiteSpace(S(notes, k))), "Заполните заключение по безопасности, заключение врача и рекомендации.");
           var care = Array(doc, "consents").LastOrDefault(c => S(c!, "purpose") == "care"); Check(care is not null && S(care, "status") == "documented", "Зафиксируйте документированное согласие на помощь.");
           if (S(visit, "format") == "remote") { var consent = Array(doc, "consents").LastOrDefault(c => S(c!, "purpose") == "communication"); Check(consent is not null && S(consent, "status") == "documented", "Для дистанционного контакта требуется документированное основание и согласие на связь."); }
           visit["status"] = "completed"; visit["completedAt"] = now; visit["confirmedBy"] = actor.Name;
@@ -243,12 +249,12 @@ public static class Domain
   }
   private static void ValidateEntity(string type, JsonObject value)
   {
+    if (type == "profile.update") { Profile(value); return; }
     var fields = type switch
     {
-      "profile.update" => string.Join(',', ProfileFields),
       "assessment.save" => "id,sourceId,sourceHash,formVersion,measuredAt,assessor,note,status",
       "episode.save" => "id,title,startedOn,status,phase,diagnosis,diagnosisStatus,endDate,summary",
-      "visit.save" => "id,episodeId,scheduledAt,kind,format,status,reason,provenance,nextVisitAt,completedAt,startedAt,confirmedBy,cancellationReason,rationale",
+      "visit.save" => "id,scheduledAt,kind,format,status,reason,provenance,nextVisitAt,completedAt,startedAt,confirmedBy,cancellationReason,rationale",
       "measurement.add" => "id,visitId,scale,title,version,measuredAt,completeness,assessor,window,sourceId,interpretation,provenance,externalForm",
       "plan.save" => "id,visitId,kind,title,details,dose,schedule,startDate,endDate,dueDate,status,confirmedAt,confirmedBy,changeReason,replacesId,instructionUrl,patientInstructions,rationale",
       "report.add" => "id,reportedAt,receivedAt,provenance,state,functioning,medication,medicationReason,adverseEffects,note,reviewedAt",
@@ -260,7 +266,7 @@ public static class Domain
     };
     var extra = type switch
     {
-      "visit.save" => "sourceIds,durationMinutes,notes,addenda,completionSnapshot",
+      "visit.save" => "sourceIds,durationMinutes,notes,diagnoses,addenda,completionSnapshot",
       "measurement.add" => "score,maximum,answers",
       "report.add" => "mood,anxiety,sleepHours,safetyConcern",
       "event.add" => "sourceIds,history",
@@ -297,6 +303,7 @@ public static class Domain
       case "visit.save":
         Instant(value, "scheduledAt"); Instant(value, "nextVisitAt", true); Integer(value, "durationMinutes");
         var notes = Object(value, "notes"); Only(notes, Notes); TextFields(notes, Notes);
+        foreach (var item in Array(value, "diagnoses")) { if (item is not JsonObject diagnosis) throw new DomainException("Ожидался диагноз МКБ-10."); var selection = new JsonObject(); foreach (var key in new[] { "system", "sourceOid", "sourceVersion", "code", "title" }) selection[key] = diagnosis[key]?.DeepClone(); Terminology(selection); Only(diagnosis, ["system", "sourceOid", "sourceVersion", "code", "title", "status"]); TextFields(diagnosis, ["system", "sourceOid", "sourceVersion", "code", "title", "status"]); Enum(diagnosis, "status", "hypothesis", "confirmed"); }
         Check(Array(value, "addenda").Count == 0, "Дополнения создаются отдельной командой.");
         Check(value["completionSnapshot"] is null, "Снимок завершения создаётся сервером."); break;
       case "measurement.add":
