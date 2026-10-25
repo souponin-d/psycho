@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="ru">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>Синкли 0.4 — макеты для согласования</title
+  ><style>
+    :root {
+      color-scheme: light;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font:
+        17px/1.65 system-ui,
+        sans-serif;
+      color: #213b31;
+      background: #f6f5f0;
+    }
+    main {
+      max-width: 1380px;
+      margin: auto;
+      padding: 32px 28px 64px;
+    }
+    h1 {
+      font-size: clamp(30px, 4vw, 48px);
+      line-height: 1.14;
+      letter-spacing: -0.03em;
+      max-width: 1040px;
+    }
+    h2 {
+      font-size: 28px;
+      line-height: 1.25;
+      margin-top: 42px;
+    }
+    h3 {
+      font-size: 22px;
+    }
+    p {
+      max-width: 1050px;
+    }
+    .muted,
+    small {
+      color: #596a60;
+    }
+    a {
+      color: #315e47;
+      text-underline-offset: 4px;
+    }
+    header {
+      border-bottom: 1px solid #d6dfd4;
+      padding-bottom: 24px;
+    }
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .button {
+      display: inline-flex;
+      min-height: 48px;
+      align-items: center;
+      border-radius: 12px;
+      padding: 10px 18px;
+      background: #355841;
+      color: white;
+      text-decoration: none;
+    }
+    .button.secondary {
+      background: #e4ebdf;
+      color: #253f31;
+    }
+    .notice {
+      padding: 18px 22px;
+      background: #e7eddf;
+      border-left: 4px solid #617d60;
+      border-radius: 0 12px 12px 0;
+      margin: 22px 0;
+    }
+    nav {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 24px 0;
+    }
+    nav a {
+      border: 1px solid #cfd9c9;
+      border-radius: 9px;
+      padding: 7px 12px;
+      text-decoration: none;
+      background: #fff;
+    }
+    figure {
+      margin: 0;
+    }
+    figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #e5e8df;
+      border: 1px solid #d8dfd2;
+      border-radius: 12px;
+    }
+    section {
+      margin: 40px 0 58px;
+      scroll-margin-top: 20px;
+    }
+    figcaption {
+      margin-top: 10px;
+      color: #596a60;
+      font-size: 14px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 15px;
+      background: #fff;
+    }
+    th,
+    td {
+      border-bottom: 1px solid #d6dfd4;
+      text-align: left;
+      vertical-align: top;
+      padding: 12px 14px;
+    }
+    th {
+      background: #e5ebdf;
+    }
+    .table {
+      overflow: auto;
+    }
+    code {
+      background: #e8ece3;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+    li {
+      margin: 8px 0;
+    }
+    .spec main {
+      max-width: 1120px;
+    }
+    .spec h1 {
+      font-size: 38px;
+    }
+    .spec h2 {
+      padding-top: 16px;
+      border-top: 1px solid #d6dfd4;
+    }
+    @media (max-width: 650px) {
+      main {
+        padding: 22px 16px;
+      }
+      table {
+        min-width: 720px;
+      }
+      nav {
+        gap: 6px;
+      }
+      nav a {
+        font-size: 14px;
+        padding: 6px 8px;
+      }
+      h2 {
+        font-size: 24px;
+      }
+    }
+  </style>
+  <main>
+    <header>
+      <p class="muted">
+        25 октября 2026 · Проект версии 0.4 · Для согласования
+      </p>
+      <h1>Спокойный живой мир и понятные ежедневные действия</h1>
+      <p>
+        10 листов: художественный эталон, 32 экранных состояния и 12 кадров
+        раскадровки. Рабочий демонстрационный спутник — облачко. Пушистик
+        остаётся вторым вариантом выбора.
+      </p>
+      <div class="actions">
+        <a class="button" href="specification.html">Подробная спецификация</a
+        ><a class="button secondary" href="audit-mapping.html"
+          >Покрытие 34 замечаний</a
+        >
+      </div>
+    </header>
+    <div class="notice">
+      <b>Ваши уточнения учтены:</b> естественный свет без пересветов; один
+      выбранный спутник; фактурные встроенные камни дней. Два вида одновременно
+      показаны только отдельными вариантами на экране выбора.
+    </div>
+    <nav>
+      <a href="#board-0">00 · Художественный эталон</a
+      ><a href="#board-1">01 · Путь и дела дня</a
+      ><a href="#board-2">02 · Знакомство</a
+      ><a href="#board-3">03 · Учимся действовать</a
+      ><a href="#board-4">04 · План и самоотчёт</a
+      ><a href="#board-5">05 · Мир и гардероб</a
+      ><a href="#board-6">06 · История и обращения</a
+      ><a href="#board-7">07 · Ночная тема</a
+      ><a href="#board-8">08 · Завершение обучения</a
+      ><a href="#board-9">09 · Раскадровка движения</a>
+    </nav>
+    <section id="board-0">
+      <h2>00 · Художественный эталон</h2>
+      <p>
+        Один выбранный спутник, спокойный свет, фактурная ткань и камни дней.
+      </p>
+      <figure>
+        <a href="00-art-direction-calm.png" target="_blank"
+          ><img src="00-art-direction-calm.png" alt="Художественный эталон"
+        /></a>
+        <figcaption>
+          Нажмите на лист, чтобы открыть исходное изображение и увеличить
+          детали.
+        </figcaption>
+      </figure>
+    </section>
+    <section id="board-1">
+      <h2>01 · Путь и дела дня</h2>
+      <p>
+        Сегодня, список обязательств, завершение дня и возвращение после паузы.
+      </p>
+      <figure>
+        <a href="01-path.png" target="_blank"
+          ><img src="01-path.png" alt="Путь и дела дня" loading="lazy"
+        /></a>
+        <figcaption>
+          Нажмите на лист, чтобы открыть исходное изображение и увеличить
+          детали.
+        </figcaption>
+      </figure>
+    </section>
+    <section id="board-2">
+      <h2>02 · Знакомство</h2>
+      <p>Приветствие, код/демо, выбор спутника и личная цель.</p>
+      <figure>
+        <a href="02-onboarding.png" target="_blank"
+          ><img src="02-onboarding.png" alt="Знакомство" loading="lazy"
+        /></a>
+        <figcaption>
+          Нажмите на лист, чтобы открыть исходное изображение и увеличить
+          детали.
+        </figcaption>
+      </figure>
+    </section>
+    <section id="board-3">
+      <h2>03 · Учимся действовать</h2>
+      <p>
+        Учебный план, пробная отметка приёма, карта ощущений и вертикальный
+        путь.
+      </p>
+      <figure>
+        <a href="03-onboarding-learn.png" target="_blank"
+          ><img
+            src="03-onboarding-learn.png"
+            alt="Учимся действовать"
+            loading="lazy"
+        /></a>
+        <figcaption>
+          Нажмите на лист, чтобы открыть исходное изображение и увеличить
+          детали.
+        </figcaption>
+      </figure>
+    </section>
+    <section id="board-4">
+      <h2>04 · План и самоотчёт</h2>
+      <p>
+        Задания, обязательный дневной отчёт и отдельная полная форма опроса.
+      </p>
+      <figure>
+        <a href="04-care.png" target="_blank"
+          ><img src="04-care.png" alt="План и самоотчёт" loading="lazy"
+        /></a>
+        <figcaption>
+          Нажмите на лист, чтобы открыть исходное изображение и увеличить
+          детали.
+        </figcaption>
+      </figure>
+    </section>
+    <section id="board-5">
+      <h2>05 · Мир и гардероб</h2>
+      <p>Объёмная одежда, расстановка, территории, награды.</p>
+      <figure>
+        <a href="05-world.png" target="_blank"
+          ><img src="05-world.png" alt="Мир и гардероб" loading="lazy"
+        /></a>
+        <figcaption>
+          Нажмите на лист, чтобы открыть исходное изображение и увеличить
+          детали.
+        </figcaption>
+      </figure>
+    </section>
+    <section id="board-6">
+      <h2>06 · История и обращения</h2>
+      <p>График, исправление, дата начала трудности, подготовка к визиту.</p>
+      <figure>
+        <a href="06-history-contact.png" target="_blank"
+          ><img
+            src="06-history-contact.png"
+            alt="История и обращения"
+            loading="lazy"
+        /></a>
+        <figcaption>
+          Нажмите на лист, чтобы открыть исходное изображение и увеличить
+          детали.
+        </figcaption>
+      </figure>
+    </section>
+    <section id="board-7">
+      <h2>07 · Ночная тема</h2>
+      <p>Та же функциональность в согласованном ночном освещении.</p>
+      <figure>
+        <a href="07-night.png" target="_blank"
+          ><img src="07-night.png" alt="Ночная тема" loading="lazy"
+        /></a>
+        <figcaption>
+          Нажмите на лист, чтобы открыть исходное изображение и увеличить
+          детали.
+        </figcaption>
+      </figure>
+    </section>
+    <section id="board-8">
+      <h2>08 · Завершение обучения</h2>
+      <p>
+        Темы, время напоминания, учебное обустройство и первое настоящее
+        задание.
+      </p>
+      <figure>
+        <a href="08-onboarding-finish.png" target="_blank"
+          ><img
+            src="08-onboarding-finish.png"
+            alt="Завершение обучения"
+            loading="lazy"
+        /></a>
+        <figcaption>
+          Нажмите на лист, чтобы открыть исходное изображение и увеличить
+          детали.
+        </figcaption>
+      </figure>
+    </section>
+    <section id="board-9">
+      <h2>09 · Раскадровка движения</h2>
+      <p>
+        12 статичных кадров для обсуждения реакции спутника и результата
+        действия. Это не видео и не готовый риг.
+      </p>
+      <figure>
+        <a href="09-motion.png" target="_blank"
+          ><img src="09-motion.png" alt="Раскадровка движения" loading="lazy"
+        /></a>
+        <figcaption>
+          Нажмите на лист, чтобы открыть исходное изображение и увеличить
+          детали.
+        </figcaption>
+      </figure>
+    </section>
+    <section>
+      <h2>На согласование</h2>
+      <p>
+        Художественный язык, спокойное освещение, камни дней, одежда, компоновка
+        экранов и маршрут обучения. Спецификация описывает 13 учебных состояний,
+        14 состояний спутников, motion-сценарии M01–M10, исправления аудита и 21
+        критерий приёмки.
+      </p>
+      <p>
+        Нативные анимации и APK 0.4 ещё не реализованы. Растровые макеты
+        показывают намерение; небольшие различия пиктограмм или типографики не
+        заменяют единую систему компонентов и точные тексты спецификации.
+        Правила терапии, дат и тестов определяет документ и каталог источников,
+        а не случайные детали изображения.
+      </p>
+    </section>
+  </main>
+</html>
