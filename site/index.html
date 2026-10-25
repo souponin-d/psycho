@@ -907,47 +907,141 @@
         class="section monetization-section"
         id="monetization"
         aria-labelledby="monetization-title"
+        data-monetization
       >
         <div class="container">
           <div class="monetization-heading reveal">
             <h2 id="monetization-title">Монетизация</h2>
             <p>
-              Подписка для специалистов и клиник. Стоимость зависит от состава
-              команды и выбранных возможностей.
+              Подписка для клиник. Посмотрите, как масштаб внедрения влияет на
+              потенциальную выручку в нашей предварительной модели.
             </p>
           </div>
-          <div class="monetization-models reveal">
-            <article>
-              <span class="monetization-number">01</span>
-              <h3>Для врача</h3>
-              <p>
-                Ежемесячная или годовая подписка на рабочее пространство:
-                карточки пациентов, динамику и инструменты сопровождения.
+          <div class="monetization-board">
+            <div class="monetization-panel reveal">
+              <div class="monetization-panel-heading">
+                <h3>Масштаб сегмента</h3>
+                <span>TAM / SAM / SOM</span>
+              </div>
+              <dl class="monetization-market">
+                <div class="monetization-market-row">
+                  <dt><b>TAM</b> Весь сегмент</dt>
+                  <dd>
+                    <strong>1,2 млрд ₽</strong>
+                    <div
+                      class="monetization-bar"
+                      data-market-ratio="1"
+                      aria-hidden="true"
+                    ></div>
+                    <span>10 000 клиник × 120 000 ₽ в год</span>
+                  </dd>
+                </div>
+                <div class="monetization-market-row">
+                  <dt><b>SAM</b> Доступный сегмент</dt>
+                  <dd>
+                    <strong>240 млн ₽</strong>
+                    <div
+                      class="monetization-bar"
+                      data-market-ratio="0.2"
+                      aria-hidden="true"
+                    ></div>
+                    <span>2 000 клиник × 120 000 ₽ в год</span>
+                  </dd>
+                </div>
+                <div class="monetization-market-row">
+                  <dt><b>SOM</b> Целевой сценарий</dt>
+                  <dd>
+                    <strong data-som-revenue>4,8 млн ₽</strong>
+                    <div
+                      class="monetization-bar"
+                      data-som-bar
+                      data-market-ratio="0.004"
+                      aria-hidden="true"
+                    ></div>
+                    <span
+                      ><span data-som-clinics>40</span> клиник × 120 000 ₽ в
+                      год</span
+                    >
+                  </dd>
+                </div>
+              </dl>
+              <p class="monetization-scale-note">
+                Диаграммы в одном масштабе. SOM занимает часть первой клетки.
               </p>
-              <span class="monetization-basis">Оплата за специалиста</span>
-            </article>
-            <article>
-              <span class="monetization-number">02</span>
-              <h3>Для клиники</h3>
-              <p>
-                Командная подписка с аналитикой и управлением рабочими местами.
-                Условия зависят от числа специалистов и масштаба внедрения.
-              </p>
-              <span class="monetization-basis">Корпоративный договор</span>
-            </article>
-            <article>
-              <span class="monetization-number">03</span>
-              <h3>Внедрение и поддержка</h3>
-              <p>
-                Настройка, обучение команды и дополнительные интеграции могут
-                оплачиваться отдельно по согласованному объёму работ.
-              </p>
-              <span class="monetization-basis">По запросу клиники</span>
-            </article>
+              <button
+                class="monetization-replay"
+                type="button"
+                data-monetization-replay
+                hidden
+              >
+                Повторить анимацию <span aria-hidden="true">↻</span>
+              </button>
+            </div>
+            <div class="monetization-panel monetization-forecast reveal">
+              <div class="monetization-panel-heading">
+                <h3>Модель выручки</h3>
+                <span class="monetization-model-label">Условный сценарий</span>
+              </div>
+              <div
+                class="monetization-result"
+                aria-live="polite"
+                aria-atomic="true"
+              >
+                <p class="monetization-revenue">
+                  <span data-annual-revenue>4,8</span><span>млн ₽ / год</span>
+                </p>
+                <p class="monetization-monthly">
+                  <span data-monthly-revenue>400 000</span> ₽ в месяц при
+                  <span data-scenario-clinics>40</span> клиниках
+                </p>
+              </div>
+              <div
+                class="monetization-mosaic"
+                data-revenue-mosaic
+                aria-hidden="true"
+              ></div>
+              <div
+                class="monetization-formula"
+                aria-label="Формула годовой выручки"
+              >
+                <div>
+                  <strong data-formula-clinics>40</strong><span>клиник</span>
+                </div>
+                <span aria-hidden="true">×</span>
+                <div>
+                  <strong>10 000 ₽</strong><span>в месяц за клинику</span>
+                </div>
+                <span aria-hidden="true">×</span>
+                <div><strong>12</strong><span>месяцев</span></div>
+              </div>
+              <div class="monetization-slider">
+                <div class="monetization-slider-label">
+                  <label for="monetization-clinics">Клиник в сценарии</label>
+                  <output for="monetization-clinics" data-clinics-output
+                    >40</output
+                  >
+                </div>
+                <input
+                  id="monetization-clinics"
+                  type="range"
+                  min="10"
+                  max="100"
+                  step="5"
+                  value="40"
+                  disabled
+                  aria-describedby="monetization-model-note"
+                />
+                <div class="monetization-slider-bounds" aria-hidden="true">
+                  <span>10 клиник</span><span>100 клиник</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <p class="monetization-note">
-            Предварительная модель. Тарифы и состав услуг уточняются; оплата на
-            сайте пока недоступна.
+          <p class="monetization-note" id="monetization-model-note">
+            Числа иллюстрируют условную модель, а не подтверждённую оценку
+            рынка, действующие тарифы или прогноз. Размер сегментов, стоимость
+            подписки и целевой сценарий уточним после расчётов. Оплата на сайте
+            недоступна.
           </p>
         </div>
       </section>
