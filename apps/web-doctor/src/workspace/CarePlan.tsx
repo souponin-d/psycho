@@ -1,10 +1,19 @@
 import { useState, type FormEvent } from "react";
-import type { PatientRecord, PlanItem, Referral } from "./model";
+import type { AviandrReview, PatientRecord, PlanItem, Referral } from "./model";
 import type { WorkspaceActions } from "./useWorkspace";
 import { message } from "./useWorkspace";
 import { formatDate, planKind, today } from "./labels";
 import { SourceLinks, SourcePicker } from "./SourceLibrary";
 import { TherapyReference } from "./TherapyReference";
+import { AviandrCheck, AviandrSummary } from "./AviandrCheck";
+import {
+  aviandr,
+  aviandrContext,
+  evaluateAviandr,
+  isAviandr,
+  newAviandrReview,
+  sameAviandrContext,
+} from "./aviandr";
 import {
   CurrentDraftValues,
   DraftConflict,
@@ -15,6 +24,7 @@ import {
   Button,
   Empty,
   ErrorNotice,
+  Icon,
   Field,
   Modal,
   Section,
@@ -40,10 +50,14 @@ const planLabels: Record<string, string> = {
   patientInstructions: "Указания пациенту",
   sourceIds: "Источники",
   rationale: "Обоснование решения врача",
+  aviandrReview: "Подготовительная проверка Авиандра",
 };
 function planValues(item: PlanItem) {
   return {
     ...item,
+    aviandrReview: item.aviandrReview
+      ? reviewComparison(item.aviandrReview)
+      : "Не выполнялась",
     kind: planKind[item.kind],
     status: {
       draft: "Черновик",
@@ -52,6 +66,53 @@ function planValues(item: PlanItem) {
       stopped: "Прекращено",
     }[item.status],
   };
+}
+function reviewComparison(review: AviandrReview) {
+  const labels: Record<string, string> = {
+    ...Object.fromEntries(aviandr.rules.map((rule) => [rule.id, rule.title])),
+    indication: "Основание назначения",
+    maoUse: "Приём ингибиторов МАО",
+    lastMaoDate: "Дата отмены МАО",
+    medicationListVerified: "Лекарственный анамнез сверен",
+    egfr: "СКФ",
+    egfrUnit: "Единицы СКФ",
+    egfrDate: "Дата СКФ",
+    evidence: "Основание уточнений",
+  };
+  const values: Record<string, string> = {
+    yes: "да",
+    no: "нет",
+    unknown: "не уточнено",
+    gad: "ГТР",
+    "post-covid": "Контекст после COVID-19",
+    other: "Другое основание",
+    "ml/min": "мл/мин",
+    "ml/min/1.73m2": "мл/мин/1,73 м²",
+  };
+  const contextLabels: Record<string, string> = {
+    birthDate: "Дата рождения",
+    allergies: "Аллергии",
+    conditions: "Заболевания",
+    currentMedication: "Текущие препараты",
+    reproductiveContext: "Репродуктивный контекст",
+    substanceUse: "Вещества и алкоголь",
+    diagnoses: "Эпизоды и диагнозы",
+    medicines: "История назначений",
+  };
+  return [
+    "Не утверждено",
+    review.sourceVersion,
+    `Источник: ${review.sourceDate} · ${review.sourceHash}`,
+    ...Object.entries(review.inputs).map(
+      ([key, value]) =>
+        `${labels[key]}: ${value === null || value === "" ? "не заполнено" : (values[String(value)] ?? String(value))}`,
+    ),
+    ...Object.entries(review.context).map(
+      ([key, value]) =>
+        `${contextLabels[key]}: ${Array.isArray(value) ? value.join("; ") || "нет сведений" : value || "нет сведений"}`,
+    ),
+    `Сохранено: ${review.checkedAt || "черновик"} · ${review.checkedBy}`,
+  ].join("\n");
 }
 function samePlanRecord(current: PlanItem | undefined, visible: PlanItem) {
   return (
@@ -100,12 +161,14 @@ export function PlanForm({
   onClose,
   visitId = "",
   existing,
+  initialKind = "follow-up",
 }: {
   patient: PatientRecord;
   actions: WorkspaceActions;
   onClose: () => void;
   visitId?: string;
   existing?: PlanItem;
+  initialKind?: PlanItem["kind"];
 }) {
   const [value, setValue] = useState<PlanItem>(
     existing ?? {
@@ -113,7 +176,7 @@ export function PlanForm({
       createdAt: "",
       author: "",
       visitId,
-      kind: "follow-up",
+      kind: initialKind,
       title: "",
       details: "",
       dose: "",
@@ -137,7 +200,21 @@ export function PlanForm({
   const guard = useDraftGuard(current, patient.revision);
   const locked = !!current && current.status !== "draft";
   const set = (key: keyof PlanItem, v: string | string[]) =>
-    setValue({ ...value, [key]: v });
+    setValue((previous) => {
+      const next = { ...previous, [key]: v };
+      if (next.kind !== "medication" || !isAviandr(next.title))
+        delete next.aviandrReview;
+      else if (
+        next.aviandrReview &&
+        ["startDate", "dose", "schedule"].includes(key)
+      )
+        next.aviandrReview = {
+          ...next.aviandrReview,
+          checkedAt: "",
+          checkedBy: "",
+        };
+      return next;
+    });
   async function save(e: FormEvent) {
     e.preventDefault();
     try {
@@ -159,9 +236,50 @@ export function PlanForm({
       setError(message(e));
     }
   }
+  const identityFields = (
+    <>
+      <Select
+        label="Тип назначения"
+        value={value.kind}
+        onChange={(e) => set("kind", e.target.value)}
+      >
+        {Object.entries(planKind).map(([id, label]) => (
+          <option key={id} value={id}>
+            {label}
+          </option>
+        ))}
+      </Select>
+      <Field
+        label={
+          value.kind === "medication"
+            ? "Препарат, форма и наименование"
+            : "Название"
+        }
+        value={value.title}
+        onChange={(e) => set("title", e.target.value)}
+        required
+      />
+    </>
+  );
   return (
-    <Modal open onClose={onClose} title="Запись в плане ведения">
-      <form className={styles.form} onSubmit={save}>
+    <Modal
+      open
+      wide
+      onClose={onClose}
+      title={
+        value.kind === "medication"
+          ? "Лекарственное назначение"
+          : "Запись в плане ведения"
+      }
+      className={styles.planModal}
+    >
+      <form className={styles.planForm} onSubmit={save}>
+        <div className={styles.prescriptionIdentity}>
+          <span>
+            {patient.profile.name} · {patient.code}
+          </span>
+          <Badge>{locked ? "Сохранённая запись" : "Черновик"}</Badge>
+        </div>
         {error && <ErrorNotice>{error}</ErrorNotice>}
         <DraftConflict
           guard={guard}
@@ -184,116 +302,195 @@ export function PlanForm({
             версией из плана ведения.
           </div>
         )}
-        <fieldset
-          className={styles.form}
-          disabled={locked}
-          style={{ margin: 0, padding: 0, border: 0, minWidth: 0 }}
-          aria-label="Данные назначения"
+        <div
+          className={`${styles.prescriptionColumns} ${value.aviandrReview ? styles.withCheck : ""}`}
         >
-          <Select
-            label="Тип назначения"
-            value={value.kind}
-            onChange={(e) => set("kind", e.target.value)}
+          <fieldset
+            className={styles.form}
+            disabled={locked}
+            style={{ margin: 0, padding: 0, border: 0, minWidth: 0 }}
+            aria-label="Данные назначения"
           >
-            {Object.entries(planKind).map(([id, label]) => (
-              <option key={id} value={id}>
-                {label}
-              </option>
-            ))}
-          </Select>
-          <Field
-            label={
-              value.kind === "medication"
-                ? "Препарат, форма и наименование"
-                : "Название"
-            }
-            value={value.title}
-            onChange={(e) => set("title", e.target.value)}
-            required
-          />
-          {value.kind === "medication" && (
-            <>
-              <div className={styles.formPair}>
-                <Field
-                  label="Дозировка"
-                  value={value.dose}
-                  onChange={(e) => set("dose", e.target.value)}
-                  placeholder="Вводит врач"
-                />
-                <Field
-                  label="Режим приёма"
-                  value={value.schedule}
-                  onChange={(e) => set("schedule", e.target.value)}
-                />
+            {value.aviandrReview && (
+              <div className={styles.drugIdentity}>
+                <span className={styles.drugMark}>
+                  <Icon name="pill" size={20} />
+                </span>
+                <div>
+                  <h3>Авиандр</h3>
+                  <p className={styles.subtext}>
+                    {aviandr.title.split(" · ").slice(1).join(" · ")}
+                  </p>
+                </div>
               </div>
-              <Field
-                label="Ссылка на действующую инструкцию"
-                type="url"
-                placeholder="https://…"
-                value={value.instructionUrl}
-                onChange={(e) => set("instructionUrl", e.target.value)}
-              />
-              <div className={styles.notice}>
-                Проверьте зарегистрированные показания, противопоказания,
-                взаимодействия и режим по действующей инструкции. Автоматический
-                подбор препарата или дозировки не выполняется.
-              </div>
-              <SourceLinks ids={["S04", "S11"]} />
-            </>
-          )}
-          <Textarea
-            label="Содержание назначения"
-            value={value.details}
-            onChange={(e) => set("details", e.target.value)}
-            rows={3}
-          />
-          <div className={styles.formPair}>
-            <Field
-              label="Дата начала"
-              type="date"
-              value={value.startDate}
-              onChange={(e) => set("startDate", e.target.value)}
-            />
-            <Field
-              label="Дата окончания, если определена"
-              type="date"
-              value={value.endDate}
-              onChange={(e) => set("endDate", e.target.value)}
-            />
-          </div>
-          <Field
-            label="Контрольная дата"
-            type="date"
-            value={value.dueDate}
-            onChange={(e) => set("dueDate", e.target.value)}
-          />
-          <Textarea
-            label="Указания пациенту"
-            value={value.patientInstructions}
-            onChange={(e) => set("patientInstructions", e.target.value)}
-            rows={3}
-          />
-          <Textarea
-            label="Обоснование решения врача"
-            hint="Исходные сведения, применимость и проверенные ограничения"
-            value={value.rationale}
-            onChange={(e) => set("rationale", e.target.value)}
-            rows={3}
-          />
-          {value.replacesId && (
+            )}
+            {value.aviandrReview ? (
+              <details className={styles.details}>
+                <summary>Изменить препарат или тип записи</summary>
+                <div className={styles.form}>{identityFields}</div>
+              </details>
+            ) : (
+              identityFields
+            )}
+            {value.kind === "medication" && !isAviandr(value.title) && (
+              <Button
+                variant="secondary"
+                icon="book"
+                onClick={() =>
+                  setValue((previous) => ({
+                    ...previous,
+                    title: aviandr.title,
+                    instructionUrl: aviandr.url,
+                    aviandrReview: newAviandrReview(patient, previous.id),
+                  }))
+                }
+              >
+                Выбрать Авиандр
+              </Button>
+            )}
+            {value.kind === "medication" &&
+              isAviandr(value.title) &&
+              (value.aviandrReview ? (
+                <AviandrCheck
+                  patient={patient}
+                  actions={actions}
+                  showSummary={false}
+                  planId={value.id}
+                  startDate={value.startDate}
+                  review={value.aviandrReview}
+                  onChange={(review) =>
+                    setValue((previous) => ({
+                      ...previous,
+                      aviandrReview: review,
+                    }))
+                  }
+                />
+              ) : (
+                <Button
+                  variant="secondary"
+                  onClick={() =>
+                    setValue((previous) => ({
+                      ...previous,
+                      aviandrReview: newAviandrReview(patient, previous.id),
+                    }))
+                  }
+                >
+                  Начать проверку Авиандра
+                </Button>
+              ))}
+            {value.kind === "medication" && (
+              <>
+                <div className={styles.formPair}>
+                  <Field
+                    label="Дозировка"
+                    value={value.dose}
+                    onChange={(e) => set("dose", e.target.value)}
+                    placeholder="Вводит врач"
+                  />
+                  <Field
+                    label="Режим приёма"
+                    value={value.schedule}
+                    onChange={(e) => set("schedule", e.target.value)}
+                  />
+                </div>
+                <Field
+                  label="Ссылка на действующую инструкцию"
+                  type="url"
+                  placeholder="https://…"
+                  value={value.instructionUrl}
+                  onChange={(e) => set("instructionUrl", e.target.value)}
+                />
+                <div className={styles.notice}>
+                  Проверьте зарегистрированные показания, противопоказания,
+                  взаимодействия и режим по действующей инструкции.
+                  Автоматический подбор препарата или дозировки не выполняется.
+                </div>
+                <SourceLinks ids={["S04", "S11"]} />
+              </>
+            )}
             <Textarea
-              label="Причина изменения предыдущего назначения"
-              value={value.changeReason}
-              onChange={(e) => set("changeReason", e.target.value)}
-              required
+              label="Содержание назначения"
+              value={value.details}
+              onChange={(e) => set("details", e.target.value)}
+              rows={3}
             />
+            <div className={styles.formPair}>
+              <Field
+                label="Дата начала"
+                type="date"
+                value={value.startDate}
+                onChange={(e) => set("startDate", e.target.value)}
+              />
+              <Field
+                label="Дата окончания, если определена"
+                type="date"
+                value={value.endDate}
+                onChange={(e) => set("endDate", e.target.value)}
+              />
+            </div>
+            <Field
+              label="Контрольная дата"
+              type="date"
+              value={value.dueDate}
+              onChange={(e) => set("dueDate", e.target.value)}
+            />
+            <Textarea
+              label="Указания пациенту"
+              value={value.patientInstructions}
+              onChange={(e) => set("patientInstructions", e.target.value)}
+              rows={3}
+            />
+            <Textarea
+              label="Обоснование решения врача"
+              hint="Исходные сведения, применимость и проверенные ограничения"
+              value={value.rationale}
+              onChange={(e) => set("rationale", e.target.value)}
+              rows={3}
+            />
+            {value.replacesId && (
+              <Textarea
+                label="Причина изменения предыдущего назначения"
+                value={value.changeReason}
+                onChange={(e) => set("changeReason", e.target.value)}
+                required
+              />
+            )}
+            <SourcePicker
+              value={value.sourceIds}
+              onChange={(ids) => set("sourceIds", ids)}
+            />
+          </fieldset>
+          {value.aviandrReview && (
+            <aside
+              className={styles.prescriptionResults}
+              aria-label="Перед решением"
+            >
+              <h3>Перед решением</h3>
+              <AviandrSummary
+                prominent
+                review={{
+                  ...value.aviandrReview,
+                  findings: sameAviandrContext(
+                    value.aviandrReview.context,
+                    aviandrContext(patient, value.id),
+                  )
+                    ? evaluateAviandr(value.aviandrReview, value.startDate)
+                    : value.aviandrReview.findings,
+                }}
+                stale={
+                  !sameAviandrContext(
+                    value.aviandrReview.context,
+                    aviandrContext(patient, value.id),
+                  )
+                }
+              />
+            </aside>
           )}
-          <SourcePicker
-            value={value.sourceIds}
-            onChange={(ids) => set("sourceIds", ids)}
-          />
-        </fieldset>
-        <div className={styles.formActions}>
+        </div>
+        <div className={`${styles.formActions} ${styles.prescriptionActions}`}>
+          <span className={styles.subtext}>
+            Сохранение черновика не назначает лечение
+          </span>
           <Button variant="secondary" onClick={onClose}>
             Отмена
           </Button>
@@ -317,7 +514,9 @@ export function CarePlan({
   actions: WorkspaceActions;
   visitId?: string;
 }) {
-  const [form, setForm] = useState<PlanItem | "new" | null>(null);
+  const [form, setForm] = useState<PlanItem | "new" | "medication" | null>(
+    null,
+  );
   const [confirmation, setConfirmation] = useState<PlanItem | null>(null);
   const [ending, setEnding] = useState<PlanItem | null>(null);
   const [reason, setReason] = useState("");
@@ -386,12 +585,17 @@ export function CarePlan({
   return (
     <>
       <Section
-        title="План ведения"
+        title="Лечение и план"
         description="Черновики доступны врачу. Действующий план состоит из подтверждённых записей."
         action={
-          <Button icon="plus" onClick={() => setForm("new")}>
-            Добавить
-          </Button>
+          <div className={styles.row}>
+            <Button variant="secondary" onClick={() => setForm("new")}>
+              Другая запись
+            </Button>
+            <Button icon="plus" onClick={() => setForm("medication")}>
+              Назначить препарат
+            </Button>
+          </div>
         }
       >
         <div
@@ -403,14 +607,14 @@ export function CarePlan({
             aria-pressed={filter === "active"}
             onClick={() => setFilter("active")}
           >
-            Текущий план
+            Действующий план
           </button>
           <button
             type="button"
             aria-pressed={filter === "all"}
             onClick={() => setFilter("all")}
           >
-            Вся история
+            История решений
           </button>
         </div>
         {items.map((item) => (
@@ -467,6 +671,18 @@ export function CarePlan({
               </a>
             )}
             <SourceLinks ids={item.sourceIds} />
+            {item.aviandrReview && (
+              <AviandrSummary
+                review={item.aviandrReview}
+                stale={
+                  item.status === "draft" &&
+                  !sameAviandrContext(
+                    item.aviandrReview.context,
+                    aviandrContext(patient, item.id),
+                  )
+                }
+              />
+            )}
             <div className={styles.row} style={{ marginTop: 12 }}>
               {item.status === "draft" ? (
                 <>
@@ -532,7 +748,8 @@ export function CarePlan({
           actions={actions}
           onClose={() => setForm(null)}
           visitId={visitId}
-          existing={form === "new" ? undefined : form}
+          initialKind={form === "medication" ? "medication" : "follow-up"}
+          existing={typeof form === "string" ? undefined : form}
         />
       )}
       <Modal
@@ -557,6 +774,17 @@ export function CarePlan({
               {confirmation.rationale || "Обоснование не внесено"}
             </p>
             <SourceLinks ids={confirmation.sourceIds} />
+            {confirmation.aviandrReview && (
+              <AviandrSummary
+                review={confirmation.aviandrReview}
+                stale={
+                  !sameAviandrContext(
+                    confirmation.aviandrReview.context,
+                    aviandrContext(patient, confirmation.id),
+                  )
+                }
+              />
+            )}
             <p className={styles.subtext}>
               Подтверждение сохраняет автора и время. Последующие изменения
               оформляются новой версией.

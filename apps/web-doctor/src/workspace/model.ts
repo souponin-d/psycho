@@ -154,6 +154,61 @@ export interface PlanItem extends Stamp, Evidence {
   replacesId: string;
   instructionUrl: string;
   patientInstructions: string;
+  /** Preparatory information only; never activates clinical rules. */
+  aviandrReview?: AviandrReview;
+}
+export type ReviewAnswer = "unknown" | "yes" | "no";
+export interface AviandrInputs {
+  indication: "unknown" | "gad" | "post-covid" | "other";
+  hypersensitivity: ReviewAnswer;
+  epilepsy: ReviewAnswer;
+  organicBrainDisease: ReviewAnswer;
+  liverFailure: ReviewAnswer;
+  pregnancy: ReviewAnswer;
+  breastfeeding: ReviewAnswer;
+  galactoseDisorder: ReviewAnswer;
+  cardiovascularDisease: ReviewAnswer;
+  maoUse: ReviewAnswer;
+  lastMaoDate: string;
+  serotonergic: ReviewAnswer;
+  sedative: ReviewAnswer;
+  cyp2d6: ReviewAnswer;
+  alcohol: ReviewAnswer;
+  medicationListVerified: ReviewAnswer;
+  egfr: number | null;
+  egfrUnit: "unknown" | "ml/min" | "ml/min/1.73m2";
+  egfrDate: string;
+  evidence: string;
+}
+export interface AviandrContext {
+  birthDate: string;
+  allergies: string;
+  conditions: string;
+  currentMedication: string;
+  reproductiveContext: string;
+  substanceUse: string;
+  diagnoses: string[];
+  medicines: string[];
+}
+export interface AviandrFinding {
+  id: string;
+  status:
+    "contraindication" | "caution" | "missing" | "review" | "not-identified";
+  title: string;
+  detail: string;
+  section: string;
+}
+export interface AviandrReview {
+  status: "unapproved";
+  sourceVersion: string;
+  sourceHash: string;
+  sourceDate: string;
+  sourceUrl: string;
+  context: AviandrContext;
+  inputs: AviandrInputs;
+  findings: AviandrFinding[];
+  checkedAt: string;
+  checkedBy: string;
 }
 export interface SelfReport extends Stamp {
   reportedAt: string;

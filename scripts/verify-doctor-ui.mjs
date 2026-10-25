@@ -95,9 +95,18 @@ async function closeSaved(modal, button) {
   await modal.waitFor({ state: "hidden" });
 }
 async function patientTab(page, name) {
+  const nested = ["Динамика", "Дневник", "События", "Сообщения"].includes(name);
+  if (nested)
+    await page
+      .getByRole("navigation", { name: "Разделы карты", exact: true })
+      .getByRole("link", { name: "Наблюдение", exact: true })
+      .click();
   const link = page
-    .getByRole("navigation", { name: "Разделы карты", exact: true })
-    .getByRole("link", { name, exact: true });
+    .getByRole("navigation", {
+      name: nested ? "Разделы наблюдения" : "Разделы карты",
+      exact: true,
+    })
+    .getByRole("link", { name: new RegExp(`^${name}(?: · \\d+)?$`) });
   await link.click();
   await page.waitForFunction(
     (element) => element.getAttribute("aria-current") === "page",
@@ -308,6 +317,7 @@ async function scenario(currentMode) {
 
     let visitUrl;
     await step("создание и проведение приёма", async () => {
+      await patientTab(page, "Приёмы");
       await page
         .getByRole("button", { name: "Создать приём", exact: true })
         .click();
@@ -342,7 +352,7 @@ async function scenario(currentMode) {
         .fill("Синтетическая оценка безопасности для технического сценария.");
       await saveVisit(page);
       await addMeasurement(page, firstMeasurementAt, 6);
-      await page.getByRole("button", { name: /Заключение и план/ }).click();
+      await page.getByRole("button", { name: /Лечение и план/ }).click();
       await page
         .getByLabel("Заключение врача", { exact: false })
         .fill("Синтетическое заключение UI, внесённое врачом.");
@@ -358,7 +368,9 @@ async function scenario(currentMode) {
         })
         .fill("Техническая проверка сохранения основания решения.");
       await saveVisit(page);
-      await page.getByRole("button", { name: "Добавить", exact: true }).click();
+      await page
+        .getByRole("button", { name: "Другая запись", exact: true })
+        .click();
       const plan = dialog(page, "Запись в плане ведения");
       await plan.getByLabel("Название", { exact: false }).fill(planTitle);
       await plan
@@ -455,14 +467,14 @@ async function scenario(currentMode) {
         visitUrl,
         "Следующий приём должен иметь отдельную запись",
       );
-      await page.getByRole("button", { name: /Заключение и план/ }).click();
+      await page.getByRole("button", { name: /Лечение и план/ }).click();
       await visible(
         page.getByRole("heading", { name: planTitle, exact: true }),
       );
       await page
         .getByRole("button", { name: "К истории пациента", exact: true })
         .click();
-      await patientTab(page, "Обзор");
+      await patientTab(page, "Приёмы");
       await page
         .getByRole("button", { name: "Создать приём", exact: true })
         .click();
@@ -530,9 +542,7 @@ async function scenario(currentMode) {
           exact: true,
         }),
       );
-      await page
-        .getByRole("button", { name: "Вся история", exact: true })
-        .click();
+      await page.getByRole("button", { name: /^Все ·/ }).click();
       await visible(page.getByText("Закрыто", { exact: true }));
     });
 

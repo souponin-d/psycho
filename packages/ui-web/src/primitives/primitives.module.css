@@ -167,3 +167,7 @@
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
+
+.dialogWide {
+  width: min(1120px, calc(100vw - 32px));
+}
