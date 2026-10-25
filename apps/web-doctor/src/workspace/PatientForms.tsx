@@ -45,12 +45,12 @@ const profileLabels: Record<string, string> = {
   address: "Адрес",
   preferredContact: "Предпочтительный способ связи",
   emergencyContact: "Контакт на случай необходимости",
-  representative: "Представитель и основание полномочий",
   ...Object.fromEntries(profileFields.map(({ key, label }) => [key, label])),
 };
 function profileValues(profile: Profile) {
+  const { representative: _representative, ...visibleProfile } = profile;
   return {
-    ...profile,
+    ...visibleProfile,
     sex: { unspecified: "Не указан", female: "Женский", male: "Мужской" }[
       profile.sex
     ],
@@ -194,16 +194,6 @@ export function ProfileForm({
           value={value.emergencyContact}
           onChange={(e) => set("emergencyContact", e.target.value)}
         />
-        <Field
-          label="Представитель и основание полномочий"
-          value={value.representative}
-          onChange={(e) => set("representative", e.target.value)}
-        />
-        <div className={styles.notice}>
-          Пустое поле означает отсутствие сведений. Для отрицательного ответа
-          укажите его явно и отметьте источник в тексте, например «со слов
-          пациента».
-        </div>
         {profileFields.map(({ key, label }) => (
           <Textarea
             key={key}
@@ -310,7 +300,12 @@ export function AppointmentForm({
     }
   }
   return (
-    <Modal open onClose={onClose} title="Запланировать приём">
+    <Modal
+      open
+      onClose={onClose}
+      title="Запланировать приём"
+      showCloseButton={false}
+    >
       <form className={styles.form} onSubmit={save}>
         {error && <ErrorNotice>{error}</ErrorNotice>}
         <h3>{patient.profile.name}</h3>
@@ -396,7 +391,7 @@ export function AppointmentForm({
           ))}
         </Select>
         <Textarea
-          label="Причина обращения / повестка"
+          label="Причина обращения"
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           rows={2}

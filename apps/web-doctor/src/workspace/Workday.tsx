@@ -251,11 +251,6 @@ export function Workday({
               </Empty>
             )}
           </Section>
-          <div className={styles.notice}>
-            <strong>Контекст перед решением</strong>
-            <br />В приёме доступны история наблюдения, результаты шкал, дневник
-            и источники. Неполные сведения остаются видимыми.
-          </div>
         </div>
       </div>
     </>

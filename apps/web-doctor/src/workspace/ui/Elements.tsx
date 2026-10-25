@@ -289,12 +289,14 @@ export function Modal({
   title,
   className,
   children,
+  showCloseButton = true,
 }: {
   open: boolean;
   onClose: () => void;
   title: string;
   className?: string;
   children: ReactNode;
+  showCloseButton?: boolean;
 }) {
   useLayoutEffect(() => {
     if (!open) return;
@@ -320,7 +322,7 @@ export function Modal({
         if (!value) onClose();
       }}
     >
-      <DialogPanel title={title}>
+      <DialogPanel title={title} showCloseButton={showCloseButton}>
         <div
           className={`${styles.root} ${styles.modalBody} ${className ?? ""}`}
         >
