@@ -131,7 +131,8 @@ const distance = (a: WalkPoint, b: WalkPoint) =>
 function free(p: WalkPoint, world: WorldState) {
   return (
     scenes[world.territory].stones.every(
-      ([x, y]) => distance(p, { x, y }) > 0.105,
+      // Центр тела выше опорной точки; запас учитывает 144 dp и экран 320 dp.
+      ([x, y]) => distance({ x: p.x, y: p.y - 0.03 }, { x, y }) > 0.31,
     ) &&
     world.placements.every(
       (o) =>

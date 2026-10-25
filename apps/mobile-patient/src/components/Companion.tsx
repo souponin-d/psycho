@@ -29,7 +29,9 @@ const Material = memo(function Material({
   source,
   outfit,
   size,
+  mascot,
 }: {
+  mascot: MascotId;
   source: number;
   outfit: Outfit;
   size: number;
@@ -90,7 +92,16 @@ const Material = memo(function Material({
         height="512"
         filter="url(#fur)"
       />
-      {outfit.clothing === "scarf" && (
+      {outfit.clothing === "scarf" && mascot === "cloud" && (
+        <G transform="translate(121.5833 291.2) scale(0.173611 0.165714)">
+          <SvgImage
+            href={require("../../assets/companions/cloud-scarf-v04.png")}
+            width={1536}
+            height={1024}
+          />
+        </G>
+      )}
+      {outfit.clothing === "scarf" && mascot !== "cloud" && (
         <G>
           <Path
             d="M140 334Q254 372 371 333L366 361Q252 397 144 359Z"
@@ -303,6 +314,7 @@ export function Companion({
         }}
       >
         <Material
+          mascot={mascot}
           source={
             companionFrames[mascot][sequence.group][
               sequence.frames[frame % sequence.frames.length]

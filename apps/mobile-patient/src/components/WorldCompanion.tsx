@@ -41,8 +41,8 @@ export function WorldCompanion({
   const active = useSceneMotion() && !editing;
   const [initial] = useState(() => {
     const candidate = {
-      x: Math.max(0.18, Math.min(0.82, home.x - 0.15)),
-      y: Math.max(0.13, home.y + 0.055),
+      x: Math.max(0.24, Math.min(0.76, home.x - 0.22)),
+      y: Math.max(0.13, home.y - 0.04),
     };
     return (
       routeToObject(candidate, world, undefined, candidate)[0] ?? candidate

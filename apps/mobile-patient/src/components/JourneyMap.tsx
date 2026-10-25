@@ -25,6 +25,8 @@ import { cloneWorld, validatePlacement } from "../core/world";
 import type { Placement, WorldState } from "../core/journeyModel";
 import { WorldScene } from "./WorldScene";
 import { WorldEditor } from "./WorldEditor";
+import { JourneyDayMarker } from "./JourneyDayMarker";
+import { journeyHud } from "../core/journeyPresentation";
 
 const statusLabels = {
   complete: "День выполнен",
@@ -89,7 +91,7 @@ export function JourneyMap() {
     tileHeight;
   const todayOffset = Math.max(
     0,
-    220 + todayY - Math.max(330, viewport * 0.58),
+    220 + todayY - Math.max(330, viewport * 0.54),
   );
   useEffect(() => {
     if (params.editWorld && journey) {
@@ -144,6 +146,12 @@ export function JourneyMap() {
   const selectedDay = map.days.find((d) => d.day === selected);
   const tasks = selected ? assignedTasks(journey, selected) : [];
   const todayTasks = assignedTasks(journey, today);
+  const hud = journeyHud(
+    todayTasks.filter((t) => t.completed).length,
+    todayTasks.length,
+    progress.successes,
+    progress.chapterStart,
+  );
   const nextTask = todayTasks.find((t) => !t.completed);
   const openNextTask = () => {
     if (nextTask?.kind === "report") router.push("/check-in");
@@ -300,77 +308,20 @@ export function JourneyMap() {
           </View>
           {map.days.map((day) => {
             const p = position(day.index);
-            const active = day.status === "today";
-            const done = day.status === "complete";
-            const future = day.status === "future";
             return (
               <View
                 key={day.day}
-                style={{
-                  position: "absolute",
-                  left: p.x - 64,
-                  top: p.y - 32,
-                  width: 128,
-                  alignItems: "center",
-                }}
+                style={{ position: "absolute", left: p.x - 63, top: p.y - 41 }}
               >
-                <Touch
-                  accessibilityRole="button"
-                  accessibilityLabel={`${dateLabel(day.day)}. ${statusLabels[day.status]}. День пути ${day.index + 1}`}
+                <JourneyDayMarker
+                  day={day.day}
+                  status={day.status}
+                  completeToday={progress.today.complete}
+                  label={`${dateLabel(day.day)}. ${statusLabels[day.status]}. День пути ${day.index + 1}`}
                   onPress={() => {
                     if (!draftWorld) setSelected(day.day);
                   }}
-                  style={{
-                    width: active ? 72 : 56,
-                    height: active ? 64 : 48,
-                    borderRadius: 32,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    backgroundColor: active
-                      ? theme.accent
-                      : done
-                        ? "#345D43"
-                        : future
-                          ? "#EEE5D4"
-                          : "#D2C3AD",
-                    borderWidth: active ? 3 : 2,
-                    borderColor: active ? "#FDF4CE" : "#FFF7E4",
-                    boxShadow: "0 6px 0 rgba(54,57,36,0.32)",
-                  }}
-                >
-                  {done ? (
-                    <Icon name="check" color="#FFFFFF" size={26} />
-                  ) : (
-                    <T
-                      weight="700"
-                      size={20}
-                      style={{ color: active ? theme.onAccent : "#4B4B3F" }}
-                    >
-                      {future ? "·" : day.index + 1}
-                    </T>
-                  )}
-                </Touch>
-                <View
-                  style={{
-                    position: "absolute",
-                    top: active ? 20 : 10,
-                    left: p.x > width * 0.5 ? -66 : 100,
-                    width: 100,
-                    paddingHorizontal: 10,
-                    paddingVertical: 4,
-                    borderRadius: 12,
-                    backgroundColor: dark ? "#172D29" : "#FFF8E8",
-                  }}
-                >
-                  <T size={11} weight="600">
-                    {active
-                      ? progress.today.complete
-                        ? "Сегодня · всё готово"
-                        : "Сегодня"
-                      : dateLabel(day.day)}
-                    {day.status === "missed" ? " · пропуск" : ""}
-                  </T>
-                </View>
+                />
               </View>
             );
           })}
@@ -437,11 +388,11 @@ export function JourneyMap() {
           }}
         >
           <View style={{ flex: 1, paddingRight: 12 }}>
-            <T size={28} weight="700">
+            <T size={23} weight="700">
               Мой путь
             </T>
-            <T size={12} weight="600">
-              {scenes[world.territory].name} · стрик {progress.streak}
+            <T size={11} muted>
+              {scenes[world.territory].name} · серия {progress.streak}
             </T>
           </View>
           <RoundButton
@@ -452,22 +403,27 @@ export function JourneyMap() {
         </View>
         <View
           style={{
-            marginTop: 12,
-            padding: 14,
+            marginTop: 8,
+            padding: 12,
             borderRadius: 20,
             backgroundColor: theme.glass,
             borderWidth: 1,
             borderColor: theme.border,
           }}
         >
-          <T size={13} weight="600">
+          <T size={12} weight="600" numberOfLines={1}>
             {draftWorld ? "Обустройте свой мир" : journey.goal}
           </T>
           <T size={11} muted>
             {draftWorld
               ? "Выберите предмет и перетащите. Путь прокручивается свободным свайпом."
-              : `${todayTasks.filter((t) => t.completed).length} / ${todayTasks.length} дел сегодня · неделя: ${progress.successes} / ${progress.goal}`}
+              : hud.taskLabel}
           </T>
+          {!draftWorld && (
+            <T size={10} muted>
+              {hud.weekLabel}
+            </T>
+          )}
           <View
             style={{
               height: 4,
@@ -655,65 +611,64 @@ export function JourneyMap() {
           </>
         ) : (
           <>
-            <Touch
-              accessibilityRole="button"
-              accessibilityLabel="Обустроить мой мир"
-              onPress={() => {
-                setDraftWorld(cloneWorld(journey.world));
-                setTools(true);
-              }}
-              style={{ width: "100%", alignItems: "flex-start" }}
-            >
+            <View style={{ width: "100%", gap: 8 }}>
               <View
                 style={{
-                  padding: 12,
-                  borderRadius: 18,
-                  backgroundColor: theme.glass,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 10,
                 }}
               >
-                <T size={13} weight="600">
-                  Обустроить мир · предметов: {world.placements.length}
-                </T>
+                <Touch
+                  accessibilityRole="button"
+                  accessibilityLabel="Обустроить мой мир"
+                  onPress={() => {
+                    setDraftWorld(cloneWorld(journey.world));
+                    setTools(true);
+                  }}
+                  style={{
+                    minHeight: 44,
+                    paddingHorizontal: 13,
+                    justifyContent: "center",
+                    borderRadius: 16,
+                    backgroundColor: theme.glass,
+                  }}
+                >
+                  <T size={12} weight="600">
+                    Мой мир
+                  </T>
+                </Touch>
+                <Touch
+                  accessibilityRole="button"
+                  accessibilityLabel="Вернуться к сегодняшнему дню"
+                  onPress={() => goToday()}
+                  style={{
+                    minHeight: 44,
+                    paddingHorizontal: 13,
+                    justifyContent: "center",
+                    borderRadius: 16,
+                    backgroundColor: theme.glass,
+                  }}
+                >
+                  <T size={12} weight="600">
+                    К сегодня
+                  </T>
+                </Touch>
               </View>
-            </Touch>
-            <Touch
-              accessibilityRole="button"
-              accessibilityLabel="Вернуться к сегодняшнему дню"
-              onPress={() => goToday()}
-              style={{
-                padding: 14,
-                borderRadius: 22,
-                backgroundColor: theme.glass,
-              }}
-            >
-              <T size={13} weight="600">
-                К сегодняшнему дню
-              </T>
-            </Touch>
-            <Touch
-              accessibilityRole="button"
-              accessibilityLabel={
-                nextTask
-                  ? `Следующее дело: ${nextTask.title}`
-                  : "Открыть план на сегодня"
-              }
-              onPress={openNextTask}
-              style={{
-                padding: 14,
-                borderRadius: 22,
-                backgroundColor: theme.accent,
-              }}
-            >
-              <T size={13} weight="600" style={{ color: theme.onAccent }}>
-                {nextTask?.kind === "report"
-                  ? "Как я себя чувствую?"
-                  : nextTask?.kind === "questionnaire"
-                    ? "Пройти опрос"
-                    : nextTask
-                      ? "Приём препарата"
-                      : "Всё на сегодня ✓"}
-              </T>
-            </Touch>
+              <Button
+                title={
+                  nextTask?.kind === "report"
+                    ? "Заполнить самоотчёт"
+                    : nextTask?.kind === "questionnaire"
+                      ? "Пройти опрос"
+                      : nextTask
+                        ? "Отметить приём"
+                        : "На сегодня всё выполнено"
+                }
+                onPress={openNextTask}
+              />
+            </View>
           </>
         )}
       </View>
