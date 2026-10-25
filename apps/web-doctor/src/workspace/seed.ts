@@ -198,7 +198,7 @@ export function seedPatients(reference = new Date()): PatientRecord[] {
       p.events.push({
         id: "event-demo-1",
         ...stamp(day(-1, 19)),
-        title: "Новый вопрос о переносимости",
+        title: "Уведомление от пациента",
         detail:
           "Пациент оставил запись о дискомфорте. Требуется уточнить обстоятельства.",
         urgency: "important",

@@ -360,7 +360,6 @@ function Workspace({
         </span>
         синкли
       </div>
-      <div className={styles.sidebarLabel}>Рабочее место врача</div>
       <nav className={styles.navigation} aria-label="Основная навигация">
         {nav.map((n) => (
           <button
@@ -440,7 +439,7 @@ function Workspace({
               >
                 <Icon name={mobile ? "close" : "menu"} />
               </button>
-              <span>{title}</span>
+              {section !== "workday" && <span>{title}</span>}
               {patient && (
                 <>
                   <Icon name="chevron" size={13} />

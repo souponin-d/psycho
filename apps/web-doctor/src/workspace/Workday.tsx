@@ -109,7 +109,6 @@ export function Workday({
             })}
           </div>
           <h1>Ваш рабочий день</h1>
-          <p>Главное о пациентах, с которыми вы работаете сегодня</p>
         </div>
         <Button icon="plus" onClick={onCreate}>
           Новый пациент
