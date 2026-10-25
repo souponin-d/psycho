@@ -1,3 +1,4 @@
+import { calendarStones } from "../src/core/pathLayout.ts";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -30,8 +31,8 @@ test("прогулка к предмету строится по свободн�
   assert(route.length >= 2);
   for (const p of route)
     assert(
-      scenes[world.territory].stones.every(
-        ([x, y]) => Math.hypot(p.x - x, (p.y - y) * 3) > 0.105,
+      calendarStones(scenes[world.territory]).every(
+        ([x, y]) => Math.hypot(p.x - x, (p.y - 0.03 - y) * 3) > 0.31,
       ),
     );
   for (const p of route)

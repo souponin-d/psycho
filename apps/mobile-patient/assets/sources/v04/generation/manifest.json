@@ -1,0 +1,96 @@
+{
+  "version": "0.4-design",
+  "status": "pending-owner-approval",
+  "date": "2026-10-25",
+  "commonGenerationPrompt": "NEW approval mockup board for Russian Android app Синкли 0.4 using the attached corrected reference as the exact art/material/exposure direction. STRICT user corrections: calm NATURAL DIFFUSE OVERCAST DAYLIGHT, neutral white balance, muted sage/lavender/stone colors, balanced exposure with details in ivory and fur. NO golden sun, NO yellow/orange wash, NO sunlight beams, NO bloom, NO overexposure, NO constant sparkles. Preserve one CHOSEN lavender three-lobed CLOUD companion with textured fabric cape/scarf fitted into fur. Maximum ONE character instance per working screen; no second species, no friend in background, no duplicate mascot in header and body. One exception only if explicitly requested: choice screen may have TWO isolated selectable species cards; no shared scene with both. Full coherent tactile miniature riverside world, artful natural stone stepping path, realistic material perspective/contact shadows on furniture and clothes, no flat vector accessories or pasted cardboard clothes. Day markers are IRREGULAR THICK BEVELED STONE STEPS with inset engraved date/status integrated into face at correct perspective. NEVER flat round circle badges/discs/stickers on stone. Completed past date has carved check/inlay plus label; FUTURE date is neutral plain stone, never checked. Today's stone has restrained green inlay and readable date. UI humanist sans-serif similar Onest, legible calm forest-green/ivory, minimal soft depth; general buttons clean with subtle pressed base (not ornate wooden plaques), modest headings, compact HUD. FOUR complete upright 9:20 app screens side by side on landscape 3:2 canvas, clear gutters, full screen edges visible, NO phone chassis, no angled phone views, no cropped footer. All text Russian. Only essential short accurate labels; no tiny invented copy. When showing Aviandr: 'Авиандр', 'По назначению врача' or 'Учебный план'; NEVER invent tablet counts, mg or dosing instructions, never insert '1 таблетка'. No invented medical tasks or claims of real message delivery. Clinical questionnaire results NEVER shown. Board title/captions outside app: short and restrained. Do not render desktop dashboards. They are visual approval mockups, not running software. ",
+  "boards": [
+    {
+      "id": "00-art-direction-calm",
+      "file": "00-art-direction-calm.png",
+      "title": "Художественный эталон",
+      "sourceFile": "exec-c5c226e8-16e9-4946-bcf2-67314b64c3b5.png",
+      "role": "art-direction",
+      "approved": false
+    },
+    {
+      "id": "01-path-calm",
+      "file": "01-path.png",
+      "title": "Путь и дела дня",
+      "sourceFile": "exec-ace9dddd-ee48-4d3e-924d-edf0125b3bb8.png",
+      "role": "raster-mockup-board",
+      "approved": false
+    },
+    {
+      "id": "02-onboarding-calm",
+      "file": "02-onboarding.png",
+      "title": "Знакомство",
+      "sourceFile": "exec-019ebcaa-f6f2-4770-8af6-80bea03fa737.png",
+      "role": "raster-mockup-board",
+      "approved": false
+    },
+    {
+      "id": "03-onboarding-learn-final",
+      "file": "03-onboarding-learn.png",
+      "title": "Учимся действовать",
+      "sourceFile": "exec-d29e8c6e-9be2-4076-8247-952037dbe88e.png",
+      "role": "raster-mockup-board",
+      "approved": false
+    },
+    {
+      "id": "04-care-final",
+      "file": "04-care.png",
+      "title": "План и самоотчёт",
+      "sourceFile": "exec-cb7ad209-018d-4779-bc86-cb2f9192aa44.png",
+      "role": "raster-mockup-board",
+      "approved": false
+    },
+    {
+      "id": "05-world-calm",
+      "file": "05-world.png",
+      "title": "Мир и гардероб",
+      "sourceFile": "exec-12b56c16-449f-4ddd-bdd2-a94ba184cd76.png",
+      "role": "raster-mockup-board",
+      "approved": false
+    },
+    {
+      "id": "08-onboarding-finish-calm",
+      "file": "08-onboarding-finish.png",
+      "title": "Завершение обучения",
+      "sourceFile": "exec-7cb92f2f-a0ec-4bc3-a313-7e8154663907.png",
+      "role": "raster-mockup-board",
+      "approved": false
+    },
+    {
+      "id": "06-history-contact-final",
+      "file": "06-history-contact.png",
+      "title": "История и обращения",
+      "sourceFile": "exec-390d8652-f679-4a50-943d-fa9ee9aa05cd.png",
+      "role": "raster-mockup-board",
+      "approved": false
+    },
+    {
+      "id": "07-night-final",
+      "file": "07-night.png",
+      "title": "Ночная тема",
+      "sourceFile": "exec-a749ca3c-37a0-401f-aacd-2300fe539e16.png",
+      "role": "raster-mockup-board",
+      "approved": false
+    },
+    {
+      "id": "09-motion-final",
+      "file": "09-motion.png",
+      "title": "Раскадровка",
+      "sourceFile": "exec-247cd402-1525-4cd5-814e-178607f3dd92.png",
+      "role": "static-storyboard",
+      "approved": false
+    }
+  ],
+  "invariants": [
+    "natural-diffuse-light",
+    "one-selected-companion",
+    "stone-integrated-day-markers",
+    "no-invented-dosage",
+    "clinical-forms-follow-source"
+  ],
+  "notes": "Растровые макеты не являются реализованным интерфейсом, ригом или нативной анимацией."
+}

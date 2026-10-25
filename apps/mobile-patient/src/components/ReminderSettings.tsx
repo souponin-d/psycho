@@ -1,5 +1,6 @@
+import { TimeControl } from "./TimeControl";
 import { useState } from "react";
-import { Alert, Linking, Platform, TextInput, View } from "react-native";
+import { Alert, Linking, Platform, View } from "react-native";
 import { useApp } from "../state/AppProvider";
 import { useReminders } from "../state/ReminderProvider";
 import { requestReminderPermission } from "../services/notificationPermissions";
@@ -37,6 +38,17 @@ export function ReminderSettings() {
       <T size={18} weight="600">
         Напоминания
       </T>
+      {reminders.nextAt && (
+        <T size={14}>
+          Ближайшее напоминание:{" "}
+          {new Date(reminders.nextAt).toLocaleString("ru-RU", {
+            day: "numeric",
+            month: "long",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </T>
+      )}
       <T size={13} muted>
         Схему задаёт врач. Вы можете выбрать удобные часы, сохраняя количество
         приёмов.
@@ -47,24 +59,12 @@ export function ReminderSettings() {
           ["Время самоотчёта", report, setReport],
         ] as const
       ).map(([label, value, onChangeText]) => (
-        <View key={label} style={{ gap: 8 }}>
-          <T size={13}>{label}</T>
-          <TextInput
-            accessibilityLabel={label}
-            value={value}
-            onChangeText={onChangeText}
-            maxLength={5}
-            keyboardType="numbers-and-punctuation"
-            style={{
-              fontFamily: "Onest",
-              fontSize: 20,
-              color: theme.text,
-              backgroundColor: theme.soft,
-              padding: 14,
-              borderRadius: 16,
-            }}
-          />
-        </View>
+        <TimeControl
+          key={label}
+          label={label}
+          value={value}
+          onChange={onChangeText}
+        />
       ))}
       {!valid && <T size={12}>Введите часы и минуты в формате 07:45.</T>}
       <Button

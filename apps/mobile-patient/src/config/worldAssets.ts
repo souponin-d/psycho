@@ -1,0 +1,23 @@
+/** Автономный каталог фактурных предметов. */
+export const worldAssets: Record<string, number> = {
+  bench: require("../../assets/world/v04/bench.png"),
+  flowers: require("../../assets/world/v04/flowers.png"),
+  lantern: require("../../assets/world/v04/lantern.png"),
+  "tea-table": require("../../assets/world/v04/tea-table.png"),
+  cushion: require("../../assets/world/v04/cushion.png"),
+  "bird-bath": require("../../assets/world/v04/bird-bath.png"),
+  "plant-pot": require("../../assets/world/v04/plant-pot.png"),
+  "soft-stone": require("../../assets/world/v04/soft-stone.png"),
+  "pebble-cluster": require("../../assets/world/v04/pebble-cluster.png"),
+  fern: require("../../assets/world/v04/fern.png"),
+  sunshade: require("../../assets/world/v04/sunshade.png"),
+  gazebo: require("../../assets/world/v04/gazebo.png"),
+  "lily-pot": require("../../assets/world/v04/lily-pot.png"),
+  "flower-arch": require("../../assets/world/v04/flower-arch.png"),
+  bookshelf: require("../../assets/world/v04/bookshelf.png"),
+  "star-mobile": require("../../assets/world/v04/star-mobile.png"),
+  "firefly-jar": require("../../assets/world/v04/firefly-jar.png"),
+  bridge: require("../../assets/world/v04/bridge.png"),
+  "wind-chime": require("../../assets/world/v04/wind-chime.png"),
+  "picnic-mat": require("../../assets/world/v04/picnic-mat.png"),
+};

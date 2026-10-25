@@ -15,7 +15,8 @@ import { clearReminderNotifications } from "../services/localNotifications";
 import { clearSavedHistoryExports } from "../services/historyExport";
 export default function SettingsScreen() {
   const { state, dispatch, theme } = useApp();
-  const { act, saving } = useJourney();
+  const { journey, act, saving } = useJourney();
+  const [goal, setGoal] = useState(journey?.goal ?? "Следовать плану терапии");
   const [name, setName] = useState(state.name);
   return (
     <Screen title="Ваше пространство" back>
@@ -28,6 +29,35 @@ export default function SettingsScreen() {
       </T>
       <ThemePicker />
       <ReminderSettings />
+      <Panel style={{ marginTop: 24, gap: 12 }}>
+        <T size={18} weight="600">
+          Личная цель
+        </T>
+        <T muted size={13}>
+          Ваш ориентир на пути. Назначения врача остаются прежними.
+        </T>
+        <TextInput
+          accessibilityLabel="Изменить личную цель"
+          value={goal}
+          onChangeText={setGoal}
+          maxLength={120}
+          multiline
+          style={{
+            fontFamily: "Onest",
+            fontSize: 16,
+            color: theme.text,
+            backgroundColor: theme.soft,
+            padding: 16,
+            borderRadius: 16,
+            minHeight: 80,
+          }}
+        />
+        <Button
+          title="Сохранить цель"
+          disabled={saving || !goal.trim() || goal.trim() === journey?.goal}
+          onPress={() => void act({ type: "goal", goal })}
+        />
+      </Panel>
       <T size={18} weight="500" style={{ marginTop: 30, marginBottom: 16 }}>
         Ваш спутник
       </T>
@@ -163,8 +193,7 @@ export default function SettingsScreen() {
           icon="spark"
           onPress={() => {
             dispatch({ type: "preferences", patch: { name } });
-            dispatch({ type: "onboard", value: false });
-            router.replace("/onboarding");
+            router.push("/onboarding?replay=1");
           }}
         />
         <Button

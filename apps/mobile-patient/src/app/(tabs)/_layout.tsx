@@ -43,6 +43,7 @@ function Bar({ state, navigation }: BottomTabBarProps) {
         return (
           <View key={route.key} style={{ flex: 1 }}>
             <Touch
+              haptic={false}
               accessibilityRole="tab"
               accessibilityLabel={item.title}
               accessibilityState={{ selected: active }}

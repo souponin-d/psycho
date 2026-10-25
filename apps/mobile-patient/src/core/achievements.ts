@@ -1,3 +1,4 @@
+import { chapterRewardItem } from "./weeklyReward.ts";
 import type { JourneyState } from "./journeyModel.ts";
 import {
   achievementCatalog,
@@ -96,7 +97,7 @@ export function grantRewards(state: JourneyState): JourneyState {
     if (days.length >= 5 && !rewards.some((r) => r.id === id))
       rewards.push({
         id,
-        itemId: index === 0 ? "garden" : "chapter-gift-" + index,
+        itemId: chapterRewardItem(index),
         day: days[4],
       });
   }

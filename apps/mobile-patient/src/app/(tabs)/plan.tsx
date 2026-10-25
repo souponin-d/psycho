@@ -20,16 +20,25 @@ export default function PlanScreen() {
   const { theme, today, state } = useApp();
   const { journey, act, saving } = useJourney();
   const [reminding, setReminding] = useState(false);
+  const [showPrescription, setShowPrescription] = useState(false);
   if (!journey) return null;
   const tasks = assignedTasks(journey, today),
     progress = journeyProgress(journey, today);
   async function dose(slotId: string, status: "taken" | "missed" | "unknown") {
+    if (dayAt(instantNow()) !== today) {
+      Alert.alert(
+        "Начался новый день",
+        "Откройте сегодняшний план и проверьте отметку.",
+      );
+      return;
+    }
     await act({
       type: "event",
       event: {
         id: "dose-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7),
         kind: "dose",
-        day: dayAt(instantNow()),
+        action: "select",
+        day: today,
         slotId,
         status,
         occurredAt:
@@ -106,35 +115,6 @@ export default function PlanScreen() {
           }) + " · шаг за шагом"
         }
       />
-      <View
-        style={{
-          backgroundColor: theme.soft,
-          borderRadius: 28,
-          padding: 22,
-          gap: 9,
-          marginBottom: 24,
-        }}
-      >
-        <T size={12} muted>
-          Ваше назначение
-        </T>
-        {journey.plan.effectiveFrom && journey.planVersions && (
-          <T size={12} muted>
-            План уточнён с{" "}
-            {new Date(
-              journey.plan.effectiveFrom + "T12:00:00",
-            ).toLocaleDateString("ru-RU")}
-            . Разделы самоотчёта определены врачом.
-          </T>
-        )}
-        <T size={28} weight="500">
-          {journey.plan.medication.name}
-        </T>
-        <T size={13}>{journey.plan.medication.dosageLabel}</T>
-        <T muted size={11}>
-          Из подключённого учебного плана · {journey.plan.doctor}
-        </T>
-      </View>
       <T size={19} weight="500">
         На сегодня · {tasks.filter((t) => t.completed).length} из {tasks.length}
       </T>
@@ -175,6 +155,11 @@ export default function PlanScreen() {
                   </T>
                 </View>
               </View>
+              {current?.status === "taken" && current.occurredAt && (
+                <T size={12} muted>
+                  Фактическая отметка: {current.occurredAt}
+                </T>
+              )}
               <View style={{ flexDirection: "row", gap: 8 }}>
                 {(
                   [
@@ -229,7 +214,11 @@ export default function PlanScreen() {
                 <Touch
                   accessibilityRole="button"
                   onPress={() => void dose(slot.id, "unknown")}
-                  style={{ padding: 7 }}
+                  style={{
+                    minHeight: 44,
+                    paddingHorizontal: 8,
+                    justifyContent: "center",
+                  }}
                 >
                   <T muted size={12}>
                     Убрать ошибочную отметку
@@ -242,7 +231,7 @@ export default function PlanScreen() {
       </View>
       <View style={{ gap: 12 }}>
         <Button
-          title={report ? "Изменить самоотчёт" : "Как вы сейчас?"}
+          title={report ? "Изменить самоотчёт" : "Заполнить самоотчёт"}
           icon="heart"
           onPress={() =>
             router.push({
@@ -282,6 +271,51 @@ export default function PlanScreen() {
             ? "На сегодня всё выполнено. Итог дня закрепится в 00:00."
             : "Для зачёта дня нужны все приёмы, полный самоотчёт и назначенные на сегодня тесты. День заканчивается в 00:00."}
       </T>
+      <View style={{ gap: 12, marginBottom: 22 }}>
+        <Button
+          title={
+            showPrescription
+              ? "Скрыть назначение"
+              : "Назначение и схема терапии"
+          }
+          secondary
+          onPress={() => setShowPrescription(!showPrescription)}
+        />
+        {showPrescription && (
+          <>
+            {" "}
+            <View
+              style={{
+                backgroundColor: theme.soft,
+                borderRadius: 28,
+                padding: 22,
+                gap: 9,
+                marginBottom: 24,
+              }}
+            >
+              <T size={12} muted>
+                Ваше назначение
+              </T>
+              {journey.plan.effectiveFrom && journey.planVersions && (
+                <T size={12} muted>
+                  План уточнён с{" "}
+                  {new Date(
+                    journey.plan.effectiveFrom + "T12:00:00",
+                  ).toLocaleDateString("ru-RU")}
+                  . Разделы самоотчёта определены врачом.
+                </T>
+              )}
+              <T size={28} weight="500">
+                {journey.plan.medication.name}
+              </T>
+              <T size={13}>{journey.plan.medication.dosageLabel}</T>
+              <T muted size={11}>
+                Из подключённого учебного плана · {journey.plan.doctor}
+              </T>
+            </View>
+          </>
+        )}
+      </View>
       <View style={{ gap: 12 }}>
         <Button
           title="Переносимость и обращение"

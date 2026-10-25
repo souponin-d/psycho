@@ -1,3 +1,4 @@
+import { upgradeWorldSections } from "../core/worldSections.ts";
 import { migrateLegacy, restoreJourney } from "./migrateV1.ts";
 import { closeElapsedDays, dayAt } from "../core/calendar.ts";
 import { applyPatientCommand } from "../core/patientCommands.ts";
@@ -37,7 +38,10 @@ export function createPatientRepository(
       raw === null
         ? migrateLegacy(await readLegacy(), dayAt(now))
         : restoreJourney(raw);
-    const closed = closeElapsedDays(state, now);
+    const closed = closeElapsedDays(
+      upgradeWorldSections(state, dayAt(now)),
+      now,
+    );
     if (raw === null || closed !== state)
       await port.write(JSON.stringify(closed));
     current = closed;

@@ -1,3 +1,4 @@
+import type { ChatMessage } from "./chat.ts";
 import type { FeelingPoint } from "./feelings.ts";
 
 export type DayKey = string;
@@ -43,6 +44,7 @@ type EventBase = {
 export type DoseEvent = EventBase & {
   kind: "dose";
   source?: "notification";
+  action?: "select" | "correct";
   slotId: string;
   status: "taken" | "missed" | "unknown";
   occurredAt?: string;
@@ -89,17 +91,35 @@ export type Placement = {
   scale: number;
 };
 export type Outfit = { color: string; clothing: string; accessory: string };
+export type WorldSection = {
+  anchorDay: DayKey;
+  territory: "shore" | "garden";
+  ambience?: "morning" | "dusk" | "mist";
+  flora?: "flowers" | "ferns";
+  placements: Placement[];
+};
 export type WorldState = {
+  anchorDay?: DayKey;
+  sections?: WorldSection[];
   territory: "shore" | "garden";
   ambience?: "morning" | "dusk" | "mist";
   flora?: "flowers" | "ferns";
   placements: Placement[];
   outfits: { fluffy: Outfit; cloud: Outfit };
 };
+export type ContactDraftFields = {
+  description: string;
+  onset: DayKey;
+  severity?: ContactEvent["severity"];
+  preference?: ContactEvent["preference"];
+};
 export type PatientDraft = {
   id: string;
   day: DayKey;
-  kind: "report" | "questionnaire";
+  kind: "report" | "questionnaire" | "contact";
+  step?: number;
+  formVersion?: string;
+  contact?: ContactDraftFields;
   fields?: ReportFields;
   note?: string;
   label?: string;
@@ -116,7 +136,23 @@ export type LegacyRecord = {
   label?: string;
   feeling?: FeelingPoint;
 };
+export type OnboardingProgress = {
+  version: 1;
+  step: number;
+  name: string;
+  goal: string;
+  code: string;
+  morning: string;
+  practiceDose: boolean;
+  practiceFeeling?: FeelingPoint;
+  practiceItem: { x: number; y: number };
+  completed: boolean;
+};
 export type JourneyState = {
+  chat?: ChatMessage[];
+  chatDraft?: string;
+  onboarding?: OnboardingProgress;
+  shown?: Record<string, true>;
   version: 2;
   scenarioId: string;
   seedDay: DayKey;
@@ -134,8 +170,12 @@ export type JourneyState = {
   activity?: Partial<Record<"history" | "question" | "customized", true>>;
 };
 export type PatientCommand =
+  | { type: "chat:append"; messages: ChatMessage[] }
+  | { type: "chat:draft"; text: string }
+  | { type: "chat:clear" }
   | {
       type: "event";
+      draftId?: string;
       event:
         | Omit<DoseEvent, "at" | "recordedDay">
         | Omit<ReportEvent, "at" | "recordedDay">
@@ -147,6 +187,9 @@ export type PatientCommand =
   | { type: "connect"; code: string }
   | { type: "goal"; goal: string }
   | { type: "world"; world: WorldState }
+  | { type: "world:section"; day: DayKey }
   | { type: "activity"; activity: "history" | "question" }
+  | { type: "onboarding:save"; progress: OnboardingProgress }
+  | { type: "seen"; key: string }
   | { type: "tick" }
   | { type: "reset" };

@@ -158,25 +158,17 @@ export function projectHistory(
         e.recordedDay !== day ||
         e.gameEligible === false
       ) {
-        const describe = (event: PatientEvent | undefined) =>
-          event?.kind === "dose"
-            ? doseLabels[event.status]
-            : event?.kind === "report"
-              ? event.deleted
-                ? "Запись удалена"
-                : event.note || event.label || "Запись самочувствия"
-              : "Нет записи";
         changes.push({
           id: e.id,
           at: e.at,
           author: "Пациент на устройстве",
           type: e.kind === "dose" ? "Приём" : "Самочувствие",
           previous: old
-            ? describe(old)
+            ? describeHistoryEvent(old)
             : archived
               ? archived.note || archived.label || "Архивная запись"
-              : describe(old),
-          current: describe(e),
+              : describeHistoryEvent(old),
+          current: describeHistoryEvent(e),
           late: e.recordedDay !== day || e.gameEligible === false,
         });
       }
@@ -460,4 +452,30 @@ export function historyHtml(data: PatientHistoryProjection) {
     lines +
     "</body></html>"
   );
+}
+
+export function describeHistoryEvent(event: PatientEvent | undefined): string {
+  if (event?.kind === "dose")
+    return (
+      doseLabels[event.status] +
+      (event.status === "taken" && event.occurredAt
+        ? ` · ${event.occurredAt}`
+        : "")
+    );
+  if (event?.kind !== "report") return "Нет записи";
+  if (event.deleted) return "Запись удалена";
+  const f = event.fields,
+    parts: string[] = [];
+  if (f.feeling)
+    parts.push(
+      `Ощущение ${f.feeling.valence}/6, энергия ${f.feeling.energy}/6`,
+    );
+  if (f.sleep !== undefined) parts.push(`Сон: ${f.sleep}`);
+  if (f.anxiety !== undefined) parts.push(`Тревога: ${f.anxiety}`);
+  if (f.functioning !== undefined)
+    parts.push(`Повседневные дела: ${f.functioning}`);
+  if (f.tolerability) parts.push(`Переносимость: ${f.tolerability}`);
+  if (event.note) parts.push(event.note);
+  if (event.label) parts.push(event.label);
+  return parts.join(" · ") || "Запись самочувствия";
 }

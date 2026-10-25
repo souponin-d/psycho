@@ -1,0 +1,922 @@
+{
+  "version": "0.4.0",
+  "files": [
+    {
+      "path": "companions/bow-v04.png",
+      "bytes": 953717,
+      "sha256": "7543c92a006534781645e0eb45c6416a1cf048b06cb2d2538ce5a8d3edaa7cb3",
+      "role": "runtime",
+      "usedBy": ["src/config/wardrobeAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "companions/cape-v04.png",
+      "bytes": 1274788,
+      "sha256": "877be692777a56ea1ac29996473631ce7dc364ff6a3238139106833280c0119c",
+      "role": "runtime",
+      "usedBy": ["src/config/wardrobeAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "companions/cloud-emotion-0.png",
+      "bytes": 164543,
+      "sha256": "ad0dad2fc06cddc601c717df9f83c1e150674613ce979b1ebc7048ec1f4d8276",
+      "role": "runtime",
+      "usedBy": ["src/config/companionFrames.ts"],
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "companions/cloud-emotion-1.png",
+      "bytes": 164652,
+      "sha256": "9b66776d2aec2d88ef46097196b92a2420f2c3b1408bc743721a7692866bc4ca",
+      "role": "runtime",
+      "usedBy": ["src/config/companionFrames.ts"],
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "companions/cloud-emotion-2.png",
+      "bytes": 164369,
+      "sha256": "a58824c1591a2caa0407f7280ffaa4e389d1f006dd758f094dc30b7c7e9c30ed",
+      "role": "runtime",
+      "usedBy": ["src/config/companionFrames.ts"],
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "companions/cloud-emotion-3.png",
+      "bytes": 164636,
+      "sha256": "0ac3e8a40112d09f4f2afaf6d94372c945a62a1d995495e528e9319b58f87e1e",
+      "role": "runtime",
+      "usedBy": ["src/config/companionFrames.ts"],
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "companions/cloud-idle-0.png",
+      "bytes": 164694,
+      "sha256": "750aebeb5d5dbcfcb9953147c3bd78d8575432763f10c64387c1e51c18939379",
+      "role": "runtime",
+      "usedBy": ["src/config/companionFrames.ts"],
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "companions/cloud-idle-1.png",
+      "bytes": 163815,
+      "sha256": "80e3cb040c72cf2abfa7c17d7ae526de04485df9a6a2794a02b1c73c69994ce0",
+      "role": "runtime",
+      "usedBy": ["src/config/companionFrames.ts"],
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "companions/cloud-idle-2.png",
+      "bytes": 163922,
+      "sha256": "50305772389b78c3c9b6d3549813347f40b032694e6db589bf90820616e4c756",
+      "role": "runtime",
+      "usedBy": ["src/config/companionFrames.ts"],
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "companions/cloud-idle-3.png",
+      "bytes": 165984,
+      "sha256": "0f564816beaf0fdc34d38ce566b9beea22296285ad80888f0b77b079e54d9484",
+      "role": "runtime",
+      "usedBy": ["src/config/companionFrames.ts"],
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "companions/cloud-scarf-v04.png",
+      "bytes": 1850125,
+      "sha256": "e416ebab86059f19e01d5e76fcab5ac70bdb23e1944dec5d0875f460fb125785",
+      "role": "runtime",
+      "usedBy": ["src/config/wardrobeAssets.ts"],
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "path": "companions/cloud-walk-0.png",
+      "bytes": 161276,
+      "sha256": "7992e6dc39ba7bc71fdadc8838c362c7c0a6579da9161934a1742eb23156f3a3",
+      "role": "runtime",
+      "usedBy": ["src/config/companionFrames.ts"],
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "companions/cloud-walk-1.png",
+      "bytes": 159920,
+      "sha256": "d67d452d2f70ab0b10e54bca0634fff7f685ad1d431ceffeecf61229fcb525b4",
+      "role": "runtime",
+      "usedBy": ["src/config/companionFrames.ts"],
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "companions/cloud-walk-2.png",
+      "bytes": 165615,
+      "sha256": "ac1ede5b21c897e547db562f42cb52797dc9ef1fc20c635115dc74f0aca76b76",
+      "role": "runtime",
+      "usedBy": ["src/config/companionFrames.ts"],
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "companions/cloud-walk-3.png",
+      "bytes": 165000,
+      "sha256": "0185a1454c5f3a992d71e27e82532f8d5429b8ee218797f8e1f5a65fecb0aa9a",
+      "role": "runtime",
+      "usedBy": ["src/config/companionFrames.ts"],
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "companions/fitted-v04/cloud-cape.png",
+      "bytes": 1145066,
+      "sha256": "2746fe2f942e46dd925047b5712af754e176c25ad0e613a856cd75abc30fb966",
+      "role": "retained-reference",
+      "usedBy": [],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "companions/fitted-v04/cloud-hoodie.png",
+      "bytes": 1038535,
+      "sha256": "c176b0b1998a6795ece2212ef86392d8bcce57d259cbbec92e5b9f2d50ac3a6c",
+      "role": "retained-reference",
+      "usedBy": [],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "companions/fitted-v04/cloud-scarf.png",
+      "bytes": 1022978,
+      "sha256": "91278e7653aba4a12edcb64fbf8f891b91cc8bbe24c2d1e3ac26019443064fd2",
+      "role": "retained-reference",
+      "usedBy": [],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "companions/fitted-v04/fluffy-cape.png",
+      "bytes": 1333957,
+      "sha256": "b87597ea1e5f1ace645d4f96e0d7f5d4c3ad235fe54fe22e71395e59533d10fb",
+      "role": "retained-reference",
+      "usedBy": [],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "companions/fitted-v04/fluffy-hoodie.png",
+      "bytes": 1311740,
+      "sha256": "df18a7f4245e5d0f083142c8b0828290b6cc93ded7a8a5bfda8cb08c27789fda",
+      "role": "retained-reference",
+      "usedBy": [],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "companions/fitted-v04/fluffy-scarf.png",
+      "bytes": 1210736,
+      "sha256": "0c1f0bcb23629fdf75734e6bfc71fb59785a6191c1edb63e2d5c6f821d863c17",
+      "role": "retained-reference",
+      "usedBy": [],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "companions/fluffy-emotion-0.png",
+      "bytes": 215287,
+      "sha256": "3c4a0d7a6e8fb74ca83374a2df0c3ff66d7c4aa01e897fd2cd3de6180cda26af",
+      "role": "runtime",
+      "usedBy": ["src/config/companionFrames.ts"],
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "companions/fluffy-emotion-1.png",
+      "bytes": 210157,
+      "sha256": "a8321aa2742bd5c634329e9af37e48d7d44d4a0ecc43cda125fe30753f5f1803",
+      "role": "runtime",
+      "usedBy": ["src/config/companionFrames.ts"],
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "companions/fluffy-emotion-2.png",
+      "bytes": 207349,
+      "sha256": "b8aa8c2a1d4ec2920667341c9dbe860311a8c94aa74ba89c52be87b63dd4ae31",
+      "role": "runtime",
+      "usedBy": ["src/config/companionFrames.ts"],
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "companions/fluffy-emotion-3.png",
+      "bytes": 209579,
+      "sha256": "1fbc3922954a51b83a82ac3d29076e9f112fe6055579130a2ac97a1e13a5f343",
+      "role": "runtime",
+      "usedBy": ["src/config/companionFrames.ts"],
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "companions/fluffy-idle-0.png",
+      "bytes": 205585,
+      "sha256": "39b9eadb03d96ce54fc1bdb9396fbf54fff5798c5e966fe6917a7d93d1b2bc97",
+      "role": "runtime",
+      "usedBy": ["src/config/companionFrames.ts"],
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "companions/fluffy-idle-1.png",
+      "bytes": 202088,
+      "sha256": "94ceb61d8ddb73cb858b830be700c99415e016d97db4a6303aecef74aba04607",
+      "role": "runtime",
+      "usedBy": ["src/config/companionFrames.ts"],
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "companions/fluffy-idle-2.png",
+      "bytes": 204241,
+      "sha256": "b9c5b37dc783cfcf9a2a98b2340196c0aa6576311400c4f98953e6c94e3fa795",
+      "role": "runtime",
+      "usedBy": ["src/config/companionFrames.ts"],
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "companions/fluffy-idle-3.png",
+      "bytes": 206422,
+      "sha256": "de6a7132382b9a08247c60ee100d38812b1b3641dc01ca83e4f4ba8eb4fcb2ba",
+      "role": "runtime",
+      "usedBy": ["src/config/companionFrames.ts"],
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "companions/fluffy-walk-0.png",
+      "bytes": 196387,
+      "sha256": "aed6707328a7d2ba7751628c24fa6b4a120a504c21a217407792b668ab15ee97",
+      "role": "runtime",
+      "usedBy": ["src/config/companionFrames.ts"],
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "companions/fluffy-walk-1.png",
+      "bytes": 192758,
+      "sha256": "bc03e6fabbcb70089904f7754f1808ee21e27e875d74667279184f0a04f8be1f",
+      "role": "runtime",
+      "usedBy": ["src/config/companionFrames.ts"],
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "companions/fluffy-walk-2.png",
+      "bytes": 204294,
+      "sha256": "babee593d8169e05877046dcaeebf3f87b2b8e1fdd038038ea15fa47aac967fd",
+      "role": "runtime",
+      "usedBy": ["src/config/companionFrames.ts"],
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "companions/fluffy-walk-3.png",
+      "bytes": 196660,
+      "sha256": "38b0ecd3ff348f72dc5f5d95b3b5ec3129992333fe4b5ad02c6cfb75f9c8e467",
+      "role": "runtime",
+      "usedBy": ["src/config/companionFrames.ts"],
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "companions/hoodie-v04.png",
+      "bytes": 1078556,
+      "sha256": "2675e1c24289bbaed95a19c1f52f6092538fa08e17e3789c301a2a19f75b1719",
+      "role": "runtime",
+      "usedBy": ["src/config/wardrobeAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "companions/leaf-v04.png",
+      "bytes": 832622,
+      "sha256": "676dcc9ffa44900508b3a0b96b5ff494b80624fcee0a0c29793775c3e68eeed0",
+      "role": "runtime",
+      "usedBy": ["src/config/wardrobeAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "companions/manifest.json",
+      "bytes": 5376,
+      "sha256": "1b27e39514b78fb8c57d2f99cf6017309c4f1773ca09a091232ccd16347cd29d",
+      "role": "retained-reference",
+      "usedBy": []
+    },
+    {
+      "path": "companions/README.md",
+      "bytes": 2866,
+      "sha256": "cce99adca22ccb937909a903475868be14139962b7c93466396ea0b1f582dc2d",
+      "role": "retained-reference",
+      "usedBy": []
+    },
+    {
+      "path": "companions/star-v04.png",
+      "bytes": 604794,
+      "sha256": "ef9ce21d7c7a5556bb5fb55a7ddf6f9599983cb74cb0526235ddbb72efcf319a",
+      "role": "runtime",
+      "usedBy": ["src/config/wardrobeAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "companions/worn-v04/cloud-cape.png",
+      "bytes": 494160,
+      "sha256": "f0a31375ee35f6e280b2ff287ba8e4e88eff2cc313a32f398092f06eefa5e49e",
+      "role": "runtime",
+      "usedBy": ["src/config/wornAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "companions/worn-v04/cloud-hoodie.png",
+      "bytes": 754218,
+      "sha256": "fa15e75fc32670938aa4f2f6c3c0652bae8502a44445ee900bbfa15bb010a594",
+      "role": "runtime",
+      "usedBy": ["src/config/wornAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "companions/worn-v04/cloud-scarf.png",
+      "bytes": 419185,
+      "sha256": "13a85eda92ec772dfd103f23652ae444819e2047b1d9e9d7cc6c10212242f2c1",
+      "role": "runtime",
+      "usedBy": ["src/config/wornAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "companions/worn-v04/fluffy-cape.png",
+      "bytes": 697882,
+      "sha256": "07d3a083059de038cfd6341100d0c315776121c436b47b15428aa8662fecc8bf",
+      "role": "runtime",
+      "usedBy": ["src/config/wornAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "companions/worn-v04/fluffy-hoodie.png",
+      "bytes": 523533,
+      "sha256": "3624ebaeed5f98e32e4657aee2dca3874a768159d4148709b40a99bfeb242ff6",
+      "role": "runtime",
+      "usedBy": ["src/config/wornAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "companions/worn-v04/fluffy-scarf.png",
+      "bytes": 386644,
+      "sha256": "775427aa5f1422a6accf03b2bb9fbd949f45d46e6c8bd68457b8361ed28694e3",
+      "role": "runtime",
+      "usedBy": ["src/config/wornAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "fonts/OFL.txt",
+      "bytes": 4383,
+      "sha256": "7805ccc507e6dc0c0796f1afa4f03ad413a9d302a30a24f8dbeb1aeef07a6c17",
+      "role": "retained-reference",
+      "usedBy": []
+    },
+    {
+      "path": "fonts/Onest.ttf",
+      "bytes": 193056,
+      "sha256": "966c5c29b4755da84b6854d5c21dd4eaa2420225d0e9874de602de176d4a9f31",
+      "role": "runtime",
+      "usedBy": ["src/app/_layout.tsx"]
+    },
+    {
+      "path": "image-prompts.json",
+      "bytes": 3779,
+      "sha256": "d3d221a32897504f752fee2493ffab72430a46a6b248580df536406e19ce9c02",
+      "role": "retained-reference",
+      "usedBy": []
+    },
+    {
+      "path": "images/cloud.png",
+      "bytes": 1920754,
+      "sha256": "138ba26e4e93293cd5132347114f3eea93440fc3f651f7dc584eb5fe9c8324a2",
+      "role": "runtime",
+      "usedBy": ["src/config/content.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "images/day-stone-v04.png",
+      "bytes": 2284147,
+      "sha256": "d61c0d9826c4482bddd2de3b073d1307dde96065ee03b1c14ab587ce40e2be1f",
+      "role": "runtime",
+      "usedBy": ["src/components/JourneyDayMarker.tsx"],
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "path": "images/fluffy.png",
+      "bytes": 3074301,
+      "sha256": "ca35a3bc0b448af88a591680d2f1dfbd29a2a5fc546b804c391c0e2ac404cf6b",
+      "role": "runtime",
+      "usedBy": ["app.json", "src/config/content.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "images/garden-day-v04.png",
+      "bytes": 3749368,
+      "sha256": "8d5f8bc6998cd5c15f078a6596646a43ed5a419d497d734377dc130ccdf833d7",
+      "role": "runtime",
+      "usedBy": ["src/config/sceneAssets.ts"],
+      "width": 724,
+      "height": 2172
+    },
+    {
+      "path": "images/garden-night-v04.png",
+      "bytes": 3551884,
+      "sha256": "0e1519b1d1db3d9b879e03bdf777affddc8ccd58cb4423772d994069840870ed",
+      "role": "runtime",
+      "usedBy": ["src/config/sceneAssets.ts"],
+      "width": 724,
+      "height": 2172
+    },
+    {
+      "path": "images/journey-environment.png",
+      "bytes": 3950487,
+      "sha256": "acef03a925259f5aeeff5cc20b2a2dcbe69913690cdca560ba32d1489e43743d",
+      "role": "retained-reference",
+      "usedBy": [],
+      "width": 724,
+      "height": 2172
+    },
+    {
+      "path": "images/journey-shore.png",
+      "bytes": 3889204,
+      "sha256": "e4fa83d6af92320d2360c1e18fd093931d6d9574fa431adfd46ff7bfa9305f4f",
+      "role": "retained-reference",
+      "usedBy": [],
+      "width": 724,
+      "height": 2172
+    },
+    {
+      "path": "images/shore-dark.png",
+      "bytes": 2722441,
+      "sha256": "9ec3e0da9162e284e98160478b379b4e2c7cf1f0bfb7a3a1e2f04914e15ecd4c",
+      "role": "runtime",
+      "usedBy": ["src/components/LivingShore.tsx"],
+      "width": 875,
+      "height": 1798
+    },
+    {
+      "path": "images/shore-day-v04.png",
+      "bytes": 3708352,
+      "sha256": "75fd38edf0d521b5f72d45551a7eab7e43d6c45fbf1ddd884384e7bf9d2d4a33",
+      "role": "runtime",
+      "usedBy": ["src/config/sceneAssets.ts"],
+      "width": 724,
+      "height": 2172
+    },
+    {
+      "path": "images/shore-light.png",
+      "bytes": 2847755,
+      "sha256": "79a4ea40e455e04f3ed79ee0b6eaef8f0af3b6f9586972a277884d976857c91f",
+      "role": "runtime",
+      "usedBy": ["src/components/LivingShore.tsx"],
+      "width": 875,
+      "height": 1798
+    },
+    {
+      "path": "images/shore-night-v04.png",
+      "bytes": 3485400,
+      "sha256": "b5e3f97d5bad085a4b8a1a6756d13065a15f5b2f545e5e0d463c835d423adac8",
+      "role": "runtime",
+      "usedBy": ["src/config/sceneAssets.ts"],
+      "width": 724,
+      "height": 2172
+    },
+    {
+      "path": "images/terrain-dark.png",
+      "bytes": 2083442,
+      "sha256": "b9b8b502d0637cb976d0730404974dd4047e824a8e996156c1a1521bfaee73f4",
+      "role": "runtime",
+      "usedBy": ["src/theme/themes.ts"],
+      "width": 941,
+      "height": 1672
+    },
+    {
+      "path": "images/terrain-light.png",
+      "bytes": 2661938,
+      "sha256": "f9d941d55397bed06327c9158c7e694cbe2e4435a3c9d05974a45cfe2c566cba",
+      "role": "runtime",
+      "usedBy": ["src/theme/themes.ts"],
+      "width": 941,
+      "height": 1672
+    },
+    {
+      "path": "README.md",
+      "bytes": 4332,
+      "sha256": "95aa55a1f77a75f5db04a1a8182cb4c0921a31d8775f5200d6dd9b81a6df1645",
+      "role": "retained-reference",
+      "usedBy": []
+    },
+    {
+      "path": "sources/v04/animation-sheets/cloud-emotion.png",
+      "bytes": 1713566,
+      "sha256": "a2cc976733e2aa07af66a6ced297581cbd45131470d20d82277a45f6ff03be5a",
+      "role": "source",
+      "usedBy": [],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "sources/v04/animation-sheets/cloud-idle.png",
+      "bytes": 1512425,
+      "sha256": "fb32419be6f987571337de208b7eadadd6915485ee1f7d419a6ee19bac423ffc",
+      "role": "source",
+      "usedBy": [],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "sources/v04/animation-sheets/cloud-walk.png",
+      "bytes": 1523328,
+      "sha256": "30e3e5c26c70e10ff7bd461d773f85d828f6781914429f4eef0777295c0af225",
+      "role": "source",
+      "usedBy": [],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "sources/v04/animation-sheets/fluffy-emotion.png",
+      "bytes": 2436877,
+      "sha256": "d0a7e2c910ca686f77c5f59f7e7a90680fdd26bd2ef770d24c7e02dc992b4bdb",
+      "role": "source",
+      "usedBy": [],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "sources/v04/animation-sheets/fluffy-idle.png",
+      "bytes": 2511491,
+      "sha256": "512b88bf3f7ad7b2af8617a4c1e7417d56db379223ce9b0376aca74fd8feb8f5",
+      "role": "source",
+      "usedBy": [],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "sources/v04/animation-sheets/fluffy-walk.png",
+      "bytes": 2391750,
+      "sha256": "3028a79953ebe0d489dcc23028528e82dfc21f5a0ad83fb8595d367a3d08f8f0",
+      "role": "source",
+      "usedBy": [],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "sources/v04/design-reference/00-art-direction-calm.png",
+      "bytes": 3304031,
+      "sha256": "953b8a92eb0b95527a3c416b2656c9883692a668cedd971eb7f9fb21daf74c4c",
+      "role": "source",
+      "usedBy": [],
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "path": "sources/v04/design-reference/01-path.png",
+      "bytes": 2523646,
+      "sha256": "2e77b73f27e50eee1cfb0b96872920bd1caf7c97655064c6a4ffe1f8c1038024",
+      "role": "source",
+      "usedBy": [],
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "path": "sources/v04/design-reference/02-onboarding.png",
+      "bytes": 2347799,
+      "sha256": "3ef22b7296421e5210c91f4e4ab004f1ef5da256146da079493e6900a0c59f33",
+      "role": "source",
+      "usedBy": [],
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "path": "sources/v04/design-reference/03-onboarding-learn.png",
+      "bytes": 2289434,
+      "sha256": "7cc736d4b5b47d5ed8c9d820aa724b15f3b64f4db2610d99fedd257c8c9d1ceb",
+      "role": "source",
+      "usedBy": [],
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "path": "sources/v04/design-reference/04-care.png",
+      "bytes": 1975025,
+      "sha256": "0ce385e60dce8cdf5a4c3f325d6fc10e586aee3d69d39212ee37a73a62f72a0a",
+      "role": "source",
+      "usedBy": [],
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "path": "sources/v04/design-reference/05-world.png",
+      "bytes": 2710572,
+      "sha256": "84793e2867d895fa5c76ca258b8106fbd97275e5f946d58bffe71975f835bb39",
+      "role": "source",
+      "usedBy": [],
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "path": "sources/v04/design-reference/06-history-contact.png",
+      "bytes": 1949539,
+      "sha256": "09e4280942212b0810da8b942afe5c9c65580a20c401c8124d48ff89bcebbc52",
+      "role": "source",
+      "usedBy": [],
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "path": "sources/v04/design-reference/07-night.png",
+      "bytes": 2217853,
+      "sha256": "3cb5a1f9fa781af54b39748aac8ce319585251a0e5b10bb9edcfe6073feb3fda",
+      "role": "source",
+      "usedBy": [],
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "path": "sources/v04/design-reference/08-onboarding-finish.png",
+      "bytes": 2666440,
+      "sha256": "989468d00a52f9a2b816aa72067db57c438f9d5fca43134df2329e044e6e7cb6",
+      "role": "source",
+      "usedBy": [],
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "path": "sources/v04/design-reference/09-motion.png",
+      "bytes": 2770248,
+      "sha256": "e868fde4949d3d8255f11240bf56c09d8ea944c7cdd35bdb94cc40a7703e7946",
+      "role": "source",
+      "usedBy": [],
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "path": "sources/v04/generation/assets-manifest.json",
+      "bytes": 18391,
+      "sha256": "4429345c6a0d3d2c815023aa3dfd51b4e98781ccc7113942e674731eec665a2d",
+      "role": "source",
+      "usedBy": []
+    },
+    {
+      "path": "sources/v04/generation/fitted-wardrobe-manifest.json",
+      "bytes": 8751,
+      "sha256": "2b24c2b73226aa987379055d199025823ca47969abdc74cf90f919f45cc50e21",
+      "role": "source",
+      "usedBy": []
+    },
+    {
+      "path": "sources/v04/generation/manifest.json",
+      "bytes": 5366,
+      "sha256": "a06599a790f3e46f35c04e9aeb0223e7e8185f66c78b8435948a4a91fb6eecea",
+      "role": "source",
+      "usedBy": []
+    },
+    {
+      "path": "sources/v04/generation/v1-assets.json",
+      "bytes": 2776,
+      "sha256": "7881a3e45b1ee06a47b3ff82c100999f8e158ff52bd1cb8753f9ef65eb33be4a",
+      "role": "source",
+      "usedBy": []
+    },
+    {
+      "path": "sources/v04/generation/wardrobe-scenes-manifest.json",
+      "bytes": 9157,
+      "sha256": "eb7589ed0eeb0108631d00f944036552148c5b7c352bb8050e3e0094c506e585",
+      "role": "source",
+      "usedBy": []
+    },
+    {
+      "path": "sources/v04/generation/worn-wardrobe-manifest.json",
+      "bytes": 9663,
+      "sha256": "6e76cefe955fa68fe467fac86f9f58d4ec0390c0ef30d115849272430d9cbbbc",
+      "role": "source",
+      "usedBy": []
+    },
+    {
+      "path": "sources/v04/provenance.json",
+      "bytes": 14584,
+      "sha256": "c34b800830c9e474d4c91afb68fff4b8389bd4b7522994cbc06eec33a00270d4",
+      "role": "source",
+      "usedBy": []
+    },
+    {
+      "path": "sources/v04/README.md",
+      "bytes": 2469,
+      "sha256": "ba60472e2d8fd98ac338157a7f40b0829049b41f0269b662c9357240aa9affd2",
+      "role": "source",
+      "usedBy": []
+    },
+    {
+      "path": "world/v04/bench.png",
+      "bytes": 1787329,
+      "sha256": "6fb09caab4abb781619e59c2030d04fda347668edc034864214a47d93634198d",
+      "role": "runtime",
+      "usedBy": ["src/config/worldAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "world/v04/bird-bath.png",
+      "bytes": 1356854,
+      "sha256": "af5ed2c852d8291ad25d4aa1a72af30775e55b42191fdf136458af3c9576e967",
+      "role": "runtime",
+      "usedBy": ["src/config/worldAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "world/v04/bookshelf.png",
+      "bytes": 1722682,
+      "sha256": "ac6bbe69e633093f464bbedb67cb4861b3c47a18329bb94a37f4e8abc825a6a1",
+      "role": "runtime",
+      "usedBy": ["src/config/worldAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "world/v04/bridge.png",
+      "bytes": 1457868,
+      "sha256": "f37654583e910821fd211396c7e98117afb1c37e632d58e3e4292bb4dbc9c24c",
+      "role": "runtime",
+      "usedBy": ["src/config/worldAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "world/v04/cushion.png",
+      "bytes": 1741759,
+      "sha256": "254e7f0eab1086f24c3cbd035af2f2955eeef92f82c309f1bd94a619bd89e757",
+      "role": "runtime",
+      "usedBy": ["src/config/worldAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "world/v04/fern.png",
+      "bytes": 1779433,
+      "sha256": "43d9d54e43a1bc6084e9e748d36c88f9e8069b5e4a1b572776075705626c2744",
+      "role": "runtime",
+      "usedBy": ["src/config/worldAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "world/v04/firefly-jar.png",
+      "bytes": 1389489,
+      "sha256": "a14547b88e96ee2c11d855a848c3cb150f5334b19046f65feb2821cb90b2ae3c",
+      "role": "runtime",
+      "usedBy": ["src/config/worldAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "world/v04/flower-arch.png",
+      "bytes": 1647173,
+      "sha256": "e90e70e024765dd993be5350d371bfce6a5e7d43dd1f7360f3ae9f16c7b29e8f",
+      "role": "runtime",
+      "usedBy": ["src/config/worldAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "world/v04/flowers.png",
+      "bytes": 2163024,
+      "sha256": "8163932a1e8b38866b3fb66a7d7dc0275fca3bf992da91cce49fe33e3950d561",
+      "role": "runtime",
+      "usedBy": ["src/config/worldAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "world/v04/gazebo.png",
+      "bytes": 1737693,
+      "sha256": "e70bbcdeda573e77c8178a1c5c60a383a1ba5698e837dc21289ac54dbe26a584",
+      "role": "runtime",
+      "usedBy": ["src/config/worldAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "world/v04/lantern.png",
+      "bytes": 909646,
+      "sha256": "81f64018874d0117875ccbea4b964f40ba0e2abab1804116727689fc971548c9",
+      "role": "runtime",
+      "usedBy": ["src/config/worldAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "world/v04/lily-pot.png",
+      "bytes": 2054785,
+      "sha256": "8d99bbf6ae27c81ccf9211e71ef414e824ca619516b0b2c5de4eace88b92a408",
+      "role": "runtime",
+      "usedBy": ["src/config/worldAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "world/v04/pebble-cluster.png",
+      "bytes": 1568005,
+      "sha256": "eae049e963f2d50a27cd94d1e8e5c947e56db144af6736b0b556c717d2406315",
+      "role": "runtime",
+      "usedBy": ["src/config/worldAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "world/v04/picnic-mat.png",
+      "bytes": 1924161,
+      "sha256": "021cac981a51c2f3ccb4de08faaf36b06c547ad267d4d9fbdbe17126dceba0df",
+      "role": "runtime",
+      "usedBy": ["src/config/worldAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "world/v04/plant-pot.png",
+      "bytes": 1320240,
+      "sha256": "2b437ae4bfb0b9a216b6dac04ffc3036276019d3a5090aa31730e1a30a0b760a",
+      "role": "runtime",
+      "usedBy": ["src/config/worldAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "world/v04/soft-stone.png",
+      "bytes": 1116306,
+      "sha256": "04aaba795cdf6dcc3691e54c8bbee7f8de50633d3b7242f8ce08a33a90011120",
+      "role": "runtime",
+      "usedBy": ["src/config/worldAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "world/v04/star-mobile.png",
+      "bytes": 731576,
+      "sha256": "97472ced3893fc1b1ef61ffae21a921882ff3b01f369c676399d7593bd28f4a7",
+      "role": "runtime",
+      "usedBy": ["src/config/worldAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "world/v04/sunshade.png",
+      "bytes": 1287676,
+      "sha256": "6e14b1ae2ad66dfc316906124da72eb5a36665b6666d0f02f86048f33094d8c2",
+      "role": "runtime",
+      "usedBy": ["src/config/worldAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "world/v04/tea-table.png",
+      "bytes": 1645168,
+      "sha256": "16b7d5a041c66a11af91252c60898bbdeb9df83442f9402507daafba5dc828fe",
+      "role": "runtime",
+      "usedBy": ["src/config/worldAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "path": "world/v04/wind-chime.png",
+      "bytes": 937033,
+      "sha256": "49ad1151f5d04e65d2cf58b3c158b32957aa2ac303a091b2b63effe7841842c7",
+      "role": "runtime",
+      "usedBy": ["src/config/worldAssets.ts"],
+      "width": 1254,
+      "height": 1254
+    }
+  ]
+}

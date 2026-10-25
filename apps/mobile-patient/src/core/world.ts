@@ -1,3 +1,5 @@
+import { calendarStones } from "./pathLayout.ts";
+import { isDay } from "./shore.ts";
 import {
   scenes,
   wardrobe,
@@ -49,7 +51,7 @@ export function validatePlacement(
   )
     return { valid: false, reason: "Оставьте предмет целиком внутри мира" };
   if (
-    scene.stones.some(
+    calendarStones(scene).some(
       ([x, y]) => Math.hypot(p.x - x, (p.y - y) * 3) < radius + 0.095,
     )
   )
@@ -63,6 +65,24 @@ export function ownsItem(state: JourneyState, itemId: string) {
   );
 }
 export function validateWorld(state: JourneyState, world: WorldState) {
+  if (
+    world.anchorDay &&
+    (!isDay(world.anchorDay) || world.anchorDay < state.plan.startedAt)
+  )
+    throw new PatientValidationError("Не удалось сохранить участок мира");
+  if (world.sections) {
+    const anchors = world.sections.map((s) => s.anchorDay);
+    if (
+      new Set(anchors).size !== anchors.length ||
+      anchors.includes(world.anchorDay ?? "")
+    )
+      throw new PatientValidationError("Участки мира не должны повторяться");
+    for (const section of world.sections) {
+      if (!isDay(section.anchorDay) || section.anchorDay < state.plan.startedAt)
+        throw new PatientValidationError("Неизвестный участок мира");
+      validateWorld(state, { ...section, outfits: world.outfits });
+    }
+  }
   if (
     (world.ambience && !["morning", "dusk", "mist"].includes(world.ambience)) ||
     (world.flora && !["flowers", "ferns"].includes(world.flora))

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   View,
+  Alert,
   ScrollView,
   TextInput,
   KeyboardAvoidingView,
@@ -9,7 +10,9 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Header, T } from "../../components/UI";
+import { router } from "expo-router";
+import { useJourney } from "../../state/JourneyProvider";
+import { Header, T, Button } from "../../components/UI";
 import { Touch, Enter } from "../../components/Motion";
 import { Icon } from "../../components/Icon";
 import { Mascot } from "../../components/Mascot";
@@ -18,17 +21,22 @@ import { demoTransport, type ChatMessage } from "../../core/chat";
 export default function ChatScreen() {
   const { theme } = useApp();
   const safe = useSafeAreaInsets();
+  const { journey, act } = useJourney();
   const list = useRef<ScrollView>(null);
   const alive = useRef(true);
   const busy = useRef(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: "welcome",
-      role: "assistant",
-      text: "Привет! Я ваш спутник в Синкли. Помогу сориентироваться в плане или оставить момент для себя. Что посмотрим?",
-    },
-  ]);
-  const [text, setText] = useState("");
+  const welcome: ChatMessage = {
+    id: "welcome",
+    role: "assistant",
+    text: "Привет! Помогу найти план дня, самоотчёт или вопросы к приёму. Что посмотрим?",
+  };
+  const messages = journey?.chat?.length ? journey.chat : [welcome];
+  const [pending, setPending] = useState<ChatMessage | null>(null);
+  const [text, setText] = useState(journey?.chatDraft ?? "");
+  useEffect(() => {
+    const timer = setTimeout(() => void act({ type: "chat:draft", text }), 400);
+    return () => clearTimeout(timer);
+  }, [act, text]);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [keyboard, setKeyboard] = useState(false);
@@ -52,23 +60,30 @@ export default function ChatScreen() {
     busy.current = true;
     setSending(true);
     setError("");
-    setText("");
+
     const next = [
       ...messages,
       { id: `u-${Date.now()}`, role: "user" as const, text: trimmed },
     ];
-    setMessages(next);
+    setPending(next[next.length - 1]);
     try {
       const reply = await demoTransport.reply(trimmed, next);
-      if (alive.current)
-        setMessages((items) => [
-          ...items,
-          { id: `a-${Date.now()}`, role: "assistant", text: reply },
-        ]);
+      if (
+        !(await act({
+          type: "chat:append",
+          messages: [
+            next[next.length - 1],
+            { id: `a-${Date.now()}`, role: "assistant", text: reply },
+          ],
+        }))
+      )
+        throw new Error("save");
+      if (alive.current) setText("");
     } catch {
       if (alive.current)
         setError("Не получилось ответить. Попробуйте написать ещё раз.");
     } finally {
+      if (alive.current) setPending(null);
       busy.current = false;
       if (alive.current) setSending(false);
     }
@@ -116,7 +131,7 @@ export default function ChatScreen() {
         }
         contentContainerStyle={{ padding: 24, gap: 14, flexGrow: 1 }}
       >
-        {messages.map((message) => (
+        {[...messages, ...(pending ? [pending] : [])].map((message) => (
           <Enter
             key={message.id}
             style={{
@@ -156,7 +171,49 @@ export default function ChatScreen() {
             </T>
           </View>
         )}
-        {error ? <T size={12}>{error}</T> : null}
+        {error ? (
+          <>
+            <T size={12}>{error}</T>
+            <Button
+              title="Повторить отправку"
+              secondary
+              onPress={() => void send()}
+            />
+          </>
+        ) : null}
+        <View style={{ gap: 8 }}>
+          {[
+            ["Открыть план", "/plan"],
+            ["Заполнить самоотчёт", "/check-in"],
+            ["Вопросы к приёму", "/questions"],
+          ].map(([label, path]) => (
+            <Button
+              key={path}
+              title={label}
+              secondary
+              onPress={() =>
+                router.push(path as "/plan" | "/check-in" | "/questions")
+              }
+            />
+          ))}
+          <Button
+            title="Очистить переписку"
+            secondary
+            onPress={() =>
+              Alert.alert("Очистить переписку?", "Записи терапии сохранятся.", [
+                { text: "Отмена", style: "cancel" },
+                {
+                  text: "Очистить",
+                  style: "destructive",
+                  onPress: () =>
+                    void act({ type: "chat:clear" }).then((ok) => {
+                      if (ok) setText("");
+                    }),
+                },
+              ])
+            }
+          />
+        </View>
       </ScrollView>
       <View
         style={{
@@ -202,6 +259,7 @@ export default function ChatScreen() {
           }}
         >
           <TextInput
+            editable={!sending}
             accessibilityLabel="Сообщение помощнику"
             value={text}
             onChangeText={setText}

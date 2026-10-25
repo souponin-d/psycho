@@ -12,7 +12,7 @@ import type { PatientDraft } from "../core/journeyModel";
 export default function QuestionnaireScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { journey, act, saving } = useJourney();
-  const { theme, today } = useApp();
+  const { theme, today, state } = useApp();
   const assignment = journey?.plan.tests.find((t) => t.id === id),
     form = assignment ? questionnaires[assignment.formId] : undefined;
   const draftKey = "questionnaire:" + id,
@@ -21,27 +21,39 @@ export default function QuestionnaireScreen() {
     draft?.answers ?? Array(form?.questions.length ?? 0).fill(null),
   );
   const [impact, setImpact] = useState<number | undefined>(draft?.impact),
-    [step, setStep] = useState(0),
+    [step, setStep] = useState(
+      Math.max(
+        0,
+        Math.min(draft?.step ?? 0, (form?.questions.length ?? 1) - 1),
+      ),
+    ),
     [done, setDone] = useState(false);
   const final = useRef(false),
     pending = useRef<PatientDraft | undefined>(draft);
   const supportShown = useRef(false);
-  pending.current = assignment
-    ? {
-        id: draftKey,
-        kind: "questionnaire",
-        day: assignment.day,
-        answers,
-        impact,
-      }
-    : undefined;
+  const already =
+    journey?.events.some(
+      (e) => e.kind === "questionnaire" && e.assignmentId === id,
+    ) ?? false;
+  pending.current =
+    assignment && assignment.day === today && !already && !done
+      ? {
+          id: draftKey,
+          kind: "questionnaire",
+          day: assignment.day,
+          answers,
+          impact,
+          step,
+          formVersion: form?.version,
+        }
+      : undefined;
   useEffect(() => {
     if (!pending.current || done) return;
     const timer = setTimeout(() => {
       if (pending.current) void act({ type: "draft", draft: pending.current });
     }, 300);
     return () => clearTimeout(timer);
-  }, [answers, impact, done, act]);
+  }, [answers, impact, step, done, act]);
   useEffect(
     () => () => {
       if (!final.current && pending.current)
@@ -59,9 +71,6 @@ export default function QuestionnaireScreen() {
         />
       </Screen>
     );
-  const already = journey.events.some(
-    (e) => e.kind === "questionnaire" && e.assignmentId === id,
-  );
   if (done || already)
     return (
       <Screen title="Опрос" back>
@@ -87,7 +96,24 @@ export default function QuestionnaireScreen() {
               ? "Срок задания прошёл"
               : "Опрос назначен на другую дату"
           }
-          body="Плановые опросы проходят в назначенный день. Прошлую серию восстановить нельзя."
+          body={
+            assignment.day > today
+              ? "Опрос откроется " +
+                new Date(assignment.day + "T12:00:00").toLocaleDateString(
+                  "ru-RU",
+                ) +
+                ". Его назначает врач."
+              : "Назначенная дата: " +
+                new Date(assignment.day + "T12:00:00").toLocaleDateString(
+                  "ru-RU",
+                ) +
+                ". Задание доступно только в назначенный день." +
+                (state.gameplay ? " Закрытый игровой итог не меняется." : "")
+          }
+        />
+        <Button
+          title="Вернуться к сегодняшнему плану"
+          onPress={() => router.dismissTo("/plan")}
         />
       </Screen>
     );
@@ -124,7 +150,10 @@ export default function QuestionnaireScreen() {
   }
   return (
     <Screen title="Назначенный опрос" back>
-      <View style={{ gap: 22, paddingTop: 24 }}>
+      <View style={{ gap: 18, paddingTop: 12 }}>
+        <T size={21} weight="600">
+          {form.title}
+        </T>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <T size={12} muted>
             {isImpact
