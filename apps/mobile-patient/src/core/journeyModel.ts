@@ -13,6 +13,7 @@ export type QuestionnaireAssignment = {
 };
 export type PlanVersion = {
   id: string;
+  effectiveFrom?: DayKey;
   startedAt: DayKey;
   doctor: string;
   medication: {
@@ -88,6 +89,8 @@ export type Placement = {
 export type Outfit = { color: string; clothing: string; accessory: string };
 export type WorldState = {
   territory: "shore" | "garden";
+  ambience?: "morning" | "dusk" | "mist";
+  flora?: "flowers" | "ferns";
   placements: Placement[];
   outfits: { fluffy: Outfit; cloud: Outfit };
 };
@@ -118,6 +121,7 @@ export type JourneyState = {
   connected: boolean;
   goal: string;
   plan: PlanVersion;
+  planVersions?: PlanVersion[];
   events: PatientEvent[];
   closedDays: Record<DayKey, ClosedDay>;
   lastObservedDay: DayKey;
@@ -125,6 +129,7 @@ export type JourneyState = {
   drafts: Record<string, PatientDraft>;
   world: WorldState;
   legacyArchive: LegacyRecord[];
+  activity?: Partial<Record<"history" | "question" | "customized", true>>;
 };
 export type PatientCommand =
   | {
@@ -140,5 +145,6 @@ export type PatientCommand =
   | { type: "connect"; code: string }
   | { type: "goal"; goal: string }
   | { type: "world"; world: WorldState }
+  | { type: "activity"; activity: "history" | "question" }
   | { type: "tick" }
   | { type: "reset" };

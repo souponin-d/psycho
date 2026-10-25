@@ -15,7 +15,7 @@ import { scenes, worldItems, wardrobe } from "../config/worldCatalog";
 import type { MascotId } from "../core/model";
 import { Companion } from "./Companion";
 import { WorldItemArt } from "./WorldItemArt";
-import { Button, RoundButton, T } from "./UI";
+import { Button, Chip, RoundButton, T } from "./UI";
 import { Touch } from "./Motion";
 
 export function WorldEditor({
@@ -329,6 +329,47 @@ export function WorldEditor({
             )}
             {tab === "Территории" && (
               <View style={{ gap: 16 }}>
+                <T size={16} weight="600">
+                  Свет
+                </T>
+                <View
+                  style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}
+                >
+                  {(
+                    [
+                      { id: "morning", label: "Утро" },
+                      { id: "dusk", label: "Тихий вечер" },
+                      { id: "mist", label: "После дождя" },
+                    ] as const
+                  ).map((o) => (
+                    <Chip
+                      key={o.id}
+                      label={o.label}
+                      active={(world.ambience ?? "morning") === o.id}
+                      onPress={() => onChange({ ...world, ambience: o.id })}
+                    />
+                  ))}
+                </View>
+                <T size={16} weight="600">
+                  Растения
+                </T>
+                <View
+                  style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}
+                >
+                  {(
+                    [
+                      { id: "flowers", label: "Полевые цветы" },
+                      { id: "ferns", label: "Папоротники" },
+                    ] as const
+                  ).map((o) => (
+                    <Chip
+                      key={o.id}
+                      label={o.label}
+                      active={(world.flora ?? "flowers") === o.id}
+                      onPress={() => onChange({ ...world, flora: o.id })}
+                    />
+                  ))}
+                </View>
                 <T size={13} muted>
                   Предметы и одежда сохраняются. Если украшение перекрывает
                   новую площадку дня, подберём ему свободное место: вы сможете

@@ -1,5 +1,5 @@
 import { questionnaires } from "../config/questionnaires.ts";
-import { fieldComplete } from "./therapy.ts";
+import { fieldComplete, planForDay } from "./therapy.ts";
 import { PatientValidationError } from "./patientErrors.ts";
 import type {
   DayKey,
@@ -83,11 +83,12 @@ export function assignedTasks(
   state: JourneyState,
   day: DayKey,
 ): AssignedTask[] {
-  const tasks: AssignedTask[] = state.plan.medication.slots.map((slot) => ({
+  const plan = planForDay(state, day);
+  const tasks: AssignedTask[] = plan.medication.slots.map((slot) => ({
     id: "dose:" + day + ":" + slot.id,
     kind: "dose",
     day,
-    title: state.plan.medication.name,
+    title: plan.medication.name,
     completed: latestDose(state, day, slot.id)?.status === "taken",
     time: slot.time,
     slotId: slot.id,
@@ -100,9 +101,9 @@ export function assignedTasks(
     title: "Самоотчёт",
     completed:
       !!report &&
-      state.plan.reportFields.every((f) => fieldComplete(report.fields, f)),
+      plan.reportFields.every((f) => fieldComplete(report.fields, f)),
   });
-  for (const assignment of state.plan.tests.filter((t) => t.day === day))
+  for (const assignment of plan.tests.filter((t) => t.day === day))
     tasks.push({
       id: assignment.id,
       kind: "questionnaire",

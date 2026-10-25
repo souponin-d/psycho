@@ -102,7 +102,7 @@ export const worldItems: WorldItem[] = [
   {
     id: "gazebo",
     name: "Беседка",
-    hint: "Десять выполненных дней",
+    hint: "Откройте историю",
     size: 94,
     max: 1,
     interaction: "sit",
@@ -118,7 +118,7 @@ export const worldItems: WorldItem[] = [
   {
     id: "flower-arch",
     name: "Цветочная арка",
-    hint: "Семь полных самоотчётов",
+    hint: "Добавьте вопрос к приёму",
     size: 88,
     max: 1,
   },
@@ -155,7 +155,7 @@ export const worldItems: WorldItem[] = [
   {
     id: "wind-chime",
     name: "Музыка ветра",
-    hint: "Расставьте четыре предмета",
+    hint: "Первое обустройство мира",
     size: 58,
     max: 2,
   },
@@ -169,7 +169,14 @@ export const worldItems: WorldItem[] = [
   },
 ];
 export type AchievementMetric =
-  "days" | "reports" | "tests" | "streak" | "placed" | "calendar";
+  | "days"
+  | "reports"
+  | "tests"
+  | "streak"
+  | "placed"
+  | "calendar"
+  | "history"
+  | "question";
 export const achievementCatalog: {
   id: string;
   name: string;
@@ -199,10 +206,10 @@ export const achievementCatalog: {
     itemId: "sunshade",
   },
   {
-    id: "ten-days",
-    name: "Продолжаю путь",
-    metric: "days",
-    target: 10,
+    id: "my-history",
+    name: "Замечаю свой путь",
+    metric: "history",
+    target: 1,
     itemId: "gazebo",
   },
   {
@@ -213,10 +220,10 @@ export const achievementCatalog: {
     itemId: "lily-pot",
   },
   {
-    id: "seven-reports",
-    name: "Дневник ощущений",
-    metric: "reports",
-    target: 7,
+    id: "my-question",
+    name: "Важный вопрос",
+    metric: "question",
+    target: 1,
     itemId: "flower-arch",
   },
   {
@@ -251,7 +258,7 @@ export const achievementCatalog: {
     id: "my-place",
     name: "Мой уголок",
     metric: "placed",
-    target: 4,
+    target: 1,
     itemId: "wind-chime",
   },
   {

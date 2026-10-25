@@ -1,3 +1,4 @@
+import { planForDay } from "./therapy.ts";
 import { shiftDay } from "./calendar.ts";
 import { latestDose, latestReports } from "./questionnaires.ts";
 import { validFeeling } from "./feelings.ts";
@@ -58,6 +59,7 @@ export function projectHistory(
   );
   const days = [];
   for (let day = range.from; day <= range.to; day = shiftDay(day, 1)) {
+    const plan = planForDay(state, day);
     const reports = latestReports(state, day).map((r) => ({
       id: r.entityId ?? r.id,
       required: r.required,
@@ -76,7 +78,7 @@ export function projectHistory(
     const doses =
       day < state.plan.startedAt
         ? []
-        : state.plan.medication.slots.map((slot) => {
+        : plan.medication.slots.map((slot) => {
             const dose = latestDose(state, day, slot.id);
             return {
               slotId: slot.id,
@@ -106,7 +108,7 @@ export function projectHistory(
             }
           : {}),
       }));
-    const tests = state.plan.tests
+    const tests = plan.tests
       .filter((t) => t.day === day)
       .map((t) => ({
         id: t.id,
@@ -205,6 +207,17 @@ export function projectHistory(
     range: { from: range.from, to: range.to },
     medication: state.plan.medication.name,
     planId: state.plan.id,
+    planChanges: (state.planVersions ?? [state.plan])
+      .filter(
+        (p) =>
+          (p.effectiveFrom ?? p.startedAt) >= range.from &&
+          (p.effectiveFrom ?? p.startedAt) <= range.to,
+      )
+      .map((p) => ({
+        id: p.id,
+        from: p.effectiveFrom ?? p.startedAt,
+        reportFields: [...p.reportFields],
+      })),
     days,
     summary: {
       assigned: doses.length,
@@ -238,6 +251,7 @@ export function exportPatientHistory(projection: PatientHistoryProjection) {
     range: { from: projection.range.from, to: projection.range.to },
     medication: projection.medication,
     planId: projection.planId,
+    planChanges: projection.planChanges,
     days: projection.days,
     summary: projection.summary,
   };
@@ -381,6 +395,16 @@ export function historyHtml(data: PatientHistoryProjection) {
     ". Дней с записями: " +
     data.summary.reportDays +
     '.</p><p class="muted">Ответы и результаты опросов не включены. Сведения записаны пациентом на устройстве; это не заключение о лечении. Закрытые игровые итоги не меняются после исправлений.</p>' +
+    data.planChanges
+      .map(
+        (p) =>
+          "<p>План с " +
+          e(p.from) +
+          ": обязательных разделов самоотчёта — " +
+          p.reportFields.length +
+          ".</p>",
+      )
+      .join("") +
     lines +
     "</body></html>"
   );

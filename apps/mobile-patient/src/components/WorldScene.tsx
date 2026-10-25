@@ -144,6 +144,25 @@ export function WorldScene({
 }) {
   return (
     <View pointerEvents="box-none" style={{ position: "absolute", inset: 0 }}>
+      {world.flora &&
+        [0.06, 0.94].flatMap((x) =>
+          [0.25, 0.55, 0.8].map((y) => (
+            <View
+              key={`${x}-${y}`}
+              pointerEvents="none"
+              style={{
+                position: "absolute",
+                left: x * width - 17,
+                top: y * height - 34,
+              }}
+            >
+              <WorldItemArt
+                id={world.flora === "ferns" ? "fern" : "flowers"}
+                size={34}
+              />
+            </View>
+          )),
+        )}
       {[...world.placements]
         .sort((a, b) => a.y - b.y)
         .map((p) => (

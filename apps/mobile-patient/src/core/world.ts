@@ -10,6 +10,7 @@ import { PatientValidationError } from "./patientErrors.ts";
 
 export function cloneWorld(world: WorldState): WorldState {
   return {
+    ...world,
     territory: world.territory,
     placements: world.placements.map((p) => ({ ...p })),
     outfits: {
@@ -62,6 +63,11 @@ export function ownsItem(state: JourneyState, itemId: string) {
   );
 }
 export function validateWorld(state: JourneyState, world: WorldState) {
+  if (
+    (world.ambience && !["morning", "dusk", "mist"].includes(world.ambience)) ||
+    (world.flora && !["flowers", "ferns"].includes(world.flora))
+  )
+    throw new PatientValidationError("Выберите доступное окружение");
   const scene = scenes[world.territory];
   if (
     !scene ||

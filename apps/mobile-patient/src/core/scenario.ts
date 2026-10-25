@@ -69,6 +69,30 @@ export function seedScenario(seedDay: DayKey): JourneyState {
       territory: "shore",
       placements: [
         {
+          instanceId: "starter-book",
+          itemId: "bookshelf",
+          x: 0.18,
+          y: 0.14,
+          rotation: 0,
+          scale: 1,
+        },
+        {
+          instanceId: "starter-tea",
+          itemId: "tea-table",
+          x: 0.82,
+          y: 0.9,
+          rotation: 0,
+          scale: 1,
+        },
+        {
+          instanceId: "starter-cushion",
+          itemId: "cushion",
+          x: 0.18,
+          y: 0.43,
+          rotation: 0,
+          scale: 1,
+        },
+        {
           instanceId: "starter-bench",
           itemId: "bench",
           x: 0.72,
@@ -175,6 +199,20 @@ export function seedScenario(seedDay: DayKey): JourneyState {
     formId: "gad7",
     answers: [1, 1, 2, 1, 1, 1, 0],
   });
+  const previous = {
+    ...state.plan,
+    effectiveFrom: start,
+    reportFields: ["feeling", "sleep", "anxiety"] as const,
+  };
+  state.plan = {
+    ...state.plan,
+    id: "aviandr-educational-v2",
+    effectiveFrom: seedDay,
+  };
+  state.planVersions = [
+    { ...previous, reportFields: [...previous.reportFields] },
+    state.plan,
+  ];
   return closeElapsedDays(state, {
     utcMs: Date.parse(seedDay + "T12:00:00Z"),
     offsetMinutes: 0,

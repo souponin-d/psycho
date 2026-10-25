@@ -11,9 +11,11 @@ import { Screen, T, Button, Panel } from "../components/UI";
 import { Touch } from "../components/Motion";
 import { Icon } from "../components/Icon";
 import { useApp } from "../state/AppProvider";
+import { useJourney } from "../state/JourneyProvider";
 import { dayKey, dayLabel } from "../config/content";
 import { useFeedback } from "../hooks/useFeedback";
 export default function QuestionsScreen() {
+  const { act } = useJourney();
   const { state, dispatch, theme } = useApp(),
     { pulse } = useFeedback();
   const [text, setText] = useState("");
@@ -29,6 +31,7 @@ export default function QuestionsScreen() {
       },
     });
     setText("");
+    void act({ type: "activity", activity: "question" });
     Keyboard.dismiss();
     pulse(true);
   }

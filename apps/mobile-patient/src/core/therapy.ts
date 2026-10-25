@@ -6,7 +6,23 @@ import type {
   PlanVersion,
   ReportFields,
   ReportField,
+  JourneyState,
 } from "./journeyModel.ts";
+
+export function planForDay(state: JourneyState, day: DayKey): PlanVersion {
+  if (day >= (state.plan.effectiveFrom ?? state.plan.startedAt))
+    return state.plan;
+  return (
+    (state.planVersions ?? [])
+      .filter((p) => (p.effectiveFrom ?? p.startedAt) <= day)
+      .sort((a, b) =>
+        (a.effectiveFrom ?? a.startedAt).localeCompare(
+          b.effectiveFrom ?? b.startedAt,
+        ),
+      )
+      .at(-1) ?? state.plan
+  );
+}
 
 export function fieldComplete(
   fields: ReportFields,

@@ -14,7 +14,7 @@ const items: Record<string, { title: string; icon: IconName }> = {
   chat: { title: "Рядом", icon: "message" },
 };
 function Bar({ state, navigation }: BottomTabBarProps) {
-  const { theme } = useApp();
+  const { theme, state: preferences } = useApp();
   const safe = useSafeAreaInsets();
   return (
     <View
@@ -34,7 +34,10 @@ function Bar({ state, navigation }: BottomTabBarProps) {
       }}
     >
       {state.routes.map((route, index) => {
-        const item = items[route.name];
+        const item =
+          route.name === "index" && !preferences.gameplay
+            ? { title: "Сегодня", icon: "sun" as const }
+            : items[route.name];
         if (!item) return null;
         const active = state.index === index;
         return (

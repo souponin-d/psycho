@@ -1,6 +1,6 @@
 import { dayAt, closeElapsedDays } from "./calendar.ts";
 import { isDay } from "./shore.ts";
-import { fieldComplete } from "./therapy.ts";
+import { fieldComplete, planForDay } from "./therapy.ts";
 import { completeQuestionnaire } from "./questionnaires.ts";
 import { PatientValidationError } from "./patientErrors.ts";
 import { connectScenario, seedScenario } from "./scenario.ts";
@@ -53,7 +53,17 @@ export function applyPatientCommand(
     }
     case "world":
       validateWorld(base, command.world);
-      return grantRewards({ ...base, world: command.world });
+      return grantRewards({
+        ...base,
+        world: command.world,
+        activity: { ...base.activity, customized: true },
+      });
+    case "activity":
+      if (base.activity?.[command.activity]) return base;
+      return grantRewards({
+        ...base,
+        activity: { ...base.activity, [command.activity]: true },
+      });
     case "event": {
       const input = command.event;
       let completion: ReturnType<typeof completeQuestionnaire> | undefined;
@@ -62,14 +72,18 @@ export function applyPatientCommand(
         throw new PatientValidationError("Нельзя выполнить будущий день");
       if (
         input.kind === "dose" &&
-        !base.plan.medication.slots.some((s) => s.id === input.slotId)
+        !planForDay(base, input.day).medication.slots.some(
+          (s) => s.id === input.slotId,
+        )
       )
         throw new PatientValidationError("Приём не найден в плане");
       if (
         input.kind === "report" &&
         input.required &&
         !input.deleted &&
-        !base.plan.reportFields.every((f) => fieldComplete(input.fields, f))
+        !planForDay(base, input.day).reportFields.every((f) =>
+          fieldComplete(input.fields, f),
+        )
       )
         throw new PatientValidationError(
           "Заполните обязательные поля самоотчёта",

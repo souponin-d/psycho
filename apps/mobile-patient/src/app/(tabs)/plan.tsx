@@ -118,6 +118,15 @@ export default function PlanScreen() {
         <T size={12} muted>
           Ваше назначение
         </T>
+        {journey.plan.effectiveFrom && journey.planVersions && (
+          <T size={12} muted>
+            План уточнён с{" "}
+            {new Date(
+              journey.plan.effectiveFrom + "T12:00:00",
+            ).toLocaleDateString("ru-RU")}
+            . Разделы самоотчёта определены врачом.
+          </T>
+        )}
         <T size={28} weight="500">
           {journey.plan.medication.name}
         </T>
@@ -267,9 +276,11 @@ export default function PlanScreen() {
           ))}
       </View>
       <T muted size={12} style={{ marginTop: 17, marginBottom: 25 }}>
-        {progress.today.complete
-          ? "На сегодня всё выполнено. Итог дня закрепится в 00:00."
-          : "Для зачёта дня нужны все приёмы, полный самоотчёт и назначенные на сегодня тесты. День заканчивается в 00:00."}
+        {!state.gameplay
+          ? "Отмечайте назначения и сохраняйте записи в удобном ритме. Все сведения доступны в истории."
+          : progress.today.complete
+            ? "На сегодня всё выполнено. Итог дня закрепится в 00:00."
+            : "Для зачёта дня нужны все приёмы, полный самоотчёт и назначенные на сегодня тесты. День заканчивается в 00:00."}
       </T>
       <View style={{ gap: 12 }}>
         <Button

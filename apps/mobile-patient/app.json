@@ -2,7 +2,7 @@
   "expo": {
     "name": "Синкли",
     "slug": "syncli-patient",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "scheme": "syncli",
     "orientation": "portrait",
     "icon": "./assets/images/fluffy.png",
@@ -18,7 +18,7 @@
     },
     "android": {
       "package": "ru.syncli.patient.demo",
-      "versionCode": 2,
+      "versionCode": 3,
       "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/fluffy.png",

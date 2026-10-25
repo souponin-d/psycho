@@ -3,7 +3,7 @@ import {
   achievementCatalog,
   type AchievementMetric,
 } from "../config/worldCatalog.ts";
-import { fieldComplete } from "./therapy.ts";
+import { fieldComplete, planForDay } from "./therapy.ts";
 
 export function achievementProgress(state: JourneyState) {
   const days = Object.values(state.closedDays).sort((a, b) =>
@@ -46,10 +46,14 @@ export function achievementProgress(state: JourneyState) {
       (e) =>
         e.kind === "report" &&
         !e.deleted &&
-        state.plan.reportFields.every((f) => fieldComplete(e.fields, f)),
+        planForDay(state, e.day).reportFields.every((f) =>
+          fieldComplete(e.fields, f),
+        ),
     ).length,
     tests: tests.size,
-    placed: state.world.placements.length,
+    placed: state.activity?.customized ? 1 : 0,
+    history: state.activity?.history ? 1 : 0,
+    question: state.activity?.question ? 1 : 0,
     calendar: Math.max(
       0,
       Math.floor(

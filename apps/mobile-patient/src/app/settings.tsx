@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Constants from "expo-constants";
 import { Alert, View, Switch, TextInput } from "react-native";
 import { router } from "expo-router";
 import { Screen, T, Heading, Panel, Button } from "../components/UI";
@@ -204,7 +205,7 @@ export default function SettingsScreen() {
         />
       </View>
       <T muted size={11} style={{ marginTop: 24, lineHeight: 17 }}>
-        Синкли · 0.2.0
+        Синкли · {Constants.expoConfig?.version??"0.3.0"}
       </T>
     </Screen>
   );

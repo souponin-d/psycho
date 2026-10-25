@@ -16,7 +16,7 @@ import { T, Button } from "../components/UI";
 import { ReportFieldsEditor } from "../components/ReportFieldsEditor";
 import { useJourney } from "../state/JourneyProvider";
 import { latestReports } from "../core/questionnaires";
-import { fieldComplete } from "../core/therapy";
+import { fieldComplete, planForDay } from "../core/therapy";
 import type { PatientDraft, ReportFields } from "../core/journeyModel";
 import { Touch, Enter } from "../components/Motion";
 import { Icon } from "../components/Icon";
@@ -36,6 +36,7 @@ export default function CheckInScreen() {
     personal?: string;
   }>();
   const day = params.day ?? dayKey();
+  const requiredFields = journey ? planForDay(journey, day).reportFields : [];
   const existing =
     journey && params.reportId
       ? latestReports(journey, day).find(
@@ -126,7 +127,7 @@ export default function CheckInScreen() {
     const completeFields = { ...fields, ...(point ? { feeling: point } : {}) };
     if (
       required &&
-      !journey.plan.reportFields.every((f) => fieldComplete(completeFields, f))
+      !requiredFields.every((f) => fieldComplete(completeFields, f))
     ) {
       setPanel("note");
       return;
@@ -517,7 +518,7 @@ export default function CheckInScreen() {
                       </T>
                       <ReportFieldsEditor
                         fields={fields}
-                        required={journey.plan.reportFields}
+                        required={requiredFields}
                         onChange={setFields}
                       />
                     </>

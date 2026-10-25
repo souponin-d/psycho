@@ -228,6 +228,25 @@ export function JourneyMap() {
                 style={{ width, height: tileHeight }}
                 resizeMode="stretch"
               />
+              {world.ambience && world.ambience !== "morning" && (
+                <LinearGradient
+                  pointerEvents="none"
+                  colors={
+                    world.ambience === "dusk"
+                      ? [
+                          "rgba(195,113,124,.20)",
+                          "rgba(245,190,125,.13)",
+                          "rgba(106,124,161,.18)",
+                        ]
+                      : [
+                          "rgba(210,228,221,.32)",
+                          "rgba(225,235,225,.08)",
+                          "rgba(170,199,181,.30)",
+                        ]
+                  }
+                  style={{ position: "absolute", inset: 0 }}
+                />
+              )}
               <View
                 pointerEvents="none"
                 style={{

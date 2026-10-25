@@ -15,6 +15,7 @@ import {
   View,
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
+import { useIsFocused } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   Screen,
@@ -112,6 +113,11 @@ const dateLabel = (day: string) =>
 export default function HistoryScreen() {
   const { theme, today } = useApp();
   const { journey, act, saving } = useJourney();
+  const focused = useIsFocused();
+  useEffect(() => {
+    if (focused && journey && !journey.activity?.history)
+      void act({ type: "activity", activity: "history" });
+  }, [focused, journey, act]);
   const params = useLocalSearchParams<{ day?: string }>();
   const requested =
     typeof params.day === "string" && isDay(params.day) && params.day <= today
@@ -253,6 +259,22 @@ export default function HistoryScreen() {
         title="Ваши дни"
         body="История небольших шагов и честных записей"
       />
+      {!!journey?.planVersions?.length && (
+        <Panel style={{ marginBottom: 16, gap: 6 }}>
+          <T size={14} weight="600">
+            Уточнения плана
+          </T>
+          {journey.planVersions.map((p) => (
+            <T key={p.id} size={12} muted>
+              С{" "}
+              {new Date(
+                (p.effectiveFrom ?? p.startedAt) + "T12:00:00",
+              ).toLocaleDateString("ru-RU")}{" "}
+              · обязательных разделов самоотчёта: {p.reportFields.length}
+            </T>
+          ))}
+        </Panel>
+      )}
       <View
         style={{
           flexDirection: "row",

@@ -1,5 +1,5 @@
 import { isDay } from "./shore.ts";
-import { assessDay } from "./therapy.ts";
+import { assessDay, planForDay } from "./therapy.ts";
 import { grantRewards } from "./achievements.ts";
 import type { DayKey, Instant, JourneyState } from "./journeyModel.ts";
 
@@ -39,7 +39,7 @@ export function closeElapsedDays(
   for (let day = state.plan.startedAt; day < today; day = shiftDay(day, 1)) {
     if (closedDays[day]) continue;
     closedDays[day] = {
-      ...assessDay(state.plan, state.events, day),
+      ...assessDay(planForDay(state, day), state.events, day),
       sealedAt: now.utcMs,
     };
     changed = true;
@@ -75,7 +75,7 @@ export function journeyProgress(state: JourneyState, today: DayKey) {
     chapterStart,
     successes,
     goal: 5,
-    today: assessDay(state.plan, state.events, today),
+    today: assessDay(planForDay(state, today), state.events, today),
     dateLocked: !!state.closedDays[today],
   };
 }
