@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Companion } from "../components/Companion";
 import {
   View,
   TextInput,
@@ -174,11 +175,7 @@ export default function CheckInScreen() {
           >
             <Enter>
               <View style={{ alignItems: "center", gap: 18 }}>
-                {point ? (
-                  <FeelingCharacter point={point} size={175} />
-                ) : (
-                  <Icon name="check" size={80} color={ink} />
-                )}
+                <Companion size={200} mode="support" />
                 <T
                   size={30}
                   weight="500"

@@ -1,0 +1,170 @@
+[
+  {
+    "file": "fluffy-idle-0.png",
+    "size": 512,
+    "alphaBounds": [71, 68, 430, 427],
+    "bodyBounds": [100, 98, 412, 418],
+    "sourceSha256": "512b88bf3f7ad7b2af8617a4c1e7417d56db379223ce9b0376aca74fd8feb8f5"
+  },
+  {
+    "file": "fluffy-idle-1.png",
+    "size": 512,
+    "alphaBounds": [75, 68, 428, 429],
+    "bodyBounds": [103, 98, 410, 418],
+    "sourceSha256": "512b88bf3f7ad7b2af8617a4c1e7417d56db379223ce9b0376aca74fd8feb8f5"
+  },
+  {
+    "file": "fluffy-idle-2.png",
+    "size": 512,
+    "alphaBounds": [67, 86, 427, 446],
+    "bodyBounds": [99, 98, 412, 418],
+    "sourceSha256": "512b88bf3f7ad7b2af8617a4c1e7417d56db379223ce9b0376aca74fd8feb8f5"
+  },
+  {
+    "file": "fluffy-idle-3.png",
+    "size": 512,
+    "alphaBounds": [69, 83, 432, 446],
+    "bodyBounds": [98, 98, 414, 418],
+    "sourceSha256": "512b88bf3f7ad7b2af8617a4c1e7417d56db379223ce9b0376aca74fd8feb8f5"
+  },
+  {
+    "file": "fluffy-walk-0.png",
+    "size": 512,
+    "alphaBounds": [57, 79, 417, 439],
+    "bodyBounds": [102, 98, 410, 419],
+    "sourceSha256": "3028a79953ebe0d489dcc23028528e82dfc21f5a0ad83fb8595d367a3d08f8f0"
+  },
+  {
+    "file": "fluffy-walk-1.png",
+    "size": 512,
+    "alphaBounds": [72, 72, 438, 439],
+    "bodyBounds": [102, 98, 410, 418],
+    "sourceSha256": "3028a79953ebe0d489dcc23028528e82dfc21f5a0ad83fb8595d367a3d08f8f0"
+  },
+  {
+    "file": "fluffy-walk-2.png",
+    "size": 512,
+    "alphaBounds": [52, 81, 426, 455],
+    "bodyBounds": [96, 98, 416, 418],
+    "sourceSha256": "3028a79953ebe0d489dcc23028528e82dfc21f5a0ad83fb8595d367a3d08f8f0"
+  },
+  {
+    "file": "fluffy-walk-3.png",
+    "size": 512,
+    "alphaBounds": [69, 88, 433, 453],
+    "bodyBounds": [100, 98, 412, 418],
+    "sourceSha256": "3028a79953ebe0d489dcc23028528e82dfc21f5a0ad83fb8595d367a3d08f8f0"
+  },
+  {
+    "file": "fluffy-emotion-0.png",
+    "size": 512,
+    "alphaBounds": [59, 57, 434, 432],
+    "bodyBounds": [97, 98, 415, 418],
+    "sourceSha256": "d0a7e2c910ca686f77c5f59f7e7a90680fdd26bd2ef770d24c7e02dc992b4bdb"
+  },
+  {
+    "file": "fluffy-emotion-1.png",
+    "size": 512,
+    "alphaBounds": [75, 67, 449, 427],
+    "bodyBounds": [97, 98, 415, 418],
+    "sourceSha256": "d0a7e2c910ca686f77c5f59f7e7a90680fdd26bd2ef770d24c7e02dc992b4bdb"
+  },
+  {
+    "file": "fluffy-emotion-2.png",
+    "size": 512,
+    "alphaBounds": [64, 87, 431, 453],
+    "bodyBounds": [98, 98, 414, 418],
+    "sourceSha256": "d0a7e2c910ca686f77c5f59f7e7a90680fdd26bd2ef770d24c7e02dc992b4bdb"
+  },
+  {
+    "file": "fluffy-emotion-3.png",
+    "size": 512,
+    "alphaBounds": [79, 85, 443, 442],
+    "bodyBounds": [98, 98, 414, 418],
+    "sourceSha256": "d0a7e2c910ca686f77c5f59f7e7a90680fdd26bd2ef770d24c7e02dc992b4bdb"
+  },
+  {
+    "file": "cloud-idle-0.png",
+    "size": 512,
+    "alphaBounds": [35, 37, 457, 454],
+    "bodyBounds": [81, 102, 430, 423],
+    "sourceSha256": "fb32419be6f987571337de208b7eadadd6915485ee1f7d419a6ee19bac423ffc"
+  },
+  {
+    "file": "cloud-idle-1.png",
+    "size": 512,
+    "alphaBounds": [48, 38, 461, 456],
+    "bodyBounds": [80, 106, 431, 427],
+    "sourceSha256": "fb32419be6f987571337de208b7eadadd6915485ee1f7d419a6ee19bac423ffc"
+  },
+  {
+    "file": "cloud-idle-2.png",
+    "size": 512,
+    "alphaBounds": [38, 51, 456, 469],
+    "bodyBounds": [83, 99, 429, 418],
+    "sourceSha256": "fb32419be6f987571337de208b7eadadd6915485ee1f7d419a6ee19bac423ffc"
+  },
+  {
+    "file": "cloud-idle-3.png",
+    "size": 512,
+    "alphaBounds": [49, 47, 471, 469],
+    "bodyBounds": [81, 98, 432, 418],
+    "sourceSha256": "fb32419be6f987571337de208b7eadadd6915485ee1f7d419a6ee19bac423ffc"
+  },
+  {
+    "file": "cloud-walk-0.png",
+    "size": 512,
+    "alphaBounds": [33, 32, 448, 447],
+    "bodyBounds": [94, 103, 418, 423],
+    "sourceSha256": "30e3e5c26c70e10ff7bd461d773f85d828f6781914429f4eef0777295c0af225"
+  },
+  {
+    "file": "cloud-walk-1.png",
+    "size": 512,
+    "alphaBounds": [58, 38, 471, 447],
+    "bodyBounds": [93, 103, 419, 423],
+    "sourceSha256": "30e3e5c26c70e10ff7bd461d773f85d828f6781914429f4eef0777295c0af225"
+  },
+  {
+    "file": "cloud-walk-2.png",
+    "size": 512,
+    "alphaBounds": [32, 53, 454, 459],
+    "bodyBounds": [93, 98, 425, 418],
+    "sourceSha256": "30e3e5c26c70e10ff7bd461d773f85d828f6781914429f4eef0777295c0af225"
+  },
+  {
+    "file": "cloud-walk-3.png",
+    "size": 512,
+    "alphaBounds": [50, 49, 469, 472],
+    "bodyBounds": [87, 98, 424, 418],
+    "sourceSha256": "30e3e5c26c70e10ff7bd461d773f85d828f6781914429f4eef0777295c0af225"
+  },
+  {
+    "file": "cloud-emotion-0.png",
+    "size": 512,
+    "alphaBounds": [47, 55, 443, 437],
+    "bodyBounds": [83, 98, 429, 419],
+    "sourceSha256": "a2cc976733e2aa07af66a6ced297581cbd45131470d20d82277a45f6ff03be5a"
+  },
+  {
+    "file": "cloud-emotion-1.png",
+    "size": 512,
+    "alphaBounds": [65, 37, 462, 435],
+    "bodyBounds": [83, 98, 428, 418],
+    "sourceSha256": "a2cc976733e2aa07af66a6ced297581cbd45131470d20d82277a45f6ff03be5a"
+  },
+  {
+    "file": "cloud-emotion-2.png",
+    "size": 512,
+    "alphaBounds": [46, 68, 442, 464],
+    "bodyBounds": [83, 98, 429, 419],
+    "sourceSha256": "a2cc976733e2aa07af66a6ced297581cbd45131470d20d82277a45f6ff03be5a"
+  },
+  {
+    "file": "cloud-emotion-3.png",
+    "size": 512,
+    "alphaBounds": [67, 68, 462, 464],
+    "bodyBounds": [84, 98, 428, 418],
+    "sourceSha256": "a2cc976733e2aa07af66a6ced297581cbd45131470d20d82277a45f6ff03be5a"
+  }
+]

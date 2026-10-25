@@ -13,12 +13,13 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useApp } from "../state/AppProvider";
 import { useJourney } from "../state/JourneyProvider";
 import { journeyMap } from "../core/journeyMap";
-import { journeyProgress } from "../core/calendar";
+import { journeyProgress, shiftDay } from "../core/calendar";
 import { assignedTasks } from "../core/questionnaires";
 import { T, Button, RoundButton } from "./UI";
 import { Touch } from "./Motion";
 import { Icon } from "./Icon";
-import { Mascot } from "./Mascot";
+import { WorldCompanion } from "./WorldCompanion";
+import type { MascotId } from "../core/model";
 import { scenes, worldItems } from "../config/worldCatalog";
 import { cloneWorld, validatePlacement } from "../core/world";
 import type { Placement, WorldState } from "../core/journeyModel";
@@ -41,13 +42,29 @@ function dateLabel(day: string) {
 }
 
 export function JourneyMap() {
-  const { state, theme, today, reducedMotion } = useApp();
+  const { state, dispatch, theme, today, reducedMotion } = useApp();
   const { journey, act, saving } = useJourney();
   const params = useLocalSearchParams<{ editWorld?: string }>();
   const [draftWorld, setDraftWorld] = useState<WorldState | null>(null);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [tools, setTools] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [draftMascot, setDraftMascot] = useState<MascotId | null>(null);
+  const [interaction, setInteraction] = useState<{
+    id: string;
+    at: number;
+  } | null>(null);
+  const rewardCount = useRef<number | null>(null);
+  const [newReward, setNewReward] = useState("");
+  useEffect(() => {
+    if (!journey) return;
+    if (
+      rewardCount.current !== null &&
+      journey.rewards.length > rewardCount.current
+    )
+      setNewReward(journey.rewards.at(-1)?.id ?? "");
+    rewardCount.current = journey.rewards.length;
+  }, [journey]);
   const lastFocusedItem = useRef<string | null>(null);
   const safe = useSafeAreaInsets();
   const { width } = useWindowDimensions();
@@ -141,35 +158,19 @@ export function JourneyMap() {
   const selectItem = (id: string) => {
     setSelectedItem(id);
     if (!draftWorld) {
-      const item = worldItems.find(
-        (i) =>
-          i.id === world.placements.find((p) => p.instanceId === id)?.itemId,
-      );
-      Alert.alert(
-        item?.name ?? "Ваш мир",
-        item?.interaction === "flowers"
-          ? "Любые ощущения имеют значение. Можно записать свой момент."
-          : item?.interaction === "read"
-            ? "Здесь можно собрать вопросы к следующему приёму."
-            : "Это ваш уголок. Его можно обустроить по-своему.",
-        item?.interaction === "flowers"
-          ? [
-              {
-                text: "Записать момент",
-                onPress: () => router.push("/check-in"),
-              },
-              { text: "Остаться", style: "cancel" },
-            ]
-          : item?.interaction === "read"
-            ? [
-                {
-                  text: "Мои вопросы",
-                  onPress: () => router.push("/questions"),
-                },
-                { text: "Остаться", style: "cancel" },
-              ]
-            : [{ text: "Хорошо" }],
-      );
+      const target = world.placements.find((p) => p.instanceId === id);
+      if (target)
+        scroll.current?.scrollTo({
+          y: Math.max(
+            0,
+            220 + worldTileTop + target.y * tileHeight - viewport * 0.66,
+          ),
+          animated: !reducedMotion,
+        });
+      setInteraction({ id, at: Date.now() });
+    }
+    if (!draftWorld) {
+      setTools(false);
     }
   };
   const moveItem = (p: Placement) => {
@@ -189,6 +190,7 @@ export function JourneyMap() {
   };
   const stopEditing = () => {
     setDraftWorld(null);
+    setDraftMascot(null);
     setSelectedItem(null);
     setDragging(false);
   };
@@ -293,20 +295,6 @@ export function JourneyMap() {
                   alignItems: "center",
                 }}
               >
-                {active && (
-                  <View
-                    style={{
-                      position: "absolute",
-                      top: -110,
-                      width: 112,
-                      height: 112,
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Mascot size={96} />
-                  </View>
-                )}
                 <Touch
                   accessibilityRole="button"
                   accessibilityLabel={`${dateLabel(day.day)}. ${statusLabels[day.status]}. День пути ${day.index + 1}`}
@@ -367,6 +355,39 @@ export function JourneyMap() {
               </View>
             );
           })}
+          <View
+            pointerEvents="box-none"
+            style={{
+              position: "absolute",
+              top: worldTileTop,
+              width,
+              height: tileHeight,
+            }}
+          >
+            <WorldCompanion
+              world={world}
+              width={width}
+              height={tileHeight}
+              home={{
+                x: stones[todayIndex % stones.length][0],
+                y: stones[todayIndex % stones.length][1],
+              }}
+              request={interaction}
+              editing={!!draftWorld}
+              id={draftMascot ?? state.mascot}
+              celebrate={
+                newReward
+                  ? "reward"
+                  : progress.today.complete
+                    ? "dayComplete"
+                    : journey.closedDays[shiftDay(today, -1)]?.complete ===
+                        false
+                      ? "sad"
+                      : undefined
+              }
+              celebrationKey={`${today}:${newReward}`}
+            />
+          </View>
         </View>
       </ScrollView>
       <LinearGradient
@@ -593,8 +614,14 @@ export function JourneyMap() {
               accessibilityRole="button"
               disabled={saving}
               onPress={async () => {
-                if (await act({ type: "world", world: draftWorld }))
+                if (await act({ type: "world", world: draftWorld })) {
+                  if (draftMascot)
+                    dispatch({
+                      type: "preferences",
+                      patch: { mascot: draftMascot },
+                    });
                   stopEditing();
+                }
               }}
               style={{
                 padding: 14,
@@ -676,6 +703,8 @@ export function JourneyMap() {
         journey={journey}
         world={world}
         onChange={setDraftWorld}
+        mascot={draftMascot ?? state.mascot}
+        onMascotChange={setDraftMascot}
         onSelect={(id) => {
           setSelectedItem(id);
         }}

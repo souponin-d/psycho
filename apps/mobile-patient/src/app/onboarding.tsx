@@ -17,6 +17,7 @@ import { Enter, Touch } from "../components/Motion";
 import { Mascot } from "../components/Mascot";
 import { ThemePicker } from "../components/ThemePicker";
 import { mascotOptions } from "../config/content";
+import { wardrobe } from "../config/worldCatalog";
 import { requestReminderPermission } from "../services/notificationPermissions";
 
 const steps = [
@@ -320,9 +321,39 @@ export default function Onboarding() {
                 ))}
               </View>
               <T size={13} muted>
-                Коснитесь спутника — он отзовётся. Больше нарядов и украшений
-                откроется по пути.
+                Коснитесь спутника — он отзовётся. Наряды и украшения ждут в
+                мастерской.
               </T>
+              <T size={14} weight="600">
+                Первая окраска
+              </T>
+              <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
+                {wardrobe.colors.map((color) => (
+                  <Chip
+                    key={color.id}
+                    label={color.name}
+                    active={
+                      journey?.world.outfits[state.mascot].color === color.id
+                    }
+                    onPress={() => {
+                      if (journey)
+                        void act({
+                          type: "world",
+                          world: {
+                            ...journey.world,
+                            outfits: {
+                              ...journey.world.outfits,
+                              [state.mascot]: {
+                                ...journey.world.outfits[state.mascot],
+                                color: color.id,
+                              },
+                            },
+                          },
+                        });
+                    }}
+                  />
+                ))}
+              </View>
             </>
           )}
           {step === 4 && <ThemePicker />}
@@ -432,6 +463,30 @@ export default function Onboarding() {
                 сохраняет территории, награды и украшения. Исправления в истории
                 не восстанавливают прошлый стрик.
               </T>
+              <Button
+                title="Посмотреть план"
+                secondary
+                onPress={() => {
+                  dispatch({ type: "onboard", value: true });
+                  router.replace("/plan");
+                }}
+              />
+              <Button
+                title="Обустроить мир"
+                secondary
+                onPress={() => {
+                  dispatch({ type: "onboard", value: true });
+                  router.replace("/shore-settings");
+                }}
+              />
+              <Button
+                title="Собрать вопросы к приёму"
+                secondary
+                onPress={() => {
+                  dispatch({ type: "onboard", value: true });
+                  router.replace("/questions");
+                }}
+              />
             </Panel>
           )}
         </Enter>

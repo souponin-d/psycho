@@ -311,5 +311,6 @@ export const wardrobe = {
     { id: "none", name: "Без аксессуара" },
     { id: "leaf", name: "Листок" },
     { id: "star", name: "Звезда" },
+    { id: "bow", name: "Бант" },
   ],
 };

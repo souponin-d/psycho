@@ -1,11 +1,19 @@
 import { useState } from "react";
-import { Alert, Modal, ScrollView, View } from "react-native";
+import {
+  Alert,
+  Modal,
+  ScrollView,
+  View,
+  useWindowDimensions,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useApp } from "../state/AppProvider";
 import type { JourneyState, WorldState } from "../core/journeyModel";
 import { achievementProgress } from "../core/achievements";
 import { findPlacement, ownsItem, validatePlacement } from "../core/world";
-import { scenes, worldItems } from "../config/worldCatalog";
+import { scenes, worldItems, wardrobe } from "../config/worldCatalog";
+import type { MascotId } from "../core/model";
+import { Companion } from "./Companion";
 import { WorldItemArt } from "./WorldItemArt";
 import { Button, RoundButton, T } from "./UI";
 import { Touch } from "./Motion";
@@ -17,6 +25,8 @@ export function WorldEditor({
   onChange,
   onSelect,
   onClose,
+  mascot,
+  onMascotChange,
 }: {
   visible: boolean;
   journey: JourneyState;
@@ -24,9 +34,12 @@ export function WorldEditor({
   onChange: (world: WorldState) => void;
   onSelect: (id: string) => void;
   onClose: () => void;
+  mascot: MascotId;
+  onMascotChange: (mascot: MascotId) => void;
 }) {
   const { theme, reducedMotion } = useApp();
   const safe = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
   const [tab, setTab] = useState("Предметы");
   const profile = { ...journey, world };
   const changeTerritory = (territory: WorldState["territory"]) => {
@@ -107,7 +120,7 @@ export function WorldEditor({
               paddingBottom: 16,
             }}
           >
-            {["Предметы", "Территории", "Достижения"].map((t) => (
+            {["Предметы", "Спутник", "Территории", "Достижения"].map((t) => (
               <Touch
                 key={t}
                 accessibilityRole="tab"
@@ -182,7 +195,7 @@ export function WorldEditor({
                           onClose();
                         }}
                         style={{
-                          width: 148,
+                          width: (width - 52) / 2,
                           minHeight: 156,
                           padding: 12,
                           alignItems: "center",
@@ -215,6 +228,104 @@ export function WorldEditor({
                   })}
                 </View>
               </>
+            )}
+            {tab === "Спутник" && (
+              <View style={{ gap: 16 }}>
+                <View style={{ alignItems: "center" }}>
+                  <Companion
+                    id={mascot}
+                    size={240}
+                    outfit={world.outfits[mascot]}
+                    mode="dress"
+                  />
+                </View>
+                <View style={{ flexDirection: "row", gap: 12 }}>
+                  {(["fluffy", "cloud"] as const).map((id) => (
+                    <Touch
+                      key={id}
+                      accessibilityRole="button"
+                      accessibilityState={{ selected: mascot === id }}
+                      onPress={() => onMascotChange(id)}
+                      style={{
+                        padding: 16,
+                        borderRadius: 20,
+                        backgroundColor:
+                          mascot === id ? theme.soft : theme.surface,
+                      }}
+                    >
+                      <T size={14} weight="600">
+                        {id === "fluffy" ? "Пушистик" : "Облачко"}
+                      </T>
+                    </Touch>
+                  ))}
+                </View>
+                {(
+                  [
+                    {
+                      title: "Окраска",
+                      key: "color",
+                      options: wardrobe.colors,
+                    },
+                    {
+                      title: "Одежда",
+                      key: "clothing",
+                      options: wardrobe.clothing,
+                    },
+                    {
+                      title: "Аксессуар",
+                      key: "accessory",
+                      options: wardrobe.accessories,
+                    },
+                  ] as const
+                ).map((section) => (
+                  <View key={section.key} style={{ gap: 8 }}>
+                    <T size={16} weight="600">
+                      {section.title}
+                    </T>
+                    <View
+                      style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}
+                    >
+                      {section.options.map((option) => (
+                        <Touch
+                          key={option.id}
+                          accessibilityRole="button"
+                          accessibilityLabel={`${section.title}: ${option.name}`}
+                          accessibilityState={{
+                            selected:
+                              world.outfits[mascot][section.key] === option.id,
+                          }}
+                          onPress={() =>
+                            onChange({
+                              ...world,
+                              outfits: {
+                                ...world.outfits,
+                                [mascot]: {
+                                  ...world.outfits[mascot],
+                                  [section.key]: option.id,
+                                },
+                              },
+                            })
+                          }
+                          style={{
+                            padding: 14,
+                            borderRadius: 18,
+                            backgroundColor:
+                              world.outfits[mascot][section.key] === option.id
+                                ? theme.soft
+                                : theme.surface,
+                          }}
+                        >
+                          <T size={13}>{option.name}</T>
+                        </Touch>
+                      ))}
+                    </View>
+                  </View>
+                ))}
+                <T size={12} muted>
+                  У каждого спутника свой гардероб. Вернитесь на карту и нажмите
+                  «Готово», чтобы сохранить выбор.
+                </T>
+              </View>
             )}
             {tab === "Территории" && (
               <View style={{ gap: 16 }}>
