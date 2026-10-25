@@ -6380,3 +6380,22 @@ main > .section.faq-section,
     padding-top: 65px;
   }
 }
+
+/* Согласованные композиции реальных экранов экосистемы. */
+.platform-panel .ecosystem-visual {
+  height: auto;
+  min-height: 0;
+  aspect-ratio: 16 / 11;
+  display: block;
+  padding: 0;
+  background: #edf3e8;
+  flex-shrink: 0;
+}
+.platform-panel .ecosystem-visual::before {
+  content: none;
+}
+.ecosystem-mockup {
+  display: block;
+  width: 100%;
+  height: auto;
+}
