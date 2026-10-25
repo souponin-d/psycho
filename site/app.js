@@ -1,6 +1,8 @@
+import { mountMonetization } from "./monetization.js";
 import { mountHeroAnimation } from "./hero-animation.js";
 
 mountHeroAnimation(document.querySelector("[data-hero-animation]"));
+mountMonetization(document.querySelector("[data-monetization]"));
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];

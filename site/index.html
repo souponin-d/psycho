@@ -907,48 +907,248 @@
         class="section monetization-section"
         id="monetization"
         aria-labelledby="monetization-title"
+        data-monetization
       >
         <div class="container">
           <div class="monetization-heading reveal">
             <h2 id="monetization-title">Монетизация</h2>
             <p>
-              Подписка для специалистов и клиник. Стоимость зависит от состава
-              команды и выбранных возможностей.
+              Клиника оплачивает врачебные места. Приложение пациента входит в
+              подписку. Слева — предлагаемые тарифы, справа — оценка рынка и
+              сценарий роста.
             </p>
           </div>
-          <div class="monetization-models reveal">
-            <article>
-              <span class="monetization-number">01</span>
-              <h3>Для врача</h3>
-              <p>
-                Ежемесячная или годовая подписка на рабочее пространство:
-                карточки пациентов, динамику и инструменты сопровождения.
-              </p>
-              <span class="monetization-basis">Оплата за специалиста</span>
-            </article>
-            <article>
-              <span class="monetization-number">02</span>
-              <h3>Для клиники</h3>
-              <p>
-                Командная подписка с аналитикой и управлением рабочими местами.
-                Условия зависят от числа специалистов и масштаба внедрения.
-              </p>
-              <span class="monetization-basis">Корпоративный договор</span>
-            </article>
-            <article>
-              <span class="monetization-number">03</span>
-              <h3>Внедрение и поддержка</h3>
-              <p>
-                Настройка, обучение команды и дополнительные интеграции могут
-                оплачиваться отдельно по согласованному объёму работ.
-              </p>
-              <span class="monetization-basis">По запросу клиники</span>
-            </article>
+          <div class="monetization-board">
+            <div class="monetization-panel monetization-pricing reveal">
+              <div class="monetization-panel-heading">
+                <h3>Тарифы подписки</h3>
+                <span>За врачебные места</span>
+              </div>
+              <div
+                class="monetization-billing"
+                role="group"
+                aria-label="Период оплаты подписки"
+              >
+                <button
+                  type="button"
+                  data-billing="month"
+                  aria-pressed="false"
+                  disabled
+                >
+                  Помесячно
+                </button>
+                <button
+                  type="button"
+                  data-billing="year"
+                  aria-pressed="true"
+                  disabled
+                >
+                  За 12 месяцев
+                </button>
+              </div>
+              <div class="monetization-plans">
+                <article class="monetization-plan" data-plan="screening">
+                  <div class="monetization-plan-top">
+                    <div>
+                      <h4>Скрининг</h4>
+                      <p>Для терапевтов</p>
+                    </div>
+                    <div class="monetization-plan-price">
+                      <strong data-plan-price>9 900 ₽</strong
+                      ><span data-plan-unit>за врача в год</span>
+                    </div>
+                  </div>
+                  <p class="monetization-plan-description">
+                    Шкалы, оценка первичного риска и подсказки по маршрутизации.
+                  </p>
+                </article>
+                <article class="monetization-plan" data-plan="clinical">
+                  <div class="monetization-plan-top">
+                    <div>
+                      <h4>Клинический</h4>
+                      <p>Для психиатров и психотерапевтов</p>
+                    </div>
+                    <div class="monetization-plan-price">
+                      <strong data-plan-price>29 900 ₽</strong
+                      ><span data-plan-unit>за врача в год</span>
+                    </div>
+                  </div>
+                  <p class="monetization-plan-description">
+                    Скрининг, динамика, мониторинг нежелательных явлений,
+                    алерты, кабинет пациента и справочная поддержка лечения.
+                  </p>
+                </article>
+                <article class="monetization-plan" data-plan="clinic">
+                  <div class="monetization-plan-top">
+                    <div>
+                      <h4>Клиника</h4>
+                      <p>Команда до 5 врачей</p>
+                    </div>
+                    <div class="monetization-plan-price">
+                      <strong data-plan-price>149 000 ₽</strong
+                      ><span data-plan-unit>за команду в год</span>
+                    </div>
+                  </div>
+                  <p class="monetization-plan-description">
+                    Командный доступ, администрирование, мониторинг и
+                    отчётность. Интеграция с МИС — отдельно.
+                  </p>
+                </article>
+              </div>
+              <div class="monetization-patient-note">
+                <svg aria-hidden="true"><use href="#i-role-patient" /></svg>
+                <p>
+                  Пациент не оплачивает мобильное приложение отдельно: оно
+                  предоставляется в рамках подписки клиники.
+                </p>
+              </div>
+            </div>
+            <div class="monetization-panel monetization-forecast reveal">
+              <div class="monetization-panel-heading">
+                <h3>Оценка рынка</h3>
+                <span>Подписная выручка в год</span>
+              </div>
+              <dl class="monetization-market">
+                <div class="monetization-market-row">
+                  <dt><b>TAM</b> Весь рынок</dt>
+                  <dd>
+                    <strong>1,16 млрд ₽</strong>
+                    <div
+                      class="monetization-bar"
+                      data-market="tam"
+                      aria-hidden="true"
+                    ></div>
+                    <span
+                      >11 559 профильных специалистов + 82 400 терапевтов</span
+                    >
+                  </dd>
+                </div>
+                <div class="monetization-market-row">
+                  <dt><b>SAM</b> Доступный сегмент</dt>
+                  <dd>
+                    <strong>138,25 млн ₽</strong>
+                    <div
+                      class="monetization-bar"
+                      data-market="sam"
+                      aria-hidden="true"
+                    ></div>
+                    <span>40% профильных специалистов × 29 900 ₽ в год</span>
+                  </dd>
+                </div>
+                <div class="monetization-market-row">
+                  <dt><b>SOM</b> Цель к 3-му году</dt>
+                  <dd>
+                    <strong data-som-revenue>7,18 млн ₽</strong>
+                    <div
+                      class="monetization-bar"
+                      data-market="som"
+                      aria-hidden="true"
+                    ></div>
+                    <span
+                      ><span data-formula-clinics>40</span> клиник ×
+                      <span data-formula-doctors>6</span> врачей × 29 900 ₽ в
+                      год</span
+                    >
+                  </dd>
+                </div>
+              </dl>
+              <div class="monetization-calculator">
+                <div class="monetization-calculator-heading">
+                  <h4>Калькулятор рынка</h4>
+                  <span>К концу 3-го года</span>
+                </div>
+                <div
+                  class="monetization-result"
+                  aria-live="polite"
+                  aria-atomic="true"
+                >
+                  <p class="monetization-revenue">
+                    <span data-annual-revenue>7,18</span><span>млн ₽ ARR</span>
+                  </p>
+                  <p class="monetization-monthly">
+                    <span data-monthly-revenue>598 000</span> ₽ MRR ·
+                    <span data-seats>240</span> врачебных мест
+                  </p>
+                </div>
+                <div class="monetization-slider">
+                  <div class="monetization-slider-label">
+                    <label for="monetization-clinics">Клиник</label
+                    ><output for="monetization-clinics" data-clinics-output
+                      >40</output
+                    >
+                  </div>
+                  <input
+                    id="monetization-clinics"
+                    type="range"
+                    min="10"
+                    max="100"
+                    step="5"
+                    value="40"
+                    disabled
+                    aria-describedby="monetization-calculation-basis"
+                  />
+                  <div class="monetization-slider-bounds" aria-hidden="true">
+                    <span>10</span><span>100</span>
+                  </div>
+                </div>
+                <div class="monetization-slider">
+                  <div class="monetization-slider-label">
+                    <label for="monetization-doctors">Врачей в клинике</label
+                    ><output for="monetization-doctors" data-doctors-output
+                      >6</output
+                    >
+                  </div>
+                  <input
+                    id="monetization-doctors"
+                    type="range"
+                    min="1"
+                    max="20"
+                    step="1"
+                    value="6"
+                    disabled
+                    aria-describedby="monetization-calculation-basis"
+                  />
+                  <div class="monetization-slider-bounds" aria-hidden="true">
+                    <span>1</span><span>20</span>
+                  </div>
+                </div>
+                <p
+                  class="monetization-calculation-basis"
+                  id="monetization-calculation-basis"
+                >
+                  Расчёт по тарифу «Клинический»: 29 900 ₽ за место в год. ARR —
+                  годовая подписная выручка; MRR — её месячный эквивалент при
+                  годовой оплате.
+                </p>
+              </div>
+              <details class="monetization-method">
+                <summary>
+                  Как рассчитаны TAM и SAM <span aria-hidden="true">+</span>
+                </summary>
+                <p>
+                  TAM: 11 559 × 29 900 + 82 400 × 9 900 = 1 161 374 100 ₽ в год.
+                  SAM: 11 559 × 40% × 29 900 = 138 245 640 ₽ в год. Доля 40% —
+                  сценарное допущение. Диаграммы показаны в общем масштабе.
+                </p>
+                <p>
+                  Численность специалистов: 10 239 психиатров и 1 320
+                  психотерапевтов —
+                  <a
+                    href="https://www.interfax.ru/russia/1090736"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >данные Минздрава за 2025 год</a
+                  >; 82 400 терапевтов —
+                  <a
+                    href="https://rosstat.gov.ru/storage/mediabank/Rossia_2025.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >Росстат, данные за 2024 год</a
+                  >.
+                </p>
+              </details>
+            </div>
           </div>
-          <p class="monetization-note">
-            Предварительная модель. Тарифы и состав услуг уточняются; оплата на
-            сайте пока недоступна.
-          </p>
         </div>
       </section>
 

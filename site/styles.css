@@ -5959,49 +5959,8 @@ summary:focus-visible {
   font-size: 15px;
   line-height: 1.8;
 }
-.monetization-models {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 36px;
-  margin-top: 40px;
-}
-.monetization-models article {
-  border-top: 1px solid var(--line);
-  padding-top: 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-.monetization-number {
-  color: var(--green);
-  font-size: 12px;
-}
-.monetization-models h3 {
-  margin: 20px 0 12px;
-  font-size: 22px;
-  font-weight: 450;
-  letter-spacing: -0.5px;
-}
-.monetization-models p {
-  margin-bottom: 24px;
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1.8;
-}
-.monetization-basis {
-  margin-top: auto;
-  font-size: 12px;
-  color: var(--green);
-}
-.monetization-note {
-  margin-top: 32px;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.7;
-}
 @media (max-width: 680px) {
-  .monetization-heading,
-  .monetization-models {
+  .monetization-heading {
     grid-template-columns: 1fr;
     gap: 24px;
   }
@@ -6398,4 +6357,432 @@ main > .section.faq-section,
   display: block;
   width: 100%;
   height: auto;
+}
+
+.monetization-board {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 36px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+}
+.monetization-panel {
+  padding: 26px 32px;
+  min-width: 0;
+}
+.monetization-panel + .monetization-panel {
+  border-left: 1px solid var(--line);
+}
+.monetization-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.monetization-panel-heading h3 {
+  font-size: 21px;
+  font-weight: 500;
+  letter-spacing: -0.6px;
+}
+.monetization-panel-heading > span {
+  font-size: 11px;
+  color: #53634f;
+}
+.monetization-forecast {
+  background: #e7efdf;
+}
+.monetization-billing {
+  display: inline-flex;
+  gap: 3px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin-top: 25px;
+  background: #f0f3ec;
+}
+.monetization-billing button {
+  min-height: 40px;
+  border: 0;
+  border-radius: 5px;
+  padding: 8px 16px;
+  font-size: 12px;
+  background: transparent;
+  color: #53634f;
+}
+.monetization-billing button[aria-pressed="true"] {
+  background: var(--green);
+  color: white;
+}
+.monetization-plans {
+  margin-top: 12px;
+}
+.monetization-plan {
+  padding: 26px 0;
+  border-bottom: 1px solid var(--line);
+}
+.monetization-plan-top {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+.monetization-plan h4 {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.6px;
+}
+.monetization-plan-top p {
+  font-size: 11px;
+  line-height: 1.6;
+  color: #53634f;
+  margin-top: 5px;
+}
+.monetization-plan-price {
+  text-align: right;
+}
+.monetization-plan-price strong {
+  display: block;
+  font-size: 28px;
+  line-height: 1.2;
+  letter-spacing: -1px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.monetization-plan-price > span {
+  display: block;
+  color: #53634f;
+  font-size: 11px;
+  margin-top: 6px;
+}
+.monetization-plan-description {
+  font-size: 13px;
+  line-height: 1.8;
+  color: #53634f;
+  margin-top: 15px;
+  max-width: 420px;
+}
+.monetization-patient-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 25px;
+  color: var(--green);
+}
+.monetization-patient-note svg {
+  width: 21px;
+  height: 21px;
+  margin-top: 2px;
+}
+.monetization-patient-note p {
+  font-size: 12px;
+  line-height: 1.8;
+  max-width: 390px;
+}
+.monetization-market {
+  margin: 20px 0 0;
+}
+.monetization-market-row {
+  position: relative;
+}
+.monetization-market-row + .monetization-market-row {
+  margin-top: 15px;
+}
+.monetization-market-row dt {
+  color: #53634f;
+  font-size: 11px;
+  padding-right: 160px;
+  min-height: 22px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+.monetization-market-row dt b {
+  color: var(--ink);
+  font-weight: 500;
+}
+.monetization-market-row dd {
+  margin: 0;
+}
+.monetization-market-row dd > strong {
+  position: absolute;
+  top: -3px;
+  right: 0;
+  font-size: 24px;
+  line-height: 1.3;
+  font-weight: 500;
+  letter-spacing: -0.8px;
+  font-variant-numeric: tabular-nums;
+}
+.monetization-market-row dd > span {
+  display: block;
+  font-size: 10px;
+  color: #53634f;
+  margin-top: 7px;
+}
+.monetization-bar {
+  display: grid;
+  grid-template-columns: repeat(40, minmax(0, 1fr));
+  gap: 3px;
+  height: 13px;
+  margin-top: 5px;
+}
+.monetization-bar i {
+  position: relative;
+  display: block;
+  background: #cad8c0;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.monetization-bar i.is-filled::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: var(--cell-fill, 100%);
+  background: var(--green);
+  border-radius: inherit;
+}
+.monetization-calculator {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid #c3d4b8;
+}
+.monetization-calculator-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+.monetization-calculator h4 {
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+}
+.monetization-calculator-heading > span {
+  color: #53634f;
+  font-size: 10px;
+}
+.monetization-revenue {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 17px;
+}
+.monetization-revenue > span:first-child {
+  font-size: 62px;
+  font-weight: 450;
+  letter-spacing: -4px;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+}
+.monetization-revenue > span:last-child {
+  font-size: 18px;
+  letter-spacing: -0.5px;
+}
+.monetization-monthly {
+  font-size: 12px;
+  color: #53634f;
+  margin-top: 7px;
+  font-variant-numeric: tabular-nums;
+}
+.monetization-slider {
+  margin-top: 16px;
+}
+.monetization-slider-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  font-size: 12px;
+}
+.monetization-slider output {
+  line-height: 1.2;
+  font-size: 17px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.monetization-slider input {
+  display: block;
+  width: 100%;
+  height: 28px;
+  margin: 0;
+  accent-color: var(--green);
+  cursor: pointer;
+}
+.monetization-slider input:disabled {
+  cursor: default;
+}
+.monetization-slider-bounds {
+  display: flex;
+  justify-content: space-between;
+  color: #53634f;
+  font-size: 10px;
+}
+.monetization-calculation-basis {
+  font-size: 10px;
+  line-height: 1.7;
+  color: #53634f;
+  margin-top: 16px;
+}
+.monetization-method {
+  border-top: 1px solid #c3d4b8;
+  margin-top: 19px;
+  padding-top: 6px;
+}
+.monetization-method summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  min-height: 40px;
+  font-size: 11px;
+  color: var(--green);
+  cursor: pointer;
+  list-style: none;
+}
+.monetization-method summary::-webkit-details-marker {
+  display: none;
+}
+.monetization-method summary > span {
+  font-size: 18px;
+}
+.monetization-method[open] summary > span {
+  transform: rotate(45deg);
+}
+.monetization-method > p {
+  font-size: 11px;
+  line-height: 1.8;
+  color: #53634f;
+  margin: 8px 0;
+}
+.monetization-method a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.js-ready .monetization-panel:not(.is-visible) i.is-filled::after {
+  opacity: 0;
+}
+.js-ready .monetization-panel.is-visible i.is-filled::after {
+  animation: monetization-cell-fill 0.3s both;
+  animation-delay: var(--cell-delay);
+}
+.js-ready .monetization-panel[data-interacting] i.is-filled::after {
+  animation: none;
+  opacity: 1;
+}
+@keyframes monetization-cell-fill {
+  from {
+    opacity: 0.1;
+    transform: scale(0.25);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@media (max-width: 1100px) and (min-width: 681px) {
+  .monetization-panel {
+    padding: 25px 24px;
+  }
+  .monetization-panel-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .monetization-plan-top {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .monetization-plan-price {
+    text-align: left;
+  }
+  .monetization-market-row dt {
+    padding-right: 0;
+    min-height: 0;
+  }
+  .monetization-market-row dd > strong {
+    position: static;
+    display: block;
+    margin-top: 7px;
+  }
+  .monetization-calculator-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+@media (max-width: 680px) {
+  .monetization-board {
+    grid-template-columns: 1fr;
+    margin-top: 28px;
+  }
+  .monetization-panel {
+    padding: 25px 20px;
+  }
+  .monetization-panel + .monetization-panel {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+  .monetization-panel-heading h3 {
+    font-size: 19px;
+  }
+  .monetization-panel-heading > span {
+    font-size: 10px;
+  }
+  .monetization-plan-top {
+    gap: 12px;
+  }
+  .monetization-plan h4 {
+    font-size: 19px;
+  }
+  .monetization-plan-price strong {
+    font-size: 25px;
+  }
+  .monetization-market-row dt {
+    padding-right: 0;
+    min-height: 0;
+  }
+  .monetization-market-row dd > strong {
+    position: static;
+    display: block;
+    margin-top: 7px;
+    font-size: 26px;
+  }
+  .monetization-bar {
+    gap: 2px;
+    height: 17px;
+  }
+  .monetization-revenue > span:first-child {
+    font-size: 60px;
+  }
+  .monetization-slider input {
+    height: 44px;
+  }
+}
+@media (max-width: 360px) {
+  .monetization-panel {
+    padding-left: 17px;
+    padding-right: 17px;
+  }
+  .monetization-plan-top {
+    grid-template-columns: 1fr;
+  }
+  .monetization-plan-price {
+    text-align: left;
+  }
+  .monetization-calculator-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .js-ready .monetization-panel i.is-filled::after {
+    animation: none;
+    opacity: 1;
+  }
 }
