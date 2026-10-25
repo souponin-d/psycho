@@ -69,13 +69,21 @@ export function journeyProgress(state: JourneyState, today: DayKey) {
     (d) =>
       d.complete && d.day >= chapterStart && d.day < shiftDay(chapterStart, 7),
   ).length;
+  const todayAssessment =
+    state.closedDays[today] ??
+    assessDay(planForDay(state, today), state.events, today);
+  if (
+    !state.closedDays[today] &&
+    todayAssessment.missing.some((m) => m.startsWith("dose:missed:"))
+  )
+    streak = 0;
   return {
     streak,
     chapterIndex,
     chapterStart,
     successes,
     goal: 5,
-    today: assessDay(planForDay(state, today), state.events, today),
+    today: todayAssessment,
     dateLocked: !!state.closedDays[today],
   };
 }

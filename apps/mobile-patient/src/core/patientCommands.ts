@@ -1,7 +1,7 @@
 import { dayAt, closeElapsedDays } from "./calendar.ts";
 import { isDay } from "./shore.ts";
 import { fieldComplete, planForDay } from "./therapy.ts";
-import { completeQuestionnaire } from "./questionnaires.ts";
+import { completeQuestionnaire, latestDose } from "./questionnaires.ts";
 import { PatientValidationError } from "./patientErrors.ts";
 import { connectScenario, seedScenario } from "./scenario.ts";
 import { validateWorld } from "./world.ts";
@@ -70,6 +70,15 @@ export function applyPatientCommand(
       if (!input.id || base.events.some((e) => e.id === input.id)) return base;
       if (!isDay(input.day) || input.day > today)
         throw new PatientValidationError("Нельзя выполнить будущий день");
+      // Runs inside the repository's serialized transaction, so simultaneous
+      // main/snooze receipts cannot both append a clinical fact.
+      if (
+        input.kind === "dose" &&
+        input.source === "notification" &&
+        input.status === "taken" &&
+        latestDose(base, input.day, input.slotId)?.status === "taken"
+      )
+        return base;
       if (
         input.kind === "dose" &&
         !planForDay(base, input.day).medication.slots.some(
@@ -89,6 +98,10 @@ export function applyPatientCommand(
           "Заполните обязательные поля самоотчёта",
         );
       if (input.kind === "questionnaire") {
+        if (base.closedDays[input.day])
+          throw new PatientValidationError(
+            "Этот день уже завершён. Назначенный опрос нельзя пройти задним числом.",
+          );
         const assignment = base.plan.tests.find(
           (t) => t.id === input.assignmentId,
         );
@@ -122,6 +135,7 @@ export function applyPatientCommand(
         ...completion,
         at: now.utcMs,
         recordedDay: today,
+        gameEligible: input.day === today && !base.closedDays[input.day],
       };
       const drafts = { ...base.drafts };
       if (event.kind === "report" && event.required)

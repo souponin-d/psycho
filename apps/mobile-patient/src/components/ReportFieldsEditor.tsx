@@ -50,6 +50,7 @@ export function ReportFieldsEditor({
                 <Chip
                   key={i}
                   label={String(i)}
+                  accessibilityLabel={`${key === "anxiety" ? "Тревога" : "Силы на привычные дела"}: ${i}`}
                   active={fields[key] === i}
                   onPress={() => onChange({ ...fields, [key]: i })}
                 />

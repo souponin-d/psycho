@@ -257,16 +257,18 @@ export function Chip({
   label,
   active,
   onPress,
+  accessibilityLabel,
 }: {
   label: string;
   active?: boolean;
   onPress: () => void;
+  accessibilityLabel?: string;
 }) {
   const { theme } = useApp();
   return (
     <Touch
       accessibilityRole="button"
-      accessibilityLabel={label}
+      accessibilityLabel={accessibilityLabel ?? label}
       accessibilityState={{ selected: active }}
       onPress={onPress}
       style={{

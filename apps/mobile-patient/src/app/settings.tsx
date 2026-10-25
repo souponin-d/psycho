@@ -205,7 +205,7 @@ export default function SettingsScreen() {
         />
       </View>
       <T muted size={11} style={{ marginTop: 24, lineHeight: 17 }}>
-        Синкли · {Constants.expoConfig?.version??"0.3.0"}
+        Синкли · {Constants.expoConfig?.version ?? "0.3.0"}
       </T>
     </Screen>
   );

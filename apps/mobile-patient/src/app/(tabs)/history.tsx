@@ -32,7 +32,12 @@ import { HistoryCalendar } from "../../components/HistoryCalendar";
 import { FeelingCharacter } from "../../components/FeelingCharacter";
 import { useApp } from "../../state/AppProvider";
 import { useJourney } from "../../state/JourneyProvider";
-import { projectHistory, historyBounds, doseLabels } from "../../core/history";
+import {
+  projectHistory,
+  historyBounds,
+  doseLabels,
+  historyDayPresentation,
+} from "../../core/history";
 import { isDay } from "../../core/shore";
 import { shiftDay } from "../../core/calendar";
 import { latestReports } from "../../core/questionnaires";
@@ -111,7 +116,7 @@ const dateLabel = (day: string) =>
   });
 
 export default function HistoryScreen() {
-  const { theme, today } = useApp();
+  const { theme, today, state } = useApp();
   const { journey, act, saving } = useJourney();
   const focused = useIsFocused();
   useEffect(() => {
@@ -149,8 +154,15 @@ export default function HistoryScreen() {
   useEffect(() => setLimit(20), [selected]);
   const from = shiftDay(end, -period + 1);
   const data = useMemo(
-    () => (journey ? projectHistory(journey, { from, to: end }) : null),
-    [journey, from, end],
+    () =>
+      journey
+        ? projectHistory(
+            journey,
+            { from, to: end },
+            { gameplay: state.gameplay },
+          )
+        : null,
+    [journey, from, end, state.gameplay],
   );
   if (!journey || !data) return null;
   const first = historyBounds(journey);
@@ -183,9 +195,11 @@ export default function HistoryScreen() {
   function removeReport(id: string, required: boolean) {
     Alert.alert(
       "Удалить запись?",
-      required
-        ? "Запись будет убрана из списка; история исправлений сохранится. Обязательный самоотчёт останется в плане. Закрытый игровой итог не изменится."
-        : "Запись будет убрана из списка; история исправлений сохранится. Закрытый игровой итог и награды не изменятся.",
+      !state.gameplay
+        ? "Запись будет убрана из списка; история исправлений сохранится."
+        : required
+          ? "Запись будет убрана из списка; история исправлений сохранится. Обязательный самоотчёт останется в плане. Закрытый игровой итог не изменится."
+          : "Запись будет убрана из списка; история исправлений сохранится. Закрытый игровой итог и награды не изменятся.",
       [
         { text: "Отмена", style: "cancel" },
         {
@@ -241,7 +255,11 @@ export default function HistoryScreen() {
     setExportBusy(true);
     try {
       const projection = allHistory
-        ? projectHistory(journey, { from: first, to: today })
+        ? projectHistory(
+            journey,
+            { from: first, to: today },
+            { gameplay: state.gameplay },
+          )
         : data!;
       setFile(await saveHistoryExport(projection, format));
     } catch {
@@ -368,11 +386,7 @@ export default function HistoryScreen() {
                 color: selected === day.day ? theme.onAccent : theme.muted,
               }}
             >
-              {day.gameOutcome === "complete"
-                ? "✓"
-                : day.gameOutcome === "missed"
-                  ? "·"
-                  : "○"}
+              {historyDayPresentation(day, state.gameplay).mark}
             </T>
           </Touch>
         ))}
@@ -383,19 +397,16 @@ export default function HistoryScreen() {
       <T size={12} muted style={{ marginBottom: 16 }}>
         {selected < journey.plan.startedAt
           ? "Запись из архива до начала текущего плана."
-          : current.gameOutcome === "complete"
-            ? "День выполнен"
-            : current.gameOutcome === "missed"
-              ? "День не зачтён. Мир и награды сохранены."
-              : "День открыт до 00:00"}
+          : historyDayPresentation(current, state.gameplay).label}
       </T>
-      {selected < today && current.changes.some((change) => change.late) && (
-        <Panel style={{ marginBottom: 16 }}>
-          <T size={12}>
-            Запись исправлена после завершения дня. Серия не пересчитывается.
-          </T>
-        </Panel>
-      )}
+      {(selected < today || current.gameOutcome !== "open") &&
+        current.changes.some((change) => change.late) && (
+          <Panel style={{ marginBottom: 16 }}>
+            <T size={12}>
+              {historyDayPresentation(current, state.gameplay).lateNote}
+            </T>
+          </Panel>
+        )}
       <View style={{ gap: 16 }}>
         {current.doses.map((d) => (
           <Panel key={d.slotId} style={{ gap: 12 }}>
@@ -674,8 +685,9 @@ export default function HistoryScreen() {
             />
             {selected < today && (
               <T size={12} muted>
-                Исправится факт в истории. Закрытый стрик и награды не
-                изменятся.
+                {state.gameplay
+                  ? "Исправится факт в истории. Закрытый стрик и награды не изменятся."
+                  : "Изменения сохранятся в истории."}
               </T>
             )}
             <Button

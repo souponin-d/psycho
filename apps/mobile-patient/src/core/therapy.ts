@@ -63,7 +63,9 @@ export function assessDay(
   day: DayKey,
 ): DayAssessment {
   const relevant = events
-    .filter((e) => e.day === day && e.recordedDay === day)
+    .filter(
+      (e) => e.day === day && e.recordedDay === day && e.gameEligible !== false,
+    )
     .sort((a, b) => a.at - b.at);
   const missing: string[] = [];
   if (day >= plan.startedAt) {

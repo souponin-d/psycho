@@ -38,9 +38,11 @@ type EventBase = {
   day: DayKey;
   at: number;
   recordedDay: DayKey;
+  gameEligible?: boolean;
 };
 export type DoseEvent = EventBase & {
   kind: "dose";
+  source?: "notification";
   slotId: string;
   status: "taken" | "missed" | "unknown";
   occurredAt?: string;

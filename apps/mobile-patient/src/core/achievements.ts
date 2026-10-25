@@ -20,13 +20,19 @@ export function achievementProgress(state: JourneyState) {
   }
   const reports = new Map<string, (typeof state.events)[number]>();
   for (const e of [...state.events].sort((a, b) => a.at - b.at))
-    if (e.kind === "report" && e.required && e.day === e.recordedDay)
+    if (
+      e.kind === "report" &&
+      e.required &&
+      e.day === e.recordedDay &&
+      e.gameEligible !== false
+    )
       reports.set(e.day, e);
   const tests = new Set(
     state.events
       .filter(
         (e) =>
           e.kind === "questionnaire" &&
+          e.gameEligible !== false &&
           e.day === e.recordedDay &&
           state.plan.tests.some(
             (t) =>

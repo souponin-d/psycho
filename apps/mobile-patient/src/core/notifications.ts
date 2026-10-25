@@ -175,6 +175,7 @@ export async function handleNotificationAction(
         kind: "dose",
         slotId: job.slotId!,
         status: "taken",
+        source: "notification",
       },
     },
     now,

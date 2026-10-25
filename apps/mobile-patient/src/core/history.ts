@@ -49,6 +49,7 @@ export function historyBounds(state: JourneyState) {
 export function projectHistory(
   state: JourneyState,
   range: { from: DayKey; to: DayKey },
+  options: { gameplay?: boolean } = {},
 ) {
   if (!isDay(range.from) || !isDay(range.to) || range.from > range.to)
     throw new PatientValidationError("Проверьте период истории");
@@ -68,6 +69,7 @@ export function projectHistory(
       label: r.label ?? "",
       at: r.at,
       edited:
+        r.gameEligible === false ||
         r.recordedDay !== r.day ||
         state.events.filter(
           (e) =>
@@ -150,7 +152,12 @@ export function projectHistory(
         e.kind === "report" && e.entityId?.startsWith("legacy:")
           ? state.legacyArchive.find((r) => r.id === e.entityId!.slice(7))
           : undefined;
-      if (old || archived || e.recordedDay !== day) {
+      if (
+        old ||
+        archived ||
+        e.recordedDay !== day ||
+        e.gameEligible === false
+      ) {
         const describe = (event: PatientEvent | undefined) =>
           event?.kind === "dose"
             ? doseLabels[event.status]
@@ -170,7 +177,7 @@ export function projectHistory(
               ? archived.note || archived.label || "Архивная запись"
               : describe(old),
           current: describe(e),
-          late: e.recordedDay !== day,
+          late: e.recordedDay !== day || e.gameEligible === false,
         });
       }
       previous.set(key, e);
@@ -204,6 +211,7 @@ export function projectHistory(
   const doses = days.flatMap((d) => d.doses);
   return {
     version: 1,
+    gameplay: options.gameplay !== false,
     range: { from: range.from, to: range.to },
     medication: state.plan.medication.name,
     planId: state.plan.id,
@@ -241,6 +249,38 @@ export function projectHistory(
   };
 }
 export type PatientHistoryProjection = ReturnType<typeof projectHistory>;
+export function historyDayPresentation(
+  day: PatientHistoryProjection["days"][number],
+  gameplay: boolean,
+) {
+  if (!gameplay)
+    return {
+      mark:
+        day.reports.length ||
+        day.legacy.length ||
+        day.doses.some((d) => d.status !== "unknown")
+          ? "•"
+          : "",
+      label: "Записи этого дня",
+      lateNote: "Запись исправлена после завершения дня.",
+    };
+  return {
+    mark:
+      day.gameOutcome === "complete"
+        ? "✓"
+        : day.gameOutcome === "missed"
+          ? "·"
+          : "○",
+    label:
+      day.gameOutcome === "complete"
+        ? "День выполнен"
+        : day.gameOutcome === "missed"
+          ? "День не зачтён. Мир и награды сохранены."
+          : "День открыт до 00:00",
+    lateNote:
+      "Запись исправлена после завершения дня. Серия не пересчитывается.",
+  };
+}
 export function exportPatientHistory(projection: PatientHistoryProjection) {
   // Reconstruct from the public schema; never serialize JourneyState or raw events.
   return {
@@ -252,8 +292,16 @@ export function exportPatientHistory(projection: PatientHistoryProjection) {
     medication: projection.medication,
     planId: projection.planId,
     planChanges: projection.planChanges,
-    days: projection.days,
-    summary: projection.summary,
+    days: projection.days.map((day) => ({
+      ...day,
+      gameOutcome: projection.gameplay ? day.gameOutcome : undefined,
+    })),
+    summary: {
+      ...projection.summary,
+      completedGameDays: projection.gameplay
+        ? projection.summary.completedGameDays
+        : undefined,
+    },
   };
 }
 function escapeHtml(value: unknown) {
@@ -394,7 +442,11 @@ export function historyHtml(data: PatientHistoryProjection) {
     data.summary.unknown +
     ". Дней с записями: " +
     data.summary.reportDays +
-    '.</p><p class="muted">Ответы и результаты опросов не включены. Сведения записаны пациентом на устройстве; это не заключение о лечении. Закрытые игровые итоги не меняются после исправлений.</p>' +
+    '.</p><p class="muted">Ответы и результаты опросов не включены. Сведения записаны пациентом на устройстве; это не заключение о лечении.' +
+    (data.gameplay
+      ? " Закрытые игровые итоги не меняются после исправлений."
+      : "") +
+    "</p>" +
     data.planChanges
       .map(
         (p) =>

@@ -60,3 +60,5 @@ npm run prebuild:android --workspace @psycho/mobile-patient
 `npm run check:mobile` запускает TypeScript, ESLint и поведенческие Node-тесты отдельно от web/.NET/БД. Перед поставкой также выполняется `npm run check`. Эмуляторные сценарии находятся в `scripts/verify-*.mjs`, по умолчанию используют собственный `emulator-5570` и пишут доказательства в `artifacts/`. Они проверяют реальные касания и системную доставку; часть сценариев меняет синтетические данные и потому запускается осознанно.
 
 [Карта и редактор](../../docs/verification/2026-10-25-mobile-world-editor.md), [спутники и запись движения](../../docs/verification/2026-10-25-mobile-companions.md), [онбординг и фоновые уведомления](../../docs/verification/2026-10-25-mobile-onboarding-notifications.md). Уменьшение движения учитывает и системную настройку, и переключатель пользователя; это нужно проверять отдельно от активной анимации.
+
+[Итоговая проверка 0.3.0 и ограничения поставки](../../docs/verification/2026-10-24-patient-journey.md).

@@ -28,7 +28,7 @@ import { useFeedback } from "../hooks/useFeedback";
 import { feelingAt, feelingHint, type FeelingPoint } from "../core/feelings";
 import { dayKey, moodOptions } from "../config/content";
 export default function CheckInScreen() {
-  const { theme, today } = useApp();
+  const { theme, today, state } = useApp();
   const { journey, act, saving: persisting } = useJourney();
   const params = useLocalSearchParams<{
     day?: string;
@@ -176,7 +176,13 @@ export default function CheckInScreen() {
           >
             <Enter>
               <View style={{ alignItems: "center", gap: 18 }}>
-                <Companion size={200} mode="support" />
+                {state.gameplay ? (
+                  <Companion size={200} mode="support" />
+                ) : point ? (
+                  <FeelingCharacter point={point} size={175} />
+                ) : (
+                  <Icon name="check" size={80} color={ink} />
+                )}
                 <T
                   size={30}
                   weight="500"
@@ -185,9 +191,11 @@ export default function CheckInScreen() {
                   {params.reportId ? "Изменения сохранены" : "Запись сохранена"}
                 </T>
                 <T size={14} style={{ color: muted, textAlign: "center" }}>
-                  {day < today
-                    ? "Запись обновлена в истории. Стрик закрытого дня и награды не пересчитываются."
-                    : "Запись уже в вашей истории. Зачёт дня учитывает все задания плана."}
+                  {!state.gameplay
+                    ? "Запись сохранена в вашей истории."
+                    : day < today
+                      ? "Запись обновлена в истории. Стрик закрытого дня и награды не пересчитываются."
+                      : "Запись уже в вашей истории. Зачёт дня учитывает все задания плана."}
                 </T>
               </View>
             </Enter>
@@ -513,8 +521,9 @@ export default function CheckInScreen() {
                   {journey && required && (
                     <>
                       <T muted size={12}>
-                        Эти поля заданы в вашем плане. Для зачёта дня заполните
-                        каждое из них.
+                        {state.gameplay
+                          ? "Эти поля заданы в вашем плане. Для зачёта дня заполните каждое из них."
+                          : "Эти поля заданы врачом. Заполните все обязательные разделы."}
                       </T>
                       <ReportFieldsEditor
                         fields={fields}
