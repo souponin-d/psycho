@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-25",
+  "scope": "V1, два самостоятельных слоя; лица и тела 0.3 не заменяются",
+  "stone": {
+    "prompt": "Create ONE isolated game UI asset on a truly TRANSPARENT background: a small irregular thick sandstone stepping-stone marker matching the stone material and oblique camera of the reference river path. No scene, no river, no character, no letters/numbers/symbols. Top/front face has a calm plain lightly recessed readable area where dynamic calendar text can later be overlaid. Natural quiet diffuse light, beige-grey weathered stone with pores, soft bevel, subtle moss edge, grounded soft contact shadow. Three-quarter slightly top-down view, broad horizontal oval-rectangular stone, NOT a flat circular button or coin. Rich tactile painterly realism matching existing game, balanced highlights not overexposed/yellow. Whole asset including shadow visible, centered, 8% transparent safe margin. Wide 3:2 image; one asset only, no atlas. This will be an editable calendar marker, so leave center surface uncluttered and plain. No decorative vegetation covering text area, no generated typography.",
+    "referenced_image_paths": [
+      "C:/Users/S/.codex/worktrees/patient-journey-integration/Psycho/apps/mobile-patient/assets/images/journey-environment.png"
+    ],
+    "transparent_background": true
+  },
+  "scarf": {
+    "prompt": "Create ONLY a separate wearable KNITTED SCARF game asset, truly transparent background, no body or character at all. The attached image is ONLY a scale/silhouette reference of the APPROVED cloud mascot; its face/body MUST NOT be redrawn or included. Deliver just a cream-beige knitted scarf front band with one short dangling tail on the RIGHT, fitted to wrap around a round wide soft creature's lower body. Broad gently curved horizontal band, realistic soft knitted wool strands, a little thickness, folds, contact-shaded inner edge, no sticker outline, no metal pin, no embroidered leaf unless tiny simple stitching. Cloth is natural softly lit and moderately saturated, NOT cardboard or flat vector. All body, eyes, feet, fur, background must be fully transparent/ABSENT. Layout: isolated scarf fills central 80% width, full band/tail visible with 8% margin, landscape 3:2 canvas. Front band curves gently downward toward middle like legacy scarf, tail short pointing down on right. One scarf only, no variants, no text, no scene, no mannequin, no altered new mascot. This independent layer will overlay original unchanged canonical PNG frames in native app.",
+    "referenced_image_paths": [
+      "C:/Users/S/.codex/worktrees/patient-journey-integration/Psycho/apps/mobile-patient/assets/companions/cloud-idle-0.png"
+    ],
+    "transparent_background": true
+  }
+}

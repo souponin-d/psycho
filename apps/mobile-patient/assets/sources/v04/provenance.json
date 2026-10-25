@@ -1,0 +1,354 @@
+{
+  "version": "0.4.0",
+  "animationSheets": [
+    {
+      "original": "sources/v04/animation-sheets/fluffy-emotion.png",
+      "sha256": "d0a7e2c910ca686f77c5f59f7e7a90680fdd26bd2ef770d24c7e02dc992b4bdb",
+      "derivedFrames": [
+        "companions/fluffy-emotion-0.png",
+        "companions/fluffy-emotion-1.png",
+        "companions/fluffy-emotion-2.png",
+        "companions/fluffy-emotion-3.png"
+      ]
+    },
+    {
+      "original": "sources/v04/animation-sheets/fluffy-idle.png",
+      "sha256": "512b88bf3f7ad7b2af8617a4c1e7417d56db379223ce9b0376aca74fd8feb8f5",
+      "derivedFrames": [
+        "companions/fluffy-idle-0.png",
+        "companions/fluffy-idle-1.png",
+        "companions/fluffy-idle-2.png",
+        "companions/fluffy-idle-3.png"
+      ]
+    },
+    {
+      "original": "sources/v04/animation-sheets/cloud-idle.png",
+      "sha256": "fb32419be6f987571337de208b7eadadd6915485ee1f7d419a6ee19bac423ffc",
+      "derivedFrames": [
+        "companions/cloud-idle-0.png",
+        "companions/cloud-idle-1.png",
+        "companions/cloud-idle-2.png",
+        "companions/cloud-idle-3.png"
+      ]
+    },
+    {
+      "original": "sources/v04/animation-sheets/cloud-emotion.png",
+      "sha256": "a2cc976733e2aa07af66a6ced297581cbd45131470d20d82277a45f6ff03be5a",
+      "derivedFrames": [
+        "companions/cloud-emotion-0.png",
+        "companions/cloud-emotion-1.png",
+        "companions/cloud-emotion-2.png",
+        "companions/cloud-emotion-3.png"
+      ]
+    },
+    {
+      "original": "sources/v04/animation-sheets/cloud-walk.png",
+      "sha256": "30e3e5c26c70e10ff7bd461d773f85d828f6781914429f4eef0777295c0af225",
+      "derivedFrames": [
+        "companions/cloud-walk-0.png",
+        "companions/cloud-walk-1.png",
+        "companions/cloud-walk-2.png",
+        "companions/cloud-walk-3.png"
+      ]
+    },
+    {
+      "original": "sources/v04/animation-sheets/fluffy-walk.png",
+      "sha256": "3028a79953ebe0d489dcc23028528e82dfc21f5a0ad83fb8595d367a3d08f8f0",
+      "derivedFrames": [
+        "companions/fluffy-walk-0.png",
+        "companions/fluffy-walk-1.png",
+        "companions/fluffy-walk-2.png",
+        "companions/fluffy-walk-3.png"
+      ]
+    }
+  ],
+  "generatedResources": [
+    {
+      "id": "bench",
+      "asset": "world/v04/bench.png",
+      "original": "world/v04/bench.png",
+      "originalSha256": "6fb09caab4abb781619e59c2030d04fda347668edc034864214a47d93634198d",
+      "generationRecord": "sources/v04/generation/assets-manifest.json"
+    },
+    {
+      "id": "flowers",
+      "asset": "world/v04/flowers.png",
+      "original": "world/v04/flowers.png",
+      "originalSha256": "8163932a1e8b38866b3fb66a7d7dc0275fca3bf992da91cce49fe33e3950d561",
+      "generationRecord": "sources/v04/generation/assets-manifest.json"
+    },
+    {
+      "id": "lantern",
+      "asset": "world/v04/lantern.png",
+      "original": "world/v04/lantern.png",
+      "originalSha256": "81f64018874d0117875ccbea4b964f40ba0e2abab1804116727689fc971548c9",
+      "generationRecord": "sources/v04/generation/assets-manifest.json"
+    },
+    {
+      "id": "tea-table",
+      "asset": "world/v04/tea-table.png",
+      "original": "world/v04/tea-table.png",
+      "originalSha256": "16b7d5a041c66a11af91252c60898bbdeb9df83442f9402507daafba5dc828fe",
+      "generationRecord": "sources/v04/generation/assets-manifest.json"
+    },
+    {
+      "id": "cushion",
+      "asset": "world/v04/cushion.png",
+      "original": "world/v04/cushion.png",
+      "originalSha256": "254e7f0eab1086f24c3cbd035af2f2955eeef92f82c309f1bd94a619bd89e757",
+      "generationRecord": "sources/v04/generation/assets-manifest.json"
+    },
+    {
+      "id": "bird-bath",
+      "asset": "world/v04/bird-bath.png",
+      "original": "world/v04/bird-bath.png",
+      "originalSha256": "af5ed2c852d8291ad25d4aa1a72af30775e55b42191fdf136458af3c9576e967",
+      "generationRecord": "sources/v04/generation/assets-manifest.json"
+    },
+    {
+      "id": "plant-pot",
+      "asset": "world/v04/plant-pot.png",
+      "original": "world/v04/plant-pot.png",
+      "originalSha256": "2b437ae4bfb0b9a216b6dac04ffc3036276019d3a5090aa31730e1a30a0b760a",
+      "generationRecord": "sources/v04/generation/assets-manifest.json"
+    },
+    {
+      "id": "soft-stone",
+      "asset": "world/v04/soft-stone.png",
+      "original": "world/v04/soft-stone.png",
+      "originalSha256": "04aaba795cdf6dcc3691e54c8bbee7f8de50633d3b7242f8ce08a33a90011120",
+      "generationRecord": "sources/v04/generation/assets-manifest.json"
+    },
+    {
+      "id": "pebble-cluster",
+      "asset": "world/v04/pebble-cluster.png",
+      "original": "world/v04/pebble-cluster.png",
+      "originalSha256": "eae049e963f2d50a27cd94d1e8e5c947e56db144af6736b0b556c717d2406315",
+      "generationRecord": "sources/v04/generation/assets-manifest.json"
+    },
+    {
+      "id": "fern",
+      "asset": "world/v04/fern.png",
+      "original": "world/v04/fern.png",
+      "originalSha256": "43d9d54e43a1bc6084e9e748d36c88f9e8069b5e4a1b572776075705626c2744",
+      "generationRecord": "sources/v04/generation/assets-manifest.json"
+    },
+    {
+      "id": "sunshade",
+      "asset": "world/v04/sunshade.png",
+      "original": "world/v04/sunshade.png",
+      "originalSha256": "6e14b1ae2ad66dfc316906124da72eb5a36665b6666d0f02f86048f33094d8c2",
+      "generationRecord": "sources/v04/generation/assets-manifest.json"
+    },
+    {
+      "id": "gazebo",
+      "asset": "world/v04/gazebo.png",
+      "original": "world/v04/gazebo.png",
+      "originalSha256": "e70bbcdeda573e77c8178a1c5c60a383a1ba5698e837dc21289ac54dbe26a584",
+      "generationRecord": "sources/v04/generation/assets-manifest.json"
+    },
+    {
+      "id": "lily-pot",
+      "asset": "world/v04/lily-pot.png",
+      "original": "world/v04/lily-pot.png",
+      "originalSha256": "8d99bbf6ae27c81ccf9211e71ef414e824ca619516b0b2c5de4eace88b92a408",
+      "generationRecord": "sources/v04/generation/assets-manifest.json"
+    },
+    {
+      "id": "flower-arch",
+      "asset": "world/v04/flower-arch.png",
+      "original": "world/v04/flower-arch.png",
+      "originalSha256": "e90e70e024765dd993be5350d371bfce6a5e7d43dd1f7360f3ae9f16c7b29e8f",
+      "generationRecord": "sources/v04/generation/assets-manifest.json"
+    },
+    {
+      "id": "bookshelf",
+      "asset": "world/v04/bookshelf.png",
+      "original": "world/v04/bookshelf.png",
+      "originalSha256": "ac6bbe69e633093f464bbedb67cb4861b3c47a18329bb94a37f4e8abc825a6a1",
+      "generationRecord": "sources/v04/generation/assets-manifest.json"
+    },
+    {
+      "id": "star-mobile",
+      "asset": "world/v04/star-mobile.png",
+      "original": "world/v04/star-mobile.png",
+      "originalSha256": "97472ced3893fc1b1ef61ffae21a921882ff3b01f369c676399d7593bd28f4a7",
+      "generationRecord": "sources/v04/generation/assets-manifest.json"
+    },
+    {
+      "id": "firefly-jar",
+      "asset": "world/v04/firefly-jar.png",
+      "original": "world/v04/firefly-jar.png",
+      "originalSha256": "a14547b88e96ee2c11d855a848c3cb150f5334b19046f65feb2821cb90b2ae3c",
+      "generationRecord": "sources/v04/generation/assets-manifest.json"
+    },
+    {
+      "id": "bridge",
+      "asset": "world/v04/bridge.png",
+      "original": "world/v04/bridge.png",
+      "originalSha256": "f37654583e910821fd211396c7e98117afb1c37e632d58e3e4292bb4dbc9c24c",
+      "generationRecord": "sources/v04/generation/assets-manifest.json"
+    },
+    {
+      "id": "wind-chime",
+      "asset": "world/v04/wind-chime.png",
+      "original": "world/v04/wind-chime.png",
+      "originalSha256": "49ad1151f5d04e65d2cf58b3c158b32957aa2ac303a091b2b63effe7841842c7",
+      "generationRecord": "sources/v04/generation/assets-manifest.json"
+    },
+    {
+      "id": "picnic-mat",
+      "asset": "world/v04/picnic-mat.png",
+      "original": "world/v04/picnic-mat.png",
+      "originalSha256": "021cac981a51c2f3ccb4de08faaf36b06c547ad267d4d9fbdbe17126dceba0df",
+      "generationRecord": "sources/v04/generation/assets-manifest.json"
+    },
+    {
+      "id": "hoodie",
+      "asset": "companions/hoodie-v04.png",
+      "original": "companions/hoodie-v04.png",
+      "originalSha256": "2675e1c24289bbaed95a19c1f52f6092538fa08e17e3789c301a2a19f75b1719",
+      "generationRecord": "sources/v04/generation/wardrobe-scenes-manifest.json"
+    },
+    {
+      "id": "cape",
+      "asset": "companions/cape-v04.png",
+      "original": "companions/cape-v04.png",
+      "originalSha256": "877be692777a56ea1ac29996473631ce7dc364ff6a3238139106833280c0119c",
+      "generationRecord": "sources/v04/generation/wardrobe-scenes-manifest.json"
+    },
+    {
+      "id": "star",
+      "asset": "companions/star-v04.png",
+      "original": "companions/star-v04.png",
+      "originalSha256": "ef9ce21d7c7a5556bb5fb55a7ddf6f9599983cb74cb0526235ddbb72efcf319a",
+      "generationRecord": "sources/v04/generation/wardrobe-scenes-manifest.json"
+    },
+    {
+      "id": "bow",
+      "asset": "companions/bow-v04.png",
+      "original": "companions/bow-v04.png",
+      "originalSha256": "7543c92a006534781645e0eb45c6416a1cf048b06cb2d2538ce5a8d3edaa7cb3",
+      "generationRecord": "sources/v04/generation/wardrobe-scenes-manifest.json"
+    },
+    {
+      "id": "leaf",
+      "asset": "companions/leaf-v04.png",
+      "original": "companions/leaf-v04.png",
+      "originalSha256": "676dcc9ffa44900508b3a0b96b5ff494b80624fcee0a0c29793775c3e68eeed0",
+      "generationRecord": "sources/v04/generation/wardrobe-scenes-manifest.json"
+    },
+    {
+      "id": "shore-day",
+      "asset": "images/shore-day-v04.png",
+      "original": "images/shore-day-v04.png",
+      "originalSha256": "75fd38edf0d521b5f72d45551a7eab7e43d6c45fbf1ddd884384e7bf9d2d4a33",
+      "generationRecord": "sources/v04/generation/wardrobe-scenes-manifest.json"
+    },
+    {
+      "id": "shore-night",
+      "asset": "images/shore-night-v04.png",
+      "original": "images/shore-night-v04.png",
+      "originalSha256": "b5e3f97d5bad085a4b8a1a6756d13065a15f5b2f545e5e0d463c835d423adac8",
+      "generationRecord": "sources/v04/generation/wardrobe-scenes-manifest.json"
+    },
+    {
+      "id": "garden-day",
+      "asset": "images/garden-day-v04.png",
+      "original": "images/garden-day-v04.png",
+      "originalSha256": "8d5f8bc6998cd5c15f078a6596646a43ed5a419d497d734377dc130ccdf833d7",
+      "generationRecord": "sources/v04/generation/wardrobe-scenes-manifest.json"
+    },
+    {
+      "id": "garden-night",
+      "asset": "images/garden-night-v04.png",
+      "original": "images/garden-night-v04.png",
+      "originalSha256": "0e1519b1d1db3d9b879e03bdf777affddc8ccd58cb4423772d994069840870ed",
+      "generationRecord": "sources/v04/generation/wardrobe-scenes-manifest.json"
+    },
+    {
+      "id": "cloud-scarf",
+      "asset": "companions/fitted-v04/cloud-scarf.png",
+      "original": "companions/fitted-v04/cloud-scarf.png",
+      "originalSha256": "91278e7653aba4a12edcb64fbf8f891b91cc8bbe24c2d1e3ac26019443064fd2",
+      "generationRecord": "sources/v04/generation/fitted-wardrobe-manifest.json"
+    },
+    {
+      "id": "cloud-hoodie",
+      "asset": "companions/fitted-v04/cloud-hoodie.png",
+      "original": "companions/fitted-v04/cloud-hoodie.png",
+      "originalSha256": "c176b0b1998a6795ece2212ef86392d8bcce57d259cbbec92e5b9f2d50ac3a6c",
+      "generationRecord": "sources/v04/generation/fitted-wardrobe-manifest.json"
+    },
+    {
+      "id": "cloud-cape",
+      "asset": "companions/fitted-v04/cloud-cape.png",
+      "original": "companions/fitted-v04/cloud-cape.png",
+      "originalSha256": "2746fe2f942e46dd925047b5712af754e176c25ad0e613a856cd75abc30fb966",
+      "generationRecord": "sources/v04/generation/fitted-wardrobe-manifest.json"
+    },
+    {
+      "id": "fluffy-scarf",
+      "asset": "companions/fitted-v04/fluffy-scarf.png",
+      "original": "companions/fitted-v04/fluffy-scarf.png",
+      "originalSha256": "0c1f0bcb23629fdf75734e6bfc71fb59785a6191c1edb63e2d5c6f821d863c17",
+      "generationRecord": "sources/v04/generation/fitted-wardrobe-manifest.json"
+    },
+    {
+      "id": "fluffy-hoodie",
+      "asset": "companions/fitted-v04/fluffy-hoodie.png",
+      "original": "companions/fitted-v04/fluffy-hoodie.png",
+      "originalSha256": "df18a7f4245e5d0f083142c8b0828290b6cc93ded7a8a5bfda8cb08c27789fda",
+      "generationRecord": "sources/v04/generation/fitted-wardrobe-manifest.json"
+    },
+    {
+      "id": "fluffy-cape",
+      "asset": "companions/fitted-v04/fluffy-cape.png",
+      "original": "companions/fitted-v04/fluffy-cape.png",
+      "originalSha256": "b87597ea1e5f1ace645d4f96e0d7f5d4c3ad235fe54fe22e71395e59533d10fb",
+      "generationRecord": "sources/v04/generation/fitted-wardrobe-manifest.json"
+    },
+    {
+      "id": "cloud-scarf",
+      "asset": "companions/worn-v04/cloud-scarf.png",
+      "original": "companions/worn-v04/cloud-scarf.png",
+      "originalSha256": "13a85eda92ec772dfd103f23652ae444819e2047b1d9e9d7cc6c10212242f2c1",
+      "generationRecord": "sources/v04/generation/worn-wardrobe-manifest.json"
+    },
+    {
+      "id": "cloud-hoodie",
+      "asset": "companions/worn-v04/cloud-hoodie.png",
+      "original": "companions/worn-v04/cloud-hoodie.png",
+      "originalSha256": "fa15e75fc32670938aa4f2f6c3c0652bae8502a44445ee900bbfa15bb010a594",
+      "generationRecord": "sources/v04/generation/worn-wardrobe-manifest.json"
+    },
+    {
+      "id": "cloud-cape",
+      "asset": "companions/worn-v04/cloud-cape.png",
+      "original": "companions/worn-v04/cloud-cape.png",
+      "originalSha256": "f0a31375ee35f6e280b2ff287ba8e4e88eff2cc313a32f398092f06eefa5e49e",
+      "generationRecord": "sources/v04/generation/worn-wardrobe-manifest.json"
+    },
+    {
+      "id": "fluffy-scarf",
+      "asset": "companions/worn-v04/fluffy-scarf.png",
+      "original": "companions/worn-v04/fluffy-scarf.png",
+      "originalSha256": "775427aa5f1422a6accf03b2bb9fbd949f45d46e6c8bd68457b8361ed28694e3",
+      "generationRecord": "sources/v04/generation/worn-wardrobe-manifest.json"
+    },
+    {
+      "id": "fluffy-hoodie",
+      "asset": "companions/worn-v04/fluffy-hoodie.png",
+      "original": "companions/worn-v04/fluffy-hoodie.png",
+      "originalSha256": "3624ebaeed5f98e32e4657aee2dca3874a768159d4148709b40a99bfeb242ff6",
+      "generationRecord": "sources/v04/generation/worn-wardrobe-manifest.json"
+    },
+    {
+      "id": "fluffy-cape",
+      "asset": "companions/worn-v04/fluffy-cape.png",
+      "original": "companions/worn-v04/fluffy-cape.png",
+      "originalSha256": "07d3a083059de038cfd6341100d0c315776121c436b47b15428aa8662fecc8bf",
+      "generationRecord": "sources/v04/generation/worn-wardrobe-manifest.json"
+    }
+  ]
+}
