@@ -161,7 +161,6 @@ export function Header({
             {title}
           </T>
         )}
-        <DemoBadge />
         {!back && (
           <RoundButton
             icon="settings"
@@ -170,25 +169,6 @@ export function Header({
           />
         )}
       </View>
-    </View>
-  );
-}
-export function DemoBadge() {
-  const { theme } = useApp();
-  return (
-    <View
-      style={{
-        borderWidth: 1,
-        borderColor: theme.border,
-        backgroundColor: theme.glass,
-        paddingHorizontal: 9,
-        paddingVertical: 4,
-        borderRadius: 20,
-      }}
-    >
-      <T size={10} muted>
-        Демо
-      </T>
     </View>
   );
 }
@@ -241,7 +221,7 @@ export function Heading({ title, body }: { title: string; body?: string }) {
   return (
     <View style={{ marginTop: 14, marginBottom: 24, gap: 8 }}>
       <T size={36} weight="500" style={{ letterSpacing: -1.4, lineHeight: 40 }}>
-        {title}
+        {title.replace(/\\n/g, "\n")}
       </T>
       {body && (
         <T muted size={14}>
@@ -277,16 +257,18 @@ export function Chip({
   label,
   active,
   onPress,
+  accessibilityLabel,
 }: {
   label: string;
   active?: boolean;
   onPress: () => void;
+  accessibilityLabel?: string;
 }) {
   const { theme } = useApp();
   return (
     <Touch
       accessibilityRole="button"
-      accessibilityLabel={label}
+      accessibilityLabel={accessibilityLabel ?? label}
       accessibilityState={{ selected: active }}
       onPress={onPress}
       style={{

@@ -15,7 +15,8 @@ export type IconName =
   | "spark"
   | "close"
   | "send"
-  | "edit";
+  | "edit"
+  | "calendar";
 const paths: Record<IconName, string> = {
   sun: "M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5",
   moon: "M20.5 13.5A8.5 8.5 0 0 1 10.5 3.5a8.5 8.5 0 1 0 10 10Z",
@@ -35,6 +36,8 @@ const paths: Record<IconName, string> = {
   close: "m6 6 12 12M6 18 18 6",
   send: "m22 2-7 20-4-9-9-4Zm0 0L11 13",
   edit: "m15 4 5 5M4 20l5-1L21 7a3.5 3.5 0 0 0-5-5L4 14Z",
+  calendar:
+    "M6 4h12a2 2 0 0 1 2 2v14H4V6a2 2 0 0 1 2-2Zm2-2v5m8-5v5M4 10h16m-12 4h2m4 0h2m-8 3h2",
 };
 export function Icon({
   name,

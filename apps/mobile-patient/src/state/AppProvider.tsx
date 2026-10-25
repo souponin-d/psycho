@@ -28,6 +28,7 @@ const Context = createContext<{
   storageError: boolean;
   retrySave: () => void;
   today: string;
+  isActive: boolean;
 } | null>(null);
 export function AppProvider({ children }: PropsWithChildren) {
   const [state, dispatch] = useReducer(
@@ -40,6 +41,9 @@ export function AppProvider({ children }: PropsWithChildren) {
   const [storageError, setStorageError] = useState(false);
   const [saveAttempt, setSaveAttempt] = useState(0);
   const [today, setToday] = useState(dayKey());
+  const [isActive, setIsActive] = useState(
+    NativeAppState.currentState === "active",
+  );
   const store = useRef(createStorage(AsyncStorage)).current;
   const [readAttempt, setReadAttempt] = useState(0);
   const [readSucceeded, setReadSucceeded] = useState(false);
@@ -67,9 +71,10 @@ export function AppProvider({ children }: PropsWithChildren) {
       "reduceMotionChanged",
       setSystemReduced,
     );
-    const foreground = NativeAppState.addEventListener("change", () =>
-      setToday(dayKey()),
-    );
+    const foreground = NativeAppState.addEventListener("change", (status) => {
+      setIsActive(status === "active");
+      setToday(dayKey());
+    });
     const timer = setInterval(() => setToday(dayKey()), 30000);
     return () => {
       alive = false;
@@ -106,6 +111,7 @@ export function AppProvider({ children }: PropsWithChildren) {
             ? setSaveAttempt((n) => n + 1)
             : setReadAttempt((n) => n + 1),
         today,
+        isActive,
       }}
     >
       {children}

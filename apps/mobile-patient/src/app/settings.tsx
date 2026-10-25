@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Constants from "expo-constants";
 import { Alert, View, Switch, TextInput } from "react-native";
 import { router } from "expo-router";
 import { Screen, T, Heading, Panel, Button } from "../components/UI";
@@ -8,19 +9,25 @@ import { Icon } from "../components/Icon";
 import { Mascot } from "../components/Mascot";
 import { useApp } from "../state/AppProvider";
 import { mascotOptions } from "../config/content";
+import { ReminderSettings } from "../components/ReminderSettings";
+import { useJourney } from "../state/JourneyProvider";
+import { clearReminderNotifications } from "../services/localNotifications";
+import { clearSavedHistoryExports } from "../services/historyExport";
 export default function SettingsScreen() {
   const { state, dispatch, theme } = useApp();
+  const { act, saving } = useJourney();
   const [name, setName] = useState(state.name);
   return (
     <Screen title="Ваше пространство" back>
       <Heading
-        title="Пусть будет\nпо-вашему"
+        title={"Пусть будет\nпо-вашему"}
         body="Все изменения сохраняются на этом телефоне"
       />
       <T size={18} weight="500" style={{ marginBottom: 16 }}>
         Оформление
       </T>
       <ThemePicker />
+      <ReminderSettings />
       <T size={18} weight="500" style={{ marginTop: 30, marginBottom: 16 }}>
         Ваш спутник
       </T>
@@ -106,7 +113,50 @@ export default function SettingsScreen() {
           />
         </View>
       </Panel>
+      <Panel style={{ marginTop: 16, gap: 18 }}>
+        {(
+          [
+            [
+              "haptics",
+              "Виброотклик",
+              "Лёгкие касания при выборе и сохранении",
+            ],
+            [
+              "gameplay",
+              "Живой берег",
+              "Предметы, воспоминания и личная цель недели",
+            ],
+          ] as const
+        ).map(([key, title, description]) => (
+          <View
+            key={key}
+            style={{ flexDirection: "row", alignItems: "center", gap: 15 }}
+          >
+            <View style={{ flex: 1 }}>
+              <T size={15}>{title}</T>
+              <T size={11} muted>
+                {description}
+              </T>
+            </View>
+            <Switch
+              accessibilityLabel={title}
+              value={state[key]}
+              onValueChange={(value) =>
+                dispatch({ type: "preferences", patch: { [key]: value } })
+              }
+              trackColor={{ true: theme.accent, false: theme.border }}
+              thumbColor={theme.surface}
+            />
+          </View>
+        ))}
+      </Panel>
       <View style={{ gap: 12, marginTop: 24 }}>
+        <Button
+          secondary
+          title="Украшения берега"
+          icon="home"
+          onPress={() => router.push("/shore-settings")}
+        />
         <Button
           secondary
           title="Пройти знакомство ещё раз"
@@ -119,18 +169,32 @@ export default function SettingsScreen() {
         />
         <Button
           secondary
-          title="Сбросить демонстрационные данные"
+          title="Сбросить данные на телефоне"
+          disabled={saving}
           icon="history"
           onPress={() =>
             Alert.alert(
               "Начать заново?",
-              "Удалятся только локальные настройки и демонстрационные записи Синкли.",
+              "Удалятся ваши локальные записи, файлы истории внутри Синкли, вопросы, настройки и расстановка. Внешние копии файлов останутся. Снова откроется учебный сценарий с восемью прошлыми днями.",
               [
                 { text: "Отмена", style: "cancel" },
                 {
                   text: "Сбросить",
                   style: "destructive",
-                  onPress: () => {
+                  onPress: async () => {
+                    if (!(await act({ type: "reset" }))) return;
+                    const cleanup = await Promise.allSettled([
+                      clearReminderNotifications(),
+                      Promise.resolve().then(clearSavedHistoryExports),
+                    ]);
+                    if (
+                      cleanup.some((result) => result.status === "rejected")
+                    ) {
+                      Alert.alert(
+                        "Очистка завершена частично",
+                        "Профиль сброшен, но часть файлов или прежних сигналов удалить не удалось. Повторите сброс после знакомства.",
+                      );
+                    }
                     dispatch({ type: "reset" });
                     router.replace("/onboarding");
                   },
@@ -141,9 +205,7 @@ export default function SettingsScreen() {
         />
       </View>
       <T muted size={11} style={{ marginTop: 24, lineHeight: 17 }}>
-        Синкли · прототип 0.1.0{"\n"}Настоящие назначения, отправка врачу, AI и
-        системные уведомления пока не подключены. Для знакомства используйте
-        вымышленные сведения.
+        Синкли · {Constants.expoConfig?.version ?? "0.3.0"}
       </T>
     </Screen>
   );

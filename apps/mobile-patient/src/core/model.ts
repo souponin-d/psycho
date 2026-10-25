@@ -1,3 +1,5 @@
+import { validFeeling, type FeelingPoint } from "./feelings.ts";
+import { decorations, isDay, type Decoration } from "./shore.ts";
 export type ThemeId = "light" | "dark" | "lavender";
 export function planOperation(
   id: string,
@@ -23,7 +25,10 @@ export type SelfReport = {
   mood: Mood;
   sleep: string;
   note: string;
+  feeling?: FeelingPoint;
+  label?: string;
 };
+export type VisitQuestion = { id: string; text: string; day: string };
 export type AppState = {
   version: 1;
   onboarded: boolean;
@@ -31,7 +36,13 @@ export type AppState = {
   mascot: MascotId;
   name: string;
   morning: string;
+  reportTime: string;
   motion: boolean;
+  haptics: boolean;
+  gameplay: boolean;
+  memoryDays: string[];
+  decoration: Decoration;
+  questions: VisitQuestion[];
   completed: Record<string, string[]>;
   reports: SelfReport[];
 };
@@ -40,12 +51,25 @@ export type Action =
   | {
       type: "preferences";
       patch: Partial<
-        Pick<AppState, "theme" | "mascot" | "name" | "morning" | "motion">
+        Pick<
+          AppState,
+          | "theme"
+          | "mascot"
+          | "name"
+          | "morning"
+          | "reportTime"
+          | "motion"
+          | "haptics"
+          | "gameplay"
+          | "decoration"
+        >
       >;
     }
   | { type: "onboard"; value: boolean }
   | { type: "complete"; day: string; taskId: string; done: boolean }
   | { type: "report"; report: SelfReport }
+  | { type: "question:add"; question: VisitQuestion }
+  | { type: "question:remove"; id: string }
   | { type: "reset" };
 export function createDefaultState(): AppState {
   return {
@@ -55,15 +79,19 @@ export function createDefaultState(): AppState {
     mascot: "fluffy",
     name: "Анна",
     morning: "09:00",
+    reportTime: "20:00",
     motion: true,
+    haptics: true,
+    gameplay: true,
+    memoryDays: [],
+    decoration: "leaf",
+    questions: [],
     completed: {},
     reports: [],
   };
 }
 const taskIds = ["morning", "checkin", "walk", "evening"];
 const moods = ["low", "uneasy", "neutral", "calm", "good"];
-const isDay = (value: unknown): value is string =>
-  typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value);
 function validReport(value: unknown): SelfReport | null {
   if (!value || typeof value !== "object") return null;
   const r = value as Record<string, unknown>;
@@ -75,7 +103,8 @@ function validReport(value: unknown): SelfReport | null {
     !/^([01]\d|2[0-3]):[0-5]\d$/.test(r.time) ||
     !moods.includes(String(r.mood)) ||
     typeof r.sleep !== "string" ||
-    typeof r.note !== "string"
+    typeof r.note !== "string" ||
+    (r.feeling !== undefined && !validFeeling(r.feeling))
   )
     return null;
   return {
@@ -85,7 +114,22 @@ function validReport(value: unknown): SelfReport | null {
     mood: r.mood as Mood,
     sleep: r.sleep.slice(0, 40),
     note: r.note.slice(0, 500),
+    ...(validFeeling(r.feeling) ? { feeling: { ...r.feeling } } : {}),
+    ...(typeof r.label === "string" && r.label.trim()
+      ? { label: r.label.trim().slice(0, 60) }
+      : {}),
   };
+}
+function validQuestion(value: unknown): VisitQuestion | null {
+  if (!value || typeof value !== "object") return null;
+  const q = value as VisitQuestion;
+  return typeof q.id === "string" &&
+    q.id &&
+    typeof q.text === "string" &&
+    q.text.trim() &&
+    isDay(q.day)
+    ? { id: q.id.slice(0, 100), text: q.text.trim().slice(0, 240), day: q.day }
+    : null;
 }
 export function restoreState(value: string | null): AppState {
   const base = createDefaultState();
@@ -106,6 +150,17 @@ export function restoreState(value: string | null): AppState {
     const reports = Array.isArray(r.reports)
       ? r.reports.map(validReport).filter((v): v is SelfReport => v !== null)
       : [];
+    const memoryDays = [
+      ...new Set([
+        ...(Array.isArray(r.memoryDays) ? r.memoryDays.filter(isDay) : []),
+        ...reports.map((report) => report.day),
+      ]),
+    ].sort();
+    const questions = Array.isArray(r.questions)
+      ? r.questions
+          .map(validQuestion)
+          .filter((q): q is VisitQuestion => q !== null)
+      : [];
     return {
       ...base,
       onboarded: r.onboarded === true,
@@ -117,14 +172,26 @@ export function restoreState(value: string | null): AppState {
         typeof r.name === "string"
           ? r.name.trim().slice(0, 30) || "Анна"
           : "Анна",
-      morning: ["08:00", "09:00", "10:00"].includes(String(r.morning))
+      morning: /^([01]\d|2[0-3]):[0-5]\d$/.test(String(r.morning))
         ? r.morning!
         : "09:00",
+      reportTime: /^([01]\d|2[0-3]):[0-5]\d$/.test(String(r.reportTime))
+        ? r.reportTime!
+        : "20:00",
       motion: r.motion !== false,
+      haptics: r.haptics !== false,
+      gameplay: r.gameplay !== false,
+      memoryDays,
+      decoration: decorations(memoryDays).includes(r.decoration!)
+        ? r.decoration!
+        : "leaf",
+      questions: [...new Map(questions.map((q) => [q.id, q])).values()].slice(
+        -40,
+      ),
       completed,
       reports: [
         ...new Map(reports.map((report) => [report.id, report])).values(),
-      ].slice(-180),
+      ],
     };
   } catch {
     return base;
@@ -155,8 +222,33 @@ export function reduceState(state: AppState, action: Action): AppState {
       const report = validReport(action.report);
       if (!report || state.reports.some((r) => r.id === report.id))
         return state;
-      return { ...state, reports: [...state.reports, report].slice(-180) };
+      return {
+        ...state,
+        reports: [...state.reports, report],
+        memoryDays: [...new Set([...state.memoryDays, report.day])].sort(),
+        completed: {
+          ...state.completed,
+          [report.day]: [
+            ...new Set([...(state.completed[report.day] ?? []), "checkin"]),
+          ],
+        },
+      };
     }
+    case "question:add": {
+      const question = validQuestion(action.question);
+      if (
+        !question ||
+        state.questions.length >= 40 ||
+        state.questions.some((q) => q.id === question.id)
+      )
+        return state;
+      return { ...state, questions: [...state.questions, question] };
+    }
+    case "question:remove":
+      return {
+        ...state,
+        questions: state.questions.filter((q) => q.id !== action.id),
+      };
     case "reset":
       return createDefaultState();
   }

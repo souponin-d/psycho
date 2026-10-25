@@ -1,0 +1,209 @@
+.calendar {
+  --calendar-zero: #f4f8fc;
+  --calendar-one: #e5f2ff;
+  --calendar-two: #c8e1f6;
+  --calendar-three: #a4c9ed;
+  --calendar-four: #7faddd;
+  --calendar-ink: #173f44;
+  --calendar-muted: #52656d;
+  --calendar-gap: #f2eee6;
+  color: var(--calendar-ink);
+  font-variant-numeric: tabular-nums;
+}
+.headline {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+  margin: 8px 0 16px;
+  flex-wrap: wrap;
+}
+.headline > strong {
+  font-size: clamp(40px, 5vw, 60px);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1.1;
+}
+.headline > div {
+  display: grid;
+  gap: 8px;
+}
+.headline small,
+.hint,
+.period,
+.legend,
+.note,
+.empty {
+  font-size: 12px;
+  line-height: 1.65;
+  color: var(--calendar-muted, #52656d);
+}
+.hint {
+  margin: 0 0 16px;
+}
+.days {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 8px;
+}
+.day {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  min-height: 90px;
+  padding: 10px 3px 8px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  color: var(--calendar-ink);
+  font: inherit;
+  cursor: pointer;
+}
+.day time {
+  font-size: 10px;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+.day strong {
+  font-size: 24px;
+  line-height: 1.25;
+  font-weight: 500;
+}
+.day > span {
+  font-size: 9px;
+  line-height: 1.3;
+}
+.day[data-level="0"],
+.scale i[data-level="0"] {
+  background: var(--calendar-zero);
+  border: 1px solid #c8d8e3;
+}
+.day[data-level="1"],
+.scale i[data-level="1"] {
+  background: var(--calendar-one);
+}
+.day[data-level="2"],
+.scale i[data-level="2"] {
+  background: var(--calendar-two);
+}
+.day[data-level="3"],
+.scale i[data-level="3"] {
+  background: var(--calendar-three);
+}
+.day[data-level="4"],
+.scale i[data-level="4"] {
+  background: var(--calendar-four);
+}
+.day:hover:not(:disabled) {
+  border-color: #2d74b4;
+  box-shadow: 0 3px 8px #173f441a;
+}
+.day:focus-visible {
+  outline: 3px solid #245e93;
+  outline-offset: 3px;
+}
+.missing,
+.gap i {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--calendar-gap),
+    var(--calendar-gap) 5px,
+    #e9e2d5 5px,
+    #e9e2d5 6px
+  );
+  border: 1px dashed #b4a386;
+  color: #655b4b;
+  cursor: default;
+  opacity: 1;
+}
+.period {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 16px 0;
+}
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.scale {
+  display: flex;
+  gap: 3px;
+}
+.scale i,
+.gap i {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+}
+.gap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 10px;
+}
+.note {
+  margin: 14px 0 0;
+}
+.empty {
+  padding: 24px 0;
+}
+.details {
+  margin-top: 18px;
+  font-size: 12px;
+}
+.details summary {
+  padding: 10px 0;
+  cursor: pointer;
+}
+.scroll {
+  overflow-x: auto;
+}
+.scroll table {
+  width: 100%;
+  min-width: 360px;
+  border-collapse: collapse;
+}
+.scroll th,
+.scroll td {
+  padding: 10px 6px;
+  text-align: left;
+  border-bottom: 1px solid #dce5e9;
+}
+.details summary:focus-visible,
+.scroll:focus-visible {
+  outline: 2px solid #245e93;
+  outline-offset: 3px;
+}
+@media (max-width: 1200px) {
+  .days {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .days {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .day {
+    min-height: 82px;
+  }
+  .headline {
+    gap: 14px;
+  }
+  .headline small {
+    font-size: 11px;
+  }
+  .gap {
+    margin-left: 0;
+  }
+}
+@media (max-width: 380px) {
+  .days {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

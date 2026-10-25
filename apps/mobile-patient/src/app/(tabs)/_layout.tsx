@@ -3,17 +3,18 @@ import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { useApp } from "../../state/AppProvider";
+import { useJourney } from "../../state/JourneyProvider";
 import { Icon, type IconName } from "../../components/Icon";
 import { T } from "../../components/UI";
 import { Touch } from "../../components/Motion";
 const items: Record<string, { title: string; icon: IconName }> = {
-  index: { title: "День", icon: "sun" },
+  index: { title: "Путь", icon: "sun" },
   plan: { title: "План", icon: "leaf" },
   history: { title: "История", icon: "history" },
   chat: { title: "Рядом", icon: "message" },
 };
 function Bar({ state, navigation }: BottomTabBarProps) {
-  const { theme } = useApp();
+  const { theme, state: preferences } = useApp();
   const safe = useSafeAreaInsets();
   return (
     <View
@@ -33,7 +34,10 @@ function Bar({ state, navigation }: BottomTabBarProps) {
       }}
     >
       {state.routes.map((route, index) => {
-        const item = items[route.name];
+        const item =
+          route.name === "index" && !preferences.gameplay
+            ? { title: "Сегодня", icon: "sun" as const }
+            : items[route.name];
         if (!item) return null;
         const active = state.index === index;
         return (
@@ -73,7 +77,9 @@ function Bar({ state, navigation }: BottomTabBarProps) {
 }
 export default function TabsLayout() {
   const { state, theme, reducedMotion } = useApp();
-  if (!state.onboarded) return <Redirect href="/onboarding" />;
+  const { journey } = useJourney();
+  if (!state.onboarded || !journey?.connected)
+    return <Redirect href="/onboarding" />;
   return (
     <Tabs
       tabBar={(props) => <Bar {...props} />}

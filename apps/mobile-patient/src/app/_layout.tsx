@@ -4,11 +4,14 @@ import { StatusBar } from "expo-status-bar";
 import { ActivityIndicator, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { AppProvider, useApp } from "../state/AppProvider";
+import { JourneyProvider, useJourney } from "../state/JourneyProvider";
+import { ReminderProvider } from "../state/ReminderProvider";
 import { T } from "../components/UI";
 export { ErrorBoundary } from "expo-router";
 function Navigation() {
   const { ready, theme, reducedMotion, storageError, retrySave } = useApp();
-  if (!ready)
+  const patient = useJourney();
+  if (!ready || !patient.ready)
     return (
       <View
         style={{
@@ -19,6 +22,27 @@ function Navigation() {
         }}
       >
         <ActivityIndicator color={theme.accent} />
+      </View>
+    );
+  if (!patient.journey)
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: theme.page,
+          padding: 30,
+          justifyContent: "center",
+          gap: 20,
+        }}
+      >
+        <T size={24}>Не удалось открыть записи</T>
+        <T>
+          {patient.error ||
+            "Попробуйте прочитать их ещё раз. Данные не удалены."}
+        </T>
+        <T accessibilityRole="button" onPress={patient.retry}>
+          Повторить
+        </T>
       </View>
     );
   return (
@@ -46,7 +70,7 @@ function Navigation() {
           options={{ animation: reducedMotion ? "none" : "slide_from_right" }}
         />
       </Stack>
-      {storageError && (
+      {(storageError || patient.error) && (
         <View
           style={{
             position: "absolute",
@@ -58,8 +82,13 @@ function Navigation() {
             borderRadius: 20,
           }}
         >
-          <T onPress={retrySave} accessibilityRole="button" size={13}>
-            Не удалось сохранить на телефоне. Коснитесь, чтобы повторить.
+          <T
+            onPress={patient.error ? patient.retry : retrySave}
+            accessibilityRole="button"
+            size={13}
+          >
+            {patient.error || "Не удалось сохранить на телефоне."} Коснитесь,
+            чтобы повторить.
           </T>
         </View>
       )}
@@ -75,7 +104,11 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <AppProvider>
-        <Navigation />
+        <JourneyProvider>
+          <ReminderProvider>
+            <Navigation />
+          </ReminderProvider>
+        </JourneyProvider>
       </AppProvider>
     </SafeAreaProvider>
   );
