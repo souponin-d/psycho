@@ -4,17 +4,38 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { within } from "@testing-library/react";
 
-vi.mock("../site/hero-animation.js", () => ({ mountHeroAnimation: vi.fn() }));
-
 afterEach(() => {
   vi.clearAllTimers();
   vi.useRealTimers();
+  vi.unstubAllGlobals();
+  Reflect.deleteProperty(document, "fonts");
   document.body.innerHTML = "";
   document.documentElement.classList.remove("js-ready");
 });
 
-it("сохраняет вкладки продукта и показывает три мозаики опроса", async () => {
+it("сохраняет навигацию, экраны экосистемы, мозаики и вкладки тарифов", async () => {
   vi.useFakeTimers();
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn(() => ({ matches: true })),
+  );
+  vi.stubGlobal(
+    "ResizeObserver",
+    class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    },
+  );
+  vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) =>
+    setTimeout(() => callback(0), 0),
+  );
+  const scrollTo = vi.fn();
+  vi.stubGlobal("scrollTo", scrollTo);
+  Object.defineProperty(document, "fonts", {
+    configurable: true,
+    value: { ready: Promise.resolve() },
+  });
   const source = readFileSync(resolve("site/index.html"), "utf8");
   document.body.innerHTML = new DOMParser().parseFromString(
     source,
@@ -22,35 +43,15 @@ it("сохраняет вкладки продукта и показывает �
   ).body.innerHTML;
   await import("../site/app.js");
 
-  const product = within(document.querySelector<HTMLElement>("#ecosystem")!);
-  const productLink =
-    document.querySelector<HTMLAnchorElement>("#platform-link")!;
-  product.getByRole("tab", { name: "Пациенту" }).click();
-  expect(productLink.hidden).toBe(true);
-  const patientDemo = product.getByRole("button", {
-    name: "Посмотреть приложение пациента",
-  });
-  expect(patientDemo).toHaveProperty("disabled", true);
+  const menu = document.querySelector<HTMLButtonElement>(".menu-toggle")!;
+  menu.click();
+  expect(menu.getAttribute("aria-expanded")).toBe("true");
+  document.dispatchEvent(
+    new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
+  );
+  expect(menu.getAttribute("aria-expanded")).toBe("false");
+  expect(document.activeElement).toBe(menu);
 
-  product
-    .getByRole("tab", { name: "Пациенту" })
-    .dispatchEvent(
-      new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }),
-    );
-  expect(
-    product.getByRole("tab", { name: "Клинике" }).getAttribute("aria-selected"),
-  ).toBe("true");
-  expect(productLink.getAttribute("href")).toBe("demo/admin/");
-  expect(
-    product.getByRole("heading", {
-      name: "Эффективное управление клиникой на основе данных",
-    }),
-  ).toBeTruthy();
-  product.getByRole("tab", { name: "Врачу" }).click();
-  expect(productLink.getAttribute("href")).toBe("doctor/");
-
-  expect(document.querySelector("#evidence")!.tagName).toBe("SECTION");
-  expect(document.querySelector("#compare")!.closest("details")).toBeNull();
   const survey = within(
     document.querySelector<HTMLElement>(".audience-survey")!,
   );
@@ -62,10 +63,70 @@ it("сохраняет вкладки продукта и показывает �
     expect(mosaic.children).toHaveLength(107);
     expect(mosaic.querySelectorAll(".is-filled")).toHaveLength(count);
   }
-  expect(survey.queryByRole("tablist")).toBeNull();
 
-  expect(document.querySelector("#ecosystem-demo")).toBeNull();
-  expect(document.querySelector(".clinical-showcase")).toBeNull();
-  expect(document.querySelector(".care-journey")).toBeNull();
-  expect(document.querySelector("dialog[open]")).toBeNull();
+  const doctor = document.querySelector<HTMLElement>('[data-step="1"]')!;
+  vi.spyOn(doctor, "getBoundingClientRect").mockReturnValue({
+    top: window.innerHeight / 2 - 100,
+    height: 200,
+  } as DOMRect);
+  window.dispatchEvent(new Event("scroll"));
+  await vi.runOnlyPendingTimersAsync();
+  const doctorScene = document.querySelector<HTMLElement>('[data-scene="1"]')!;
+  expect(doctorScene.getAttribute("aria-hidden")).toBe("false");
+  expect(
+    document.querySelector('[data-scene="0"]')!.getAttribute("aria-hidden"),
+  ).toBe("true");
+  within(doctorScene).getByRole("button", { name: "Лечение и план" }).click();
+  expect(doctorScene.querySelector("img")!.getAttribute("src")).toContain(
+    "plan.jpg",
+  );
+  expect(doctorScene.querySelector("img")!.alt).toBe("Лечение и план");
+  expect(document.querySelector("#role-doctor a")!.getAttribute("href")).toBe(
+    "doctor/",
+  );
+  expect(document.querySelector("#role-clinic a")!.getAttribute("href")).toBe(
+    "demo/admin/",
+  );
+  expect(document.querySelector("dialog")).toBeNull();
+  expect(document.querySelector(".stage-head")).toBeNull();
+
+  const tariffs = within(document.querySelector<HTMLElement>("#monetization")!);
+  const investor = tariffs.getByRole("tab", { name: "Для инвестора" });
+  investor.click();
+  await Promise.resolve();
+  expect(document.querySelector("#monetization-title")!.textContent).toBe(
+    "Монетизация",
+  );
+  expect(
+    document.querySelector<HTMLElement>(".tariffs-clinic-copy")!.hidden,
+  ).toBe(true);
+  expect(
+    document.querySelector("#panel-clinic")!.getAttribute("aria-hidden"),
+  ).toBe("true");
+  investor.dispatchEvent(
+    new KeyboardEvent("keydown", { key: "ArrowLeft", bubbles: true }),
+  );
+  await Promise.resolve();
+  expect(document.querySelector("#monetization-title")!.textContent).toBe(
+    "Тарифы",
+  );
+  expect(
+    document.querySelector<HTMLElement>(".tariffs-clinic-copy")!.hidden,
+  ).toBe(false);
+  expect(document.activeElement?.id).toBe("tab-clinic");
+
+  vi.spyOn(
+    document.querySelector("header")!,
+    "getBoundingClientRect",
+  ).mockReturnValue({ height: 80 } as DOMRect);
+  vi.spyOn(
+    document.querySelector("#team")!,
+    "getBoundingClientRect",
+  ).mockReturnValue({ top: 600 } as DOMRect);
+  document
+    .querySelector<HTMLAnchorElement>('#site-nav a[href="#team"]')!
+    .click();
+  expect(scrollTo).toHaveBeenLastCalledWith({ top: 520, behavior: "instant" });
+  expect(document.querySelector("#pilot .pilot-contact")).not.toBeNull();
+  expect(document.querySelector("#team .team-contact")).toBeNull();
 });
