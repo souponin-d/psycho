@@ -1,3 +1,4 @@
+import { calendarStones } from "./pathLayout.ts";
 import type { WorldState } from "./journeyModel.ts";
 import { scenes, worldItems } from "../config/worldCatalog.ts";
 
@@ -130,7 +131,7 @@ const distance = (a: WalkPoint, b: WalkPoint) =>
   Math.hypot(a.x - b.x, (a.y - b.y) * 3);
 function free(p: WalkPoint, world: WorldState) {
   return (
-    scenes[world.territory].stones.every(
+    calendarStones(scenes[world.territory]).every(
       // Центр тела выше опорной точки; запас учитывает 144 dp и экран 320 dp.
       ([x, y]) => distance({ x: p.x, y: p.y - 0.03 }, { x, y }) > 0.31,
     ) &&

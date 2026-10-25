@@ -90,7 +90,16 @@ export type Placement = {
   scale: number;
 };
 export type Outfit = { color: string; clothing: string; accessory: string };
+export type WorldSection = {
+  anchorDay: DayKey;
+  territory: "shore" | "garden";
+  ambience?: "morning" | "dusk" | "mist";
+  flora?: "flowers" | "ferns";
+  placements: Placement[];
+};
 export type WorldState = {
+  anchorDay?: DayKey;
+  sections?: WorldSection[];
   territory: "shore" | "garden";
   ambience?: "morning" | "dusk" | "mist";
   flora?: "flowers" | "ferns";
@@ -107,6 +116,8 @@ export type PatientDraft = {
   id: string;
   day: DayKey;
   kind: "report" | "questionnaire" | "contact";
+  step?: number;
+  formVersion?: string;
   contact?: ContactDraftFields;
   fields?: ReportFields;
   note?: string;
@@ -144,6 +155,7 @@ export type JourneyState = {
 export type PatientCommand =
   | {
       type: "event";
+      draftId?: string;
       event:
         | Omit<DoseEvent, "at" | "recordedDay">
         | Omit<ReportEvent, "at" | "recordedDay">
@@ -155,6 +167,7 @@ export type PatientCommand =
   | { type: "connect"; code: string }
   | { type: "goal"; goal: string }
   | { type: "world"; world: WorldState }
+  | { type: "world:section"; day: DayKey }
   | { type: "activity"; activity: "history" | "question" }
   | { type: "tick" }
   | { type: "reset" };

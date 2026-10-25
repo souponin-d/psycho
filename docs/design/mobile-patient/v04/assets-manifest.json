@@ -1,0 +1,122 @@
+[
+  {
+    "id": "bench",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-fa2f7c05-ad79-49c0-bc95-2435d7f31b51.png",
+    "prompt": "Production game prop, ONE isolated object on truly TRANSPARENT background: a small solid wood garden bench with rounded weathered slats and subtly carved legs, room for one tiny companion. Match the reference landscape's painterly miniature realism, three-quarter overhead camera, realistic material grain and volume. Natural quiet diffuse neutral daylight, low-to-moderate saturation; no overexposure, no neon, no glossy cartoon outline. Whole object with a subtle local contact shadow, anchored at bottom center, fills 80% of a square canvas, generous 10% transparent margin, no terrain tile or background, no characters, no text or UI. A tangible tiny object belonging inside this exact garden, not a flat vector icon. No alternative variants, no sheet.",
+    "path": "apps/mobile-patient/assets/world/v04/bench.png"
+  },
+  {
+    "id": "flowers",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-d9833c68-5b11-4efe-aec4-1383b923422d.png",
+    "prompt": "Production game prop, ONE isolated object on truly TRANSPARENT background: one small dense clump of natural pale lilac and ivory wildflowers, leaves and soil base. Match the reference landscape's painterly miniature realism, three-quarter overhead camera, realistic material grain and volume. Natural quiet diffuse neutral daylight, low-to-moderate saturation; no overexposure, no neon, no glossy cartoon outline. Whole object with a subtle local contact shadow, anchored at bottom center, fills 80% of a square canvas, generous 10% transparent margin, no terrain tile or background, no characters, no text or UI. A tangible tiny object belonging inside this exact garden, not a flat vector icon. No alternative variants, no sheet.",
+    "path": "apps/mobile-patient/assets/world/v04/flowers.png"
+  },
+  {
+    "id": "lantern",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-e318d346-a720-4289-a118-d426962dddaa.png",
+    "prompt": "Production game prop, ONE isolated object on truly TRANSPARENT background: one tiny aged brass and glass garden lantern on a short carved wood post, softly lit warm interior. Match the reference landscape's painterly miniature realism, three-quarter overhead camera, realistic material grain and volume. Natural quiet diffuse neutral daylight, low-to-moderate saturation; no overexposure, no neon, no glossy cartoon outline. Whole object with a subtle local contact shadow, anchored at bottom center, fills 80% of a square canvas, generous 10% transparent margin, no terrain tile or background, no characters, no text or UI. A tangible tiny object belonging inside this exact garden, not a flat vector icon. No alternative variants, no sheet.",
+    "path": "apps/mobile-patient/assets/world/v04/lantern.png"
+  },
+  {
+    "id": "tea-table",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-61a305f7-a7c6-4f7f-a8bc-a6ac6a610a13.png",
+    "prompt": "Production game prop, ONE isolated object on truly TRANSPARENT background: one low round solid oak tea table with two ceramic cups and a tiny teapot. Match the reference landscape's painterly miniature realism, three-quarter overhead camera, realistic material grain and volume. Natural quiet diffuse neutral daylight, low-to-moderate saturation; no overexposure, no neon, no glossy cartoon outline. Whole object with a subtle local contact shadow, anchored at bottom center, fills 80% of a square canvas, generous 10% transparent margin, no terrain tile or background, no characters, no text or UI. A tangible tiny object belonging inside this exact garden, not a flat vector icon. No alternative variants, no sheet.",
+    "path": "apps/mobile-patient/assets/world/v04/tea-table.png"
+  },
+  {
+    "id": "cushion",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-adf3a833-0546-4813-b819-5a1039689cca.png",
+    "prompt": "ONE isolated production game prop on truly TRANSPARENT background: one plump pale lavender woven linen floor cushion with soft folds and tiny stitched edges. Same painterly three-dimensional miniature realism and three-quarter overhead camera as the supplied garden and bench. Natural neutral diffuse light, subdued colours, tactile material, no glare, no yellow bloom, no white outline, no flat vector icon. Entire object including a subtle LOCAL contact shadow inside central 80% of square canvas, 10% transparent safety margin, bottom center anchor. No landscape or terrain base, no characters, no text, no variant sheet. Match this existing game environment.",
+    "path": "apps/mobile-patient/assets/world/v04/cushion.png"
+  },
+  {
+    "id": "bird-bath",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-8f8381c2-787f-4eff-b34a-a6efe5864f70.png",
+    "prompt": "ONE isolated production game prop on truly TRANSPARENT background: one low shallow weathered sandstone bird bath on a short pedestal, a little still blue-grey water. Same painterly three-dimensional miniature realism and three-quarter overhead camera as the supplied garden and bench. Natural neutral diffuse light, subdued colours, tactile material, no glare, no yellow bloom, no white outline, no flat vector icon. Entire object including a subtle LOCAL contact shadow inside central 80% of square canvas, 10% transparent safety margin, bottom center anchor. No landscape or terrain base, no characters, no text, no variant sheet. Match this existing game environment.",
+    "path": "apps/mobile-patient/assets/world/v04/bird-bath.png"
+  },
+  {
+    "id": "plant-pot",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-d230827f-1a29-4329-b782-6a31bc859a60.png",
+    "prompt": "ONE isolated production game prop on truly TRANSPARENT background: one terracotta clay pot with a healthy small leafy plant, realistic matte foliage. Same painterly three-dimensional miniature realism and three-quarter overhead camera as the supplied garden and bench. Natural neutral diffuse light, subdued colours, tactile material, no glare, no yellow bloom, no white outline, no flat vector icon. Entire object including a subtle LOCAL contact shadow inside central 80% of square canvas, 10% transparent safety margin, bottom center anchor. No landscape or terrain base, no characters, no text, no variant sheet. Match this existing game environment.",
+    "path": "apps/mobile-patient/assets/world/v04/plant-pot.png"
+  },
+  {
+    "id": "soft-stone",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-ca137141-bb72-4cfb-98a3-82253c4e1efb.png",
+    "prompt": "ONE isolated production game prop on truly TRANSPARENT background: one smooth broad rounded grey-beige river stone with a tiny moss patch. Same painterly three-dimensional miniature realism and three-quarter overhead camera as the supplied garden and bench. Natural neutral diffuse light, subdued colours, tactile material, no glare, no yellow bloom, no white outline, no flat vector icon. Entire object including a subtle LOCAL contact shadow inside central 80% of square canvas, 10% transparent safety margin, bottom center anchor. No landscape or terrain base, no characters, no text, no variant sheet. Match this existing game environment.",
+    "path": "apps/mobile-patient/assets/world/v04/soft-stone.png"
+  },
+  {
+    "id": "pebble-cluster",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-f5fce2ab-ee3f-49b4-86f7-f37ce3ad3765.png",
+    "prompt": "ONE isolated production game prop on truly TRANSPARENT background: three smooth small rounded river pebbles, one grey, one beige and one pale blue-grey, naturally grouped. Match the supplied garden and bench's natural painterly miniature realism and three-quarter overhead camera. Soft diffuse neutral light, tactile natural material detail and thickness, moderate saturation. Whole object including a delicate local contact shadow fills central 78% of square canvas, 10% transparent safe margin. No landscape base, no vegetation background, no characters, no text, no icon border, no glow, no overexposure. One asset only. Coherent scale for a peaceful tiny world.",
+    "path": "apps/mobile-patient/assets/world/v04/pebble-cluster.png"
+  },
+  {
+    "id": "fern",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-e9c6e93a-e976-448a-ae82-5710164a2639.png",
+    "prompt": "ONE isolated production game prop on truly TRANSPARENT background: one small lush delicate green fern growing out of a tiny mossy root clump. Match the supplied garden and bench's natural painterly miniature realism and three-quarter overhead camera. Soft diffuse neutral light, tactile natural material detail and thickness, moderate saturation. Whole object including a delicate local contact shadow fills central 78% of square canvas, 10% transparent safe margin. No landscape base, no vegetation background, no characters, no text, no icon border, no glow, no overexposure. One asset only. Coherent scale for a peaceful tiny world.",
+    "path": "apps/mobile-patient/assets/world/v04/fern.png"
+  },
+  {
+    "id": "sunshade",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-0b77d30b-f337-4662-8bc8-362ba8725139.png",
+    "prompt": "ONE isolated production game prop on truly TRANSPARENT background: one small cream linen garden parasol on a carved oak stand, open canopy, compact base. Match the supplied garden and bench's natural painterly miniature realism and three-quarter overhead camera. Soft diffuse neutral light, tactile natural material detail and thickness, moderate saturation. Whole object including a delicate local contact shadow fills central 78% of square canvas, 10% transparent safe margin. No landscape base, no vegetation background, no characters, no text, no icon border, no glow, no overexposure. One asset only. Coherent scale for a peaceful tiny world.",
+    "path": "apps/mobile-patient/assets/world/v04/sunshade.png"
+  },
+  {
+    "id": "gazebo",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-f1449128-448e-43d0-bbf5-52cd686e9133.png",
+    "prompt": "ONE isolated production game prop on truly TRANSPARENT background: one tiny open-sided timber garden gazebo with a moss-grey shingled roof and a small built-in bench. Match the supplied garden and bench's natural painterly miniature realism and three-quarter overhead camera. Soft diffuse neutral light, tactile natural material detail and thickness, moderate saturation. Whole object including a delicate local contact shadow fills central 78% of square canvas, 10% transparent safe margin. No landscape base, no vegetation background, no characters, no text, no icon border, no glow, no overexposure. One asset only. Coherent scale for a peaceful tiny world.",
+    "path": "apps/mobile-patient/assets/world/v04/gazebo.png"
+  },
+  {
+    "id": "lily-pot",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-39154a13-20c9-4fc9-968f-cc445f1d7503.png",
+    "prompt": "ONE isolated production game prop, truly TRANSPARENT background: one low stone garden planter with a few elegant ivory lilies and deep green leaves, delicate soft petals. Match the supplied garden and bench's painterly miniature realism, 3/4 overhead camera and soft natural diffuse lighting. Tangible wood/stone/cloth/metal, fine grain, thickness, soft contact shadows. Moderate natural colours, no bloom or clipped highlights. Whole object within central 78% of square canvas and 10% transparent margins. No landscape base or background, no characters, no text, no icon border, no multiple variants.",
+    "path": "apps/mobile-patient/assets/world/v04/lily-pot.png"
+  },
+  {
+    "id": "flower-arch",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-053b5d27-4bb6-4b71-a500-6c869b57ecba.png",
+    "prompt": "ONE isolated production game prop, truly TRANSPARENT background: one small carved oak garden arch with sparse ivory and lilac climbing flowers and leaves, open center. Match the supplied garden and bench's painterly miniature realism, 3/4 overhead camera and soft natural diffuse lighting. Tangible wood/stone/cloth/metal, fine grain, thickness, soft contact shadows. Moderate natural colours, no bloom or clipped highlights. Whole object within central 78% of square canvas and 10% transparent margins. No landscape base or background, no characters, no text, no icon border, no multiple variants.",
+    "path": "apps/mobile-patient/assets/world/v04/flower-arch.png"
+  },
+  {
+    "id": "bookshelf",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-5547fbd0-443a-4a21-864f-dd17e6dbe7b7.png",
+    "prompt": "ONE isolated production game prop, truly TRANSPARENT background: one tiny freestanding weathered oak bookcase with two shelves and a few cloth-bound books, one small open book on top, no written titles. Match the supplied garden and bench's painterly miniature realism, 3/4 overhead camera and soft natural diffuse lighting. Tangible wood/stone/cloth/metal, fine grain, thickness, soft contact shadows. Moderate natural colours, no bloom or clipped highlights. Whole object within central 78% of square canvas and 10% transparent margins. No landscape base or background, no characters, no text, no icon border, no multiple variants.",
+    "path": "apps/mobile-patient/assets/world/v04/bookshelf.png"
+  },
+  {
+    "id": "star-mobile",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-68a73292-d024-4ca1-8c37-8a31bd13bbe6.png",
+    "prompt": "ONE isolated production game prop, truly TRANSPARENT background: one tiny freestanding curved dark-bronze stand holding a hanging mobile of three small brass stars, subtle physical metal highlights, no glowing effects. Match the supplied garden and bench's painterly miniature realism, 3/4 overhead camera and soft natural diffuse lighting. Tangible wood/stone/cloth/metal, fine grain, thickness, soft contact shadows. Moderate natural colours, no bloom or clipped highlights. Whole object within central 78% of square canvas and 10% transparent margins. No landscape base or background, no characters, no text, no icon border, no multiple variants.",
+    "path": "apps/mobile-patient/assets/world/v04/star-mobile.png"
+  },
+  {
+    "id": "firefly-jar",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-87d09545-de2e-4d8b-b634-5554aa5ad0cf.png",
+    "prompt": "ONE isolated production game prop on truly TRANSPARENT background: one small clear handblown glass jar with a few delicate golden fireflies inside, modest warm light with no bloom, cork lid. Exactly the reference garden and bench's painterly tactile miniature realism, natural proportions, three-quarter overhead camera, soft diffuse neutral light, moderate saturation, no yellow lighting, no overexposure. Whole object and subtle local contact shadow within central 78% of square canvas, 10% transparent safety margin. No landscape base, no background, no characters, no text or icons, no variant sheet. Tangible volume, natural wood/cloth/glass/metal material.",
+    "path": "apps/mobile-patient/assets/world/v04/firefly-jar.png"
+  },
+  {
+    "id": "bridge",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-c6293497-5346-42d5-931a-5afe801c1985.png",
+    "prompt": "ONE isolated production game prop on truly TRANSPARENT background: one very small gently arched weathered oak garden footbridge with short wooden railings, standalone movable prop. Exactly the reference garden and bench's painterly tactile miniature realism, natural proportions, three-quarter overhead camera, soft diffuse neutral light, moderate saturation, no yellow lighting, no overexposure. Whole object and subtle local contact shadow within central 78% of square canvas, 10% transparent safety margin. No landscape base, no background, no characters, no text or icons, no variant sheet. Tangible volume, natural wood/cloth/glass/metal material.",
+    "path": "apps/mobile-patient/assets/world/v04/bridge.png"
+  },
+  {
+    "id": "wind-chime",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-22a4f1ad-10a5-47ed-a3af-835d69c03927.png",
+    "prompt": "ONE isolated production game prop on truly TRANSPARENT background: one tiny freestanding curved branch stand with hanging ceramic and brass wind chimes. Exactly the reference garden and bench's painterly tactile miniature realism, natural proportions, three-quarter overhead camera, soft diffuse neutral light, moderate saturation, no yellow lighting, no overexposure. Whole object and subtle local contact shadow within central 78% of square canvas, 10% transparent safety margin. No landscape base, no background, no characters, no text or icons, no variant sheet. Tangible volume, natural wood/cloth/glass/metal material.",
+    "path": "apps/mobile-patient/assets/world/v04/wind-chime.png"
+  },
+  {
+    "id": "picnic-mat",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-0f63575d-f83b-4ce2-903e-23755363fb35.png",
+    "prompt": "ONE isolated production game prop on truly TRANSPARENT background: one folded-open soft cream and muted sage woven picnic blanket with tactile stitched edge, gentle folds, viewed from above at three-quarter angle. Exactly the reference garden and bench's painterly tactile miniature realism, natural proportions, three-quarter overhead camera, soft diffuse neutral light, moderate saturation, no yellow lighting, no overexposure. Whole object and subtle local contact shadow within central 78% of square canvas, 10% transparent safety margin. No landscape base, no background, no characters, no text or icons, no variant sheet. Tangible volume, natural wood/cloth/glass/metal material.",
+    "path": "apps/mobile-patient/assets/world/v04/picnic-mat.png"
+  }
+]

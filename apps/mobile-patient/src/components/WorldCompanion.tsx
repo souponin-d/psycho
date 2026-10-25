@@ -26,6 +26,7 @@ export function WorldCompanion({
   id,
   celebrate,
   celebrationKey,
+  visible = true,
 }: {
   world: WorldState;
   width: number;
@@ -36,9 +37,10 @@ export function WorldCompanion({
   id?: MascotId;
   celebrate?: "dayComplete" | "reward" | "sad";
   celebrationKey?: string;
+  visible?: boolean;
 }) {
   const { theme, reducedMotion } = useApp();
-  const active = useSceneMotion() && !editing;
+  const active = useSceneMotion() && !editing && visible;
   const [initial] = useState(() => {
     const candidate = {
       x: Math.max(0.24, Math.min(0.76, home.x - 0.22)),

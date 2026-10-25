@@ -1,0 +1,56 @@
+[
+  {
+    "id": "hoodie",
+    "path": "apps/mobile-patient/assets/companions/hoodie-v04.png",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-415311d0-2e97-4049-8429-6070e62dddae.png",
+    "prompt": "Generate ONE separate wearable accessory asset on truly TRANSPARENT background. Only a tiny cropped cream knitted hoodie garment: wide low U-neck opening, folded hood resting at back below the neck line, short soft sleeves and real small kangaroo pocket. Broad short torso shaped for the lower third of a wide round creature. No tall hood around a head, no body/face included. The attached two images are canonical mascots for style/scale ONLY; do NOT redraw or include either character, face, eyes, fur silhouette, feet or mannequin. Output only the independent garment/accessory. Match the existing soft tactile painterly realism, calm diffuse natural light, detailed material, no white outline, no bloom or overexposure, no flat cardboard edge. Whole asset centered within 78% of square canvas with 10% transparent safe margin. No scene, no text, no variants."
+  },
+  {
+    "id": "cape",
+    "path": "apps/mobile-patient/assets/companions/cape-v04.png",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-5119da87-59e5-4be2-9591-12f3578f3180.png",
+    "prompt": "Generate ONE separate wearable accessory asset on truly TRANSPARENT background. Only a small sage wool shoulder cape wearable: broad curved low collar with a small matte brass clasp, softly draping side panels, short hem. Garment shaped to fit the lower third of a wide round soft creature, no hood or head, no body included. The attached two images are canonical mascots for style/scale ONLY; do NOT redraw or include either character, face, eyes, fur silhouette, feet or mannequin. Output only the independent garment/accessory. Match the existing soft tactile painterly realism, calm diffuse natural light, detailed material, no white outline, no bloom or overexposure, no flat cardboard edge. Whole asset centered within 78% of square canvas with 10% transparent safe margin. No scene, no text, no variants."
+  },
+  {
+    "id": "star",
+    "path": "apps/mobile-patient/assets/companions/star-v04.png",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-66ce606d-cc96-480d-8f9c-5330e927d285.png",
+    "prompt": "Generate ONE separate wearable accessory asset on truly TRANSPARENT background. Only one tiny five-point brass star hair clip, gently hammered metal grain, physical thickness and a tiny discreet pin attachment. Warm subdued metal, not shiny plastic. The attached two images are canonical mascots for style/scale ONLY; do NOT redraw or include either character, face, eyes, fur silhouette, feet or mannequin. Output only the independent garment/accessory. Match the existing soft tactile painterly realism, calm diffuse natural light, detailed material, no white outline, no bloom or overexposure, no flat cardboard edge. Whole asset centered within 78% of square canvas with 10% transparent safe margin. No scene, no text, no variants."
+  },
+  {
+    "id": "bow",
+    "path": "apps/mobile-patient/assets/companions/bow-v04.png",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-b2a15c46-fc02-46d0-9c5e-4e074281cc4f.png",
+    "prompt": "Generate ONE separate wearable accessory asset on truly TRANSPARENT background. Only one small lavender linen hair bow with soft loops, sewn knot and two short tails, palpable cloth weave and volume. The attached two images are canonical mascots for style/scale ONLY; do NOT redraw or include either character, face, eyes, fur silhouette, feet or mannequin. Output only the independent garment/accessory. Match the existing soft tactile painterly realism, calm diffuse natural light, detailed material, no white outline, no bloom or overexposure, no flat cardboard edge. Whole asset centered within 78% of square canvas with 10% transparent safe margin. No scene, no text, no variants."
+  },
+  {
+    "id": "leaf",
+    "path": "apps/mobile-patient/assets/companions/leaf-v04.png",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-51e8465d-a944-448f-b143-51ce2e852fdc.png",
+    "prompt": "Generate ONE separate wearable accessory asset on truly TRANSPARENT background. Only one slightly curved sage green natural leaf accessory with visible fine veins and a tiny discreet bronze clip at its stem. Tactile painterly volume, not a vector leaf. The attached two images are canonical mascots for style/scale ONLY; do NOT redraw or include either character, face, eyes, fur silhouette, feet or mannequin. Output only the independent garment/accessory. Match the existing soft tactile painterly realism, calm diffuse natural light, detailed material, no white outline, no bloom or overexposure, no flat cardboard edge. Whole asset centered within 78% of square canvas with 10% transparent safe margin. No scene, no text, no variants."
+  },
+  {
+    "id": "shore-day",
+    "path": "apps/mobile-patient/assets/images/shore-day-v04.png",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-bc8f4b7f-8336-45cf-996a-78f27676743e.png",
+    "prompt": "EDIT TARGET IMAGE: RELIGHT ONLY. Preserve EXACT camera, full very tall 1:3 composition and geometry, every stone platform, stair, bridge, river bend, tree and rock at the same coordinates. Do not add/remove/move/reframe/crop any content. This is an existing game map whose clickable locations MUST still match. Output must keep the complete 1:3 aspect and all top/bottom details. Natural calm overcast daylight, neutral beige stone with visible detail, sage greens, softer lower-contrast illumination, remove the yellow/golden cast and blown-out highlights. Quiet painterly garden realism, same textures, not washed out. No characters, no UI, no letters. This is NOT a new composition."
+  },
+  {
+    "id": "shore-night",
+    "path": "apps/mobile-patient/assets/images/shore-night-v04.png",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-542e837c-e307-4702-99ae-5ba8675de764.png",
+    "prompt": "EDIT TARGET IMAGE: RELIGHT ONLY. Preserve EXACT camera, full very tall 1:3 composition and geometry, every stone platform, stair, bridge, river bend, tree and rock at the same coordinates. Do not add/remove/move/reframe/crop any content. This is an existing game map whose clickable locations MUST still match. Output must keep the complete 1:3 aspect and all top/bottom details. True peaceful late-evening blue-hour/night relighting of the same scene. Moonlit blue-grey stone, deep desaturated forest greens, softly reflected cool light in the river, a few very subtle warm fireflies in foliage only; readable shadow detail. No sun, no daytime yellow highlights, no black overlay look, no neon/bloom, no sky insertion, no new lantern props. Same texture realism. No characters, no UI, no letters. This is NOT a new composition."
+  },
+  {
+    "id": "garden-day",
+    "path": "apps/mobile-patient/assets/images/garden-day-v04.png",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-3565e9a0-9843-4219-840c-2b1296585103.png",
+    "prompt": "EDIT TARGET IMAGE: RELIGHT ONLY. Preserve EXACT camera, full very tall 1:3 composition and geometry, every stone platform, stair, bridge, river bend, tree and rock at the same coordinates. Do not add/remove/move/reframe/crop any content. This is an existing game map whose clickable locations MUST still match. Output must keep the complete 1:3 aspect and all top/bottom details. Natural calm overcast daylight, neutral beige stone with visible detail, sage greens, softer lower-contrast illumination, remove the yellow/golden cast and blown-out highlights. Quiet painterly garden realism, same textures, not washed out. No characters, no UI, no letters. This is NOT a new composition."
+  },
+  {
+    "id": "garden-night",
+    "path": "apps/mobile-patient/assets/images/garden-night-v04.png",
+    "source": "C:\\Users\\S\\.codex\\generated_images\\01a16343-552f-7091-b778-1800d594081c\\exec-eab68b30-0425-43c2-8dc5-a147cf1059b0.png",
+    "prompt": "EDIT TARGET IMAGE: RELIGHT ONLY. Preserve EXACT camera, full very tall 1:3 composition and geometry, every stone platform, stair, bridge, river bend, tree and rock at the same coordinates. Do not add/remove/move/reframe/crop any content. This is an existing game map whose clickable locations MUST still match. Output must keep the complete 1:3 aspect and all top/bottom details. True peaceful late-evening blue-hour/night relighting of the same scene. Moonlit blue-grey stone, deep desaturated forest greens, softly reflected cool light in the river, a few very subtle warm fireflies in foliage only; readable shadow detail. No sun, no daytime yellow highlights, no black overlay look, no neon/bloom, no sky insertion, no new lantern props. Same texture realism. No characters, no UI, no letters. This is NOT a new composition."
+  }
+]

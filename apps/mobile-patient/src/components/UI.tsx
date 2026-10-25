@@ -20,6 +20,7 @@ export function T({
   muted,
   size = 16,
   weight = "400",
+  children,
   ...props
 }: TextProps & {
   muted?: boolean;
@@ -40,7 +41,9 @@ export function T({
         },
         style,
       ]}
-    />
+    >
+      {typeof children === "string" ? children.replace(/\\n/g, "\n") : children}
+    </Text>
   );
 }
 export function Button({
@@ -64,11 +67,19 @@ export function Button({
       disabled={disabled}
       onPress={onPress}
       style={{
-        minHeight: 58,
-        paddingHorizontal: 22,
+        minHeight: 56,
+        paddingHorizontal: 20,
         paddingVertical: 15,
         borderRadius: 22,
         backgroundColor: secondary ? theme.soft : theme.accent,
+        borderWidth: 1,
+        borderTopColor: "rgba(255,255,255,.24)",
+        borderBottomColor: secondary ? theme.border : "rgba(12,36,27,.28)",
+        borderLeftColor: secondary ? theme.border : "rgba(255,255,255,.08)",
+        borderRightColor: secondary ? theme.border : "rgba(12,36,27,.12)",
+        boxShadow: secondary
+          ? "0 2px 0 rgba(40,61,45,.08)"
+          : "0 3px 0 rgba(20,43,32,.18)",
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
@@ -76,6 +87,11 @@ export function Button({
         gap: 12,
       }}
     >
+      <LinearGradient
+        pointerEvents="none"
+        colors={["rgba(255,255,255,.10)", "rgba(0,0,0,.035)"]}
+        style={{ position: "absolute", inset: 0, borderRadius: 21 }}
+      />
       <T
         size={16}
         weight="600"
@@ -98,10 +114,12 @@ export function RoundButton({
   icon,
   label,
   onPress,
+  disabled = false,
 }: {
   icon: IconName;
   label: string;
   onPress: () => void;
+  disabled?: boolean;
 }) {
   const { theme } = useApp();
   return (
@@ -109,7 +127,11 @@ export function RoundButton({
       accessibilityRole="button"
       accessibilityLabel={label}
       onPress={onPress}
+      disabled={disabled}
+      accessibilityState={{ disabled }}
       style={{
+        opacity: disabled ? 0.35 : 1,
+        boxShadow: "0 2px 5px rgba(37,58,41,.08)",
         width: 48,
         height: 48,
         borderRadius: 24,
@@ -219,8 +241,8 @@ export function Screen({
 }
 export function Heading({ title, body }: { title: string; body?: string }) {
   return (
-    <View style={{ marginTop: 14, marginBottom: 24, gap: 8 }}>
-      <T size={36} weight="500" style={{ letterSpacing: -1.4, lineHeight: 40 }}>
+    <View style={{ marginTop: 10, marginBottom: 18, gap: 8 }}>
+      <T size={28} weight="600" style={{ letterSpacing: -0.8, lineHeight: 35 }}>
         {title.replace(/\\n/g, "\n")}
       </T>
       {body && (

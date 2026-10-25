@@ -1,3 +1,5 @@
+import { sceneSource } from "../config/sceneAssets";
+import { useJourney } from "../state/JourneyProvider";
 import { View, Image, StyleSheet } from "react-native";
 import { themes } from "../theme/themes";
 import { useApp } from "../state/AppProvider";
@@ -7,6 +9,7 @@ import { Icon } from "./Icon";
 import type { ThemeId } from "../core/model";
 export function ThemePicker() {
   const { state, dispatch, theme } = useApp();
+  const { journey } = useJourney();
   return (
     <View style={{ flexDirection: "row", gap: 10 }}>
       {(Object.keys(themes) as ThemeId[]).map((id) => {
@@ -31,7 +34,7 @@ export function ThemePicker() {
               }}
             >
               <Image
-                source={item.landscape}
+                source={sceneSource(journey?.world.territory ?? "shore", id)}
                 style={[
                   StyleSheet.absoluteFill,
                   { width: "100%", height: "100%" },
@@ -41,7 +44,12 @@ export function ThemePicker() {
               <View
                 style={[
                   StyleSheet.absoluteFill,
-                  { backgroundColor: item.overlay },
+                  {
+                    backgroundColor:
+                      id === "lavender"
+                        ? "rgba(151,120,179,.08)"
+                        : "transparent",
+                  },
                 ]}
               />
               <View
