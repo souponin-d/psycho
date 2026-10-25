@@ -114,13 +114,13 @@ export default function CheckInScreen() {
     formVersion: plan?.id,
   };
   useEffect(() => {
-    if (saved || !journey || !hasContent) return;
+    if (saved || !hasContent) return;
     const timer = setTimeout(() => {
       if (!savedRef.current && pending.current)
         void act({ type: "draft", draft: pending.current });
     }, 350);
     return () => clearTimeout(timer);
-  }, [fields, note, label, step, saved, hasContent, journey, act]);
+  }, [fields, note, label, step, saved, hasContent, act]);
   useEffect(
     () => () => {
       if (

@@ -2,7 +2,7 @@
   "expo": {
     "name": "Синкли",
     "slug": "syncli-patient",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "scheme": "syncli",
     "orientation": "portrait",
     "icon": "./assets/images/fluffy.png",
@@ -18,7 +18,7 @@
     },
     "android": {
       "package": "ru.syncli.patient.demo",
-      "versionCode": 3,
+      "versionCode": 4,
       "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/fluffy.png",
@@ -37,7 +37,10 @@
       "expo-font",
       [
         "expo-notifications",
-        { "defaultChannel": "syncli_reminders", "color": "#2C5740" }
+        {
+          "defaultChannel": "syncli_reminders",
+          "color": "#2C5740"
+        }
       ]
     ],
     "experiments": {

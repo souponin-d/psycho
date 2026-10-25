@@ -31,9 +31,17 @@ const Context = createContext<{
   allowed: boolean;
   precise: boolean | null;
   count: number;
+  nextAt: number | null;
   error: string;
   refresh: () => void;
-}>({ allowed: false, precise: null, count: 0, error: "", refresh: () => {} });
+}>({
+  allowed: false,
+  precise: null,
+  count: 0,
+  nextAt: null,
+  error: "",
+  refresh: () => {},
+});
 export function ReminderProvider({ children }: PropsWithChildren) {
   const { state, isActive, today } = useApp();
   const { journey, ready, act } = useJourney();
@@ -41,6 +49,7 @@ export function ReminderProvider({ children }: PropsWithChildren) {
     [precise, setPrecise] = useState<boolean | null>(null),
     [count, setCount] = useState(0),
     [error, setError] = useState("");
+  const [nextAt, setNextAt] = useState<number | null>(null);
   const [attempt, setAttempt] = useState(0);
   const previousExact = useRef<boolean | null>(null);
   const processing = useRef(false);
@@ -91,11 +100,16 @@ export function ReminderProvider({ children }: PropsWithChildren) {
           permission.granted && journey.connected && state.onboarded,
           previousExact.current !== exact,
         );
+        const actual = (await Notifications.getAllScheduledNotificationsAsync())
+          .map((n) => readReminderJob(n.content.data))
+          .filter((j) => j && j.at > Date.now())
+          .sort((a, b) => a!.at - b!.at);
         previousExact.current = exact;
         if (alive) {
           setAllowed(permission.granted);
           setPrecise(exact);
           setCount(scheduled);
+          setNextAt(actual[0]?.at ?? null);
           setError("");
         }
       } catch {
@@ -184,7 +198,9 @@ export function ReminderProvider({ children }: PropsWithChildren) {
     return () => listener.remove();
   }, [ready, journey?.connected, state.onboarded, act, refresh]);
   return (
-    <Context.Provider value={{ allowed, precise, count, error, refresh }}>
+    <Context.Provider
+      value={{ allowed, precise, count, nextAt, error, refresh }}
+    >
       {children}
     </Context.Provider>
   );

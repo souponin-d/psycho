@@ -1,3 +1,4 @@
+import type { ChatMessage } from "./chat.ts";
 import type { FeelingPoint } from "./feelings.ts";
 
 export type DayKey = string;
@@ -135,7 +136,23 @@ export type LegacyRecord = {
   label?: string;
   feeling?: FeelingPoint;
 };
+export type OnboardingProgress = {
+  version: 1;
+  step: number;
+  name: string;
+  goal: string;
+  code: string;
+  morning: string;
+  practiceDose: boolean;
+  practiceFeeling?: FeelingPoint;
+  practiceItem: { x: number; y: number };
+  completed: boolean;
+};
 export type JourneyState = {
+  chat?: ChatMessage[];
+  chatDraft?: string;
+  onboarding?: OnboardingProgress;
+  shown?: Record<string, true>;
   version: 2;
   scenarioId: string;
   seedDay: DayKey;
@@ -153,6 +170,9 @@ export type JourneyState = {
   activity?: Partial<Record<"history" | "question" | "customized", true>>;
 };
 export type PatientCommand =
+  | { type: "chat:append"; messages: ChatMessage[] }
+  | { type: "chat:draft"; text: string }
+  | { type: "chat:clear" }
   | {
       type: "event";
       draftId?: string;
@@ -169,5 +189,7 @@ export type PatientCommand =
   | { type: "world"; world: WorldState }
   | { type: "world:section"; day: DayKey }
   | { type: "activity"; activity: "history" | "question" }
+  | { type: "onboarding:save"; progress: OnboardingProgress }
+  | { type: "seen"; key: string }
   | { type: "tick" }
   | { type: "reset" };

@@ -1,3 +1,5 @@
+import { useIsFocused } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useRef, useState } from "react";
 import {
   Alert,
@@ -33,7 +35,10 @@ export function JourneyMap() {
     editWorld?: string;
     showWorld?: string;
   }>();
+  const focused = useIsFocused();
   const canvas = useRef<JourneyCanvasHandle>(null);
+  const [headerHeight, setHeaderHeight] = useState(160),
+    [footerHeight, setFooterHeight] = useState(210);
   const [draftWorld, setDraftWorld] = useState<WorldState | null>(null),
     [draftMascot, setDraftMascot] = useState<MascotId | null>(null);
   const [tools, setTools] = useState(false),
@@ -43,17 +48,22 @@ export function JourneyMap() {
     [interaction, setInteraction] = useState<{ id: string; at: number } | null>(
       null,
     );
-  const [newReward, setNewReward] = useState(""),
-    rewardCount = useRef<number | null>(null);
+  const [newReward, setNewReward] = useState("");
   useEffect(() => {
-    if (!journey) return;
-    if (
-      rewardCount.current !== null &&
-      journey.rewards.length > rewardCount.current
-    )
-      setNewReward(journey.rewards.at(-1)?.id ?? "");
-    rewardCount.current = journey.rewards.length;
-  }, [journey]);
+    if (!journey || newReward) return;
+    const latest = journey.rewards.at(-1);
+    if (latest && !journey.shown?.[`reward:${latest.id}`])
+      setNewReward(latest.id);
+  }, [journey, newReward]);
+  useEffect(() => {
+    if (!newReward || !focused || tools) return;
+    const timer = setTimeout(() => {
+      void act({ type: "seen", key: `reward:${newReward}` }).then((ok) => {
+        if (ok) setNewReward("");
+      });
+    }, 2400);
+    return () => clearTimeout(timer);
+  }, [newReward, act, focused, tools]);
   useEffect(() => {
     if (params.editWorld && journey) {
       setDraftWorld(cloneWorld(journey.world));
@@ -136,7 +146,9 @@ export function JourneyMap() {
   };
   const nextTitle =
     todayNode.nextTask?.kind === "report"
-      ? "Заполнить самоотчёт"
+      ? compact
+        ? "Самоотчёт"
+        : "Заполнить самоотчёт"
       : todayNode.nextTask?.kind === "questionnaire"
         ? "Пройти опрос"
         : todayNode.nextTask
@@ -144,13 +156,65 @@ export function JourneyMap() {
           : "Посмотреть итог дня";
   return (
     <View style={{ flex: 1, backgroundColor: theme.page }}>
+      <JourneyCanvas
+        insets={{ top: headerHeight, bottom: footerHeight }}
+        ref={canvas}
+        journey={journey}
+        today={today}
+        world={world}
+        mascot={draftMascot ?? state.mascot}
+        editing={!!draftWorld}
+        selected={selectedItem}
+        onDay={(day) => {
+          if (!draftWorld) setSelectedDay(day);
+        }}
+        onObject={chooseObject}
+        onMove={moveItem}
+        onDrag={setDragging}
+        dragging={dragging}
+        request={interaction}
+        celebrate={
+          newReward
+            ? "reward"
+            : progress.today.complete
+              ? "dayComplete"
+              : journey.closedDays[shiftDay(today, -1)]?.complete === false
+                ? "sad"
+                : undefined
+        }
+        celebrationKey={newReward || today}
+      />
+      <LinearGradient
+        pointerEvents="none"
+        colors={[theme.page + "E8", theme.page + "90", theme.page + "00"]}
+        locations={[0, 0.75, 1]}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: headerHeight + 24,
+        }}
+      />
+      <LinearGradient
+        pointerEvents="none"
+        colors={[theme.page + "00", theme.page + "A0"]}
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: footerHeight + 20,
+        }}
+      />
       <View
+        onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}
         style={{
           paddingTop: safe.top + 8,
           paddingHorizontal: 20,
           paddingBottom: 10,
           gap: 6,
-          backgroundColor: theme.page,
+          backgroundColor: "transparent",
         }}
       >
         <View
@@ -224,42 +288,37 @@ export function JourneyMap() {
           />
         </View>
       </View>
-      <JourneyCanvas
-        ref={canvas}
-        journey={journey}
-        today={today}
-        world={world}
-        mascot={draftMascot ?? state.mascot}
-        editing={!!draftWorld}
-        selected={selectedItem}
-        onDay={(day) => {
-          if (!draftWorld) setSelectedDay(day);
-        }}
-        onObject={chooseObject}
-        onMove={moveItem}
-        onDrag={setDragging}
-        dragging={dragging}
-        request={interaction}
-        celebrate={
-          newReward
-            ? "reward"
-            : progress.today.complete
-              ? "dayComplete"
-              : journey.closedDays[shiftDay(today, -1)]?.complete === false
-                ? "sad"
-                : undefined
-        }
-        celebrationKey={today + ":" + newReward}
-      />
+      <View style={{ flex: 1 }} pointerEvents="box-none" />
       <View
+        onLayout={(e) => setFooterHeight(e.nativeEvent.layout.height)}
         style={{
           paddingHorizontal: 20,
           paddingTop: 10,
           paddingBottom: Math.max(safe.bottom, 12) + 82,
           gap: 8,
-          backgroundColor: theme.page,
+          backgroundColor: "transparent",
         }}
       >
+        {newReward && (
+          <Touch
+            accessibilityRole="button"
+            accessibilityLabel="Открыта новая награда. Посмотреть в моём мире"
+            onPress={() => router.push("/world")}
+            style={{
+              padding: 12,
+              borderRadius: 18,
+              backgroundColor: theme.surface,
+            }}
+          >
+            <T size={13} weight="600">
+              Новая награда в вашем мире
+            </T>
+            <T size={12} muted>
+              Она сохранится, даже если серия прервётся.
+            </T>
+          </Touch>
+        )}
+
         {draftWorld ? (
           <>
             {selectedPlacement && (

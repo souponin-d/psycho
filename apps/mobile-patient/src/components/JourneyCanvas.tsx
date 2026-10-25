@@ -9,6 +9,7 @@ import {
 } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import {
+  Animated,
   FlatList,
   Image,
   View,
@@ -47,6 +48,7 @@ type Props = {
   request: { id: string; at: number } | null;
   celebrate?: "reward" | "dayComplete" | "sad";
   celebrationKey: string;
+  insets: { top: number; bottom: number };
 };
 export const JourneyCanvas = forwardRef<JourneyCanvasHandle, Props>(
   function JourneyCanvas(props, ref) {
@@ -65,11 +67,13 @@ export const JourneyCanvas = forwardRef<JourneyCanvasHandle, Props>(
       request,
       celebrate,
       celebrationKey,
+      insets,
     } = props;
     const { width } = useWindowDimensions(),
       { state, reducedMotion, theme } = useApp();
     const [viewport, setViewport] = useState(360),
       [visible, setVisible] = useState<number[]>([]);
+    const scrollY = useRef(new Animated.Value(0)).current;
     const list = useRef<FlatList<number>>(null),
       tileHeight = width * 3;
     const map = useMemo(() => journeyMap(journey, today), [journey, today]);
@@ -90,7 +94,7 @@ export const JourneyCanvas = forwardRef<JourneyCanvasHandle, Props>(
         CALENDAR_SLOTS,
     );
     const offset = (block: number, y: number) =>
-      (count - 1 - block) * tileHeight + y * tileHeight - viewport * 0.52;
+      (count - 1 - block) * tileHeight + y * tileHeight - viewport * 0.6;
     const to = (block: number, y: number, animated = !reducedMotion) =>
       list.current?.scrollToOffset({
         offset: Math.max(0, offset(block, y)),
@@ -129,63 +133,76 @@ export const JourneyCanvas = forwardRef<JourneyCanvasHandle, Props>(
       ({ viewableItems }: { viewableItems: ViewToken<number>[] }) =>
         setVisible(viewableItems.map((v) => v.item)),
     ).current;
+    const backgrounds = Array.from(
+      new Set(
+        (visible.length ? visible : [todayBlock]).flatMap((b) => [
+          b - 1,
+          b,
+          b + 1,
+        ]),
+      ),
+    ).filter((b) => b >= 0 && b < count);
     return (
       <View
-        style={{ flex: 1, overflow: "hidden", backgroundColor: theme.page }}
-        onLayout={(e) => setViewport(e.nativeEvent.layout.height)}
+        style={{
+          position: "absolute",
+          inset: 0,
+          overflow: "hidden",
+          backgroundColor: theme.page,
+        }}
       >
-        <FlatList
-          ref={list}
-          data={rows}
-          keyExtractor={(block) => String(block)}
-          getItemLayout={(_, index) => ({
-            length: tileHeight,
-            offset: index * tileHeight,
-            index,
-          })}
-          initialNumToRender={2}
-          maxToRenderPerBatch={2}
-          windowSize={3}
-          removeClippedSubviews={false}
-          scrollEnabled={!dragging}
-          onViewableItemsChanged={onView}
-          viewabilityConfig={{ itemVisiblePercentThreshold: 1 }}
-          accessibilityLabel="Мой путь: вертикальная карта дней"
-          showsVerticalScrollIndicator
-          renderItem={({ item: block }) => {
-            const baseDay = shiftDay(
-                journey.plan.startedAt,
-                block * CALENDAR_SLOTS,
+        <Image
+          accessible={false}
+          source={sceneSource(world.territory, state.theme)}
+          resizeMode="cover"
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+          }}
+        />
+        <Animated.View
+          pointerEvents="none"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width,
+            height: count * tileHeight,
+            transform: [
+              {
+                translateY: Animated.add(
+                  Animated.multiply(scrollY, -1),
+                  insets.top,
+                ),
+              },
+            ],
+          }}
+        >
+          {backgrounds.map((block) => {
+            const section = sections.get(
+                shiftDay(journey.plan.startedAt, block * CALENDAR_SLOTS),
               ),
-              section = sections.get(baseDay);
-            const terrain = section?.territory ?? world.territory,
-              stonePositions = calendarStones(scenes[terrain]),
-              isActive = activeBlock === block;
-            const placed = section
-              ? { ...world, ...section, outfits: world.outfits }
-              : null;
-            const homeIndex = Math.max(
-              0,
-              Math.min(
-                CALENDAR_SLOTS - 1,
-                map.todayIndex - block * CALENDAR_SLOTS,
-              ),
-            );
+              terrain = section?.territory ?? world.territory;
             return (
-              <View style={{ width, height: tileHeight }}>
+              <View
+                key={block}
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  top: (count - 1 - block) * tileHeight,
+                  width,
+                  height: tileHeight,
+                }}
+              >
                 <Image
                   source={sceneSource(terrain, state.theme)}
                   resizeMode="stretch"
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    width,
-                    height: tileHeight,
-                  }}
+                  style={{ width, height: tileHeight }}
                 />
                 {state.theme === "lavender" && (
                   <View
-                    pointerEvents="none"
                     style={{
                       position: "absolute",
                       inset: 0,
@@ -193,101 +210,159 @@ export const JourneyCanvas = forwardRef<JourneyCanvasHandle, Props>(
                     }}
                   />
                 )}
-                {placed && (
-                  <View
-                    pointerEvents={isActive ? "box-none" : "none"}
-                    importantForAccessibility={
-                      isActive ? "auto" : "no-hide-descendants"
-                    }
-                    style={{ position: "absolute", inset: 0 }}
-                  >
-                    <WorldScene
-                      world={placed}
-                      width={width}
-                      height={tileHeight}
-                      editing={editing && isActive}
-                      selected={selected}
-                      onSelect={onObject}
-                      onMove={onMove}
-                      onDrag={onDrag}
-                    />
-                  </View>
-                )}
-                {map.days
-                  .filter(
-                    (day) => Math.floor(day.index / CALENDAR_SLOTS) === block,
-                  )
-                  .map((day) => {
-                    const [x, y] = stonePositions[day.index % CALENDAR_SLOTS],
-                      node = dayNode(journey, day.day, today),
-                      w = day.status === "today" ? 154 : 132;
-                    return (
-                      <View
-                        key={day.day}
-                        style={{
-                          position: "absolute",
-                          left: Math.max(
-                            4,
-                            Math.min(width - w - 4, x * width - w / 2),
-                          ),
-                          top: y * tileHeight - 58,
-                        }}
-                      >
-                        <JourneyDayMarker
-                          node={node}
-                          chapter={Math.floor(day.index / 7) + 1}
-                          onPress={() => onDay(day.day)}
-                        />
-                      </View>
-                    );
-                  })}
                 <LinearGradient
-                  pointerEvents="none"
                   colors={[theme.page, theme.page + "00"]}
                   style={{
                     position: "absolute",
+                    top: 0,
                     left: 0,
                     right: 0,
-                    top: 0,
                     height: 46,
                   }}
                 />
                 <LinearGradient
-                  pointerEvents="none"
                   colors={[theme.page + "00", theme.page]}
                   style={{
                     position: "absolute",
+                    bottom: 0,
                     left: 0,
                     right: 0,
-                    bottom: 0,
                     height: 46,
                   }}
                 />
-                {placed && isActive && (
-                  <WorldCompanion
-                    key={world.anchorDay}
-                    world={world}
-                    width={width}
-                    height={tileHeight}
-                    home={{
-                      x: stonePositions[homeIndex][0],
-                      y: stonePositions[homeIndex][1],
-                    }}
-                    request={request}
-                    editing={editing}
-                    id={mascot}
-                    visible={
-                      visible.includes(block) ||
-                      (!visible.length && block === todayBlock)
-                    }
-                    celebrate={celebrate}
-                    celebrationKey={celebrationKey}
-                  />
-                )}
               </View>
             );
+          })}
+        </Animated.View>
+        <View
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            top: insets.top,
+            bottom: insets.bottom,
+            overflow: "hidden",
           }}
-        />
+          onLayout={(e) => setViewport(e.nativeEvent.layout.height)}
+        >
+          <Animated.FlatList
+            scrollEventThrottle={16}
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+              { useNativeDriver: true },
+            )}
+            ref={list}
+            data={rows}
+            keyExtractor={(block) => String(block)}
+            getItemLayout={(_, index) => ({
+              length: tileHeight,
+              offset: index * tileHeight,
+              index,
+            })}
+            initialNumToRender={2}
+            maxToRenderPerBatch={2}
+            windowSize={3}
+            removeClippedSubviews={false}
+            scrollEnabled={!dragging}
+            onViewableItemsChanged={onView}
+            viewabilityConfig={{ itemVisiblePercentThreshold: 1 }}
+            accessibilityLabel="Мой путь: вертикальная карта дней"
+            showsVerticalScrollIndicator
+            renderItem={({ item: block }) => {
+              const baseDay = shiftDay(
+                  journey.plan.startedAt,
+                  block * CALENDAR_SLOTS,
+                ),
+                section = sections.get(baseDay);
+              const terrain = section?.territory ?? world.territory,
+                stonePositions = calendarStones(scenes[terrain]),
+                isActive = activeBlock === block;
+              const placed = section
+                ? { ...world, ...section, outfits: world.outfits }
+                : null;
+              const homeIndex = Math.max(
+                0,
+                Math.min(
+                  CALENDAR_SLOTS - 1,
+                  map.todayIndex - block * CALENDAR_SLOTS,
+                ),
+              );
+              return (
+                <View style={{ width, height: tileHeight }}>
+                  {placed && (
+                    <View
+                      pointerEvents={isActive ? "box-none" : "none"}
+                      importantForAccessibility={
+                        isActive ? "auto" : "no-hide-descendants"
+                      }
+                      style={{ position: "absolute", inset: 0 }}
+                    >
+                      <WorldScene
+                        world={placed}
+                        width={width}
+                        height={tileHeight}
+                        editing={editing && isActive}
+                        selected={selected}
+                        onSelect={onObject}
+                        onMove={onMove}
+                        onDrag={onDrag}
+                      />
+                    </View>
+                  )}
+                  {map.days
+                    .filter(
+                      (day) => Math.floor(day.index / CALENDAR_SLOTS) === block,
+                    )
+                    .map((day) => {
+                      const [x, y] = stonePositions[day.index % CALENDAR_SLOTS],
+                        node = dayNode(journey, day.day, today),
+                        w = day.status === "today" ? 154 : 132;
+                      return (
+                        <View
+                          key={day.day}
+                          style={{
+                            position: "absolute",
+                            left: Math.max(
+                              4,
+                              Math.min(width - w - 4, x * width - w / 2),
+                            ),
+                            top: y * tileHeight - 58,
+                          }}
+                        >
+                          <JourneyDayMarker
+                            node={node}
+                            chapter={Math.floor(day.index / 7) + 1}
+                            onPress={() => onDay(day.day)}
+                          />
+                        </View>
+                      );
+                    })}
+                  {placed && isActive && (
+                    <WorldCompanion
+                      key={world.anchorDay}
+                      world={world}
+                      width={width}
+                      height={tileHeight}
+                      home={{
+                        x: stonePositions[homeIndex][0],
+                        y: stonePositions[homeIndex][1],
+                      }}
+                      request={request}
+                      editing={editing}
+                      id={mascot}
+                      visible={
+                        visible.includes(block) ||
+                        (!visible.length && block === todayBlock)
+                      }
+                      celebrate={celebrate}
+                      celebrationKey={celebrationKey}
+                    />
+                  )}
+                </View>
+              );
+            }}
+          />
+        </View>
       </View>
     );
   },

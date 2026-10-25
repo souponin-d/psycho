@@ -1,3 +1,4 @@
+import { useJourney } from "../state/JourneyProvider";
 import { useEffect, useRef, useState } from "react";
 import { Animated, Easing, Pressable, View } from "react-native";
 import { router } from "expo-router";
@@ -57,6 +58,9 @@ export function WorldCompanion({
   const [mode, setMode] = useState<CompanionMode>("idle");
   const [eventMode, setEventMode] = useState<CompanionMode | null>(null);
   const celebrated = useRef(new Set<string>());
+  const { journey, act } = useJourney();
+  const shown = useRef(journey?.shown);
+  shown.current = journey?.shown;
   const [bubble, setBubble] = useState("");
   const [action, setAction] = useState<"flowers" | "read" | null>(null);
   const [roam, setRoam] = useState(0);
@@ -188,16 +192,28 @@ export function WorldCompanion({
       return;
     }
     if (!celebrate) return;
-    const key = `${celebrationKey}:${celebrate}`;
-    if (celebrated.current.has(key)) return;
+    const key =
+      celebrate === "reward"
+        ? `reward:${celebrationKey}`
+        : `day:${celebrationKey?.split(":")[0]}:${celebrate}`;
+    if (celebrated.current.has(key) || shown.current?.[key]) return;
     celebrated.current.add(key);
-    setEventMode(celebrate);
-    const timer = setTimeout(
-      () => setEventMode(null),
-      celebrate === "sad" ? 1400 : 2100,
-    );
-    return () => clearTimeout(timer);
-  }, [celebrate, celebrationKey, active]);
+    let alive = true;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    void act({ type: "seen", key }).then((ok) => {
+      if (!ok || !alive) return;
+      setEventMode(celebrate);
+      if (celebrate !== "sad") pulse(true);
+      timer = setTimeout(
+        () => setEventMode(null),
+        celebrate === "sad" ? 1400 : 2100,
+      );
+    });
+    return () => {
+      alive = false;
+      if (timer) clearTimeout(timer);
+    };
+  }, [celebrate, celebrationKey, active, act, pulse]);
   // Reduced motion keeps a fully visible, tappable companion in one safe spot.
   const anchor =
     reducedMotion || editing

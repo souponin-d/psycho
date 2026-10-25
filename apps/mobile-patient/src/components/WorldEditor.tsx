@@ -111,14 +111,15 @@ export function WorldEditor({
               onPress={onClose}
             />
           </View>
-          <View
-            style={{
-              flexDirection: "row",
-              paddingHorizontal: 16,
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{
               gap: 8,
-              flexWrap: "wrap",
+              paddingHorizontal: 16,
               paddingBottom: 16,
             }}
+            style={{ height: 64, flexGrow: 0, flexShrink: 0 }}
           >
             {["Предметы", "Спутник", "Территории", "Достижения"].map((t) => (
               <Touch
@@ -137,7 +138,7 @@ export function WorldEditor({
                 </T>
               </Touch>
             ))}
-          </View>
+          </ScrollView>
           <ScrollView
             contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24 }}
           >
@@ -234,7 +235,7 @@ export function WorldEditor({
                 <View style={{ alignItems: "center" }}>
                   <Companion
                     id={mascot}
-                    size={240}
+                    size={180}
                     outfit={world.outfits[mascot]}
                     mode="dress"
                   />
@@ -315,6 +316,22 @@ export function WorldEditor({
                                 : theme.surface,
                           }}
                         >
+                          {section.key !== "color" && (
+                            <View
+                              pointerEvents="none"
+                              importantForAccessibility="no-hide-descendants"
+                            >
+                              <Companion
+                                id={mascot}
+                                quiet
+                                size={72}
+                                outfit={{
+                                  ...world.outfits[mascot],
+                                  [section.key]: option.id,
+                                }}
+                              />
+                            </View>
+                          )}
                           <T size={13}>{option.name}</T>
                         </Touch>
                       ))}

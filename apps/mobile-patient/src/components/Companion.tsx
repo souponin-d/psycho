@@ -2,11 +2,16 @@ import { memo, useEffect, useRef, useState } from "react";
 import { Pressable, View } from "react-native";
 import Svg, {
   Defs,
+  ClipPath,
+  Path,
+  Ellipse,
   Filter,
   FeColorMatrix,
   G,
   Image as SvgImage,
 } from "react-native-svg";
+import { wornAssets } from "../config/wornAssets";
+import { garmentRig, type Garment } from "../core/garmentRig";
 import { wardrobeAssets } from "../config/wardrobeAssets";
 import { wardrobeRect, type WardrobeItem } from "../core/wardrobeLayout";
 import { companionFrames } from "../config/companionFrames";
@@ -84,7 +89,11 @@ const Material = memo(function Material({
     const sx = rect.width / (x1 - x0),
       sy = rect.height / (y1 - y0);
     return (
-      <G key={id} filter="url(#wear)">
+      <G
+        key={id}
+        filter="url(#wear)"
+        transform={`rotate(-18 ${rect.x + rect.width / 2} ${rect.y + rect.height / 2})`}
+      >
         <G
           transform={
             "translate(" +
@@ -107,9 +116,54 @@ const Material = memo(function Material({
       </G>
     );
   };
+  const rig = garmentRig(
+    mascot,
+    frame.group,
+    frame.index,
+    outfit.clothing as Garment,
+  );
+  const wear =
+    wornAssets[`${mascot}-${outfit.clothing}` as keyof typeof wornAssets];
+  const [l, t, r, b] = wear.bounds;
+  const gx = rig.rect.width / (r - l),
+    gy = rig.rect.height / (b - t);
+  const cloth = () => (
+    <G filter="url(#wear)">
+      <G transform={rig.transform}>
+        <SvgImage
+          href={wear.source}
+          x={rig.rect.x - l * gx}
+          y={rig.rect.y - t * gy}
+          width={1254 * gx}
+          height={1254 * gy}
+        />
+      </G>
+    </G>
+  );
+  const body = () => (
+    <SvgImage href={source} width="512" height="512" filter="url(#fur)" />
+  );
   return (
     <Svg width={size} height={size} viewBox="0 0 512 512" accessible={false}>
       <Defs>
+        <ClipPath id="front">
+          <Path d={rig.frontPath} transform={rig.transform} />
+        </ClipPath>
+        <ClipPath id="attachment">
+          <Ellipse
+            cx={rig.tx + (mascot === "cloud" ? 328 : 318) * rig.sx}
+            cy={rig.ty + 153 * rig.sy}
+            rx={16 * rig.sx}
+            ry={7 * rig.sy}
+          />
+        </ClipPath>
+        <ClipPath id="feet">
+          <G transform={rig.transform}>
+            {rig.feet.map((f, i) => (
+              <Ellipse key={i} cx={f.x} cy={f.y} rx={f.rx} ry={f.ry} />
+            ))}
+          </G>
+        </ClipPath>
         <Filter
           id="fur"
           x="0"
@@ -131,9 +185,17 @@ const Material = memo(function Material({
           <FeColorMatrix type="matrix" values={wearMatrix} />
         </Filter>
       </Defs>
-      <SvgImage href={source} width="512" height="512" filter="url(#fur)" />
-      {layer(outfit.clothing)}
-      {outfit.accessory !== "none" && layer(outfit.accessory)}
+      {cloth()}
+      {body()}
+      <G clipPath="url(#front)">{cloth()}</G>
+
+      <G clipPath="url(#feet)">{body()}</G>
+      {outfit.accessory !== "none" && (
+        <>
+          {layer(outfit.accessory)}
+          <G clipPath="url(#attachment)">{body()}</G>
+        </>
+      )}
     </Svg>
   );
 });

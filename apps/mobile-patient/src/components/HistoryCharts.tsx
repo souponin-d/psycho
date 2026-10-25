@@ -1,6 +1,8 @@
-import { View } from "react-native";
+import { useState } from "react";
+import { View, ScrollView } from "react-native";
 import Svg, { Line, Circle, Polyline, Text as SvgText } from "react-native-svg";
 import { useApp } from "../state/AppProvider";
+import { Touch } from "./Motion";
 import { T, Panel } from "./UI";
 import type { PatientHistoryProjection } from "../core/history";
 
@@ -16,6 +18,8 @@ function LineChart({
   color: string;
 }) {
   const { theme } = useApp();
+  const [selected, setSelected] = useState<string | null>(null);
+  const chosen = days.find((d) => d.day === selected);
   const width = 320,
     height = 112;
   const x = (index: number) =>
@@ -83,7 +87,8 @@ function LineChart({
               key={day.day}
               cx={x(i)}
               cy={y(day[field]!)}
-              r={3.5}
+              onPress={() => setSelected(day.day)}
+              r={selected === day.day ? 6 : 3.5}
               fill={color}
             />
           ) : null,
@@ -101,6 +106,36 @@ function LineChart({
           {days.at(-1)?.day.slice(5).split("-").reverse().join(".")}
         </SvgText>
       </Svg>
+      <ScrollView horizontal contentContainerStyle={{ gap: 8 }}>
+        {days.map((day) => (
+          <Touch
+            key={day.day}
+            accessibilityRole="button"
+            accessibilityLabel={`${day.day}: ${day[field] === null ? "нет записи" : day[field] + " из 6"}`}
+            accessibilityState={{ selected: day.day === selected }}
+            onPress={() => setSelected(day.day)}
+            style={{
+              minWidth: 44,
+              minHeight: 44,
+              padding: 10,
+              justifyContent: "center",
+              borderRadius: 14,
+              backgroundColor:
+                day.day === selected ? theme.soft : theme.surface,
+            }}
+          >
+            <T size={12}>
+              {day.day.slice(8)}: {day[field] ?? "—"}
+            </T>
+          </Touch>
+        ))}
+      </ScrollView>
+      {chosen && (
+        <T size={13}>
+          {chosen.day.split("-").reverse().join(".")} · {label}:{" "}
+          {chosen[field] === null ? "нет записи" : `${chosen[field]} из 6`}
+        </T>
+      )}
     </View>
   );
 }

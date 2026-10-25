@@ -1,3 +1,4 @@
+import { saveOnboarding } from "./onboarding.ts";
 import { sameReport } from "./reportFlow.ts";
 import { openWorldSection } from "./worldSections.ts";
 import { validateContactDraft } from "./contactDraft.ts";
@@ -28,6 +29,31 @@ export function applyPatientCommand(
   const base = closeElapsedDays(state, now);
   const today = dayAt(now);
   switch (command.type) {
+    case "chat:append": {
+      if (
+        !command.messages.length ||
+        command.messages.some(
+          (m) =>
+            !m.id ||
+            m.id.length > 100 ||
+            !["user", "assistant"].includes(m.role) ||
+            !m.text.trim() ||
+            m.text.length > 1000,
+        )
+      )
+        throw new PatientValidationError("Не удалось сохранить сообщение");
+      const ids = new Set((base.chat ?? []).map((m) => m.id));
+      const fresh = command.messages.filter((m) => {
+        if (ids.has(m.id)) return false;
+        ids.add(m.id);
+        return true;
+      });
+      return { ...base, chat: [...(base.chat ?? []), ...fresh], chatDraft: "" };
+    }
+    case "chat:draft":
+      return { ...base, chatDraft: command.text.slice(0, 1000) };
+    case "chat:clear":
+      return { ...base, chat: [], chatDraft: "" };
     case "reset": {
       const fresh = seedScenario(today);
       return {
@@ -36,6 +62,18 @@ export function applyPatientCommand(
         plan: { ...fresh.plan, id: fresh.plan.id + ":" + now.utcMs },
       };
     }
+    case "onboarding:save":
+      return saveOnboarding(base, command.progress);
+    case "seen":
+      if (
+        !/^(release:4|hint:(path|history|world)|reward:.{1,100}|day:.{1,60})$/.test(
+          command.key,
+        )
+      )
+        throw new PatientValidationError("Неизвестное подтверждение");
+      return base.shown?.[command.key]
+        ? base
+        : { ...base, shown: { ...base.shown, [command.key]: true } };
     case "tick":
       return base;
     case "connect":
@@ -48,6 +86,11 @@ export function applyPatientCommand(
     case "draft": {
       if (!isDay(command.draft.day) || command.draft.day > today)
         throw new PatientValidationError("Нельзя заполнить будущий день");
+      if (
+        JSON.stringify(base.drafts[command.draft.id]) ===
+        JSON.stringify(command.draft)
+      )
+        return base;
       return {
         ...base,
         drafts: { ...base.drafts, [command.draft.id]: command.draft },

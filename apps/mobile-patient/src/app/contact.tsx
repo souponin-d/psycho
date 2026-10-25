@@ -179,15 +179,17 @@ export default function ContactScreen() {
           {customDate && (
             <View style={{ gap: 8 }}>
               <T muted size={12}>
-                Укажите дату в формате ГГГГ-ММ-ДД, например 2026-10-20.
+                Укажите дату в формате ДД.ММ.ГГГГ, например 20.10.2026.
               </T>
               <TextInput
                 accessibilityLabel="Дата начала трудности"
-                value={fields.onset}
-                onChangeText={(onset) => patch({ onset })}
+                value={fields.onset.split("-").reverse().join(".")}
+                onChangeText={(text) =>
+                  patch({ onset: text.split(".").reverse().join("-") })
+                }
                 maxLength={10}
                 keyboardType="numbers-and-punctuation"
-                placeholder="ГГГГ-ММ-ДД"
+                placeholder="ДД.ММ.ГГГГ"
                 placeholderTextColor={theme.muted}
                 style={inputStyle}
               />

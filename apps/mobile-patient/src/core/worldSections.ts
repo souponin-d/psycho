@@ -1,3 +1,4 @@
+import { chapterRewardItem } from "./weeklyReward.ts";
 import type { JourneyState, WorldState, WorldSection } from "./journeyModel.ts";
 import { daysBetween, shiftDay } from "./calendar.ts";
 import { isDay } from "./shore.ts";
@@ -13,6 +14,14 @@ export function upgradeWorldSections(
   state: JourneyState,
   today: string,
 ): JourneyState {
+  const rewards = state.rewards.map((r) => {
+    const old = /^chapter-gift-([1-9][0-9]*)$/.exec(r.itemId);
+    return old && r.id === `chapter-${old[1]}`
+      ? { ...r, itemId: chapterRewardItem(Number(old[1])) }
+      : r;
+  });
+  if (rewards.some((r, i) => r !== state.rewards[i]))
+    state = { ...state, rewards };
   if (state.world.anchorDay) {
     if (
       !isDay(state.world.anchorDay) ||
