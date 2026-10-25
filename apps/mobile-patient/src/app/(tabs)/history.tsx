@@ -238,6 +238,7 @@ export default function HistoryScreen() {
         event: {
           id: "dose-edit-" + Date.now(),
           kind: "dose",
+          action: "correct",
           day: selected,
           slotId: dose.slotId,
           status: dose.status,

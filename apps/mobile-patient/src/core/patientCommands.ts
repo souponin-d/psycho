@@ -1,3 +1,4 @@
+import { validateContactDraft } from "./contactDraft.ts";
 import { dayAt, closeElapsedDays } from "./calendar.ts";
 import { isDay } from "./shore.ts";
 import { fieldComplete, planForDay } from "./therapy.ts";
@@ -74,6 +75,12 @@ export function applyPatientCommand(
       // main/snooze receipts cannot both append a clinical fact.
       if (
         input.kind === "dose" &&
+        input.action === "select" &&
+        latestDose(base, input.day, input.slotId)?.status === input.status
+      )
+        return base;
+      if (
+        input.kind === "dose" &&
         input.source === "notification" &&
         input.status === "taken" &&
         latestDose(base, input.day, input.slotId)?.status === "taken"
@@ -130,6 +137,10 @@ export function applyPatientCommand(
           input.impact,
         );
       }
+      if (input.kind === "contact") {
+        const invalid = validateContactDraft(input, today);
+        if (invalid) throw new PatientValidationError(invalid);
+      }
       const event: PatientEvent = {
         ...input,
         ...completion,
@@ -142,6 +153,7 @@ export function applyPatientCommand(
         delete drafts["report:" + event.day];
       if (event.kind === "questionnaire")
         delete drafts["questionnaire:" + event.assignmentId];
+      if (event.kind === "contact") delete drafts["contact:" + event.day];
       return grantRewards({ ...base, events: [...base.events, event], drafts });
     }
   }

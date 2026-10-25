@@ -43,6 +43,7 @@ type EventBase = {
 export type DoseEvent = EventBase & {
   kind: "dose";
   source?: "notification";
+  action?: "select" | "correct";
   slotId: string;
   status: "taken" | "missed" | "unknown";
   occurredAt?: string;
@@ -96,10 +97,17 @@ export type WorldState = {
   placements: Placement[];
   outfits: { fluffy: Outfit; cloud: Outfit };
 };
+export type ContactDraftFields = {
+  description: string;
+  onset: DayKey;
+  severity?: ContactEvent["severity"];
+  preference?: ContactEvent["preference"];
+};
 export type PatientDraft = {
   id: string;
   day: DayKey;
-  kind: "report" | "questionnaire";
+  kind: "report" | "questionnaire" | "contact";
+  contact?: ContactDraftFields;
   fields?: ReportFields;
   note?: string;
   label?: string;

@@ -29,6 +29,7 @@ export default function PlanScreen() {
       event: {
         id: "dose-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7),
         kind: "dose",
+        action: "select",
         day: dayAt(instantNow()),
         slotId,
         status,
