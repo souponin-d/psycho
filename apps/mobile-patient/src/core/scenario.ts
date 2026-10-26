@@ -136,7 +136,7 @@ export function seedScenario(seedDay: DayKey): JourneyState {
     const day = shiftDay(start, i),
       at = Date.parse(day + "T10:00:00Z");
     const fields: ReportFields = {
-      feeling: { valence: [3, 4, 2, 3, 4, 3, 2, 4][i], energy: energy[i] },
+      feeling: { valence: [3, 4, 2, 3, 4, 3, 2, 4][i]!, energy: energy[i]! },
       sleep: i === 2 ? "Плохо" : i % 2 ? "Хорошо" : "Обычно",
       anxiety: [5, 4, 7, 5, 4, 5, 6, 3][i],
       functioning: [4, 5, 3, 4, 5, 4, 3, 6][i],
@@ -163,7 +163,7 @@ export function seedScenario(seedDay: DayKey): JourneyState {
         recordedDay: day,
         at: at + 1000,
         fields,
-        note: notes[i],
+        note: notes[i]!,
         required: true,
       });
     else

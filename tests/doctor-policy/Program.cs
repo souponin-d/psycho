@@ -24,7 +24,9 @@ try {
  foreach(var (name,type) in new[]{("ClinicalWorkflow","workflow.submit"),("ClinicalSupport","support.evaluate"),("Adherence","adherence.schedule")}) {
   var entry=typeof(Domain).Assembly.GetType("Doctor.Api."+name)!.GetMethod("Apply")!;
   var p=new JsonObject{["clinicId"]="another-clinic"};var original=p.ToJsonString();
-  try {entry.Invoke(null,new object[]{p,new JsonObject{["type"]=type},doctor,"2026-10-26T10:00:00.000Z"});throw new Exception("Entry point bypass");}
+  var arguments = new object[]{p,new JsonObject{["type"]=type},doctor,"2026-10-26T10:00:00.000Z"};
+  if(entry.GetParameters().Length==5) arguments=[..arguments,false];
+  try {entry.Invoke(null,arguments);throw new Exception("Entry point bypass");}
   catch(System.Reflection.TargetInvocationException e) when(e.InnerException is DomainException d&&d.Status==403){passed++;}
   Check(p.ToJsonString()==original,"Denied clinical command changed state");
  }
