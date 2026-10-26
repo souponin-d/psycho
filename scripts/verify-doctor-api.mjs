@@ -48,6 +48,7 @@ import {
   supportCatalog,
 } from "../apps/web-doctor/src/workspace/clinical-support-engine.ts";
 import { adherenceSummary } from "../apps/web-doctor/src/workspace/adherence.ts";
+import { patientBirthDateBounds } from "../apps/web-doctor/src/workspace/patient-age.ts";
 import { fixtureDatabaseSettings } from "./doctor-fixture-sql.mjs";
 const base = process.env.DOCTOR_API_TEST_URL ?? "http://127.0.0.1:5080/api";
 let passed = 0;
@@ -2254,17 +2255,27 @@ for (const answers of [
   ["1", 0, 0, 0, 0, 0, 0, 0, 0],
 ])
   await flowCommand(realSubmission(phqProtocol, answers), 400);
-const savedBirthDate = patient.profile.birthDate;
-await flowCommand({
-  type: "profile.update",
-  value: { ...patient.profile, birthDate: "2015-01-01" },
-});
-await flowCommand(realSubmission(gadProtocol, Array(7).fill(0)), 400);
-await flowCommand(realSubmission(phqProtocol, Array(9).fill(0)), 400);
-await flowCommand({
-  type: "profile.update",
-  value: { ...patient.profile, birthDate: savedBirthDate },
-});
+await flowCommand(
+  {
+    type: "profile.update",
+    value: { ...patient.profile, birthDate: "2015-01-01" },
+  },
+  400,
+);
+// An adult chart still cannot register adult forms measured before age 18.
+const childhoodMeasurement = `${Number(patient.profile.birthDate.slice(0, 4)) + 10}-01-01T10:00:00.000Z`;
+await flowCommand(
+  realSubmission(gadProtocol, Array(7).fill(0), {
+    measuredAt: childhoodMeasurement,
+  }),
+  400,
+);
+await flowCommand(
+  realSubmission(phqProtocol, Array(9).fill(0), {
+    measuredAt: childhoodMeasurement,
+  }),
+  400,
+);
 ok(
   "real form scores/source/approval cannot be forged; invalid answers and minors reject atomically without changing persisted state",
 );
@@ -3287,6 +3298,156 @@ for (const mutation of [
 }
 ok(
   "patient projection excludes clinical-support and adherence internals and patient commands cannot evaluate treatment or forge adherence records",
+);
+const ageBounds = patientBirthDateBounds();
+const adjacentDate = (day, delta) => {
+  const date = new Date(day + "T12:00:00Z");
+  date.setUTCDate(date.getUTCDate() + delta);
+  return date.toISOString().slice(0, 10);
+};
+const ageProfile = structuredClone(patient.profile);
+for (const birthDate of [
+  adjacentDate(ageBounds.max, 1),
+  adjacentDate(ageBounds.min, -1),
+  "1626-01-01",
+]) {
+  const before = structuredClone(patient);
+  assert.equal(
+    (
+      await doctor.call("/patients", "POST", {
+        id: randomUUID(),
+        profile: { name: "Проверка возраста", birthDate },
+      })
+    ).status,
+    400,
+  );
+  assert.equal(
+    (
+      await command({
+        type: "profile.update",
+        value: { ...patient.profile, birthDate },
+      })
+    ).status,
+    400,
+  );
+  assert.deepEqual(patient, before);
+}
+ok(
+  "API rejects ages below 18 and above 120 on creation and profile edits without changing the chart",
+);
+for (const birthDate of [ageBounds.min, ageBounds.max]) {
+  assert.equal(
+    (
+      await command({
+        type: "profile.update",
+        value: { ...patient.profile, birthDate },
+      })
+    ).status,
+    200,
+  );
+  assert.equal(patient.profile.birthDate, birthDate);
+}
+assert.equal(
+  (await command({ type: "profile.update", value: ageProfile })).status,
+  200,
+);
+ok(
+  "API accepts exact inclusive age boundaries 18 and 120 and preserves the remaining profile",
+);
+const questionnaireVisit = createVisit(
+  randomUUID(),
+  new Date().toISOString(),
+  actor,
+);
+await flowCommand({
+  type: "consent.add",
+  value: {
+    id: randomUUID(),
+    createdAt: "",
+    author: "",
+    purpose: "care",
+    status: "documented",
+    signedOn: new Date().toISOString().slice(0, 10),
+    documentReference: "Синтетический документ проверки приёма",
+    person: "Синтетический пациент",
+    scope: "Приём",
+    informing: "Техническая проверка снимка результата",
+  },
+});
+questionnaireVisit.status = "in-progress";
+questionnaireVisit.reason = "Проверка шкалы в приёме";
+questionnaireVisit.notes.safetyConclusion =
+  "Синтетическая запись оценки рисков";
+questionnaireVisit.notes.conclusion = "Техническая проверка связи результата";
+questionnaireVisit.notes.recommendations = "Контрольная запись";
+await flowCommand({ type: "visit.save", value: questionnaireVisit });
+for (const visitId of [
+  randomUUID(),
+  null,
+  123,
+  patient.visits.find((v) => v.status === "completed")?.id,
+]) {
+  if (visitId === undefined) continue;
+  await flowCommand(
+    realSubmission(gadProtocol, Array(7).fill(0), {
+      visitId,
+      safety: "no",
+      immediateDanger: "no",
+    }),
+    400,
+  );
+}
+const linkedSubmission = realSubmission(gadProtocol, Array(7).fill(1), {
+  visitId: questionnaireVisit.id,
+  safety: "no",
+  immediateDanger: "no",
+});
+await flowCommand(linkedSubmission);
+assert.equal(
+  patient.workflow.assessments.at(-1).visitId,
+  questionnaireVisit.id,
+);
+await flowCommand({ type: "visit.complete", id: questionnaireVisit.id });
+const linkedSnapshot = structuredClone(
+  patient.visits.find((v) => v.id === questionnaireVisit.id).completionSnapshot,
+);
+assert.equal(
+  linkedSnapshot.measurements.find(
+    (m) => m.id === `workflow:${linkedSubmission.value.id}`,
+  ).score,
+  7,
+);
+assert.equal(
+  patient.measurements.some(
+    (m) => m.id === `workflow:${linkedSubmission.value.id}`,
+  ),
+  false,
+);
+await flowCommand(
+  realSubmission(gadProtocol, Array(7).fill(0), {
+    visitId: questionnaireVisit.id,
+    safety: "no",
+    immediateDanger: "no",
+  }),
+  400,
+);
+await flowCommand({
+  type: "visit.print",
+  id: questionnaireVisit.id,
+  reason: "Проверка неизменяемого снимка",
+});
+await flowCommand(
+  realSubmission(gadProtocol, Array(7).fill(0), {
+    safety: "no",
+    immediateDanger: "no",
+  }),
+);
+assert.deepEqual(
+  patient.visits.find((v) => v.id === questionnaireVisit.id).completionSnapshot,
+  linkedSnapshot,
+);
+ok(
+  "questionnaires keep encounter association, reject foreign/read-only links and freeze stored scores in completed snapshots without duplicate measurements, with API/local parity",
 );
 console.log(
   JSON.stringify(

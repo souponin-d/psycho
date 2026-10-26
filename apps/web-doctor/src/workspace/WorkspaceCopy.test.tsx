@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, expect, it, vi } from "vitest";
 import { DoctorWorkspace } from "./DoctorWorkspace";
@@ -58,8 +58,7 @@ it("показывает пациентское уведомление без с
   expect(
     screen.queryByText("Главное о пациентах, с которыми вы работаете сегодня"),
   ).toBeNull();
-  expect(
-    within(document.querySelector("header")!).queryByText("Рабочий день"),
-  ).toBeNull();
+  expect(document.querySelector("main > header")).toBeNull();
+  expect(screen.getByText("Демо-данные")).toBeTruthy();
   expect(screen.getByText("Уведомление от пациента")).toBeTruthy();
 });

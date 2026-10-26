@@ -1,7 +1,6 @@
 import { workflowEffectOwner } from "./clinical-workflow";
 import { CandidateMedicineReview } from "./CandidateMedicineReview";
 import { assertSupportPlanCurrent } from "./clinical-support";
-import { WorkflowRecommendations } from "./ClinicalWorkflow";
 import { ClinicalFacts } from "./ClinicalFacts";
 import { useState, type FormEvent } from "react";
 import type {
@@ -500,7 +499,6 @@ export function PlanForm({
                   взаимодействия и режим по действующей инструкции.
                   Автоматический подбор препарата или дозировки не выполняется.
                 </div>
-                <SourceLinks ids={["S04", "S11"]} />
               </>
             )}
             <Textarea
@@ -558,9 +556,9 @@ export function PlanForm({
           {value.aviandrReview && (
             <aside
               className={styles.prescriptionResults}
-              aria-label="Перед решением"
+              aria-label="Дополнительная информация"
             >
-              <h3>Перед решением</h3>
+              <h3>Дополнительная информация</h3>
               <AviandrSummary
                 prominent
                 review={{
@@ -678,7 +676,6 @@ export function CarePlan({
   }
   return (
     <>
-      <WorkflowRecommendations patient={patient} actions={actions} />
       <Section
         title="Лечение и план"
         description="Черновики доступны врачу. Действующий план состоит из подтверждённых записей."
@@ -766,7 +763,12 @@ export function CarePlan({
                 Инструкция препарата
               </a>
             )}
-            <SourceLinks ids={item.sourceIds} />
+            {!!item.sourceIds.length && (
+              <details className={styles.details}>
+                <summary>Источники решения</summary>
+                <SourceLinks ids={item.sourceIds} />
+              </details>
+            )}
             {item.aviandrReview && (
               <AviandrSummary
                 review={item.aviandrReview}
@@ -786,7 +788,13 @@ export function CarePlan({
                 <p className={styles.subtext}>
                   {workflowEffectOwner(patient, item.id)?.stale
                     ? "Основание устарело. Рассмотрите новое предложение."
-                    : "Подтвердите действие в рекомендациях."}
+                    : "Подтвердите действие в рекомендациях."}{" "}
+                  <a
+                    className={styles.link}
+                    href={`#/patients/${patient.id}/overview`}
+                  >
+                    Открыть рекомендацию
+                  </a>
                 </p>
               ) : item.status === "draft" ? (
                 <>
@@ -882,7 +890,12 @@ export function CarePlan({
             <p className={styles.reviewText}>
               {confirmation.rationale || "Обоснование не внесено"}
             </p>
-            <SourceLinks ids={confirmation.sourceIds} />
+            {!!confirmation.sourceIds.length && (
+              <details className={styles.details}>
+                <summary>Источники решения</summary>
+                <SourceLinks ids={confirmation.sourceIds} />
+              </details>
+            )}
             <CandidateMedicineReview
               patient={patient}
               plan={confirmation}
@@ -1120,7 +1133,12 @@ export function ReferralForm({
           onChange={(e) => setValue({ ...value, outcome: e.target.value })}
         />
         {issued ? (
-          <SourceLinks ids={value.sourceIds} />
+          !!value.sourceIds.length && (
+            <details className={styles.details}>
+              <summary>Источники решения</summary>
+              <SourceLinks ids={value.sourceIds} />
+            </details>
+          )
         ) : (
           <SourcePicker
             value={value.sourceIds}
@@ -1131,7 +1149,6 @@ export function ReferralForm({
           Категория направления не заменяет согласие пациента и юридическую
           процедуру недобровольного вмешательства.
         </div>
-        <SourceLinks ids={["S10", "S14", "S15"]} />
         <div className={styles.formActions}>
           <Button variant="secondary" onClick={onClose}>
             Отмена
@@ -1201,7 +1218,12 @@ export function Referrals({
                 </Button>
               )}
             </div>
-            <SourceLinks ids={r.sourceIds} />
+            {!!r.sourceIds.length && (
+              <details className={styles.details}>
+                <summary>Источники решения</summary>
+                <SourceLinks ids={r.sourceIds} />
+              </details>
+            )}
           </div>
         ))}
         {!patient.referrals.length && (

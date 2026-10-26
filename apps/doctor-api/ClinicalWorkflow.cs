@@ -7,6 +7,24 @@ namespace Doctor.Api;
 
 // Technical fixture only; no clinical activation route.
 internal static class ClinicalWorkflow {
+  // Projection only: preserve the stored score/source and capture it in visit snapshots.
+  internal static JsonArray Measurements(JsonObject patient) {
+    var results=A(patient,"measurements").Select(n=>n!.DeepClone()).ToList();
+    if(patient["workflow"] is JsonObject workflow) foreach(var result in A(workflow,"assessments")) {
+      var source=result?["source"];var scale=S(source,"scale");
+      if(scale is not ("GAD-7" or "PHQ-9"))continue;
+      var completeness=S(result,"completeness");
+      results.Add(new JsonObject {
+        ["id"]="workflow:"+S(result,"id"),["createdAt"]=S(result,"receivedAt"),["author"]=S(result?["receivedBy"],"name"),
+        ["visitId"]=S(result,"visitId"),["scale"]=scale,["title"]=S(source,"title"),["version"]=S(source,"version"),
+        ["measuredAt"]=S(result,"measuredAt"),["score"]=result?["score"]?.DeepClone(),["maximum"]=source?["maximum"]?.DeepClone(),
+        ["answers"]=result?["answers"]?.DeepClone(),["completeness"]=completeness is "complete" or "partial"?completeness:"not-assessed",
+        ["assessor"]="patient",["window"]=S(source,"window"),["sourceId"]="",["interpretation"]=S(result?["interpretation"],"label"),
+        ["provenance"]="patient",["externalForm"]=S(source,"source")
+      });
+    }
+    return new JsonArray(results.OrderByDescending(n=>DateTimeOffset.Parse(S(n,"measuredAt"),CultureInfo.InvariantCulture)).ToArray());
+  }
   private const string RuleVersion="clinical-review-2026-10-26-v2";
   private const string Limit="Учебный сценарий. Не устанавливает диагноз, не выбирает лечение, не подтверждает безопасность. Клинические правила не утверждены.";
   private static readonly JsonSerializerOptions Wire=new(){Encoder=JavaScriptEncoder.UnsafeRelaxedJsonEscaping};
@@ -91,11 +109,18 @@ internal static class ClinicalWorkflow {
     ClinicalExecutionPolicy.AssertAllowed(p,actor);
     var w=State(p);var type=S(m,"type");
     if(type=="workflow.submit"){
-      Only(m,"type","value");var v=O(m,"value");Only(v,"id","protocolVersion","measuredAt","answers","state","safety","note","assignmentId","impact","immediateDanger");
+      Only(m,"type","value");var v=O(m,"value");Only(v,"id","protocolVersion","measuredAt","answers","state","safety","note","assignmentId","impact","immediateDanger","visitId");
+      if(v.ContainsKey("visitId")) {
+        var visitId=Text(v,"visitId",false,100);
+        if(visitId!="") {
+          var visit=A(p,"visits").FirstOrDefault(item=>S(item,"id")==visitId);
+          Check(visit is not null && (S(visit,"status")=="scheduled" || S(visit,"status")=="in-progress") && !A(p,"audit").Any(item=>S(item,"action")=="visit.print" && S(item,"targetId")==visitId),"Связанный приём недоступен для добавления результатов.");
+        }
+      }
       var id=Text(v,"id",true,100);var protocolVersion=Text(v,"protocolVersion");var old=protocolVersion=="synthetic-7-v1";var protocol=(old?Protocol():ClinicalProtocols.Find(protocolVersion))??throw new DomainException("Неизвестная версия учебного протокола.");
       var measured=Text(v,"measuredAt",true);Check(Regex.IsMatch(measured,@"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,7})?(Z|[+-]\d{2}:\d{2})$")&&DateTimeOffset.TryParse(measured,CultureInfo.InvariantCulture,DateTimeStyles.None,out var instant)&&instant<=DateTimeOffset.Parse(now,CultureInfo.InvariantCulture),"Проверьте дату результата; будущее недопустимо.");
       if(!old){var birth=S(p["profile"],"birthDate");Check(DateOnly.TryParseExact(birth,"yyyy-MM-dd",CultureInfo.InvariantCulture,DateTimeStyles.None,out var birthday)&&DateOnly.TryParseExact(measured[..10],"yyyy-MM-dd",CultureInfo.InvariantCulture,DateTimeStyles.None,out var measuredDate)&&birthday.AddYears(18)<=measuredDate,"Шкала доступна только взрослым на дату измерения.");}
-      Text(v,"note");var assignmentId=Text(v,"assignmentId",false,100);var completion=Text(v,"state");var safety=Text(v,"safety");Check(new[]{"completed","declined","cannot"}.Contains(completion)&&new[]{"yes","no","unknown"}.Contains(safety),"Проверьте полноту и ответ о безопасности.");
+      Text(v,"note");var assignmentId=Text(v,"assignmentId",false,100);var completion=Text(v,"state");var safety=Text(v,"safety");Check(new[]{"completed","declined","cannot"}.Contains(completion)&&new[]{"yes","no","unknown"}.Contains(safety),"Проверьте полноту и ответы о рисках.");
       var immediate=v.ContainsKey("immediateDanger")?Text(v,"immediateDanger"):"unknown";Check(new[]{"yes","no","unknown"}.Contains(immediate),"Проверьте ответ о непосредственной опасности.");
       Check(!v.ContainsKey("impact")||v["impact"] is null||v["impact"] is JsonValue impact&&impact.TryGetValue<int>(out var impactValue)&&impactValue>=0&&impactValue<=3,"Проверьте ответ о влиянии симптомов.");
       var answers=A(v,"answers");var count=protocol!["items"]!.GetValue<int>();Check(answers.Count==count&&answers.All(a=>a is null||a is JsonValue j&&j.TryGetValue<int>(out var n)&&n>=0&&n<=3),old?"Нужны семь ответов 0–3 либо явные пропуски.":$"Нужны {count} ответов 0–3 либо явные пропуски.");
@@ -112,8 +137,8 @@ internal static class ClinicalWorkflow {
       if(needSafety){
         var kind=old?safety=="yes"?"explicit-concern":"not-assessed":immediate=="yes"?"immediate-danger":positive9?"phq-item9":safety=="yes"?"explicit-concern":"not-assessed";
         var priority=kind=="immediate-danger"||old&&safety=="yes"?"urgent":"important";
-        var detail=kind switch{"immediate-danger"=>"Пациент сообщает о непосредственной опасности. Требуется срочная очная оценка.","phq-item9"=>"Положительный ответ на пункт 9 PHQ-9. Уточните мысли, намерение, план и необходимость срочной помощи.","explicit-concern"=>"Пациент сообщил о вопросе безопасности. Требуется оценка врача.",_=>"Безопасность не оценена: ответ неизвестен, пропущен или не получен."};
-        Check(A(w,"safety").Count<1000,"Достигнут лимит событий безопасности.");A(w,"safety").Add(new JsonObject{["id"]=$"wf-s-{id}",["version"]=1,["assessmentId"]=id,["kind"]=kind,["priority"]=priority,["status"]="created",["evaluation"]="not-assessed",["detail"]=detail,["assessment"]="",["action"]="",["deliveredAt"]="",["history"]=new JsonArray(new JsonObject{["at"]=now,["by"]=Person(actor),["status"]="created",["note"]="Учебное событие; факт клинического риска системой не установлен."})});
+        var detail=kind switch{"immediate-danger"=>"Пациент сообщает о непосредственной опасности. Требуется срочная очная оценка.","phq-item9"=>"Положительный ответ на пункт 9 PHQ-9. Уточните мысли, намерение, план и необходимость срочной помощи.","explicit-concern"=>"Пациент сообщил о риске. Требуется оценка врача.",_=>"Риски не оценены: ответ неизвестен, пропущен или не получен."};
+        Check(A(w,"safety").Count<1000,"Достигнут лимит событий риска.");A(w,"safety").Add(new JsonObject{["id"]=$"wf-s-{id}",["version"]=1,["assessmentId"]=id,["kind"]=kind,["priority"]=priority,["status"]="created",["evaluation"]="not-assessed",["detail"]=detail,["assessment"]="",["action"]="",["deliveredAt"]="",["history"]=new JsonArray(new JsonObject{["at"]=now,["by"]=Person(actor),["status"]="created",["note"]="Учебное событие; факт клинического риска системой не установлен."})});
       }
     }else if(type=="workflow.refresh"){
       Only(m,"type");

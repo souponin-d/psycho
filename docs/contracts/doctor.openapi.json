@@ -3532,6 +3532,7 @@
                                   "const": "synthetic-patient"
                                 },
                                 "id": { "type": "string" },
+                                "visitId": { "anyOf": [{ "type": "string" }] },
                                 "protocolVersion": { "type": "string" },
                                 "measuredAt": { "type": "string" },
                                 "answers": {
@@ -6135,6 +6136,7 @@
                           "const": "synthetic-patient"
                         },
                         "id": { "type": "string" },
+                        "visitId": { "anyOf": [{ "type": "string" }] },
                         "protocolVersion": { "type": "string" },
                         "measuredAt": { "type": "string" },
                         "answers": {
@@ -7939,6 +7941,7 @@
                 "type": "object",
                 "properties": {
                   "id": { "type": "string" },
+                  "visitId": { "anyOf": [{ "type": "string" }] },
                   "protocolVersion": { "type": "string" },
                   "measuredAt": { "type": "string" },
                   "answers": {

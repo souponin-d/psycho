@@ -1,4 +1,5 @@
 import { WorkflowPanel } from "./ClinicalWorkflow";
+import { patientMeasurements } from "./patient-measurements";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { EncounterField, PatientRecord, Visit } from "./model";
 import { completionErrors } from "./commands";
@@ -26,7 +27,6 @@ import {
   Field,
   Modal,
   Section,
-  Select,
   Textarea,
   styles,
 } from "./ui/Elements";
@@ -448,6 +448,7 @@ export function EncounterEditor({
                         : patient
                     }
                     actions={readOnly ? undefined : actions}
+                    visitId={visit.id}
                     compact
                   />
                   <PatientContext
@@ -466,63 +467,16 @@ export function EncounterEditor({
                     actions={readOnly ? undefined : actions}
                   />
                   {!readOnly && (
-                    <Section title="Данные встречи и источник сведений">
+                    <Section title="Текущие препараты">
                       <div className={styles.form}>
-                        <Field
-                          label="Дата и время"
-                          type="datetime-local"
-                          value={localDateTime(draft.scheduledAt)}
-                          onChange={(e) => {
-                            if (e.target.value)
-                              setDraft({
-                                ...draft,
-                                scheduledAt: new Date(
-                                  e.target.value,
-                                ).toISOString(),
-                              });
-                          }}
-                        />
-                        <Select
-                          label="Формат"
-                          value={draft.format}
-                          onChange={(e) =>
-                            setDraft({
-                              ...draft,
-                              format: e.target.value as Visit["format"],
-                            })
-                          }
-                        >
-                          <option value="in-person">Очно</option>
-                          <option value="remote">Дистанционно</option>
-                        </Select>
-                        <Select
-                          label="Источник сведений"
-                          value={draft.provenance}
-                          onChange={(e) =>
-                            setDraft({
-                              ...draft,
-                              provenance: e.target.value as Visit["provenance"],
-                            })
-                          }
-                        >
-                          <option value="patient">Со слов пациента</option>
-                          <option value="clinician">Оценка врача</option>
-                          <option value="relative">Со слов близкого</option>
-                          <option value="document">Из документа</option>
-                        </Select>
                         {fields([
                           "medicationReview",
                           "adverseEffects",
                           "adherence",
                         ])}
                       </div>
-                      <SourceLinks ids={["S01", "S02", "S03", "S04"]} />
                     </Section>
                   )}
-                  <p className={styles.subtext}>
-                    Прошлые записи не переносятся как новые. Укажите изменения и
-                    источник текущих сведений.
-                  </p>
                 </div>
                 <aside className={styles.encounterContext}>
                   <PatientBrief
@@ -546,14 +500,12 @@ export function EncounterEditor({
                     <div className={styles.form}>
                       {fields(assessmentFields)}
                     </div>
-                    <SourceLinks ids={["S02", "S03", "S04"]} />
                   </Section>
                   <Section
-                    title="Безопасность"
+                    title="Риски"
                     description="Фиксируйте ответы, их давность, доступные сведения и заключение отдельно"
                   >
                     <div className={styles.form}>{fields(safetyFields)}</div>
-                    <SourceLinks ids={["S02", "S03", "S10", "S25"]} />
                   </Section>
                   <Section
                     title="Измерения и шкалы"
@@ -569,7 +521,7 @@ export function EncounterEditor({
                       </Button>
                     }
                   >
-                    {patient.measurements
+                    {patientMeasurements(patient)
                       .filter((m) => m.visitId === visit.id)
                       .map((m) => (
                         <div className={styles.inlineNote} key={m.id}>
@@ -585,7 +537,7 @@ export function EncounterEditor({
                           </p>
                         </div>
                       ))}
-                    {!patient.measurements.some(
+                    {!patientMeasurements(patient).some(
                       (m) => m.visitId === visit.id,
                     ) && (
                       <p className={styles.subtext}>
@@ -704,7 +656,7 @@ export function EncounterEditor({
                           if (await save()) setConsent(true);
                         }}
                       >
-                        Согласие / отказ
+                        Решение пациента
                       </Button>
                       <Button
                         icon="check"
@@ -944,7 +896,7 @@ export function VisitSummary({
     visit.status === "completed" ? visit.completionSnapshot : null;
   const measurements =
     snapshot?.measurements ??
-    patient.measurements.filter((m) => m.visitId === visit.id);
+    patientMeasurements(patient).filter((m) => m.visitId === visit.id);
   const plan =
     snapshot?.plan ??
     patient.plan.filter((p) => p.visitId === visit.id && p.status !== "draft");
@@ -1054,7 +1006,12 @@ export function VisitSummary({
             </p>
           </div>
         )}
-        <SourceLinks ids={visit.sourceIds} />
+        {!!visit.sourceIds.length && (
+          <details className={styles.details}>
+            <summary>Источники решения</summary>
+            <SourceLinks ids={visit.sourceIds} />
+          </details>
+        )}
       </div>
     </Section>
   );

@@ -66,6 +66,10 @@ public static class Domain
     var context = Object(value, "clinicalContext"); Only(context, ["complaints", "illnessHistory", "somaticConditions"]); TextFields(context, ["complaints", "illnessHistory"]); var conditions = Array(context, "somaticConditions"); foreach (var item in conditions) { if (item is not JsonObject selection) throw new DomainException("Ожидалась запись МКБ-10."); Terminology(selection, previous?["clinicalContext"]?["somaticConditions"] as JsonArray); }
     var result = new JsonObject(); foreach (var key in ProfileFields.Where(key => key != "clinicalContext")) result[key] = S(value, key); result["clinicalContext"] = context.DeepClone(); if (S(result, "sex") == "") result["sex"] = "unspecified";
     Required(result, "name"); Check(S(result, "name").Length <= 200, "Имя: не более 200 символов."); CalendarDate(result, "birthDate"); Check(DateOnly.ParseExact(S(result, "birthDate"), "yyyy-MM-dd", CultureInfo.InvariantCulture) <= DateOnly.FromDateTime(DateTime.UtcNow), "Дата рождения не может быть в будущем."); Enum(result, "sex", "female", "male", "unspecified");
+    var birthday = DateOnly.ParseExact(S(result, "birthDate"), "yyyy-MM-dd", CultureInfo.InvariantCulture);
+    var today = DateOnly.FromDateTime(DateTime.UtcNow);
+    var age = today.Year - birthday.Year - (today.Month < birthday.Month || today.Month == birthday.Month && today.Day < birthday.Day ? 1 : 0);
+    Check(age >= 18 && age <= 120, "Возраст пациента должен быть от 18 до 120 лет.");
     if (S(result, "email") != "") Check(System.Net.Mail.MailAddress.TryCreate(S(result, "email"), out _), "Проверьте адрес электронной почты.");
     return result;
   }
@@ -130,7 +134,7 @@ public static class Domain
       case "visit.complete":
         {
           var visit = Find(doc, "visits", id); Enum(visit, "status", "scheduled", "in-progress"); var notes = Object(visit, "notes");
-          Check(new[] { "safetyConclusion", "conclusion", "recommendations" }.All(k => !string.IsNullOrWhiteSpace(S(notes, k))), "Заполните заключение по безопасности, заключение врача и рекомендации.");
+          Check(new[] { "safetyConclusion", "conclusion", "recommendations" }.All(k => !string.IsNullOrWhiteSpace(S(notes, k))), "Заполните заключение по рискам, заключение врача и рекомендации.");
           var care = Array(doc, "consents").LastOrDefault(c => S(c!, "purpose") == "care"); Check(care is not null && S(care, "status") == "documented", "Зафиксируйте документированное согласие на помощь.");
           if (S(visit, "format") == "remote") { var consent = Array(doc, "consents").LastOrDefault(c => S(c!, "purpose") == "communication"); Check(consent is not null && S(consent, "status") == "documented", "Для дистанционного контакта требуется документированное основание и согласие на связь."); }
           visit["status"] = "completed"; visit["completedAt"] = now; visit["confirmedBy"] = actor.Name;
@@ -138,7 +142,7 @@ public static class Domain
           {
             ["patientName"] = S(Object(doc, "profile"), "name"),
             ["clinicalProfile"] = doc["profile"]!.DeepClone(),
-            ["measurements"] = new JsonArray(Array(doc, "measurements").Where(n => S(n, "visitId") == id).Select(n => n!.DeepClone()).ToArray()),
+            ["measurements"] = new JsonArray(ClinicalWorkflow.Measurements(doc).Where(n => S(n, "visitId") == id).Select(n => n!.DeepClone()).ToArray()),
             ["plan"] = new JsonArray(Array(doc, "plan").Where(n => S(n, "visitId") == id && S(n, "status") != "draft").Select(n => n!.DeepClone()).ToArray()),
             ["referrals"] = new JsonArray(Array(doc, "referrals").Where(n => S(n, "visitId") == id && S(n, "status") != "draft").Select(n => n!.DeepClone()).ToArray())
           };
@@ -186,7 +190,7 @@ public static class Domain
           if (value["safetyConcern"]!.GetValue<bool>() || S(value, "adverseEffects") != "")
           {
             var safety = value["safetyConcern"]!.GetValue<bool>(); var detail = S(value, "adverseEffects") != "" ? S(value, "adverseEffects") : S(value, "note");
-            var ev = new JsonObject { ["id"] = $"event-{commandId}", ["title"] = safety ? "Пациент отметил вопрос безопасности" : "Нежелательное явление в дневнике", ["detail"] = detail, ["urgency"] = safety ? "urgent" : "important", ["status"] = "created", ["relatedId"] = S(value, "id"), ["dueAt"] = "", ["assignee"] = S(doc, "doctorId"), ["assessment"] = "", ["action"] = "", ["outcome"] = "", ["sourceIds"] = new JsonArray(), ["rationale"] = "Прямое сообщение пациента, без вычисления клинического риска", ["history"] = new JsonArray(new JsonObject { ["at"] = now, ["by"] = actor.Name, ["status"] = "created", ["note"] = "Получено явно отмеченное сообщение. Требуется оценка врача." }) }; Add(doc, "events", ev, actor, now);
+            var ev = new JsonObject { ["id"] = $"event-{commandId}", ["title"] = safety ? "Пациент сообщил о риске" : "Нежелательное явление в дневнике", ["detail"] = detail, ["urgency"] = safety ? "urgent" : "important", ["status"] = "created", ["relatedId"] = S(value, "id"), ["dueAt"] = "", ["assignee"] = S(doc, "doctorId"), ["assessment"] = "", ["action"] = "", ["outcome"] = "", ["sourceIds"] = new JsonArray(), ["rationale"] = "Прямое сообщение пациента, без вычисления клинического риска", ["history"] = new JsonArray(new JsonObject { ["at"] = now, ["by"] = actor.Name, ["status"] = "created", ["note"] = "Получено явно отмеченное сообщение. Требуется оценка врача." }) }; Add(doc, "events", ev, actor, now);
           }
           break;
         }
@@ -235,7 +239,7 @@ public static class Domain
       default: throw new DomainException("Неизвестное или недоступное действие.");
     }
     doc["revision"] = revision + 1; doc["updatedAt"] = now; var recentCommands = Array(doc, "commandIds"); recentCommands.Add(commandId); while (recentCommands.Count > 100) recentCommands.RemoveAt(0);
-    if(type=="patient.archive" && doc["archived"]!.GetValue<bool>()) Check(doc["workflow"] is not JsonObject wf || !Array(wf,"safety").Any(e=>S(e,"status")!="acted"),"Сначала завершите обработку событий безопасности.");
+    if(type=="patient.archive" && doc["archived"]!.GetValue<bool>()) Check(doc["workflow"] is not JsonObject wf || !Array(wf,"safety").Any(e=>S(e,"status")!="acted"),"Сначала завершите обработку событий риска.");
     Adherence.Reconcile(doc,actor,now);
     ClinicalWorkflow.Reconcile(doc,actor,now);
     if(type=="visit.complete" && doc["workflow"] is not null) ClinicalWorkflow.Apply(doc,new JsonObject{["type"]="workflow.contact",["note"]=$"Завершён приём {id}"},actor,now);

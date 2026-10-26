@@ -62,10 +62,10 @@ export function ClinicalDecisionQueue({
       </div>
       {!!safety.length && (
         <div className={styles.inlineNote}>
-          <strong>Отдельная безопасность: {safety.length}</strong>
-          <p>События безопасности рассматриваются отдельно от обычных задач.</p>
+          <strong>Риски: {safety.length}</strong>
+
           <Button variant="secondary" onClick={() => navigate("/events")}>
-            Открыть безопасность
+            Открыть риски
           </Button>
         </div>
       )}

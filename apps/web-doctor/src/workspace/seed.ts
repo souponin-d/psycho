@@ -69,7 +69,7 @@ export function seedPatients(reference = new Date()): PatientRecord[] {
           i === 0
             ? "Снова спокойно вести рабочие встречи и восстановить сон"
             : "Улучшить повседневное функционирование",
-        socialContext: "Синтетический пример. Есть поддержка близких.",
+        socialContext: "Есть поддержка близких.",
       },
       demoActor,
       day(-35 - i),

@@ -1,12 +1,11 @@
 import { useMemo, useState } from "react";
 import type { DiagnosisSelection } from "./model";
 import {
-  ICD10_SOURCE,
   isCurrentIcd10Selection,
   searchIcd10,
   type TerminologySelection,
 } from "./terminology";
-import { Button, Field, Select, styles } from "./ui/Elements";
+import { Button, Field, Icon, Select, styles } from "./ui/Elements";
 
 type Selection = TerminologySelection | DiagnosisSelection;
 
@@ -35,6 +34,7 @@ export function TerminologyPicker<T extends Selection>({
       ...(multiple ? value : []),
       (diagnosis ? { ...item, status: "hypothesis" } : item) as T,
     ]);
+    setQuery("");
   };
   return (
     <div className={styles.form}>
@@ -45,7 +45,7 @@ export function TerminologyPicker<T extends Selection>({
           setQuery(event.target.value);
           setPage(0);
         }}
-        hint={`Полная МКБ-10 · ЕСНСИ ${ICD10_SOURCE.sourceVersion.replace("esnsi-", "")} · поиск по коду, названию, классу или блоку`}
+        hint="Поиск по коду или названию МКБ-10"
       />
       {query && (
         <div className={styles.inlineNote} role="group" aria-label={label}>
@@ -90,50 +90,60 @@ export function TerminologyPicker<T extends Selection>({
           )}
         </div>
       )}
-      {value.map((item) => (
-        <div className={styles.stack} key={item.code}>
-          <span>
-            {item.code} · {item.title}
-          </span>
-          {!Boolean(isCurrentIcd10Selection(item)) && (
-            <small className={styles.subtext}>
-              Историческая запись · {item.sourceVersion}. Для замены выберите
-              актуальный код.
-            </small>
-          )}
-          {diagnosis && "status" in item && (
-            <Select
-              label={`Статус диагноза ${item.code}`}
-              value={item.status}
-              disabled={!canConfirm}
-              onChange={(event) => {
-                if (!canConfirm) return;
-                const status = event.target
-                  .value as DiagnosisSelection["status"];
-                onChange(
-                  value.map((current) =>
-                    current.code === item.code
-                      ? { ...current, status }
-                      : current,
-                  ),
-                );
-              }}
+      <div className={styles.terminologyChips}>
+        {value.map((item) => (
+          <div className={styles.stack} key={item.code}>
+            <div
+              className={styles.terminologyChip}
+              title={`МКБ-10 · ${item.sourceVersion}`}
             >
-              <option value="hypothesis">Рабочая гипотеза</option>
-              <option value="confirmed">Подтверждён</option>
-            </Select>
-          )}
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() =>
-              onChange(value.filter((current) => current.code !== item.code))
-            }
-          >
-            Убрать
-          </Button>
-        </div>
-      ))}
+              <span>
+                {item.code} · {item.title}
+              </span>
+              <button
+                type="button"
+                className={styles.chipRemove}
+                aria-label={`Убрать ${item.code}`}
+                onClick={() =>
+                  onChange(
+                    value.filter((current) => current.code !== item.code),
+                  )
+                }
+              >
+                <Icon name="close" size={14} />
+              </button>
+            </div>
+            {!Boolean(isCurrentIcd10Selection(item)) && (
+              <small className={styles.subtext}>
+                Историческая запись · {item.sourceVersion}. Для замены выберите
+                актуальный код.
+              </small>
+            )}
+            {diagnosis && "status" in item && (
+              <Select
+                label={`Статус диагноза ${item.code}`}
+                value={item.status}
+                disabled={!canConfirm}
+                onChange={(event) => {
+                  if (!canConfirm) return;
+                  const status = event.target
+                    .value as DiagnosisSelection["status"];
+                  onChange(
+                    value.map((current) =>
+                      current.code === item.code
+                        ? { ...current, status }
+                        : current,
+                    ),
+                  );
+                }}
+              >
+                <option value="hypothesis">Рабочая гипотеза</option>
+                <option value="confirmed">Подтверждён</option>
+              </Select>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

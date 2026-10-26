@@ -35,7 +35,7 @@ export function PatientBrief({
       <div className={styles.between}>
         <h2>
           {compact
-            ? "Перед решением"
+            ? "Дополнительная информация"
             : previous
               ? "К повторному приёму"
               : "К приёму"}

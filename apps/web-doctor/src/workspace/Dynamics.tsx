@@ -1,3 +1,5 @@
+import { ClinicalQuestionnaire } from "./ClinicalQuestionnaire";
+import { patientMeasurements } from "./patient-measurements";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { Measurement, PatientRecord, ScaleKey } from "./model";
 import { scales } from "./sources";
@@ -19,7 +21,47 @@ import {
   styles,
 } from "./ui/Elements";
 
-export function MeasurementForm({
+export function MeasurementForm(props: {
+  patient: PatientRecord;
+  actions: WorkspaceActions;
+  onClose: () => void;
+  visitId?: string;
+}) {
+  const [mode, setMode] = useState<"questions" | "manual" | null>(null);
+  if (mode === "questions")
+    return (
+      <ClinicalQuestionnaire
+        patient={props.patient}
+        actions={props.actions}
+        onClose={props.onClose}
+        visitId={props.visitId}
+      />
+    );
+  if (mode === "manual") return <ManualMeasurementForm {...props} />;
+  return (
+    <Modal open onClose={props.onClose} title="Добавить оценку">
+      <div className={styles.form}>
+        <Button onClick={() => setMode("questions")}>
+          Ответить на вопросы
+        </Button>
+        <p className={styles.subtext}>GAD-7 и PHQ-9 · подсчёт по ответам</p>
+        <Button variant="secondary" onClick={() => setMode("manual")}>
+          Внести готовый результат
+        </Button>
+        <p className={styles.subtext}>
+          Результат любой шкалы из бланка или интервью
+        </p>
+        <div className={styles.formActions}>
+          <Button variant="ghost" onClick={props.onClose}>
+            Отмена
+          </Button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+function ManualMeasurementForm({
   patient,
   actions,
   onClose,
@@ -110,13 +152,6 @@ export function MeasurementForm({
             </option>
           ))}
         </Select>
-        <div className={styles.notice}>
-          Регистрация результата из использованной формы. Автоматические ключи и
-          клинические пороги не активированы до проверки версии и утверждения.{" "}
-          {preset.assessor === "clinician"
-            ? "Заполняет врач по результатам экспертной оценки."
-            : "Укажите результат самоотчёта пациента и его происхождение."}
-        </div>
         {scale === "custom" && (
           <Field
             label="Название инструмента"
@@ -200,7 +235,6 @@ export function MeasurementForm({
           onChange={(e) => setInterpretation(e.target.value)}
           rows={3}
         />
-        {preset.sourceId && <SourceLinks ids={[preset.sourceId]} />}
         <div className={styles.formActions}>
           <Button variant="secondary" onClick={onClose}>
             Отмена
@@ -349,12 +383,13 @@ export function Dynamics({
   compact?: boolean;
 }) {
   const [form, setForm] = useState(false);
-  const keys = [...new Set(patient.measurements.map(seriesKey))];
+  const measurements = patientMeasurements(patient);
+  const keys = [...new Set(measurements.map(seriesKey))];
   const [selected, setSelected] = useState("");
   const key = keys.includes(selected) ? selected : (keys[0] ?? "");
   const [period, setPeriod] = useState("all");
   const since = period === "all" ? 0 : Date.now() - Number(period) * 86400000;
-  const values = patient.measurements.filter(
+  const values = measurements.filter(
     (m) => seriesKey(m) === key && Date.parse(m.measuredAt) >= since,
   );
   const latest = values
@@ -365,7 +400,6 @@ export function Dynamics({
     <>
       <Section
         title="Динамика состояния"
-        description="Сравниваются одна форма, версия, роль оценщика и шкала баллов"
         action={
           <Button
             variant={compact ? "ghost" : "primary"}
@@ -398,9 +432,7 @@ export function Dynamics({
                 onChange={(e) => setSelected(e.target.value)}
               >
                 {keys.map((k) => {
-                  const m = patient.measurements.find(
-                    (m) => seriesKey(m) === k,
-                  )!;
+                  const m = measurements.find((m) => seriesKey(m) === k)!;
                   return (
                     <option key={k} value={k}>
                       {m.scale} · {m.version}
@@ -469,13 +501,10 @@ export function Dynamics({
             </table>
           </div>
         )}
-        {values[0]?.sourceId && <SourceLinks ids={[values[0].sourceId]} />}
       </Section>
-      {!compact && (
-        <Section
-          title="Контекст лечения"
-          description="Изменения плана рядом с динамикой, без автоматического вывода о причинной связи"
-        >
+      {!compact && patient.plan.some((p) => p.status !== "draft") && (
+        <details className={styles.details}>
+          <summary>Изменения лечения</summary>
           <div className={styles.timeline}>
             {patient.plan
               .filter((p) => p.status !== "draft")
@@ -485,20 +514,20 @@ export function Dynamics({
                   <h3>{p.title}</h3>
                   <p>
                     {p.details}{" "}
-                    {p.changeReason && `Причина изменения: ${p.changeReason}`}
+                    {p.changeReason && "Причина изменения: " + p.changeReason}
                   </p>
                   <SourceLinks ids={p.sourceIds} />
                 </div>
               ))}
           </div>
-          {!patient.plan.some((p) => p.status !== "draft") && (
-            <Empty title="Подтверждённых изменений пока нет" icon="calendar">
-              После подтверждения плана здесь появится контекст лечения.
-            </Empty>
-          )}
-        </Section>
+        </details>
       )}
-      {!compact && <AssessmentForms patient={patient} actions={actions} />}
+      {!compact && (
+        <details className={styles.details}>
+          <summary>Другие формы шкал</summary>
+          <AssessmentForms patient={patient} actions={actions} />
+        </details>
+      )}
       {form && (
         <MeasurementForm
           patient={patient}
@@ -544,7 +573,7 @@ export function Dynamics({
                 </dd>
               </div>
               <div>
-                <dt>Заключение врача</dt>
+                <dt>Описание результата</dt>
                 <dd>{detail.interpretation || "Не внесено"}</dd>
               </div>
             </dl>
