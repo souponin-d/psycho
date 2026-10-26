@@ -60,13 +60,13 @@ export function FeelingGrid({
       accessible
       accessibilityRole="adjustable"
       accessibilityLabel="Карта ощущений"
-      accessibilityHint="Вправо — приятнее, вверх — больше энергии. Доступны отдельные кнопки выбора."
+      accessibilityHint="Вправо — к радости, влево — грустнее, вверх — больше энергии. Доступны отдельные кнопки выбора."
       accessibilityValue={{
         text: point ? feeling.label + " · " + feelingHint(point) : "Не выбрано",
       }}
       accessibilityActions={[
-        { name: "increment", label: "Приятнее" },
-        { name: "decrement", label: "Менее приятно" },
+        { name: "increment", label: "Больше радости" },
+        { name: "decrement", label: "Грустнее" },
         { name: "increaseEnergy", label: "Больше энергии" },
         { name: "decreaseEnergy", label: "Меньше энергии" },
       ]}
@@ -217,7 +217,7 @@ export function FeelingGrid({
             transform: [{ rotate: "-90deg" }],
           }}
         >
-          НЕПРИЯТНО
+          ГРУСТНО
         </T>
         <T
           size={9}
@@ -232,7 +232,7 @@ export function FeelingGrid({
             transform: [{ rotate: "90deg" }],
           }}
         >
-          ПРИЯТНО
+          РАДОСТЬ
         </T>
       </View>
     </View>

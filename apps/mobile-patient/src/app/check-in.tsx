@@ -338,8 +338,8 @@ export default function CheckInScreen() {
           >
             {draft?.formVersion && draft.formVersion !== plan?.id && (
               <T size={12}>
-                План обновился. Проверьте обязательные разделы перед
-                сохранением; ваши ответы сохранены.
+                План обновился. Проверьте разделы перед сохранением; ваши ответы
+                сохранены.
               </T>
             )}
             {day < today && (
@@ -396,21 +396,19 @@ export default function CheckInScreen() {
                         <RoundButton
                           icon="back"
                           label={
-                            axis === "valence"
-                              ? "Меньше приятных ощущений"
-                              : "Меньше энергии"
+                            axis === "valence" ? "Грустнее" : "Меньше энергии"
                           }
                           onPress={() => adjust(axis, -1)}
                         />
                         <T size={13}>
-                          {axis === "valence" ? "Приятность" : "Энергия"}:{" "}
+                          {axis === "valence" ? "Настроение" : "Энергия"}:{" "}
                           {preview[axis]} из 6
                         </T>
                         <RoundButton
                           icon="arrow"
                           label={
                             axis === "valence"
-                              ? "Больше приятных ощущений"
+                              ? "Больше радости"
                               : "Больше энергии"
                           }
                           onPress={() => adjust(axis, 1)}

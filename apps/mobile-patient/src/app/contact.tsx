@@ -157,7 +157,7 @@ export default function ContactScreen() {
         title={
           saved
             ? connection.mode === "server"
-              ? "Обращение принято сервером"
+              ? "Сообщение успешно отправлено!"
               : "Обращение сохранено"
             : "Что хотите обсудить?"
         }
@@ -294,7 +294,7 @@ export default function ContactScreen() {
             </T>
           )}
           <Button
-            title="Сохранить обращение"
+            title="Отправить"
             disabled={!!invalid || saving}
             onPress={() => void save()}
           />

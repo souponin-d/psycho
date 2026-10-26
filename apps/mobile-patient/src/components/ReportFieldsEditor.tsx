@@ -16,7 +16,7 @@ export function ReportFieldsEditor({
       {required.includes("sleep") && (
         <View style={{ gap: 9 }}>
           <T size={16} weight="500">
-            Как прошла ночь? · обязательно
+            Как прошла ночь?
           </T>
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
             {["Плохо", "Обычно", "Хорошо"].map((value) => (
@@ -42,8 +42,7 @@ export function ReportFieldsEditor({
             <T muted size={11}>
               {key === "anxiety"
                 ? "0 — совсем нет, 10 — очень сильно"
-                : "0 — совсем не хватало, 10 — полностью хватало"}{" "}
-              · обязательно
+                : "0 — совсем не хватало, 10 — полностью хватало"}
             </T>
             <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
               {Array.from({ length: 11 }, (_, i) => (
@@ -61,7 +60,7 @@ export function ReportFieldsEditor({
       {required.includes("tolerability") && (
         <View style={{ gap: 9 }}>
           <T size={16} weight="500">
-            Как переносится терапия? · обязательно
+            Как переносится терапия?
           </T>
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
             {["Без трудностей", "Есть трудности"].map((value) => (
@@ -74,7 +73,7 @@ export function ReportFieldsEditor({
             ))}
           </View>
           <T muted size={11}>
-            При трудностях можно отдельно сохранить обращение к врачу.
+            При трудностях можно отдельно связаться с врачом.
           </T>
         </View>
       )}

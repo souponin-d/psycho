@@ -62,7 +62,7 @@ const steps = [
   },
   {
     title: "Найдите своё ощущение",
-    body: "Проведите пальцем по карте. Слева — меньше приятных ощущений, справа — больше. Выше — больше энергии.",
+    body: "Проведите пальцем по карте. Слева — грустнее, справа — больше радости. Выше — больше энергии.",
   },
   {
     title: "Самоотчёт и личный момент",
@@ -281,22 +281,26 @@ export default function Onboarding() {
   }
   return (
     <View style={{ flex: 1, backgroundColor: theme.page }}>
-      <Image
-        source={theme.landscape}
-        accessible={false}
-        style={{
-          position: "absolute",
-          width: "100%",
-          height: "100%",
-          opacity: step === 0 || step === 12 ? 0.8 : 0.2,
-        }}
-        resizeMode="cover"
-      />
-      <LinearGradient
-        pointerEvents="none"
-        colors={[theme.page, theme.page + "22", theme.page]}
-        style={{ position: "absolute", inset: 0 }}
-      />
+      {(step === 0 || step === 12) && (
+        <>
+          <Image
+            source={theme.landscape}
+            accessible={false}
+            style={{
+              position: "absolute",
+              width: "100%",
+              height: "100%",
+              opacity: 0.8,
+            }}
+            resizeMode="cover"
+          />
+          <LinearGradient
+            pointerEvents="none"
+            colors={[theme.page, theme.page + "22", theme.page]}
+            style={{ position: "absolute", inset: 0 }}
+          />
+        </>
+      )}
       <ScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{
@@ -535,8 +539,8 @@ export default function Onboarding() {
               />
               <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
                 {[
-                  ["Менее приятно", "valence", -1],
-                  ["Приятнее", "valence", 1],
+                  ["Грустнее", "valence", -1],
+                  ["Больше радости", "valence", 1],
                   ["Меньше энергии", "energy", -1],
                   ["Больше энергии", "energy", 1],
                 ].map(([label, axis, delta]) => (
