@@ -1,5 +1,5 @@
 {
-  "version": "aviandr-2026-07-16-draft-1",
+  "version": "aviandr-2026-07-16-draft-2",
   "status": "unapproved",
   "title": "Авиандр · маритупирдин · таблетки 20 мг",
   "url": "https://disk.360.yandex.ru/i/n-l5OQc0Fbsojw",
@@ -35,7 +35,7 @@
       "id": "pregnancy",
       "title": "Беременность",
       "section": "4.6",
-      "positive": "contraindication"
+      "positive": "review"
     },
     {
       "id": "breastfeeding",
@@ -45,7 +45,7 @@
     },
     {
       "id": "galactoseDisorder",
-      "title": "Наследственная непереносимость галактозы, дефицит лактазы или мальабсорбция",
+      "title": "Наследственная непереносимость галактозы, дефицит лактазы или глюкозо-галактозная мальабсорбция",
       "section": "4.4",
       "positive": "contraindication"
     },

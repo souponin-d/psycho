@@ -1,3 +1,4 @@
+import { installGrlsFixture } from "../../../../tests/grls-fixture";
 import { afterEach, expect, it, vi } from "vitest";
 import {
   cleanup,
@@ -5,8 +6,9 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
-import { PlanForm } from "./CarePlan";
+import { CarePlan, PlanForm } from "./CarePlan";
 import { newAviandrReview } from "./aviandr";
 import { applyCommand } from "./commands";
 import { demoActor, seedPatients } from "./seed";
@@ -39,6 +41,7 @@ it("shows the actual saved and local Aviandr answers before resolving a concurre
   expect(screen.getByText(/Эпилепсия: нет/)).toBeTruthy();
 });
 function fixture() {
+  installGrlsFixture();
   let patient = seedPatients(new Date("2026-10-24T09:00:00Z"))[0]!;
   const onClose = vi.fn();
   const mutate = vi.fn(
@@ -75,13 +78,134 @@ function openDrug() {
   });
   fireEvent.click(screen.getByRole("button", { name: "Выбрать Авиандр" }));
 }
+function oldDraft(f: ReturnType<typeof fixture>) {
+  const plan = {
+    ...f.patient.plan[0]!,
+    id: "old-source-aviandr",
+    visitId: "",
+    kind: "medication" as const,
+    medicine: installGrlsFixture(),
+    title: installGrlsFixture().tradeName,
+    status: "draft" as const,
+    details: "Сохранить текст назначения",
+    dose: "20 мг",
+    schedule: "Схема врача",
+    instructionUrl: "https://example.test/instruction",
+    startDate: "2026-10-24",
+  };
+  f.patient.plan = [plan];
+  const review = newAviandrReview(f.patient, plan.id);
+  review.sourceVersion = "aviandr-2026-07-16-draft-1";
+  review.inputs.epilepsy = "yes";
+  review.inputs.evidence = "Старое уточнение";
+  review.findings = [
+    {
+      id: "pregnancy",
+      title: "Беременность",
+      status: "contraindication",
+      detail: "Результат сохранённой версии",
+      section: "4.6",
+    },
+  ];
+  plan.aviandrReview = review;
+  return plan;
+}
+it("requires explicit refresh for an old source on an unchanged chart and preserves prescription text", async () => {
+  const f = fixture();
+  const plan = oldDraft(f);
+  render(
+    <PlanForm
+      patient={f.patient}
+      existing={plan}
+      actions={f.actions}
+      onClose={f.onClose}
+    />,
+  );
+  expect(screen.getByText("Источник проверки изменился")).toBeTruthy();
+  expect((screen.getByLabelText("Эпилепсия") as HTMLSelectElement).value).toBe(
+    "yes",
+  );
+  expect(
+    (
+      screen.getByRole("button", {
+        name: "Сохранить черновик",
+      }) as HTMLButtonElement
+    ).disabled,
+  ).toBe(true);
+  expect(f.mutate).not.toHaveBeenCalled();
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Обновить контекст и сбросить уточнения",
+    }),
+  );
+  expect(screen.queryByText("Источник проверки изменился")).toBeNull();
+  expect((screen.getByLabelText("Эпилепсия") as HTMLSelectElement).value).toBe(
+    "unknown",
+  );
+  expect(
+    (screen.getByLabelText(/^Основание уточнений/) as HTMLTextAreaElement)
+      .value,
+  ).toBe("");
+  expect(
+    (screen.getByLabelText("Содержание назначения") as HTMLTextAreaElement)
+      .value,
+  ).toBe("Сохранить текст назначения");
+  expect(plan.aviandrReview?.sourceVersion).toBe("aviandr-2026-07-16-draft-1");
+  expect(plan.aviandrReview?.inputs.epilepsy).toBe("yes");
+  fireEvent.click(screen.getByRole("button", { name: "Сохранить черновик" }));
+  await waitFor(() =>
+    expect(
+      f.onClose,
+      screen.queryByRole("alert")?.textContent,
+    ).toHaveBeenCalledOnce(),
+  );
+  const saved = f.patient.plan[0]!;
+  expect(saved.aviandrReview?.sourceVersion).toBe("aviandr-2026-07-16-draft-2");
+  expect(saved.dose).toBe("20 мг");
+  expect(saved.schedule).toBe("Схема врача");
+  expect(saved.details).toBe("Сохранить текст назначения");
+});
+it("disables confirmation of a draft whose source version is obsolete", () => {
+  const f = fixture();
+  oldDraft(f);
+  render(<CarePlan patient={f.patient} actions={f.actions} />);
+  const button = screen.getByRole("button", {
+    name: "Проверить и подтвердить",
+  });
+  expect((button as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.click(button);
+  expect(
+    screen.queryByRole("dialog", { name: "Подтвердить назначение" }),
+  ).toBeNull();
+  expect(f.mutate).not.toHaveBeenCalled();
+});
+it("keeps confirmed historical review results and source metadata as the saved snapshot", () => {
+  const f = fixture();
+  const plan = { ...oldDraft(f), status: "confirmed" as const };
+  f.patient.plan = [plan];
+  const snapshot = structuredClone(plan);
+  render(<CarePlan patient={f.patient} actions={f.actions} />);
+  expect(screen.getByText(/aviandr-2026-07-16-draft-1/)).toBeTruthy();
+  expect(screen.getByText("Результат сохранённой версии")).toBeTruthy();
+  expect(screen.queryByText("Источник проверки изменился")).toBeNull();
+  expect(
+    screen.queryByRole("button", { name: /сбросить уточнения/ }),
+  ).toBeNull();
+  expect(plan).toEqual(snapshot);
+  expect(f.mutate).not.toHaveBeenCalled();
+});
 it("selects Aviandr, shows actual chart context, saves and reopens the unapproved review", async () => {
   const f = fixture();
   const view = render(
     <PlanForm patient={f.patient} actions={f.actions} onClose={f.onClose} />,
   );
   openDrug();
-  expect(screen.getByText(f.patient.profile.allergies)).toBeTruthy();
+  expect(
+    within(screen.getByRole("region", { name: "Проверка Авиандра" })).getByText(
+      f.patient.profile.allergies,
+      { selector: "dd" },
+    ),
+  ).toBeTruthy();
   fireEvent.change(screen.getByLabelText("Эпилепсия"), {
     target: { value: "yes" },
   });
@@ -136,7 +260,12 @@ it("preserves draft text on chart refresh and asks to explicitly reset stale cla
     }),
   );
   expect(screen.queryByText(/Данные карты изменились/)).toBeNull();
-  expect(screen.getByText("Сведения другого врача")).toBeTruthy();
+  expect(
+    within(screen.getByRole("region", { name: "Проверка Авиандра" })).getByText(
+      "Сведения другого врача",
+      { selector: "dd" },
+    ),
+  ).toBeTruthy();
 });
 it("does not attach an Aviandr review to another drug", async () => {
   const f = fixture();
@@ -144,9 +273,13 @@ it("does not attach an Aviandr review to another drug", async () => {
     <PlanForm patient={f.patient} actions={f.actions} onClose={f.onClose} />,
   );
   openDrug();
-  fireEvent.change(screen.getByLabelText(/^Препарат, форма и наименование/), {
-    target: { value: "Другой препарат" },
-  });
+  fireEvent.change(
+    screen.getByRole("textbox", { name: /^Поиск препарата в ГРЛС/ }),
+    { target: { value: "Парацетамол" } },
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: /^Парацетамол ·/i }),
+  );
   fireEvent.click(screen.getByRole("button", { name: "Сохранить черновик" }));
   await waitFor(() => expect(f.onClose).toHaveBeenCalledOnce());
   expect(f.patient.plan.at(-1)?.aviandrReview).toBeUndefined();
@@ -180,5 +313,10 @@ it("updates the shared profile from Aviandr without submitting or losing the med
       .value,
   ).toBe("Сохранить мой текст");
   expect(screen.getByText("Данные карты изменились")).toBeTruthy();
-  expect(screen.getByText("Со слов пациента: учебное уточнение")).toBeTruthy();
+  expect(
+    within(screen.getByRole("region", { name: "Проверка Авиандра" })).getByText(
+      "Со слов пациента: учебное уточнение",
+      { selector: "dd" },
+    ),
+  ).toBeTruthy();
 });

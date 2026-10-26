@@ -74,6 +74,40 @@ try {
       schema(checker.getDeclaredTypeOfSymbol(symbol), true),
     ]),
   );
+  // Match Store.PatientData's explicit plan projection; internal clinical
+  // rationales and score-bearing details never belong to the patient wire type.
+  const patientPlanFields = [
+    "id",
+    "kind",
+    "title",
+    "dose",
+    "schedule",
+    "startDate",
+    "endDate",
+    "dueDate",
+    "status",
+    "confirmedAt",
+    "confirmedBy",
+    "patientInstructions",
+    "medicine",
+  ];
+  schemas.PatientPlanItem = {
+    type: "object",
+    additionalProperties: false,
+    properties: Object.fromEntries(
+      patientPlanFields.map((name) => [
+        name,
+        schemas.PlanItem.properties[name],
+      ]),
+    ),
+    required: schemas.PlanItem.required.filter((name) =>
+      patientPlanFields.includes(name),
+    ),
+  };
+  schemas.PatientPlanItem.properties.status = {
+    type: "string",
+    const: "confirmed",
+  };
   const ref = (name) => ({ $ref: `#/components/schemas/${name}` });
   const json = (value) => ({ "application/json": { schema: value } });
   const errors = Object.fromEntries(
@@ -212,6 +246,62 @@ try {
         responses: response({ type: "array", items: ref("SourceDocument") }),
       },
     },
+    "/api/terminology/icd10": {
+      get: {
+        operationId: "searchIcd10",
+        description:
+          "Полная актуальная российская МКБ-10: код, название, класс или блок; пагинация с 1. Неактуальные записи и группировочные узлы не выбираются как диагноз.",
+        parameters: [
+          {
+            name: "q",
+            in: "query",
+            required: false,
+            schema: { type: "string", maxLength: 250 },
+          },
+          {
+            name: "page",
+            in: "query",
+            required: false,
+            schema: { type: "integer", minimum: 1, default: 1 },
+          },
+          {
+            name: "pageSize",
+            in: "query",
+            required: false,
+            schema: { type: "integer", minimum: 1, maximum: 100, default: 25 },
+          },
+        ],
+        responses: response(ref("Icd10SearchResult")),
+      },
+    },
+    "/api/terminology/grls": {
+      get: {
+        operationId: "searchGrls",
+        description:
+          "Только актуальные регистрации препаратов из проверенного снимка ГРЛС; статус и версия сохраняются в назначении.",
+        parameters: [
+          {
+            name: "q",
+            in: "query",
+            required: false,
+            schema: { type: "string", maxLength: 250 },
+          },
+          {
+            name: "page",
+            in: "query",
+            required: false,
+            schema: { type: "integer", minimum: 1, default: 1 },
+          },
+          {
+            name: "pageSize",
+            in: "query",
+            required: false,
+            schema: { type: "integer", minimum: 1, maximum: 100, default: 12 },
+          },
+        ],
+        responses: response(ref("GrlsSearchResult")),
+      },
+    },
     "/api/assessment-forms/{id}": {
       get: {
         operationId: "assessmentForm",
@@ -240,7 +330,7 @@ try {
           properties: {
             patientId: { type: "string" },
             name: { type: "string" },
-            plan: { type: "array", items: ref("PlanItem") },
+            plan: { type: "array", items: ref("PatientPlanItem") },
             reports: { type: "array", items: ref("SelfReport") },
             messages: { type: "array", items: ref("Message") },
           },
@@ -316,7 +406,12 @@ try {
   };
   const output = "docs/contracts/doctor.openapi.json";
   function tsType(value) {
-    if (value.$ref) return `models.${value.$ref.split("/").at(-1)}`;
+    if (value.$ref) {
+      const name = value.$ref.split("/").at(-1);
+      return name === "PatientPlanItem"
+        ? tsType(schemas.PatientPlanItem)
+        : `models.${name}`;
+    }
     if ("const" in value) return JSON.stringify(value.const);
     if (value.enum) return value.enum.map((v) => JSON.stringify(v)).join(" | ");
     if (value.anyOf || value.oneOf)
@@ -347,6 +442,9 @@ try {
       const parameters = (operation.parameters ?? []).filter(
         (p) => p.in === "path",
       );
+      const query = (operation.parameters ?? []).filter(
+        (p) => p.in === "query",
+      );
       const requestSchema =
         operation.requestBody?.content?.["application/json"]?.schema;
       const success =
@@ -366,14 +464,22 @@ try {
       const args = [
         "transport: Transport",
         ...parameters.map((p) => `${p.name}: string`),
+        ...(query.length
+          ? [
+              `query: { ${query.map((p) => `${p.name}?: ${p.schema.type === "integer" ? "number" : "string"}`).join("; ")} } = {}`,
+            ]
+          : []),
         ...(requestSchema ? [`body: ${tsType(requestSchema)}`] : []),
       ];
-      const url = route
+      let url = route
         .replace(/^\/api/, "")
         .replace(
           /\{(\w+)\}/g,
           (_, key) => "${encodeURIComponent(" + key + ")}",
         );
+      if (query.length)
+        url +=
+          "?${new URLSearchParams(Object.entries(query).filter(([, value]) => value !== undefined).map(([key, value]) => [key, String(value)]))}";
       functions.push(
         `export function ${operation.operationId}(${args.join(", ")}): Promise<${resultType}> {return transport(\`${url}\`, {method: ${JSON.stringify(method.toUpperCase())}${requestSchema ? ", body: JSON.stringify(body)" : ""}});}`,
       );

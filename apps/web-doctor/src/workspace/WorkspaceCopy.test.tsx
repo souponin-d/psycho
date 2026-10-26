@@ -11,7 +11,12 @@ vi.mock("./repository", async (importOriginal) => {
     demoRepository: async () => ({
       mode: "demo" as const,
       actor: demoActor,
-      list: async () => seedPatients(),
+      // Изолируем текст пациентского уведомления от приоритета новых клинических сценариев.
+      list: async () =>
+        seedPatients().map((p) => ({
+          ...p,
+          events: p.events.filter((e) => e.title === "Уведомление от пациента"),
+        })),
       create: async () => {
         throw new Error("not used by this test");
       },
@@ -43,7 +48,7 @@ it("показывает пациентское уведомление без с
 
   await user.click(
     await screen.findByRole("button", {
-      name: "Открыть учебное рабочее место",
+      name: "Открыть кабинет",
     }),
   );
 

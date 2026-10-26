@@ -1,3 +1,6 @@
+import { WorkflowPanel } from "./ClinicalWorkflow";
+import { ClinicalSupportPanel } from "./ClinicalSupportPanel";
+import { AdherencePanel } from "./AdherencePanel";
 import { useId, useState, type FormEvent } from "react";
 import type { Actor, Episode, PatientRecord } from "./model";
 import { message, type WorkspaceActions } from "./useWorkspace";
@@ -87,8 +90,11 @@ export function PatientView({
   const openEvents = patient.events.filter(
     (event) => event.status !== "closed",
   ).length;
-  const archiveBlocked = next.length > 0 || openEvents > 0;
+  const openSafety =
+    patient.workflow?.safety.filter((e) => e.status !== "acted").length ?? 0;
+  const archiveBlocked = next.length > 0 || openEvents > 0 || openSafety > 0;
   const archiveBlockReason = [
+    openSafety > 0 ? `Завершите оценку безопасности: ${openSafety}.` : "",
     next.length > 0
       ? `Сначала завершите или отмените предстоящие и текущие приёмы: ${next.length}.`
       : "",
@@ -237,6 +243,16 @@ export function PatientView({
         </nav>
       )}
       <div className={styles.stack}>
+        {(tab === "overview" || tab === "plan") && (
+          <ClinicalSupportPanel
+            patient={patient}
+            actor={actor}
+            actions={actions}
+          />
+        )}
+        {tab === "overview" && (
+          <WorkflowPanel patient={patient} actions={actions} />
+        )}
         {tab === "overview" && (
           <PatientBrief patient={patient} navigate={navigate} />
         )}
@@ -520,6 +536,7 @@ export function PatientView({
         {tab === "plan" && (
           <>
             <CarePlan patient={patient} actions={actions} />
+            <AdherencePanel patient={patient} actor={actor} actions={actions} />
             <Section
               title="Контроль и договорённости"
               action={

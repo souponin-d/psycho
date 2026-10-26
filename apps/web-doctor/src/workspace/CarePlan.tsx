@@ -1,16 +1,44 @@
+import { workflowEffectOwner } from "./clinical-workflow";
+import { CandidateMedicineReview } from "./CandidateMedicineReview";
+import { assertSupportPlanCurrent } from "./clinical-support";
+import { WorkflowRecommendations } from "./ClinicalWorkflow";
+import { ClinicalFacts } from "./ClinicalFacts";
 import { useState, type FormEvent } from "react";
-import type { AviandrReview, PatientRecord, PlanItem, Referral } from "./model";
+import type {
+  Actor,
+  AviandrReview,
+  PatientRecord,
+  PlanItem,
+  Referral,
+} from "./model";
 import type { WorkspaceActions } from "./useWorkspace";
 import { message } from "./useWorkspace";
 import { formatDate, planKind, today } from "./labels";
 import { SourceLinks, SourcePicker } from "./SourceLibrary";
 import { TherapyReference } from "./TherapyReference";
 import { AviandrCheck, AviandrSummary } from "./AviandrCheck";
+import { MedicinePicker, MedicineSummary } from "./MedicinePicker";
+import { grlsCatalog, type MedicineSelection } from "./grls";
+import { loadGrlsCatalog } from "./grls-loader";
+function supportPlanIssue(
+  patient: PatientRecord,
+  item: PlanItem,
+  actor: Actor,
+): string {
+  if (item.status !== "draft") return "";
+  try {
+    assertSupportPlanCurrent(patient, item.id, actor);
+    return "";
+  } catch (error) {
+    return message(error);
+  }
+}
 import {
   aviandr,
   aviandrContext,
   evaluateAviandr,
   isAviandr,
+  isAviandrSourceCurrent,
   newAviandrReview,
   sameAviandrContext,
 } from "./aviandr";
@@ -34,6 +62,7 @@ import {
 } from "./ui/Elements";
 
 const planLabels: Record<string, string> = {
+  medicine: "Препарат и регистрационные сведения ГРЛС",
   kind: "Тип назначения",
   title: "Название",
   details: "Содержание назначения",
@@ -55,6 +84,9 @@ const planLabels: Record<string, string> = {
 function planValues(item: PlanItem) {
   return {
     ...item,
+    medicine: item.medicine
+      ? `${item.medicine.registrationNumber} · ${item.medicine.registrationStatus} · ${item.medicine.sourceVersion} · ${item.medicine.forms} · ${item.medicine.manufacturers} · ${item.medicine.holder}`
+      : "Историческая запись без ГРЛС",
     aviandrReview: item.aviandrReview
       ? reviewComparison(item.aviandrReview)
       : "Не выполнялась",
@@ -90,6 +122,7 @@ function reviewComparison(review: AviandrReview) {
     "ml/min/1.73m2": "мл/мин/1,73 м²",
   };
   const contextLabels: Record<string, string> = {
+    clinicalFacts: "Клинические факты и источники",
     birthDate: "Дата рождения",
     allergies: "Аллергии",
     conditions: "Заболевания",
@@ -155,6 +188,16 @@ function referralValues(item: Referral) {
   };
 }
 
+function staleAviandrReview(patient: PatientRecord, item: PlanItem) {
+  return (
+    !!item.aviandrReview &&
+    (!isAviandrSourceCurrent(item.aviandrReview) ||
+      !sameAviandrContext(
+        item.aviandrReview.context,
+        aviandrContext(patient, item.id),
+      ))
+  );
+}
 export function PlanForm({
   patient,
   actions,
@@ -199,9 +242,11 @@ export function PlanForm({
   const current = patient.plan.find((item) => item.id === value.id);
   const guard = useDraftGuard(current, patient.revision);
   const locked = !!current && current.status !== "draft";
+  const staleReview = !locked && staleAviandrReview(patient, value);
   const set = (key: keyof PlanItem, v: string | string[]) =>
     setValue((previous) => {
       const next = { ...previous, [key]: v };
+      if (key === "kind" && v !== "medication") delete next.medicine;
       if (next.kind !== "medication" || !isAviandr(next.title))
         delete next.aviandrReview;
       else if (
@@ -215,6 +260,38 @@ export function PlanForm({
         };
       return next;
     });
+  function selectMedicine(medicine: MedicineSelection | null) {
+    setValue((previous) => {
+      const next = { ...previous, medicine, title: medicine?.tradeName ?? "" };
+      if (!isAviandr(next.title)) delete next.aviandrReview;
+      return next;
+    });
+  }
+  function selectAviandr() {
+    const choose = () => {
+      const matches = grlsCatalog
+        .search("Авиандр", 1, 100)
+        .items.filter((r) => /^авиандр[®\s]*$/iu.test(r.tradeName));
+      if (matches.length !== 1) {
+        setError(
+          "Найдите нужную регистрацию Авиандра в ГРЛС и выберите её явно.",
+        );
+        return;
+      }
+      setValue((previous) => ({
+        ...previous,
+        medicine: matches[0]!,
+        title: matches[0]!.tradeName,
+        instructionUrl: aviandr.url,
+        aviandrReview: newAviandrReview(patient, previous.id),
+      }));
+    };
+    if (grlsCatalog.ready) choose();
+    else
+      void loadGrlsCatalog()
+        .then(choose)
+        .catch((e) => setError(message(e)));
+  }
   async function save(e: FormEvent) {
     e.preventDefault();
     try {
@@ -225,6 +302,10 @@ export function PlanForm({
       if (guard.conflict)
         throw new Error(
           "Назначение изменено в другой сессии. Сравните данные и выберите, какие изменения сохранить.",
+        );
+      if (staleReview)
+        throw new Error(
+          "Источник проверки или данные карты изменились. Повторите сверку.",
         );
       await actions.mutate(
         patient.id,
@@ -258,7 +339,26 @@ export function PlanForm({
         value={value.title}
         onChange={(e) => set("title", e.target.value)}
         required
+        readOnly={
+          value.kind === "medication" && (!!value.medicine || !existing)
+        }
       />
+      {value.kind === "medication" && (
+        <MedicinePicker value={value.medicine} onChange={selectMedicine} />
+      )}
+      {value.kind === "medication" && (
+        <CandidateMedicineReview
+          patient={patient}
+          plan={value}
+          actor={actions.actor}
+        />
+      )}
+      {value.kind === "medication" && existing && !value.medicine && (
+        <p className={styles.subtext}>
+          Прежняя запись без связи с ГРЛС. Название и историю сохраняем; замена
+          препарата требует выбора из справочника.
+        </p>
+      )}
     </>
   );
   return (
@@ -273,6 +373,10 @@ export function PlanForm({
       }
       className={styles.planModal}
     >
+      <details className={styles.details}>
+        <summary>Клинический контекст перед решением</summary>
+        <ClinicalFacts patient={patient} actions={actions} compact />
+      </details>
       <form className={styles.planForm} onSubmit={save}>
         <div className={styles.prescriptionIdentity}>
           <span>
@@ -333,38 +437,29 @@ export function PlanForm({
               identityFields
             )}
             {value.kind === "medication" && !isAviandr(value.title) && (
-              <Button
-                variant="secondary"
-                icon="book"
-                onClick={() =>
-                  setValue((previous) => ({
-                    ...previous,
-                    title: aviandr.title,
-                    instructionUrl: aviandr.url,
-                    aviandrReview: newAviandrReview(patient, previous.id),
-                  }))
-                }
-              >
+              <Button variant="secondary" icon="book" onClick={selectAviandr}>
                 Выбрать Авиандр
               </Button>
             )}
             {value.kind === "medication" &&
               isAviandr(value.title) &&
               (value.aviandrReview ? (
-                <AviandrCheck
-                  patient={patient}
-                  actions={actions}
-                  showSummary={false}
-                  planId={value.id}
-                  startDate={value.startDate}
-                  review={value.aviandrReview}
-                  onChange={(review) =>
-                    setValue((previous) => ({
-                      ...previous,
-                      aviandrReview: review,
-                    }))
-                  }
-                />
+                !locked && (
+                  <AviandrCheck
+                    patient={patient}
+                    actions={actions}
+                    showSummary={false}
+                    planId={value.id}
+                    startDate={value.startDate}
+                    review={value.aviandrReview}
+                    onChange={(review) =>
+                      setValue((previous) => ({
+                        ...previous,
+                        aviandrReview: review,
+                      }))
+                    }
+                  />
+                )
               ) : (
                 <Button
                   variant="secondary"
@@ -470,19 +565,12 @@ export function PlanForm({
                 prominent
                 review={{
                   ...value.aviandrReview,
-                  findings: sameAviandrContext(
-                    value.aviandrReview.context,
-                    aviandrContext(patient, value.id),
-                  )
-                    ? evaluateAviandr(value.aviandrReview, value.startDate)
-                    : value.aviandrReview.findings,
+                  findings:
+                    !locked && !staleReview
+                      ? evaluateAviandr(value.aviandrReview, value.startDate)
+                      : value.aviandrReview.findings,
                 }}
-                stale={
-                  !sameAviandrContext(
-                    value.aviandrReview.context,
-                    aviandrContext(patient, value.id),
-                  )
-                }
+                stale={staleReview}
               />
             </aside>
           )}
@@ -496,7 +584,7 @@ export function PlanForm({
           </Button>
           <Button
             type="submit"
-            disabled={actions.busy || guard.conflict || locked}
+            disabled={actions.busy || guard.conflict || locked || staleReview}
           >
             Сохранить черновик
           </Button>
@@ -525,6 +613,8 @@ export function CarePlan({
   );
   const [filter, setFilter] = useState("active");
   const [error, setError] = useState("");
+  const confirmationStale =
+    !!confirmation && staleAviandrReview(patient, confirmation);
   const items = patient.plan.filter(
     (p) =>
       filter === "all" ||
@@ -538,6 +628,10 @@ export function CarePlan({
       if (!samePlanRecord(current, confirmation))
         throw new Error(
           "Назначение изменено в другой сессии. Закройте окно и проверьте обновлённую запись перед подтверждением.",
+        );
+      if (confirmationStale)
+        throw new Error(
+          "Источник проверки или данные карты изменились. Повторите сверку перед подтверждением.",
         );
       await actions.mutate(
         patient.id,
@@ -584,6 +678,7 @@ export function CarePlan({
   }
   return (
     <>
+      <WorkflowRecommendations patient={patient} actions={actions} />
       <Section
         title="Лечение и план"
         description="Черновики доступны врачу. Действующий план состоит из подтверждённых записей."
@@ -638,6 +733,7 @@ export function CarePlan({
               </span>
             </div>
             <h3 style={{ marginTop: 12 }}>{item.title}</h3>
+            {item.medicine && <MedicineSummary value={item.medicine} />}
             {item.visitId && (
               <p className={styles.subtext}>
                 Приём{" "}
@@ -675,20 +771,33 @@ export function CarePlan({
               <AviandrSummary
                 review={item.aviandrReview}
                 stale={
-                  item.status === "draft" &&
-                  !sameAviandrContext(
-                    item.aviandrReview.context,
-                    aviandrContext(patient, item.id),
-                  )
+                  item.status === "draft" && staleAviandrReview(patient, item)
                 }
               />
             )}
+            {supportPlanIssue(patient, item, actions.actor) && (
+              <p className={styles.notice}>
+                {supportPlanIssue(patient, item, actions.actor)}
+              </p>
+            )}
             <div className={styles.row} style={{ marginTop: 12 }}>
-              {item.status === "draft" ? (
+              {item.status === "draft" &&
+              workflowEffectOwner(patient, item.id) ? (
+                <p className={styles.subtext}>
+                  {workflowEffectOwner(patient, item.id)?.stale
+                    ? "Основание устарело. Рассмотрите новое предложение."
+                    : "Подтвердите действие в рекомендациях."}
+                </p>
+              ) : item.status === "draft" ? (
                 <>
                   <Button
                     variant="secondary"
                     icon="check"
+                    disabled={
+                      actions.busy ||
+                      staleAviandrReview(patient, item) ||
+                      !!supportPlanIssue(patient, item, actions.actor)
+                    }
                     onClick={() => {
                       setError("");
                       setConfirmation(item);
@@ -774,15 +883,15 @@ export function CarePlan({
               {confirmation.rationale || "Обоснование не внесено"}
             </p>
             <SourceLinks ids={confirmation.sourceIds} />
+            <CandidateMedicineReview
+              patient={patient}
+              plan={confirmation}
+              actor={actions.actor}
+            />
             {confirmation.aviandrReview && (
               <AviandrSummary
                 review={confirmation.aviandrReview}
-                stale={
-                  !sameAviandrContext(
-                    confirmation.aviandrReview.context,
-                    aviandrContext(patient, confirmation.id),
-                  )
-                }
+                stale={confirmationStale}
               />
             )}
             <p className={styles.subtext}>
@@ -793,7 +902,10 @@ export function CarePlan({
               <Button variant="secondary" onClick={() => setConfirmation(null)}>
                 Назад
               </Button>
-              <Button disabled={actions.busy} onClick={() => void confirm()}>
+              <Button
+                disabled={actions.busy || confirmationStale}
+                onClick={() => void confirm()}
+              >
                 Подтверждаю решение
               </Button>
             </div>
@@ -1079,9 +1191,15 @@ export function Referrals({
                   }[r.status]
                 }
               </span>
-              <Button variant="ghost" onClick={() => setForm(r)}>
-                Открыть направление
-              </Button>
+              {r.status === "draft" && workflowEffectOwner(patient, r.id) ? (
+                <span className={styles.subtext}>
+                  Проект связан с рекомендацией
+                </span>
+              ) : (
+                <Button variant="ghost" onClick={() => setForm(r)}>
+                  Открыть направление
+                </Button>
+              )}
             </div>
             <SourceLinks ids={r.sourceIds} />
           </div>

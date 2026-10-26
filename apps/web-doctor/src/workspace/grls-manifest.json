@@ -1,0 +1,92 @@
+{
+  "system": "GRLS",
+  "sourceVersion": "grls-2026-10-23-118c99f66d3f",
+  "snapshotDate": "2026-10-23",
+  "sourceUrl": "https://grls.minzdrav.gov.ru/grls.aspx",
+  "archiveName": "grls2026-10-23-1.zip",
+  "archiveSha256": "118c99f66d3f57d93bef85a047f288edb3b73c7a89fddf54f530bf5eb99da88d",
+  "artifactSha256": "bb9e51946b6401a73ff2a2e0dd8aec8e718d526a71b6b9a8f464718e3a23057d",
+  "totalSourceRows": 143504,
+  "currentRecords": 24331,
+  "activeStatuses": [
+    "Действующий",
+    "Выдано по правилам ЕАЭС",
+    "Действует, на подтверждении государственной регистрации",
+    "Действует, в иностранных упаковках"
+  ],
+  "files": [
+    {
+      "name": "grls2026-10-23-1-Действующий.xlsx",
+      "status": "Действующий",
+      "sha256": "bb4f90b0d9f99c9278cc428f4dff598ccf44c2c7a1628b8753ba5557d44fb2eb",
+      "rows": 19661,
+      "currentRows": 15752,
+      "duplicates": 0,
+      "substances": 3788
+    },
+    {
+      "name": "grls2026-10-23-1-Изменённый.xlsx",
+      "status": "Изменённый",
+      "sha256": "ddae4a74d27baf82359489a0e025ec7d3f59e42e5174e7f3f46f19284571e87f",
+      "rows": 104260,
+      "currentRows": 0,
+      "duplicates": 0,
+      "substances": 5303
+    },
+    {
+      "name": "grls2026-10-23-1-Исключённый.xlsx",
+      "status": "Исключённый",
+      "sha256": "d18db451e9b8763c4897e9ea9a41b517925705c5980b3fc0691391872feb53ac",
+      "rows": 4363,
+      "currentRows": 0,
+      "duplicates": 0,
+      "substances": 228
+    },
+    {
+      "name": "grls2026-10-23-1-Истёкший.xlsx",
+      "status": "Истёкший",
+      "sha256": "1b728753e2622532ab0c1b11cbc63a8bc11e69bcd211677edebffbbe992dc6f7",
+      "rows": 5482,
+      "currentRows": 0,
+      "duplicates": 0,
+      "substances": 41
+    },
+    {
+      "name": "grls2026-10-23-1-Выдано_по_правилам_ЕАЭС.xlsx",
+      "status": "Выдано по правилам ЕАЭС",
+      "sha256": "88f693031235ca5eb818218f095e25ef0c5cda9f26bc35913001346e40d95807",
+      "rows": 9576,
+      "currentRows": 8478,
+      "duplicates": 0,
+      "substances": 0
+    },
+    {
+      "name": "grls2026-10-23-1-Действует_на_подтверждении_государственной_регистрации.xlsx",
+      "status": "Действует, на подтверждении государственной регистрации",
+      "sha256": "5f0204b631aa676bf256d3b849966886f81e9c783ee6a80a7a2a0462b204902f",
+      "rows": 77,
+      "currentRows": 74,
+      "duplicates": 0,
+      "substances": 3
+    },
+    {
+      "name": "grls2026-10-23-1-Приостановлено_применение.xlsx",
+      "status": "Приостановлено применение",
+      "sha256": "7612fff875efb1b9b16988caa47f00a85bb9b62616e49eada8b3836bae456714",
+      "rows": 49,
+      "currentRows": 0,
+      "duplicates": 0,
+      "substances": 0
+    },
+    {
+      "name": "grls2026-10-23-1-Действует_в_иностранных_упаковках.xlsx",
+      "status": "Действует, в иностранных упаковках",
+      "sha256": "5819606c2c1a8ef65f41de4473b9a4baa6d02374a0b9bc8da8bd122226532830",
+      "rows": 36,
+      "currentRows": 28,
+      "duplicates": 1,
+      "substances": 0
+    }
+  ],
+  "contentSha256": "889167e2fe4fb3be4a172d6b53112c7898d8113271ff58253150b9f9b0134899"
+}

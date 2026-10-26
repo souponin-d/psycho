@@ -69,9 +69,18 @@ export interface Episode extends Stamp {
   status: "active" | "remission" | "closed";
   phase: "assessment" | "acute" | "continuation" | "maintenance";
   diagnosis: string;
+  /** Structured selection; legacy diagnosis text is retained until explicitly replaced. */
+  diagnosisCode?: TerminologySelection | null;
   diagnosisStatus: "hypothesis" | "confirmed";
   endDate: string;
   summary: string;
+}
+export interface Icd10SearchResult {
+  sourceVersion: string;
+  total: number;
+  page: number;
+  pageSize: number;
+  items: TerminologySelection[];
 }
 export const encounterFields = [
   "mentalStatus",
@@ -115,6 +124,11 @@ export interface Visit extends Stamp, Evidence {
   addenda: (Stamp & { text: string; reason: string })[];
   /** Server/domain snapshot captured once when the visit is completed. */
   completionSnapshot?: {
+    clinicalSupport?: import("./clinical-support-types").ClinicalSupportState;
+    adherence?: import("./adherence").AdherenceState;
+    clinicalProfile?: Profile;
+    workflow?: import("./clinical-workflow").ClinicalWorkflowState;
+    clinicalFacts?: import("./clinical-facts").ClinicalFact[];
     patientName: string;
     measurements: Measurement[];
     plan: PlanItem[];
@@ -139,6 +153,7 @@ export interface Measurement extends Stamp {
   externalForm: string;
 }
 export interface PlanItem extends Stamp, Evidence {
+  medicine?: import("./grls").MedicineSelection | null;
   visitId: string;
   kind: PlanKind;
   title: string;
@@ -158,6 +173,7 @@ export interface PlanItem extends Stamp, Evidence {
   /** Preparatory information only; never activates clinical rules. */
   aviandrReview?: AviandrReview;
 }
+export type { MedicineSelection, GrlsSearchResult } from "./grls";
 export type ReviewAnswer = "unknown" | "yes" | "no";
 export interface AviandrInputs {
   indication: "unknown" | "gad" | "post-covid" | "other";
@@ -182,6 +198,7 @@ export interface AviandrInputs {
   evidence: string;
 }
 export interface AviandrContext {
+  clinicalFacts?: string[];
   birthDate: string;
   allergies: string;
   conditions: string;
@@ -315,6 +332,10 @@ export interface AssessmentFormDefinition {
   warnings: string[];
 }
 export interface PatientRecord {
+  clinicalSupport?: import("./clinical-support-types").ClinicalSupportState;
+  adherence?: import("./adherence").AdherenceState;
+  workflow?: import("./clinical-workflow").ClinicalWorkflowState;
+  clinicalFacts?: import("./clinical-facts").ClinicalFact[];
   id: string;
   code: string;
   clinicId: string;
@@ -339,6 +360,10 @@ export interface PatientRecord {
   assessmentDrafts?: AssessmentDraft[];
 }
 export type Mutation =
+  | import("./clinical-support-types").ClinicalSupportMutation
+  | import("./adherence").AdherenceMutation
+  | import("./clinical-workflow").WorkflowMutation
+  | import("./clinical-facts").ClinicalFactMutation
   | { type: "assessment.save"; value: AssessmentDraft }
   | { type: "profile.update"; value: Profile }
   | { type: "episode.save"; value: Episode }
@@ -366,6 +391,16 @@ export type Mutation =
   | { type: "document.add"; value: ClinicalDocument }
   | { type: "document.facts"; id: string; facts: ClinicalDocument["facts"] }
   | { type: "patient.archive"; archived: boolean; reason: string };
+export type {
+  ClinicalFact,
+  ClinicalFactVersion,
+  ClinicalFactDraft,
+  ClinicalFactValue,
+  ClinicalFactOrigin,
+  ClinicalFactDecision,
+  ClinicalFactStatus,
+  ClinicalFactCategory,
+} from "./clinical-facts";
 export interface Command {
   commandId: string;
   expectedRevision: number;

@@ -8,6 +8,7 @@ import {
   aviandr,
   aviandrContext,
   evaluateAviandr,
+  isAviandrSourceCurrent,
   newAviandrReview,
   sameAviandrContext,
 } from "./aviandr";
@@ -54,7 +55,7 @@ export function AviandrSummary({
       </div>
       <p className={styles.subtext}>
         {stale
-          ? "Снимок относится к прежним данным карты. Уточнения требуют повторной сверки."
+          ? "Источник проверки или данные карты изменились. Уточнения требуют повторной сверки."
           : `Условия противопоказаний: ${count("contraindication")} · предосторожности: ${count("caution")} · без данных: ${count("missing")}`}
       </p>
       <p className={styles.notice}>
@@ -163,7 +164,8 @@ export function AviandrCheck({
   onChange: (review: AviandrReview) => void;
 }) {
   const context = aviandrContext(patient, planId);
-  const stale = !sameAviandrContext(review.context, context);
+  const sourceStale = !isAviandrSourceCurrent(review);
+  const stale = sourceStale || !sameAviandrContext(review.context, context);
   const set = (key: keyof AviandrInputs, value: string | number | null) =>
     onChange({
       ...review,
@@ -189,7 +191,11 @@ export function AviandrCheck({
     <section className={styles.aviandrEditor} aria-label="Проверка Авиандра">
       {stale && (
         <div role="alert" className={styles.notice}>
-          <strong>Данные карты изменились</strong>
+          <strong>
+            {sourceStale
+              ? "Источник проверки изменился"
+              : "Данные карты изменились"}
+          </strong>
           <p>
             Текст назначения сохранён в форме. Перед сохранением проверки заново
             сверьте сведения; прежние уточнения будут сброшены.
@@ -338,6 +344,10 @@ export function AviandrCheck({
           {(
             [
               ["Дата рождения", context.birthDate],
+              [
+                "Клинические факты и источники",
+                context.clinicalFacts?.join("\n") ?? "Нет записей в реестре",
+              ],
               ["Заболевания", context.conditions],
               ["Репродуктивный контекст", context.reproductiveContext],
               ["Вещества и алкоголь", context.substanceUse],

@@ -1,0 +1,109 @@
+{
+  "sourceVersion": "esnsi-444",
+  "total": 15038,
+  "chapters": 22,
+  "blocks": 274,
+  "selectable": 14641,
+  "inactive": 101,
+  "catalogSha256": "612cb5849208baaac4a7f6d1e08c58f0fb1d7e657b887dcef2169ac7395a2334",
+  "passportSha256": "5efc78e2153d3f920060714e64baaf18d90d2147e19e04bad5e599bb53cce266",
+  "sourcePages": [
+    {
+      "page": 1,
+      "url": "https://esnsi.gosuslugi.ru/rest/ext/v1/classifiers/5697/data?version=444&pageNumber=1&pageSize=1000",
+      "rows": 1000,
+      "sha256": "f3be859aaab7837a42d6564b858fc4e41b54958b07b70010d447d1470a59e019"
+    },
+    {
+      "page": 2,
+      "url": "https://esnsi.gosuslugi.ru/rest/ext/v1/classifiers/5697/data?version=444&pageNumber=2&pageSize=1000",
+      "rows": 1000,
+      "sha256": "0f63dac466054c60f51f39e4e16cbf7153970a16826b67837ced0de760d2d7b7"
+    },
+    {
+      "page": 3,
+      "url": "https://esnsi.gosuslugi.ru/rest/ext/v1/classifiers/5697/data?version=444&pageNumber=3&pageSize=1000",
+      "rows": 1000,
+      "sha256": "29533d56db57fa3073122b1a5e508ba8e15599d0935ea37a4944e5667290f9a2"
+    },
+    {
+      "page": 4,
+      "url": "https://esnsi.gosuslugi.ru/rest/ext/v1/classifiers/5697/data?version=444&pageNumber=4&pageSize=1000",
+      "rows": 1000,
+      "sha256": "ff0ad1e5452a5b6117a978667db58d6eab6453254b2c3b18a06d2f8ac1a194e8"
+    },
+    {
+      "page": 5,
+      "url": "https://esnsi.gosuslugi.ru/rest/ext/v1/classifiers/5697/data?version=444&pageNumber=5&pageSize=1000",
+      "rows": 1000,
+      "sha256": "3a9f871d3ec976c0c993c6ce8f80b0acd23defcd0e5bea158202d7bdabf00e68"
+    },
+    {
+      "page": 6,
+      "url": "https://esnsi.gosuslugi.ru/rest/ext/v1/classifiers/5697/data?version=444&pageNumber=6&pageSize=1000",
+      "rows": 1000,
+      "sha256": "79dc311f725bb1457e05c40bb8c23da1903f63aaf276b3b7f8cbf510ee2701f4"
+    },
+    {
+      "page": 7,
+      "url": "https://esnsi.gosuslugi.ru/rest/ext/v1/classifiers/5697/data?version=444&pageNumber=7&pageSize=1000",
+      "rows": 1000,
+      "sha256": "2799d096c5eee1dd3e8de3cb29ae52489374a368b22f575f1bc6e30435907513"
+    },
+    {
+      "page": 8,
+      "url": "https://esnsi.gosuslugi.ru/rest/ext/v1/classifiers/5697/data?version=444&pageNumber=8&pageSize=1000",
+      "rows": 1000,
+      "sha256": "9b55949fd026df2e871e5cc964d7f6f7d580355f1fea341ecff5ef0d5030649b"
+    },
+    {
+      "page": 9,
+      "url": "https://esnsi.gosuslugi.ru/rest/ext/v1/classifiers/5697/data?version=444&pageNumber=9&pageSize=1000",
+      "rows": 1000,
+      "sha256": "5e202b6d7b7fe6722ef152155a7394743b8843b9fcf7e430d3ef9b50fe7f9476"
+    },
+    {
+      "page": 10,
+      "url": "https://esnsi.gosuslugi.ru/rest/ext/v1/classifiers/5697/data?version=444&pageNumber=10&pageSize=1000",
+      "rows": 1000,
+      "sha256": "38e88485a3c8fae91ed39242cef7545c9fb4583b072c291d74e73ab75d798cad"
+    },
+    {
+      "page": 11,
+      "url": "https://esnsi.gosuslugi.ru/rest/ext/v1/classifiers/5697/data?version=444&pageNumber=11&pageSize=1000",
+      "rows": 1000,
+      "sha256": "05ccd1da682f88106ec59c2a7edd5864ca04a01493792f0fab855b04ca61affb"
+    },
+    {
+      "page": 12,
+      "url": "https://esnsi.gosuslugi.ru/rest/ext/v1/classifiers/5697/data?version=444&pageNumber=12&pageSize=1000",
+      "rows": 1000,
+      "sha256": "91318356483a668e56eb2844ac4115c36d482786727dcc0f03f734671880dda6"
+    },
+    {
+      "page": 13,
+      "url": "https://esnsi.gosuslugi.ru/rest/ext/v1/classifiers/5697/data?version=444&pageNumber=13&pageSize=1000",
+      "rows": 1000,
+      "sha256": "27f169cd35cc6138bba5d025f6b70cf2e43974a8f081e235105be9d86290ff11"
+    },
+    {
+      "page": 14,
+      "url": "https://esnsi.gosuslugi.ru/rest/ext/v1/classifiers/5697/data?version=444&pageNumber=14&pageSize=1000",
+      "rows": 1000,
+      "sha256": "a8a06d11188889cfaf396ccb74d7032c176abc2716303995f0f7fce3874f35f8"
+    },
+    {
+      "page": 15,
+      "url": "https://esnsi.gosuslugi.ru/rest/ext/v1/classifiers/5697/data?version=444&pageNumber=15&pageSize=1000",
+      "rows": 1000,
+      "sha256": "a135ef83b28bd1c5e64899d953de0abf5420c62094bdb48919dd7b75efad6f2b"
+    },
+    {
+      "page": 16,
+      "url": "https://esnsi.gosuslugi.ru/rest/ext/v1/classifiers/5697/data?version=444&pageNumber=16&pageSize=1000",
+      "rows": 38,
+      "sha256": "26c95744f4bacd766d2426cbf000b1fa78d810191c390276b4a0c126426f3bb3"
+    }
+  ],
+  "artifactSha256": "d59e6d9cc021c44888a7c1e767f8657357131c5cda22d0a19b55e0e8f9741232"
+}

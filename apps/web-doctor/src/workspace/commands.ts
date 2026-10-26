@@ -11,7 +11,23 @@ import {
 } from "./model.ts";
 import sourceData from "./source-data.json" with { type: "json" };
 import { reviewForPlan, validateAviandrReview } from "./aviandr.ts";
-import { isCurrentIcd10Selection } from "./terminology.ts";
+import { isAllowedIcd10Selection } from "./terminology.ts";
+import { grlsCatalog } from "./grls.ts";
+import { applyClinicalFactMutation } from "./clinical-facts.ts";
+import { assertMedicationCandidate } from "./clinical-support-engine.ts";
+import { applyAdherenceMutation, reconcileAdherence } from "./adherence.ts";
+import {
+  applySupportMutation,
+  isSupportMutation,
+  assertSupportPlanCurrent,
+  assertSupportReferralCurrent,
+} from "./clinical-support.ts";
+import {
+  applyWorkflowMutation,
+  isWorkflowMutation,
+  reconcileWorkflow,
+  workflowEffectOwner,
+} from "./clinical-workflow.ts";
 export class DomainError extends Error {
   public code: string;
   constructor(message: string, code = "validation") {
@@ -66,7 +82,7 @@ function record(value: unknown): asserts value is Record<string, unknown> {
     "Ожидался объект записи.",
   );
 }
-function validateMutation(mutation: Mutation) {
+function validateMutation(mutation: Mutation, previous: PatientRecord) {
   record(mutation);
   text(mutation.type, "тип действия");
   const definitions: Record<string, string> = {
@@ -155,11 +171,12 @@ function validateMutation(mutation: Mutation) {
   const raw = (mutation as unknown as { value: unknown }).value;
   record(raw);
   const extras: Record<string, string> = {
+    "episode.save": "diagnosisCode",
     "assessment.save": "responses",
     "visit.save":
       "notes,diagnoses,durationMinutes,addenda,sourceIds,completionSnapshot",
     "measurement.add": "score,maximum,answers",
-    "plan.save": "sourceIds,aviandrReview",
+    "plan.save": "sourceIds,aviandrReview,medicine",
     "report.add": "mood,anxiety,sleepHours,safetyConcern",
     "event.add": "sourceIds,history",
     "referral.save": "sourceIds",
@@ -230,8 +247,13 @@ function validateMutation(mutation: Mutation) {
         );
       requireValue(
         Array.isArray(context.somaticConditions) &&
-          context.somaticConditions.every(isCurrentIcd10Selection),
-        "Соматические заболевания выбираются из текущего учебного каталога МКБ-10.",
+          context.somaticConditions.every((item) =>
+            isAllowedIcd10Selection(
+              item,
+              previous.profile.clinicalContext.somaticConditions,
+            ),
+          ),
+        "Соматические заболевания выбираются из актуального каталога МКБ-10.",
       );
       break;
     }
@@ -294,12 +316,15 @@ function validateMutation(mutation: Mutation) {
           (diagnosis) =>
             diagnosis &&
             typeof diagnosis === "object" &&
-            isCurrentIcd10Selection(diagnosis) &&
+            isAllowedIcd10Selection(
+              diagnosis,
+              previous.visits.find((v) => v.id === raw.id)?.diagnoses,
+            ) &&
             ["hypothesis", "confirmed"].includes(
               (diagnosis as { status?: unknown }).status as string,
             ),
         ),
-        "Диагноз выбирается из текущего учебного каталога МКБ-10.",
+        "Диагноз выбирается из актуального каталога МКБ-10.",
       );
       requireValue(
         raw.completionSnapshot == null && array("addenda").length === 0,
@@ -476,7 +501,7 @@ export function createPatient(
     commandIds: [],
   };
 }
-function validateProfile(profile: Profile, now: string) {
+function validateProfile(profile: Profile, now: string, previous?: Profile) {
   for (const [key, value] of Object.entries(profile))
     if (key !== "clinicalContext")
       requireValue(
@@ -490,7 +515,12 @@ function validateProfile(profile: Profile, now: string) {
       typeof profile.clinicalContext.illnessHistory === "string" &&
       profile.clinicalContext.complaints.length <= 20000 &&
       profile.clinicalContext.illnessHistory.length <= 20000 &&
-      profile.clinicalContext.somaticConditions.every(isCurrentIcd10Selection),
+      profile.clinicalContext.somaticConditions.every((item) =>
+        isAllowedIcd10Selection(
+          item,
+          previous?.clinicalContext.somaticConditions,
+        ),
+      ),
     "Контекст пациента содержит недопустимые данные МКБ-10.",
   );
   text(profile.name, "имя пациента");
@@ -589,11 +619,61 @@ export function applyCommand(
   );
   const p = structuredClone(patient);
   const m = command.mutation;
-  validateMutation(m);
+  if (
+    m.type !== "fact.save" &&
+    m.type !== "fact.review" &&
+    !isWorkflowMutation(m) &&
+    !isSupportMutation(m) &&
+    m.type !== "adherence.schedule" &&
+    m.type !== "adherence.record"
+  )
+    validateMutation(m, patient);
+  const effectTarget =
+    m.type === "plan.save" || m.type === "referral.save"
+      ? m.value.id
+      : m.type === "plan.confirm"
+        ? m.id
+        : "";
+  if (effectTarget && workflowEffectOwner(patient, effectTarget)) {
+    const locked =
+      m.type === "plan.save" ||
+      m.type === "plan.confirm" ||
+      (m.type === "referral.save" &&
+        patient.referrals.find((r) => r.id === effectTarget)?.status ===
+          "draft");
+    requireValue(
+      !locked,
+      "Проект связан с решением. Подтвердите действие в карточке рекомендации.",
+      "conflict",
+    );
+  }
   let targetId =
     "id" in m ? m.id : "value" in m && "id" in m.value ? m.value.id : p.id;
   const stamp = { createdAt: now, author: actor.name };
   switch (m.type) {
+    case "support.evaluate":
+    case "support.route":
+    case "support.decide":
+    case "support.adverse":
+      applySupportMutation(p, m, actor, now);
+      break;
+    case "adherence.schedule":
+    case "adherence.record":
+      applyAdherenceMutation(p, m, actor, now);
+      break;
+    case "workflow.refresh":
+    case "workflow.submit":
+    case "workflow.open":
+    case "workflow.decide":
+    case "workflow.execute":
+    case "workflow.safety":
+    case "workflow.contact":
+      applyWorkflowMutation(p, m, actor, now);
+      break;
+    case "fact.save":
+    case "fact.review":
+      applyClinicalFactMutation(p, m, actor, now);
+      break;
     case "assessment.save": {
       p.assessmentDrafts ??= [];
       const previous = p.assessmentDrafts.find(
@@ -610,10 +690,22 @@ export function applyCommand(
       break;
     }
     case "profile.update":
-      validateProfile(m.value, now);
+      validateProfile(m.value, now, patient.profile);
       p.profile = structuredClone(m.value);
       break;
     case "episode.save": {
+      const old = patient.episodes.find((episode) => episode.id === m.value.id);
+      const selection = m.value.diagnosisCode;
+      requireValue(
+        selection
+          ? isAllowedIcd10Selection(
+              selection,
+              old?.diagnosisCode ? [old.diagnosisCode] : [],
+            ) && m.value.diagnosis === `${selection.code} · ${selection.title}`
+          : m.value.diagnosis === "" ||
+              (!old?.diagnosisCode && old?.diagnosis === m.value.diagnosis),
+        "Диагноз эпизода выбирается из МКБ-10; прежний текст можно сохранить без изменения.",
+      );
       option(m.value.status, ["active", "remission", "closed"]);
       option(m.value.phase, [
         "assessment",
@@ -682,6 +774,11 @@ export function applyCommand(
       v.completedAt = now;
       v.confirmedBy = actor.name;
       v.completionSnapshot = structuredClone({
+        clinicalProfile: p.profile,
+        ...(p.workflow ? { workflow: p.workflow } : {}),
+        ...(p.clinicalSupport ? { clinicalSupport: p.clinicalSupport } : {}),
+        ...(p.adherence ? { adherence: p.adherence } : {}),
+        ...(p.clinicalFacts ? { clinicalFacts: p.clinicalFacts } : {}),
         patientName: p.profile.name,
         measurements: p.measurements.filter((item) => item.visitId === v.id),
         plan: p.plan.filter(
@@ -760,6 +857,24 @@ export function applyCommand(
     }
     case "plan.save": {
       const old = p.plan.find((x) => x.id === m.value.id);
+      if (m.value.medicine != null)
+        requireValue(
+          m.value.kind === "medication" &&
+            grlsCatalog.allowed(
+              m.value.medicine,
+              old?.medicine,
+              now.slice(0, 10),
+            ) &&
+            m.value.title === m.value.medicine.tradeName,
+          "Выберите актуальный препарат из ГРЛС; регистрационные сведения не совпадают.",
+        );
+      if (m.value.kind === "medication" && !m.value.medicine)
+        requireValue(
+          old?.kind === "medication" &&
+            !old.medicine &&
+            old.title === m.value.title,
+          "Для нового лекарственного назначения выберите препарат из ГРЛС.",
+        );
       requireValue(
         !old || old.status === "draft",
         "Подтверждённый план нельзя переписать. Создайте новую запись с причиной изменения.",
@@ -791,12 +906,19 @@ export function applyCommand(
       break;
     }
     case "plan.confirm": {
+      assertSupportPlanCurrent(p, m.id, actor, now);
       const item = find(p.plan, m.id);
+      assertMedicationCandidate(p, item);
       writableVisit(p, item.visitId);
       requireValue(item.status === "draft", "Запись уже подтверждена.");
       text(item.rationale, "основание решения");
       text(item.patientInstructions, "указания пациенту");
       if (item.kind === "medication") {
+        if (item.medicine)
+          requireValue(
+            grlsCatalog.isCurrent(item.medicine, now.slice(0, 10)),
+            "ГРЛС: перед подтверждением выберите актуальную регистрацию препарата.",
+          );
         text(item.dose, "дозировку");
         text(item.schedule, "режим приёма");
         requireValue(
@@ -963,6 +1085,11 @@ export function applyCommand(
       break;
     }
     case "referral.save": {
+      if (
+        m.value.status === "issued" &&
+        p.referrals.find((r) => r.id === m.value.id)?.status === "draft"
+      )
+        assertSupportReferralCurrent(p, m.value.id, actor, now);
       option(m.value.status, ["draft", "issued", "attended", "declined"]);
       option(m.value.urgency, ["routine", "important", "urgent"]);
       option(m.value.category, ["required", "desirable"]);
@@ -1060,6 +1187,20 @@ export function applyCommand(
       throw new DomainError(`Неизвестное действие: ${String(unreachable)}`);
     }
   }
+  if (m.type === "patient.archive" && m.archived)
+    requireValue(
+      !p.workflow?.safety.some((e) => e.status !== "acted"),
+      "Сначала завершите обработку событий безопасности.",
+    );
+  reconcileAdherence(p, actor, now);
+  reconcileWorkflow(p, actor, now);
+  if (m.type === "visit.complete" && p.workflow)
+    applyWorkflowMutation(
+      p,
+      { type: "workflow.contact", note: `Завершён приём ${m.id}` },
+      actor,
+      now,
+    );
   p.revision += 1;
   p.updatedAt = now;
   p.commandIds.push(command.commandId);
@@ -1068,7 +1209,8 @@ export function applyCommand(
     ...stamp,
     action: m.type,
     targetId,
-    detail: "reason" in m ? m.reason : "",
+    detail:
+      "reason" in m ? m.reason : m.type === "fact.save" ? m.value.reason : "",
   });
   return p;
 }

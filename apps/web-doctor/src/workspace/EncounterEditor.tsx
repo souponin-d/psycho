@@ -1,3 +1,4 @@
+import { WorkflowPanel } from "./ClinicalWorkflow";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { EncounterField, PatientRecord, Visit } from "./model";
 import { completionErrors } from "./commands";
@@ -432,8 +433,36 @@ export function EncounterEditor({
             {step === 0 && (
               <div className={styles.encounterColumns}>
                 <div className={styles.stack}>
+                  <WorkflowPanel
+                    patient={
+                      readOnly && visit.completionSnapshot
+                        ? {
+                            ...patient,
+                            profile:
+                              visit.completionSnapshot.clinicalProfile ??
+                              patient.profile,
+                            workflow: visit.completionSnapshot.workflow,
+                            clinicalFacts:
+                              visit.completionSnapshot.clinicalFacts,
+                          }
+                        : patient
+                    }
+                    actions={readOnly ? undefined : actions}
+                    compact
+                  />
                   <PatientContext
-                    patient={patient}
+                    patient={
+                      readOnly && visit.completionSnapshot
+                        ? {
+                            ...patient,
+                            profile:
+                              visit.completionSnapshot.clinicalProfile ??
+                              patient.profile,
+                            clinicalFacts:
+                              visit.completionSnapshot.clinicalFacts,
+                          }
+                        : patient
+                    }
                     actions={readOnly ? undefined : actions}
                   />
                   {!readOnly && (

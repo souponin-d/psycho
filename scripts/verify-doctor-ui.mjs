@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
+import clinicalProtocols from "../apps/web-doctor/src/workspace/clinical-protocols.json" with { type: "json" };
 
 // Запуск: node scripts/verify-doctor-ui.mjs. Нужны запущенный doctor web и Chromium.
 // DOCTOR_UI_MODE=demo|server|all; по умолчанию all при наличии локального конфига.
@@ -145,6 +146,9 @@ async function scenario(currentMode) {
     timezoneId: Intl.DateTimeFormat().resolvedOptions().timeZone,
   });
   const page = await context.newPage();
+  // The demo must persist diagnoses even when every API request is unavailable.
+  if (currentMode === "demo")
+    await context.route("**/api/**", (route) => route.abort());
   page.setDefaultTimeout(15_000);
   const errors = [];
   const apiFailures = [];
@@ -172,7 +176,7 @@ async function scenario(currentMode) {
       if (currentMode === "demo") {
         await page
           .getByRole("button", {
-            name: "Открыть учебное рабочее место",
+            name: "Открыть кабинет",
             exact: true,
           })
           .click();
@@ -273,7 +277,24 @@ async function scenario(currentMode) {
       await profile
         .getByLabel("Анамнез заболевания", { exact: true })
         .fill("Учебная запись; клиническое решение не моделируется.");
+      const terminology = profile.getByRole("textbox", {
+        name: /Соматические заболевания/,
+      });
+      await terminology.fill("M");
+      await profile
+        .getByRole("button", { name: "Следующие результаты", exact: true })
+        .click();
+      await visible(profile.getByRole("status").filter({ hasText: /^13–24/ }));
+      await terminology.fill("M54.5");
+      await profile.getByRole("button", { name: /^M54\.5 ·/ }).click();
       await closeSaved(profile, "Сохранить профиль");
+      await page.reload();
+      await page.getByRole("button", { name: "Профиль", exact: true }).click();
+      const reopened = dialog(page, "Профиль и контекст пациента");
+      await visible(reopened.getByText(/^M54\.5 ·/));
+      await reopened.getByText(/^M54\.5 ·/).scrollIntoViewIfNeeded();
+      await screenshot(page, currentMode, "icd10-profile-persisted");
+      await page.keyboard.press("Escape");
       await visible(
         page.getByText(
           "Учебная цель: подготовить вопросы к следующему приёму",
@@ -282,13 +303,396 @@ async function scenario(currentMode) {
       );
     });
 
+    await step(
+      "клинический контекст: источник, подтверждение и история",
+      async () => {
+        await page
+          .getByRole("button", {
+            name: "Добавить клинический факт",
+            exact: true,
+          })
+          .click();
+        const editor = dialog(page, "Новый клинический факт");
+        await editor
+          .getByLabel("Содержание сведений", { exact: false })
+          .selectOption("known");
+        await editor
+          .getByLabel("Аллерген / препарат / вещество", { exact: false })
+          .fill("Учебный аллерген UI");
+        await editor
+          .getByLabel("Описание реакции", { exact: false })
+          .fill("Учебная сыпь");
+        await editor
+          .getByLabel("Происхождение сведений", { exact: false })
+          .selectOption("patient");
+        await editor
+          .getByLabel("Ссылка / описание источника", { exact: false })
+          .fill("Синтетическая беседа");
+        await editor
+          .getByLabel("Исходные сведения / цитата", { exact: false })
+          .fill("Пациент сообщил об учебной реакции");
+        await closeSaved(editor, "Сохранить сведения");
+        let card = page.getByRole("article", {
+          name: /^Факт: Учебный аллерген UI/,
+        });
+        await visible(
+          card.getByText("Не проверено · Со слов пациента", { exact: true }),
+        );
+        await card
+          .getByRole("button", { name: "Подтвердить факт", exact: true })
+          .click();
+        await closeSaved(
+          dialog(page, "Решение по клиническому факту"),
+          "Подтвердить сведения",
+        );
+        await visible(
+          card.getByText("Подтверждено врачом · Со слов пациента", {
+            exact: true,
+          }),
+        );
+        await page.reload();
+        card = page.getByRole("article", {
+          name: /^Факт: Учебный аллерген UI/,
+        });
+        await visible(
+          card.getByText("Подтверждено врачом · Со слов пациента", {
+            exact: true,
+          }),
+        );
+        await card
+          .getByRole("button", { name: "Исправить факт", exact: true })
+          .click();
+        const correction = dialog(page, "Уточнение клинического факта");
+        await correction
+          .getByLabel("Описание реакции", { exact: false })
+          .fill("Уточнённая учебная реакция");
+        await correction
+          .getByLabel("Причина исправления", { exact: false })
+          .fill("Сверено описание реакции");
+        await closeSaved(correction, "Сохранить сведения");
+        await visible(
+          card.getByText("Не проверено · Со слов пациента", { exact: true }),
+        );
+        await card.getByText("Источник и история (3)", { exact: true }).click();
+        await visible(
+          card.getByText("Версия 2 · Подтверждено врачом", { exact: false }),
+        );
+        assert.equal(
+          await card
+            .getByText("Пациент сообщил об учебной реакции", { exact: true })
+            .count(),
+          3,
+        );
+        await screenshot(page, currentMode, "clinical-context-history");
+      },
+    );
+
+    await step("оценка, решение, план и отдельная безопасность", async () => {
+      const panel = page.getByRole("region", {
+        name: "Оценки и клинические решения",
+        exact: true,
+      });
+      await panel.getByText("Добавить данные", { exact: true }).click();
+      await panel.getByLabel(/^Сценарий/).selectOption("complete");
+      await panel
+        .getByRole("button", { name: "Добавить сценарий", exact: true })
+        .click();
+      await visible(panel.getByText("Результат: 14 из 21", { exact: true }));
+      let recommendation = panel.getByRole("article", {
+        name: "Рекомендация: Рассмотреть новую оценку",
+        exact: true,
+      });
+      await recommendation
+        .getByRole("button", { name: "Принять", exact: true })
+        .click();
+      await closeSaved(
+        dialog(page, "Решение по рекомендации"),
+        "Сохранить решение",
+      );
+      await visible(recommendation.getByText("Принята", { exact: true }));
+      await recommendation
+        .getByRole("button", {
+          name: "Проверить и подтвердить действие",
+          exact: true,
+        })
+        .click();
+      let confirmation = dialog(page, "Отдельное подтверждение действия");
+      await confirmation.getByRole("checkbox").check();
+      await closeSaved(confirmation, "Подтвердить действие");
+      await visible(
+        recommendation.getByText("Действие подтверждено", { exact: true }),
+      );
+      let scale = panel.getByRole("article", {
+        name: "Рекомендация: Согласовать следующее измерение",
+        exact: true,
+      });
+      await scale.getByRole("button", { name: "Принять", exact: true }).click();
+      const decision = dialog(page, "Решение по рекомендации");
+      await decision
+        .getByLabel("Срок действия / следующего измерения", { exact: false })
+        .fill(new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10));
+      await closeSaved(decision, "Сохранить решение");
+      await scale
+        .getByRole("button", {
+          name: "Проверить и подтвердить действие",
+          exact: true,
+        })
+        .click();
+      confirmation = dialog(page, "Отдельное подтверждение действия");
+      await confirmation.getByRole("checkbox").check();
+      await closeSaved(confirmation, "Подтвердить действие");
+      await visible(
+        panel.getByRole("region", {
+          name: "Задания на самоопросники",
+          exact: true,
+        }),
+      );
+      const clarification = panel.getByRole("article", {
+        name: "Рекомендация: Проверить клинический факт",
+        exact: true,
+      });
+      await clarification
+        .getByRole("button", { name: "Изменить", exact: true })
+        .click();
+      const referralDecision = dialog(page, "Решение по рекомендации");
+      await referralDecision
+        .getByLabel(/^Предлагаемое действие/)
+        .selectOption("consultation");
+      await referralDecision
+        .getByLabel("Адресат проекта", { exact: false })
+        .fill("Консультант UI");
+      const referralReason = "Уточнить исходные сведения перед решением UI";
+      await referralDecision
+        .getByLabel("Причина направления", { exact: false })
+        .fill(referralReason);
+      await referralDecision
+        .getByLabel("Причина решения по рекомендации", { exact: false })
+        .fill("Изменено врачом в браузерной проверке");
+      await closeSaved(referralDecision, "Сохранить решение");
+      await clarification
+        .getByRole("button", {
+          name: "Проверить и подтвердить действие",
+          exact: true,
+        })
+        .click();
+      confirmation = dialog(page, "Отдельное подтверждение действия");
+      await confirmation.getByRole("checkbox").check();
+      await closeSaved(confirmation, "Подтвердить действие");
+      await clarification
+        .getByRole("link", {
+          name: "Связанный проект в плане или направлениях",
+          exact: true,
+        })
+        .click();
+      await visible(page.getByText(referralReason, { exact: false }));
+      await patientTab(page, "Обзор");
+      await page.reload();
+      await visible(panel.getByText("Результат: 14 из 21", { exact: true }));
+      await panel.getByText("Добавить данные", { exact: true }).click();
+      await panel.getByLabel(/^Сценарий/).selectOption("safety");
+      await panel
+        .getByRole("button", { name: "Добавить сценарий", exact: true })
+        .click();
+      const safety = panel.getByRole("region", {
+        name: "Отдельная безопасность",
+        exact: true,
+      });
+      let event = safety.getByRole("article").first();
+      for (const label of [
+        "Доставлено в локальную очередь",
+        "Принято в работу",
+        "Клинически оценено врачом",
+        "Действие подтверждено",
+      ]) {
+        await event.getByRole("button", { name: label, exact: true }).click();
+        const stage = dialog(page, "Этап оценки безопасности");
+        await stage
+          .getByLabel("Оценка / действие / основание этапа", { exact: false })
+          .fill(`Проверка этапа: ${label}`);
+        await closeSaved(stage, "Подтвердить этап безопасности");
+      }
+      await safety
+        .getByRole("button", {
+          name: "Показать историю безопасности",
+          exact: true,
+        })
+        .click();
+      await visible(
+        safety.getByText("Действие: Проверка этапа: Действие подтверждено", {
+          exact: true,
+        }),
+      );
+      await screenshot(page, currentMode, "clinical-flow-safety");
+    });
+
+    await step(
+      "русские GAD-7 и PHQ-9, пропуски и отдельная безопасность",
+      async () => {
+        const panel = page.getByRole("region", {
+          name: "Оценки и клинические решения",
+          exact: true,
+        });
+        const safety = panel.getByRole("region", {
+          name: "Отдельная безопасность",
+          exact: true,
+        });
+        async function enterForm(
+          protocol,
+          answers,
+          note,
+          immediateDanger = "no",
+          impact = null,
+        ) {
+          await panel
+            .getByRole("button", { name: "Добавить самоотчёт", exact: true })
+            .click();
+          const modal = dialog(page, "Новый самоотчёт");
+          assert.equal(
+            await modal
+              .getByLabel("Форма самоопросника", { exact: false })
+              .inputValue(),
+            clinicalProtocols[0].version,
+          );
+          await modal
+            .getByLabel("Форма самоопросника", { exact: false })
+            .selectOption(protocol.version);
+          assert.equal(
+            await modal.getByLabel(/^\d+\. /).count(),
+            protocol.items,
+          );
+          for (let index = 0; index < protocol.items; index++) {
+            const field = modal.getByLabel(
+              `${index + 1}. ${protocol.questions[index]}`,
+              { exact: false },
+            );
+            assert.deepEqual(await field.locator("option").allTextContents(), [
+              "Пропуск / неизвестно",
+              ...protocol.options,
+            ]);
+            if (answers[index] !== null)
+              await field.selectOption(String(answers[index]));
+          }
+          if (protocol.impactQuestion && answers.some((answer) => answer > 0)) {
+            const impactField = modal.getByLabel(protocol.impactQuestion, {
+              exact: false,
+            });
+            assert.deepEqual(
+              await impactField.locator("option").allTextContents(),
+              ["Пропуск / неизвестно", ...protocol.impactOptions],
+            );
+            if (impact !== null) await impactField.selectOption(String(impact));
+          }
+          await modal
+            .getByLabel("Прямой ответ о вопросе безопасности", { exact: false })
+            .selectOption("no");
+          await modal
+            .getByLabel("Непосредственная опасность сейчас", { exact: false })
+            .selectOption(immediateDanger);
+          await modal.getByLabel("Что изменилось", { exact: true }).fill(note);
+          if (protocol.scale === "PHQ-9" && impact !== null) {
+            await modal.getByText("Источник формы", { exact: true }).click();
+            await screenshot(
+              page,
+              currentMode,
+              "clinical-validation-phq9-form",
+            );
+          }
+          await closeSaved(modal, "Сохранить самоотчёт");
+          return panel
+            .getByRole("article", { name: /^Оценка пациента:/ })
+            .filter({ hasText: note });
+        }
+        const gad = await enterForm(
+          clinicalProtocols[0],
+          Array(7).fill(1),
+          `GAD-7 браузер ${runId}`,
+        );
+        await visible(gad.getByText("Результат: 7 из 21", { exact: true }));
+        await visible(
+          gad.getByText("Лёгкая выраженность тревожных симптомов", {
+            exact: true,
+          }),
+        );
+        const phq = await enterForm(
+          clinicalProtocols[1],
+          [0, 0, 0, 0, 0, 0, 0, 0, 1],
+          `PHQ-9 браузер ${runId}`,
+          "no",
+          0,
+        );
+        await visible(phq.getByText("Результат: 1 из 27", { exact: true }));
+        await visible(gad.getByText("Результат: 7 из 21", { exact: true }));
+        await visible(
+          phq.getByText("Минимальная выраженность депрессивных симптомов", {
+            exact: true,
+          }),
+        );
+        const positive9 = safety
+          .getByRole("article")
+          .filter({ hasText: "Положительный ответ на пункт 9 PHQ-9." })
+          .first();
+        await visible(positive9.getByText(/Приоритетно оценить безопасность/));
+        assert.equal(
+          await positive9
+            .getByText(/Срочно рассмотреть прямое сообщение/)
+            .count(),
+          0,
+        );
+        const partial = await enterForm(
+          clinicalProtocols[1],
+          [0, 0, 0, 0, 0, 0, 0, 0, null],
+          `PHQ-9 пропуск ${runId}`,
+        );
+        await visible(
+          partial.getByText("Итог не рассчитан: нет полных ответов", {
+            exact: true,
+          }),
+        );
+        assert.equal(
+          await partial
+            .getByText(/выраженность депрессивных симптомов/)
+            .count(),
+          0,
+        );
+        await enterForm(
+          clinicalProtocols[1],
+          Array(9).fill(0),
+          `Прямая опасность ${runId}`,
+          "yes",
+        );
+        const danger = safety
+          .getByRole("article")
+          .filter({ hasText: "Пациент сообщает о непосредственной опасности." })
+          .first();
+        await visible(danger.getByText(/Срочно рассмотреть прямое сообщение/));
+        await visible(
+          panel
+            .getByText(/^Категория направления: (Обязательно|Желательно)$/)
+            .first(),
+        );
+        await screenshot(page, currentMode, "clinical-validation-safety");
+        await noOverflow(page);
+      },
+    );
+
     await step("эпизод и согласие", async () => {
       await page.getByRole("button", { name: "Эпизод", exact: true }).click();
       const episode = dialog(page, "Новый эпизод");
       await episode
         .getByLabel("Название / повод наблюдения", { exact: false })
         .fill("Учебное наблюдение UI");
+      await episode
+        .getByRole("textbox", { name: /Диагноз \/ гипотеза/ })
+        .fill("U09.9");
+      await episode.getByRole("button", { name: /^U09\.9 ·/ }).click();
       await closeSaved(episode, "Сохранить эпизод");
+      await page.reload();
+      await page
+        .getByRole("button", { name: "Учебное наблюдение UI", exact: true })
+        .click();
+      const savedEpisode = dialog(page, "Эпизод наблюдения");
+      await visible(savedEpisode.getByText(/^U09\.9 ·/));
+      await page.keyboard.press("Escape");
       await page.getByRole("button", { name: "Запись", exact: true }).click();
       const consent = dialog(page, "Зафиксировать согласие или отказ");
       await consent
@@ -320,6 +724,60 @@ async function scenario(currentMode) {
       await visible(page.getByText("Дистанционная связь", { exact: true }));
       await screenshot(page, currentMode, "patient");
     });
+
+    await step(
+      "актуальный ГРЛС и сохранение регистрационного снимка",
+      async () => {
+        await page
+          .getByRole("button", { name: "Назначить препарат", exact: true })
+          .click();
+        const prescription = dialog(page, "Лекарственное назначение");
+        const search = prescription.getByRole("textbox", {
+          name: /^Поиск препарата в ГРЛС/,
+        });
+        await search.fill("парацетамол");
+        await prescription
+          .getByRole("button", { name: "Следующие препараты", exact: true })
+          .waitFor({ state: "visible", timeout: 60000 });
+        await prescription
+          .getByRole("button", { name: "Следующие препараты", exact: true })
+          .click();
+        await visible(
+          prescription.getByRole("status").filter({ hasText: /^13–24/ }),
+        );
+        const drug = prescription
+          .getByRole("group", { name: "Результаты поиска препаратов" })
+          .getByRole("button")
+          .filter({ hasText: / · РУ / })
+          .first();
+        const label = await drug.innerText();
+        const registration = label.split(" · РУ ")[1];
+        await drug.click();
+        await visible(
+          prescription
+            .getByText(
+              new RegExp(
+                `РУ ${registration.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`,
+              ),
+            )
+            .first(),
+        );
+        await closeSaved(prescription, "Сохранить черновик");
+        await page.reload();
+        await patientTab(page, "Лечение и план");
+        await visible(
+          page
+            .getByText(
+              new RegExp(
+                `РУ ${registration.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`,
+              ),
+            )
+            .first(),
+        );
+        await screenshot(page, currentMode, "grls-persisted");
+        await patientTab(page, "Обзор");
+      },
+    );
 
     let visitUrl;
     await step("создание и проведение приёма", async () => {
@@ -359,6 +817,10 @@ async function scenario(currentMode) {
       await addMeasurement(page, firstMeasurementAt, 6);
       await page.getByRole("button", { name: /Лечение и план/ }).click();
       await page
+        .getByRole("textbox", { name: /Диагноз \/ рабочая гипотеза/ })
+        .fill("U07.1");
+      await page.getByRole("button", { name: /^U07\.1 ·/ }).click();
+      await page
         .getByLabel("Заключение врача", { exact: false })
         .fill("Синтетическое заключение UI, внесённое врачом.");
       await page
@@ -373,6 +835,9 @@ async function scenario(currentMode) {
         })
         .fill("Техническая проверка сохранения основания решения.");
       await saveVisit(page);
+      await page.reload();
+      await page.getByRole("button", { name: /Лечение и план/ }).click();
+      await visible(page.getByText(/^U07\.1 ·/));
       await page
         .getByRole("button", { name: "Другая запись", exact: true })
         .click();

@@ -1,3 +1,8 @@
+import { populateSupportScenario } from "./clinical-support-scenarios";
+import {
+  populateSyntheticScenario,
+  clinicalScenarios,
+} from "./clinical-scenarios";
 import { createPatient, createVisit } from "./commands";
 import type { Actor, PatientRecord } from "./model";
 export const demoActor: Actor = {
@@ -222,7 +227,24 @@ export function seedPatients(reference = new Date()): PatientRecord[] {
         rationale: "Прямое сообщение пациента",
       });
     p.updatedAt = day(i < 3 ? -1 : -7);
-    return p;
+    const prepared = populateSyntheticScenario(
+      p,
+      clinicalScenarios[i % clinicalScenarios.length]!.id,
+      demoActor,
+      reference,
+    );
+    return populateSupportScenario(
+      prepared,
+      demoActor,
+      reference,
+      i === 2
+        ? "adverse"
+        : prepared.workflow?.assessments.at(-1)?.source.scale === "PHQ-9"
+          ? "depression"
+          : i === 3
+            ? "unknown"
+            : "gad",
+    );
   });
 }
 function stamp(time: string) {

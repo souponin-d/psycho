@@ -26,6 +26,8 @@ public static class AviandrChecks
         .SelectMany(v => Domain.Array(v!, "diagnoses").OrderBy(d => S(d, "code"), StringComparer.Ordinal).Select(d => $"{S(v, "id")} | {S(d, "code")} | {S(d, "title")} | {S(d, "status")} | {S(d, "sourceVersion")}")))
       .Select(value => (JsonNode?)JsonValue.Create(value)).ToArray());
     context["medicines"] = new JsonArray(Domain.Array(patient, "plan").Where(p => S(p, "id") != planId && S(p, "kind") == "medication" && S(p, "status") != "draft").OrderBy(p => S(p, "id"), StringComparer.Ordinal).Select(p => (JsonNode?)JsonValue.Create($"{S(p, "title")} | {S(p, "dose")} | {S(p, "schedule")} | {S(p, "startDate")} | {S(p, "endDate")} | {S(p, "status")} | {S(p, "changeReason")}")).ToArray());
+    var facts = ClinicalFacts.Context(patient);
+    if(facts.Count > 0) context["clinicalFacts"] = facts;
     return context;
   }
   public static void Validate(JsonObject review)
@@ -42,9 +44,9 @@ public static class AviandrChecks
     if (input["egfr"] is not null) Check(input["egfr"] is JsonValue value && value.TryGetValue<double>(out var n) && double.IsFinite(n) && n >= 0 && n <= 300);
     foreach (var field in new[] { "egfrDate", "lastMaoDate" }) Check(S(input, field) == "" || Date(S(input, field)));
     Check(input["evidence"] is JsonValue && S(input, "evidence").Length <= 20000);
-    var context = Domain.Object(review, "context"); Only(context, ContextFields); Check(context.Count == ContextFields.Length);
+    var context = Domain.Object(review, "context"); Only(context, ContextFields.Concat(["clinicalFacts"])); Check(ContextFields.All(context.ContainsKey));
     foreach (var field in ContextFields.Take(6)) Check(context[field] is JsonValue && S(context, field).Length <= 20000);
-    foreach (var field in ContextFields.Skip(6)) { var rows = Domain.Array(context, field); Check(rows.Count <= 1000); foreach (var row in rows) Check(row is JsonValue v && v.TryGetValue<string>(out var text) && text.Length <= 200000); }
+    foreach (var field in ContextFields.Skip(6).Concat(context.ContainsKey("clinicalFacts") ? ["clinicalFacts"] : System.Array.Empty<string>())) { var rows = Domain.Array(context, field); Check(rows.Count <= 1000); foreach (var row in rows) Check(row is JsonValue v && v.TryGetValue<string>(out var text) && text.Length <= 200000); }
   }
   public static void Prepare(JsonObject patient, JsonObject plan, Actor actor, string now)
   {
