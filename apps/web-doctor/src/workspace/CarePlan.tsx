@@ -474,6 +474,25 @@ export function PlanForm({
               ))}
             {value.kind === "medication" && (
               <>
+                <Select
+                  label="Приём, на котором принято решение"
+                  value={value.visitId}
+                  onChange={(e) => set("visitId", e.target.value)}
+                >
+                  <option value="">Выберите начатый приём</option>
+                  {patient.visits
+                    .filter(
+                      (v) =>
+                        v.status === "in-progress" &&
+                        (v.format === "in-person" || !!value.replacesId),
+                    )
+                    .map((v) => (
+                      <option key={v.id} value={v.id}>
+                        {formatDate(v.scheduledAt)} ·{" "}
+                        {v.format === "in-person" ? "очно" : "дистанционно"}
+                      </option>
+                    ))}
+                </Select>
                 <div className={styles.formPair}>
                   <Field
                     label="Дозировка"
@@ -606,6 +625,7 @@ export function CarePlan({
   const [confirmation, setConfirmation] = useState<PlanItem | null>(null);
   const [ending, setEnding] = useState<PlanItem | null>(null);
   const [reason, setReason] = useState("");
+  const [endVisitId, setEndVisitId] = useState("");
   const [endStatus, setEndStatus] = useState<"completed" | "stopped">(
     "completed",
   );
@@ -652,7 +672,13 @@ export function CarePlan({
         );
       await actions.mutate(
         patient.id,
-        { type: "plan.status", id: ending.id, status: endStatus, reason },
+        {
+          type: "plan.status",
+          id: ending.id,
+          status: endStatus,
+          reason,
+          ...(ending.kind === "medication" ? { visitId: endVisitId } : {}),
+        },
         patient.revision,
       );
       setEnding(null);
@@ -827,6 +853,16 @@ export function CarePlan({
                     variant="ghost"
                     onClick={() => {
                       setEnding(item);
+                      setEndVisitId(
+                        patient.visits.some(
+                          (v) =>
+                            v.id === visitId &&
+                            v.format === "in-person" &&
+                            v.status === "in-progress",
+                        )
+                          ? visitId
+                          : "",
+                      );
                       setReason("");
                       setError("");
                     }}
@@ -933,6 +969,24 @@ export function CarePlan({
         <form onSubmit={end} className={styles.form}>
           {error && <ErrorNotice>{error}</ErrorNotice>}
           <h3>{ending?.title}</h3>
+          {ending?.kind === "medication" && (
+            <Select
+              label="Очный приём"
+              value={endVisitId}
+              onChange={(e) => setEndVisitId(e.target.value)}
+            >
+              <option value="">Выберите начатый очный приём</option>
+              {patient.visits
+                .filter(
+                  (v) => v.format === "in-person" && v.status === "in-progress",
+                )
+                .map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {formatDate(v.scheduledAt)}
+                  </option>
+                ))}
+            </Select>
+          )}
           <Select
             label="Новый статус"
             value={endStatus}

@@ -30,9 +30,23 @@ import {
 } from "../core/reportFlow";
 import { feelingAt, feelingHint, type FeelingPoint } from "../core/feelings";
 import type { ReportFields, PatientDraft } from "../core/journeyModel";
+import { usePatientConnection } from "../state/PatientConnectionProvider";
+import {
+  ReportQueuedError,
+  type PatientReport,
+} from "../core/patientReportSync";
+const serverReportFields = [
+  "feeling",
+  "sleep",
+  "anxiety",
+  "functioning",
+  "tolerability",
+] as const;
 export default function CheckInScreen() {
   const { theme, today, state } = useApp(),
     { journey, act } = useJourney();
+  const connection = usePatientConnection();
+  const serverMode = connection.mode === "server";
   const params = useLocalSearchParams<{
     day?: string;
     reportId?: string;
@@ -40,7 +54,9 @@ export default function CheckInScreen() {
   }>();
   const [day] = useState(() => params.day ?? today);
   const plan = journey ? planForDay(journey, day) : undefined,
-    requiredFields = plan?.reportFields ?? [];
+    requiredFields = serverMode
+      ? [...serverReportFields]
+      : (plan?.reportFields ?? []);
   const existing = journey
     ? latestReports(journey, day).find((r) =>
         params.reportId
@@ -85,11 +101,14 @@ export default function CheckInScreen() {
   );
   const [controls, setControls] = useState(false),
     [saved, setSaved] = useState(false),
+    [queued, setQueued] = useState(false),
+    [localIssue, setLocalIssue] = useState(false),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
   const savedRef = useRef(false),
     inFlight = useRef(false),
     pending = useRef<PatientDraft | null>(null);
+  const reportCommand = useRef<PatientReport | null>(null);
   const safe = useSafeAreaInsets(),
     { width, height } = useWindowDimensions(),
     { pulse } = useFeedback();
@@ -185,14 +204,60 @@ export default function CheckInScreen() {
       setError("Не удалось сохранить черновик. Ответы остались здесь.");
       return;
     }
-    savedRef.current = true;
     const id =
       "report-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8);
+    if (serverMode && required) {
+      if (
+        !point ||
+        fields.sleep === undefined ||
+        fields.anxiety === undefined ||
+        fields.functioning === undefined ||
+        fields.tolerability === undefined
+      ) {
+        inFlight.current = false;
+        setBusy(false);
+        setError("Заполните все разделы самоотчёта.");
+        return;
+      }
+      const value = reportCommand.current ?? {
+        id,
+        entityId: params.reportId ?? "report:" + day,
+        day,
+        formVersion: "syncli-report-v1" as const,
+        reportedAt: new Date().toISOString(),
+        fields: {
+          feeling: point,
+          sleep: fields.sleep,
+          anxiety: fields.anxiety,
+          functioning: fields.functioning,
+          tolerability: fields.tolerability,
+        },
+        note: note.trim(),
+        label: label.trim() || feeling.label,
+      };
+      reportCommand.current = value;
+      try {
+        await connection.sendReport(value);
+      } catch (e) {
+        if (!(e instanceof ReportQueuedError)) {
+          inFlight.current = false;
+          setBusy(false);
+          setError(
+            e instanceof Error
+              ? e.message
+              : "Не удалось сохранить самоотчёт для отправки.",
+          );
+          return;
+        }
+        setQueued(true);
+      }
+    }
+    savedRef.current = true;
     const success = await act({
       type: "event",
       draftId: draftKey,
       event: {
-        id,
+        id: reportCommand.current?.id ?? id,
         entityId: params.reportId ?? (required ? "report:" + day : id),
         kind: "report",
         day,
@@ -206,6 +271,11 @@ export default function CheckInScreen() {
     setBusy(false);
     if (success) {
       pulse(true);
+      setSaved(true);
+    } else if (serverMode && required && reportCommand.current) {
+      // Acknowledged or durably queued already: do not resend edited values with
+      // the same command ID if saving the separate local history failed.
+      setLocalIssue(true);
       setSaved(true);
     } else {
       savedRef.current = false;
@@ -297,20 +367,30 @@ export default function CheckInScreen() {
                 <Icon name="check" size={64} color={theme.accent} />
               )}
               <T size={26} weight="600" style={{ textAlign: "center" }}>
-                {params.reportId
-                  ? "Изменения сохранены"
-                  : required
-                    ? "Самоотчёт сохранён"
-                    : "Момент сохранён"}
+                {localIssue
+                  ? "Самоотчёт принят к отправке"
+                  : queued
+                    ? "Самоотчёт сохранён на телефоне"
+                    : params.reportId
+                      ? "Изменения сохранены"
+                      : required
+                        ? "Самоотчёт сохранён"
+                        : "Момент сохранён"}
               </T>
               <T size={13} muted style={{ textAlign: "center" }}>
-                {!state.gameplay
-                  ? "Запись доступна в вашей истории."
-                  : day < today
-                    ? "Запись обновлена. Закрытый итог дня и прошлую серию исправления не меняют."
-                    : required
-                      ? "Отчёт учтён в сегодняшнем плане. Проверьте, остались ли другие задания."
-                      : "Личный момент дополняет историю. Обязательный самоотчёт учитывается отдельно."}
+                {localIssue
+                  ? "Копия не попала в историю телефона. Отправка подтверждена или ожидает подтверждения сервера."
+                  : queued
+                    ? "Отправка врачу ожидает подтверждения сервера."
+                    : serverMode && required
+                      ? "Самоотчёт отправлен врачу."
+                      : !state.gameplay
+                        ? "Запись доступна в вашей истории."
+                        : day < today
+                          ? "Запись обновлена. Закрытый итог дня и прошлую серию исправления не меняют."
+                          : required
+                            ? "Отчёт учтён в сегодняшнем плане. Проверьте, остались ли другие задания."
+                            : "Личный момент дополняет историю. Обязательный самоотчёт учитывается отдельно."}
               </T>
             </View>
           </Enter>

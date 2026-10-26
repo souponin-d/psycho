@@ -14,6 +14,7 @@ export type QuestionnaireAssignment = {
 };
 export type PlanVersion = {
   id: string;
+  status?: "unavailable";
   effectiveFrom?: DayKey;
   startedAt: DayKey;
   doctor: string;
@@ -52,6 +53,7 @@ export type DoseEvent = EventBase & {
 };
 export type ReportEvent = EventBase & {
   kind: "report";
+  source?: "server";
   fields: ReportFields;
   note: string;
   required: boolean;
@@ -183,6 +185,7 @@ export type PatientCommand =
         | Omit<ContactEvent, "at" | "recordedDay">;
     }
   | { type: "draft"; draft: PatientDraft }
+  | { type: "server:reports"; reports: ReportEvent[] }
   | { type: "draft:remove"; id: string }
   | { type: "connect"; code: string }
   | { type: "goal"; goal: string }

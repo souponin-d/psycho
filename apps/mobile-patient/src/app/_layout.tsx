@@ -1,4 +1,5 @@
 import { Stack } from "expo-router";
+import { useMemo, useRef } from "react";
 import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import { ActivityIndicator, View } from "react-native";
@@ -11,20 +12,23 @@ import {
   PatientConnectionProvider,
   usePatientConnection,
 } from "../state/PatientConnectionProvider";
+import { initialOnboarding } from "../core/onboarding";
 export { ErrorBoundary } from "expo-router";
 function Navigation() {
   const { ready, theme, reducedMotion, storageError, retrySave } = useApp();
   const patient = useJourney();
   const connection = usePatientConnection();
   const { state } = useApp();
+  const opened = useRef(false);
+  if (ready && patient.ready && connection.ready && patient.journey)
+    opened.current = true;
   const needsAccess =
     ready &&
-    patient.ready &&
     connection.ready &&
     state.onboarded &&
     connection.mode !== "demo" &&
     !connection.connected;
-  if (!ready || !patient.ready || !connection.ready)
+  if ((!ready || !patient.ready || !connection.ready) && !opened.current)
     return (
       <View
         style={{
@@ -37,7 +41,7 @@ function Navigation() {
         <ActivityIndicator color={theme.accent} />
       </View>
     );
-  if (!patient.journey)
+  if (!patient.journey && patient.ready)
     return (
       <View
         style={{
@@ -84,6 +88,7 @@ function Navigation() {
           />
           <Stack.Screen name="companion-preview" />
           <Stack.Screen name="contact" />
+          <Stack.Screen name="doctor-chat" />
           <Stack.Screen name="questionnaire" />
           <Stack.Screen name="questions" />
           <Stack.Screen name="shore-settings" />
@@ -119,6 +124,22 @@ function Navigation() {
           </T>
         </View>
       )}
+      {!patient.ready && (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: theme.page,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <ActivityIndicator color={theme.accent} />
+        </View>
+      )}
     </>
   );
 }
@@ -132,13 +153,30 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <AppProvider>
         <PatientConnectionProvider>
-          <JourneyProvider>
-            <ReminderProvider>
-              <Navigation />
-            </ReminderProvider>
-          </JourneyProvider>
+          <ProfileNavigation />
         </PatientConnectionProvider>
       </AppProvider>
     </SafeAreaProvider>
+  );
+}
+function ProfileNavigation() {
+  const { owner } = usePatientConnection();
+  const { state } = useApp();
+  const onboarding = useMemo(
+    () =>
+      owner && !state.onboarded
+        ? {
+            ...initialOnboarding(undefined, state.name, state.morning),
+            step: 2,
+          }
+        : undefined,
+    [owner, state.onboarded, state.name, state.morning],
+  );
+  return (
+    <JourneyProvider owner={owner} onboarding={onboarding}>
+      <ReminderProvider>
+        <Navigation />
+      </ReminderProvider>
+    </JourneyProvider>
   );
 }

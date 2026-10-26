@@ -25,4 +25,14 @@ public static class ClinicalExecutionPolicy
     if (!allowedEnvironment || !sameClinic || actor.PatientId is not null || actor.Specialty == "patient")
       throw new DomainException("Учебные команды доступны только врачу своей клиники в Development или в явно разрешённом синтетическом контуре Production.", 403);
   }
+  public static void AssertPatientAllowed(JsonObject patient, Actor actor)
+  {
+    var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+    var current = Volatile.Read(ref settings);
+    var allowedEnvironment = environment == "Development" || environment == "Production" && current.Enabled && current.ClinicIds.Contains(actor.ClinicId, StringComparer.Ordinal);
+    var sameClinic = patient["clinicId"] is JsonValue clinic && clinic.TryGetValue<string>(out var clinicId) && clinicId == actor.ClinicId && !string.IsNullOrWhiteSpace(clinicId);
+    var samePatient = patient["id"] is JsonValue id && id.TryGetValue<string>(out var patientId) && patientId == actor.PatientId && !string.IsNullOrWhiteSpace(patientId);
+    if (!allowedEnvironment || !sameClinic || !samePatient || actor.Specialty != "patient")
+      throw new DomainException("Отметка пациента недоступна для этой сессии.", 403);
+  }
 }

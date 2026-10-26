@@ -8,8 +8,20 @@ import { useApp } from "../state/AppProvider";
 import { questionnaires } from "../config/questionnaires";
 import { completeQuestionnaire } from "../core/questionnaires";
 import type { PatientDraft } from "../core/journeyModel";
+import { usePatientConnection } from "../state/PatientConnectionProvider";
+import { ServerQuestionnaire } from "../components/ServerQuestionnaire";
 
 export default function QuestionnaireScreen() {
+  const { mode } = usePatientConnection();
+  const { id } = useLocalSearchParams<{ id: string }>();
+  return mode === "server" ? (
+    <ServerQuestionnaire id={id} />
+  ) : (
+    <DemoQuestionnaire />
+  );
+}
+
+function DemoQuestionnaire() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { journey, act, saving } = useJourney();
   const { theme, today, state } = useApp();

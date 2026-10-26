@@ -30,6 +30,7 @@ import { ThemePicker } from "../components/ThemePicker";
 import { mascotOptions } from "../config/content";
 import { requestReminderPermission } from "../services/notificationPermissions";
 import { usePatientConnection } from "../state/PatientConnectionProvider";
+import { openPatientRepository } from "../storage/sqlite";
 
 const steps = [
   {
@@ -205,12 +206,10 @@ export default function Onboarding() {
     try {
       if (demo) await connection.demo();
       else await connection.connect(value);
-      // This flag opens the existing local teaching journey, not an API session.
-      // Server access is controlled separately by the authenticated channel.
-      if (!(await act({ type: "connect", code: "SYNCLI-START" })))
-        throw new Error(
-          "Не удалось открыть записи на телефоне. Подключитесь ещё раз.",
-        );
+      if (demo)
+        await (
+          await openPatientRepository()
+        ).apply({ type: "connect", code: "SYNCLI-START" });
       setCode("");
       if (accessOnly) router.replace("/");
       else setStep(2);
@@ -404,29 +403,62 @@ export default function Onboarding() {
           )}
           {step === 2 && (
             <Panel style={{ gap: 16 }}>
-              <T size={18} weight="600">
-                {journey.plan.medication.name}
-              </T>
-              <T size={14}>{patientLabel(journey.plan.doctor)}</T>
-              <T size={13} muted>
-                {patientLabel(
-                  journey.plan.medication.dosageLabel,
-                  "Дозировка не указана",
-                )}
-              </T>
-              {journey.plan.medication.slots.map((slot) => (
-                <T size={14} key={slot.id}>
-                  {slot.time} · {slot.label}
-                </T>
-              ))}
-              <T size={14}>Ежедневный самоотчёт и назначенные опросы</T>
-              <T size={13} muted>
-                Ближайший визит:{" "}
-                {new Date(journey.plan.visit.day + "T12:00").toLocaleDateString(
-                  "ru-RU",
-                )}{" "}
-                в {journey.plan.visit.time}
-              </T>
+              {connection.mode === "server" ? (
+                <>
+                  <T size={18} weight="600">
+                    План врача
+                  </T>
+                  {connection.snapshot?.plan.kind === "ready" &&
+                  connection.snapshot.plan.items.length ? (
+                    connection.snapshot.plan.items.map((item) => (
+                      <View key={item.id}>
+                        <T size={14}>{item.title}</T>
+                        {!!item.dose && (
+                          <T size={13} muted>
+                            {item.dose}
+                          </T>
+                        )}
+                        {!!item.schedule && (
+                          <T size={13} muted>
+                            {item.schedule}
+                          </T>
+                        )}
+                      </View>
+                    ))
+                  ) : (
+                    <T size={13} muted>
+                      Назначения появятся здесь после подтверждения врачом.
+                    </T>
+                  )}
+                  <T size={14}>Самоотчёт и назначенные опросы</T>
+                </>
+              ) : (
+                <>
+                  <T size={18} weight="600">
+                    {journey.plan.medication.name}
+                  </T>
+                  <T size={14}>{patientLabel(journey.plan.doctor)}</T>
+                  <T size={13} muted>
+                    {patientLabel(
+                      journey.plan.medication.dosageLabel,
+                      "Дозировка не указана",
+                    )}
+                  </T>
+                  {journey.plan.medication.slots.map((slot) => (
+                    <T size={14} key={slot.id}>
+                      {slot.time} · {slot.label}
+                    </T>
+                  ))}
+                  <T size={14}>Ежедневный самоотчёт и назначенные опросы</T>
+                  <T size={13} muted>
+                    Ближайший визит:{" "}
+                    {new Date(
+                      journey.plan.visit.day + "T12:00",
+                    ).toLocaleDateString("ru-RU")}{" "}
+                    в {journey.plan.visit.time}
+                  </T>
+                </>
+              )}
             </Panel>
           )}
           {step === 3 && (
@@ -520,7 +552,9 @@ export default function Onboarding() {
             <Panel style={{ gap: 16 }}>
               <T weight="600">Тренировка · утренний приём</T>
               <T muted size={13}>
-                {journey.plan.medication.name}. Эта проба не попадёт в историю.
+                {connection.mode === "server"
+                  ? "Эта проба не попадёт в историю."
+                  : `${journey.plan.medication.name}. Эта проба не попадёт в историю.`}
               </T>
               <Button
                 title={
@@ -683,17 +717,22 @@ export default function Onboarding() {
             <>
               <Panel style={{ gap: 12 }}>
                 <T size={16} weight="600">
-                  Утренний приём · {journey.plan.medication.name}
+                  {connection.mode === "server"
+                    ? "Напоминания"
+                    : `Утренний приём · ${journey.plan.medication.name}`}
                 </T>
                 <T size={12} muted>
-                  Меняется время напоминания. Схема и количество приёмов
-                  остаются назначенными врачом.
+                  {connection.mode === "server"
+                    ? "Время приёмов указано в назначении врача. Напоминания для подключённого плана пока не настроены."
+                    : "Меняется время напоминания. Схема и количество приёмов остаются назначенными врачом."}
                 </T>
-                <TimeControl
-                  label="Время утреннего напоминания"
-                  value={time}
-                  onChange={setTime}
-                />
+                {connection.mode !== "server" && (
+                  <TimeControl
+                    label="Время утреннего напоминания"
+                    value={time}
+                    onChange={setTime}
+                  />
+                )}
                 {!validTime && (
                   <T size={12}>
                     Введите время от 00:00 до 23:59, например 07:45.

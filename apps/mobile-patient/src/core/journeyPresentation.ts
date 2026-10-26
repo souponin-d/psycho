@@ -1,5 +1,6 @@
 import { shiftDay } from "./calendar.ts";
-export type JourneyDayStatus = "today" | "complete" | "missed" | "future";
+export type JourneyDayStatus =
+  "today" | "complete" | "missed" | "future" | "unknown";
 const dateLabel = (day: string) =>
   new Date(day + "T12:00:00")
     .toLocaleDateString("ru-RU", { day: "numeric", month: "short" })
@@ -20,9 +21,11 @@ export function dayMarkerPresentation(
           : "Сегодня"
         : status === "complete"
           ? "Выполнено"
-          : status === "missed"
-            ? "Пропуск"
-            : "Впереди",
+          : status === "unknown"
+            ? "Нет данных"
+            : status === "missed"
+              ? "Пропуск"
+              : "Впереди",
     symbol: completed ? "✓" : status === "missed" ? "—" : "",
     active: status === "today",
     completed,
@@ -33,6 +36,7 @@ export function journeyHud(
   total: number,
   successes: number,
   chapterStart: string,
+  planAvailable = true,
 ) {
   const remaining = Math.max(0, total - completed);
   const noun =
@@ -45,9 +49,11 @@ export function journeyHud(
         : "дел";
   return {
     remaining,
-    taskLabel: remaining
-      ? `Осталось ${remaining} ${noun}`
-      : "На сегодня всё выполнено",
+    taskLabel: !planAvailable
+      ? "Откройте план врача"
+      : remaining
+        ? `Осталось ${remaining} ${noun}`
+        : "На сегодня всё выполнено",
     weekLabel: `${dateLabel(chapterStart)}–${dateLabel(shiftDay(chapterStart, 6))} · ${successes} из 5 дней`,
   };
 }

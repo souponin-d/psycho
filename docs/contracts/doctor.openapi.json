@@ -1941,6 +1941,111 @@
                     "messages": {
                       "type": "array",
                       "items": { "$ref": "#/components/schemas/Message" }
+                    },
+                    "doseSchedules": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "id",
+                          "version",
+                          "planId",
+                          "times",
+                          "offsetMinutes",
+                          "effectiveFrom",
+                          "effectiveUntil",
+                          "endDate",
+                          "medication"
+                        ],
+                        "properties": {
+                          "id": { "type": "string" },
+                          "version": { "type": "integer" },
+                          "planId": { "type": "string" },
+                          "times": {
+                            "type": "array",
+                            "items": { "type": "string" }
+                          },
+                          "offsetMinutes": { "type": "integer" },
+                          "effectiveFrom": { "type": "string" },
+                          "effectiveUntil": { "type": "string" },
+                          "endDate": { "type": "string" },
+                          "medication": {
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "title",
+                              "dose",
+                              "schedule",
+                              "patientInstructions"
+                            ],
+                            "properties": {
+                              "id": { "type": "string" },
+                              "title": { "type": "string" },
+                              "dose": { "type": "string" },
+                              "schedule": { "type": "string" },
+                              "patientInstructions": { "type": "string" }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "doseRecords": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "id",
+                          "scheduleId",
+                          "scheduleVersion",
+                          "plannedAt",
+                          "version",
+                          "status",
+                          "reportedAt",
+                          "provenance"
+                        ],
+                        "properties": {
+                          "id": { "type": "string" },
+                          "scheduleId": { "type": "string" },
+                          "scheduleVersion": { "type": "integer" },
+                          "plannedAt": { "type": "string" },
+                          "version": { "type": "integer" },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "taken",
+                              "missed",
+                              "not-applicable",
+                              "unknown"
+                            ]
+                          },
+                          "reportedAt": { "type": "string" },
+                          "provenance": {
+                            "type": "string",
+                            "enum": ["patient", "clinician"]
+                          }
+                        }
+                      }
+                    },
+                    "questionnaires": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "id",
+                          "protocolVersion",
+                          "dueDate",
+                          "status"
+                        ],
+                        "properties": {
+                          "id": { "type": "string" },
+                          "protocolVersion": { "type": "string" },
+                          "dueDate": { "type": "string", "format": "date" },
+                          "status": { "enum": ["issued", "submitted"] }
+                        }
+                      }
                     }
                   }
                 }
@@ -2051,7 +2156,7 @@
     "/api/patient/commands": {
       "post": {
         "operationId": "patientCommand",
-        "description": "Только report.add, message.patient, message.received. PatientId берётся из сессии; сервер устанавливает provenance=patient. Возвращается допустимая пациентская проекция.",
+        "description": "Пациент отправляет сообщения, отметки, самоотчёты и ответы на выданные опросы. PatientId берётся из сессии; сервер устанавливает provenance=patient. Возвращается допустимая пациентская проекция.",
         "parameters": [
           {
             "name": "X-CSRF-TOKEN",
@@ -2071,6 +2176,166 @@
                   "commandId": { "type": "string" },
                   "mutation": {
                     "oneOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": ["type", "value"],
+                        "properties": {
+                          "type": { "const": "report.patient" },
+                          "value": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "id",
+                              "entityId",
+                              "day",
+                              "formVersion",
+                              "reportedAt",
+                              "fields",
+                              "note",
+                              "label"
+                            ],
+                            "properties": {
+                              "id": { "type": "string" },
+                              "entityId": { "type": "string" },
+                              "day": { "type": "string", "format": "date" },
+                              "formVersion": { "const": "syncli-report-v1" },
+                              "reportedAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "note": { "type": "string", "maxLength": 2000 },
+                              "label": { "type": "string", "maxLength": 80 },
+                              "fields": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "required": [
+                                  "feeling",
+                                  "sleep",
+                                  "anxiety",
+                                  "functioning",
+                                  "tolerability"
+                                ],
+                                "properties": {
+                                  "feeling": {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": ["valence", "energy"],
+                                    "properties": {
+                                      "valence": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 6
+                                      },
+                                      "energy": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 6
+                                      }
+                                    }
+                                  },
+                                  "sleep": {
+                                    "enum": ["Плохо", "Обычно", "Хорошо"]
+                                  },
+                                  "anxiety": {
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "maximum": 10
+                                  },
+                                  "functioning": {
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "maximum": 10
+                                  },
+                                  "tolerability": {
+                                    "enum": ["Без трудностей", "Есть трудности"]
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": ["type", "value"],
+                        "properties": {
+                          "type": { "const": "questionnaire.patient" },
+                          "value": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "id",
+                              "assignmentId",
+                              "protocolVersion",
+                              "measuredAt",
+                              "answers",
+                              "impact"
+                            ],
+                            "properties": {
+                              "id": { "type": "string" },
+                              "assignmentId": { "type": "string" },
+                              "protocolVersion": { "type": "string" },
+                              "measuredAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "answers": {
+                                "type": "array",
+                                "items": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "maximum": 3
+                                }
+                              },
+                              "impact": {
+                                "anyOf": [
+                                  {
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "maximum": 3
+                                  },
+                                  { "type": "null" }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": ["type", "value"],
+                        "properties": {
+                          "type": { "const": "dose.patient" },
+                          "value": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "scheduleId",
+                              "scheduleVersion",
+                              "plannedAt",
+                              "status",
+                              "reportedAt",
+                              "reason",
+                              "expectedVersion"
+                            ],
+                            "properties": {
+                              "scheduleId": { "type": "string" },
+                              "scheduleVersion": { "type": "integer" },
+                              "plannedAt": { "type": "string" },
+                              "status": {
+                                "type": "string",
+                                "enum": ["taken", "missed", "unknown"]
+                              },
+                              "reportedAt": { "type": "string" },
+                              "reason": { "type": "string" },
+                              "expectedVersion": { "type": "integer" }
+                            }
+                          }
+                        }
+                      },
                       {
                         "type": "object",
                         "required": ["type", "value"],
@@ -2550,6 +2815,7 @@
       "Visit": {
         "type": "object",
         "properties": {
+          "confirmedById": { "anyOf": [{ "type": "string" }] },
           "scheduledAt": { "type": "string" },
           "durationMinutes": { "type": "number" },
           "kind": {
@@ -4684,6 +4950,7 @@
       "PlanItem": {
         "type": "object",
         "properties": {
+          "confirmedById": { "anyOf": [{ "type": "string" }] },
           "medicine": {
             "anyOf": [
               { "type": "null" },
@@ -4913,6 +5180,59 @@
       "SelfReport": {
         "type": "object",
         "properties": {
+          "mobile": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "string" },
+                  "entityId": { "type": "string" },
+                  "day": { "type": "string" },
+                  "formVersion": {
+                    "type": "string",
+                    "const": "syncli-report-v1"
+                  },
+                  "reportedAt": { "type": "string" },
+                  "fields": {
+                    "type": "object",
+                    "properties": {
+                      "feeling": {
+                        "type": "object",
+                        "properties": {
+                          "valence": { "type": "number" },
+                          "energy": { "type": "number" }
+                        },
+                        "required": ["valence", "energy"]
+                      },
+                      "sleep": { "type": "string" },
+                      "anxiety": { "type": "number" },
+                      "functioning": { "type": "number" },
+                      "tolerability": { "type": "string" }
+                    },
+                    "required": [
+                      "feeling",
+                      "sleep",
+                      "anxiety",
+                      "functioning",
+                      "tolerability"
+                    ]
+                  },
+                  "label": { "type": "string" },
+                  "note": { "type": "string" }
+                },
+                "required": [
+                  "id",
+                  "entityId",
+                  "day",
+                  "formVersion",
+                  "reportedAt",
+                  "fields",
+                  "label",
+                  "note"
+                ]
+              }
+            ]
+          },
           "reportedAt": { "type": "string" },
           "receivedAt": { "type": "string" },
           "provenance": { "$ref": "#/components/schemas/Provenance" },
@@ -8158,7 +8478,8 @@
               "type": { "type": "string", "const": "plan.status" },
               "id": { "type": "string" },
               "status": { "type": "string", "enum": ["completed", "stopped"] },
-              "reason": { "type": "string" }
+              "reason": { "type": "string" },
+              "visitId": { "anyOf": [{ "type": "string" }] }
             },
             "required": ["type", "id", "status", "reason"]
           },

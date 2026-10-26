@@ -83,6 +83,7 @@ export function notificationSchedule(
   preferences: ReminderPreferences,
   now: Instant,
 ): NotificationJob[] {
+  if (plan.status === "unavailable") return [];
   const jobs: NotificationJob[] = [];
   const today = dayAt(now);
   for (let i = 0; i < 28; i++) {

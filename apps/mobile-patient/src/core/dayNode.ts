@@ -31,9 +31,11 @@ export function dayNode(state: JourneyState, day: string, today: string) {
     ? ("future" as const)
     : day === today
       ? ("today" as const)
-      : awarded
-        ? ("complete" as const)
-        : ("missed" as const);
+      : planForDay(state, day).status === "unavailable"
+        ? ("unknown" as const)
+        : awarded
+          ? ("complete" as const)
+          : ("missed" as const);
   const growth = awarded
     ? 3
     : future
@@ -46,6 +48,7 @@ export function dayNode(state: JourneyState, day: string, today: string) {
     groups,
     done,
     total: tasks.length,
+    planUnavailable: planForDay(state, day).status === "unavailable",
     awarded,
     growth,
     closed: !!closed || day < today,

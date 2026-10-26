@@ -1,4 +1,20 @@
 import { createPatientReader, PatientApiError } from "./patientGateway.ts";
+import type { PatientOutboxOwner } from "./patientOutbox.ts";
+import {
+  decodePatientPlan,
+  type PatientPlanProjection,
+} from "./patientPlanProjection.ts";
+import {
+  decodePatientDoses,
+  type PatientDoses,
+} from "./patientDoseSchedule.ts";
+import type { PatientReport } from "./patientReportSync.ts";
+import { decodePatientReports } from "./patientReportRecovery.ts";
+import {
+  decodePatientQuestionnaires,
+  type PatientQuestionnaires,
+  type PatientQuestionnaireResult,
+} from "./patientQuestionnaireSync.ts";
 export type ServerMessage = {
   id: string;
   direction: "doctor" | "patient";
@@ -10,6 +26,19 @@ export type PatientSnapshot = {
   patientId: string;
   name: string;
   messages: ServerMessage[];
+  plan: PatientPlanProjection;
+  doses: PatientDoses;
+  questionnaires: PatientQuestionnaires;
+  reports: ReturnType<typeof decodePatientReports>;
+};
+export type PatientDoseUpdate = {
+  scheduleId: string;
+  scheduleVersion: number;
+  plannedAt: string;
+  status: "taken" | "missed" | "unknown";
+  reportedAt: string;
+  expectedVersion: number;
+  reason: string;
 };
 type JsonResponse = {
   ok: boolean;
@@ -35,7 +64,11 @@ export function createPatientChannel(options: {
   const request = options.request ?? ((url, init) => fetch(url, init));
   let generation = 0;
   let snapshotVersion = 0;
-  let session: { patientId: string; token: string } | null = null;
+  let session: {
+    patientId: string;
+    token: string;
+    owner: PatientOutboxOwner | null;
+  } | null = null;
   const pending = new Set<AbortController>();
   function lock() {
     generation++;
@@ -135,7 +168,15 @@ export function createPatientChannel(options: {
         createdAt: m.createdAt,
       };
     });
-    return { patientId, name: data.name, messages };
+    return {
+      patientId,
+      name: data.name,
+      messages,
+      plan: decodePatientPlan(data.plan),
+      doses: decodePatientDoses(data.doseSchedules, data.doseRecords),
+      questionnaires: decodePatientQuestionnaires(data.questionnaires),
+      reports: decodePatientReports(data.reports),
+    };
   }
   async function operation(body?: unknown) {
     if (body !== undefined) snapshotVersion++;
@@ -160,6 +201,7 @@ export function createPatientChannel(options: {
   return {
     lock,
     authorized: () => session !== null,
+    owner: () => (session?.owner ? { ...session.owner } : null),
     async connect(code: string) {
       lock();
       const turn = generation;
@@ -193,14 +235,126 @@ export function createPatientChannel(options: {
         session = {
           patientId: result.actor.patientId,
           token: result.csrfToken,
+          owner: null,
         };
-        return await operation();
+        const confirmed = await operation();
+        if (turn !== generation || !session) throw cancelled();
+        session.owner = {
+          origin,
+          patientId: result.actor.patientId,
+          clinicId: result.actor.clinicId,
+          actorId: result.actor.id,
+        };
+        return confirmed;
       } catch (error) {
         if (turn === generation) lock();
         throw error;
       }
     },
     read: () => operation(),
+    sendQuestionnaire(value: PatientQuestionnaireResult, commandId: string) {
+      if (!commandId || value.id !== commandId)
+        return Promise.reject(
+          new PatientApiError(400, "Некорректный идентификатор опроса"),
+        );
+      const { id, assignmentId, protocolVersion, measuredAt, answers, impact } =
+        value;
+      return operation({
+        commandId,
+        mutation: {
+          type: "questionnaire.patient",
+          value: {
+            id,
+            assignmentId,
+            protocolVersion,
+            measuredAt,
+            answers,
+            impact,
+          },
+        },
+      });
+    },
+    sendReport(value: PatientReport, commandId: string) {
+      if (!commandId || value.id !== commandId)
+        return Promise.reject(
+          new PatientApiError(400, "Некорректный идентификатор самоотчёта"),
+        );
+      const {
+        id,
+        entityId,
+        day,
+        formVersion,
+        reportedAt,
+        fields,
+        note,
+        label,
+      } = value;
+      const { feeling, sleep, anxiety, functioning, tolerability } = fields;
+      return operation({
+        commandId,
+        mutation: {
+          type: "report.patient",
+          value: {
+            id,
+            entityId,
+            day,
+            formVersion,
+            reportedAt,
+            fields: {
+              feeling: { valence: feeling.valence, energy: feeling.energy },
+              sleep,
+              anxiety,
+              functioning,
+              tolerability,
+            },
+            note,
+            label,
+          },
+        },
+      });
+    },
+    markDose(value: PatientDoseUpdate, commandId: string) {
+      if (
+        !commandId ||
+        !value.scheduleId ||
+        !Number.isInteger(value.scheduleVersion) ||
+        value.scheduleVersion < 1 ||
+        !Number.isInteger(value.expectedVersion) ||
+        value.expectedVersion < 0 ||
+        !["taken", "missed", "unknown"].includes(value.status) ||
+        (value.status === "unknown" && value.expectedVersion === 0) ||
+        !value.plannedAt ||
+        !value.reportedAt ||
+        typeof value.reason !== "string"
+      )
+        return Promise.reject(
+          new PatientApiError(400, "Проверьте отметку приёма"),
+        );
+      const {
+        scheduleId,
+        scheduleVersion,
+        plannedAt,
+        status,
+        reportedAt,
+        expectedVersion,
+        reason,
+      } = value;
+      return operation({
+        commandId,
+        mutation: {
+          type: "dose.patient",
+          value: {
+            scheduleId,
+            scheduleVersion,
+            plannedAt,
+            status,
+            reportedAt,
+            expectedVersion,
+            reason,
+          },
+        },
+      });
+    },
     send(text: string, commandId: string) {
       if (!text.trim() || text.trim().length > 20000 || !commandId)
         return Promise.reject(

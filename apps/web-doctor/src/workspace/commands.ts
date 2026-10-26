@@ -1,6 +1,10 @@
 import { patientAgeAt } from "./patient-age.ts";
 import { patientMeasurements } from "./patient-measurements.ts";
 import {
+  assertMedicationStatusVisit,
+  assertMedicationVisit,
+} from "./medication-policy.ts";
+import {
   encounterFields,
   type Actor,
   type Command,
@@ -130,7 +134,11 @@ function validateMutation(mutation: Mutation, previous: PatientRecord) {
     );
     const keys = shapes[mutation.type]!.split(",");
     requireValue(
-      Object.keys(mutation).every((key) => keys.includes(key)),
+      Object.keys(mutation).every(
+        (key) =>
+          keys.includes(key) ||
+          (mutation.type === "plan.status" && key === "visitId"),
+      ),
       "Действие содержит неизвестные поля.",
     );
     for (const key of keys) {
@@ -168,6 +176,8 @@ function validateMutation(mutation: Mutation, previous: PatientRecord) {
     }
     if (mutation.type === "plan.status")
       option(mutation.status, ["completed", "stopped"]);
+    if (mutation.type === "plan.status" && mutation.visitId !== undefined)
+      text(mutation.visitId, "visitId");
     return;
   }
   const raw = (mutation as unknown as { value: unknown }).value;
@@ -176,9 +186,9 @@ function validateMutation(mutation: Mutation, previous: PatientRecord) {
     "episode.save": "diagnosisCode",
     "assessment.save": "responses",
     "visit.save":
-      "notes,diagnoses,durationMinutes,addenda,sourceIds,completionSnapshot",
+      "notes,diagnoses,durationMinutes,addenda,sourceIds,completionSnapshot,confirmedById",
     "measurement.add": "score,maximum,answers",
-    "plan.save": "sourceIds,aviandrReview,medicine",
+    "plan.save": "sourceIds,aviandrReview,medicine,confirmedById",
     "report.add": "mood,anxiety,sleepHours,safetyConcern",
     "event.add": "sourceIds,history",
     "referral.save": "sourceIds",
@@ -202,6 +212,12 @@ function validateMutation(mutation: Mutation, previous: PatientRecord) {
           (raw[field] as string).length <= 20000,
         `Ожидалось текстовое поле: ${field}.`,
       );
+  if (raw.confirmedById !== undefined)
+    requireValue(
+      typeof raw.confirmedById === "string" &&
+        raw.confirmedById.length <= 20000,
+      "Ожидался идентификатор врача.",
+    );
   if (mutation.type !== "profile.update") {
     text(raw.id as string, "идентификатор");
     requireValue(
@@ -742,6 +758,16 @@ export function applyCommand(
         "Завершённый или отменённый приём нельзя переписать. Добавьте отдельное дополнение.",
       );
       requireValue(
+        !old ||
+          old.status !== "in-progress" ||
+          m.value.status === "in-progress",
+        "Начатый приём нельзя вернуть в запланированные.",
+      );
+      requireValue(
+        !old || old.status !== "in-progress" || old.format === m.value.format,
+        "Формат начатого приёма нельзя изменить.",
+      );
+      requireValue(
         ["scheduled", "in-progress"].includes(m.value.status),
         "Для завершения приёма используйте подтверждение.",
       );
@@ -763,6 +789,7 @@ export function applyCommand(
         addenda: [],
         completedAt: "",
         confirmedBy: "",
+        confirmedById: "",
         startedAt:
           old?.startedAt || (m.value.status === "in-progress" ? now : ""),
       };
@@ -780,6 +807,7 @@ export function applyCommand(
       v.status = "completed";
       v.completedAt = now;
       v.confirmedBy = actor.name;
+      v.confirmedById = actor.id;
       v.completionSnapshot = structuredClone({
         clinicalProfile: p.profile,
         ...(p.workflow ? { workflow: p.workflow } : {}),
@@ -899,6 +927,7 @@ export function applyCommand(
         find(p.plan, m.value.replacesId);
         text(m.value.changeReason, "причину изменения плана");
       }
+      assertMedicationVisit(p, m.value, actor, false);
       upsert(
         p.plan,
         {
@@ -908,6 +937,7 @@ export function applyCommand(
             : {}),
           confirmedAt: "",
           confirmedBy: "",
+          confirmedById: "",
         },
         actor,
         now,
@@ -919,6 +949,7 @@ export function applyCommand(
       const item = find(p.plan, m.id);
       assertMedicationCandidate(p, item);
       writableVisit(p, item.visitId);
+      assertMedicationVisit(p, item, actor, true);
       requireValue(item.status === "draft", "Запись уже подтверждена.");
       text(item.rationale, "основание решения");
       text(item.patientInstructions, "указания пациенту");
@@ -940,6 +971,7 @@ export function applyCommand(
       item.status = "confirmed";
       item.confirmedAt = now;
       item.confirmedBy = actor.name;
+      item.confirmedById = actor.id;
       if (item.replacesId) {
         const old = find(p.plan, item.replacesId);
         requireValue(
@@ -959,6 +991,7 @@ export function applyCommand(
         "Изменить статус можно только у действующего назначения.",
       );
       text(m.reason, "причину изменения");
+      assertMedicationStatusVisit(p, item, m.visitId);
       item.status = m.status;
       item.changeReason = m.reason;
       break;

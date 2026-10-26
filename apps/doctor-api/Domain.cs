@@ -46,6 +46,36 @@ public static class Domain
   { var allowed = fields.ToHashSet(StringComparer.Ordinal); Check(node.All(p => allowed.Contains(p.Key)), "Запись содержит неизвестные поля."); }
   private static void WritableVisit(JsonObject doc, string id)
   { if (id != "") Check(S(Find(doc, "visits", id), "status") is not ("completed" or "cancelled"), "Нельзя добавлять или менять записи завершённого или отменённого приёма. Создайте новый приём или дополнение."); }
+  private static void MedicationVisit(JsonObject doc, JsonObject item, Actor actor, bool confirming)
+  {
+    if (S(item, "kind") != "medication") return;
+    var visitId = S(item, "visitId");
+    if (visitId == "") { Check(!confirming, "Лекарственное назначение нужно связать с приёмом."); return; }
+    var visit = Find(doc, "visits", visitId);
+    if (S(visit, "format") == "in-person") { if (confirming) Check(S(visit, "status") == "in-progress", "Подтвердите назначение на начатом очном приёме."); return; }
+    Check(S(visit, "format") == "remote", "Неизвестный формат приёма.");
+    Check(S(visit, "status") == "in-progress", "Дистанционная коррекция доступна на начатом приёме.");
+    var replacedId = S(item, "replacesId");
+    Check(replacedId != "", "Новый препарат назначается на очном приёме.");
+    var previous = Find(doc, "plan", replacedId);
+    Check(S(previous, "kind") == "medication" && S(previous, "status") == "confirmed", "Нужен действующий назначенный препарат.");
+    foreach (var key in new[] { "kind", "title", "medicine", "details", "schedule", "startDate", "endDate", "dueDate", "instructionUrl", "patientInstructions", "sourceIds" })
+      Check(JsonNode.DeepEquals(item[key], previous[key]), "Дистанционно можно изменить только дозировку назначенного препарата.");
+    var anchor = previous; var seen = new HashSet<string>(StringComparer.Ordinal);
+    for (var depth = 0; ; depth++) {
+      Check(depth < 100 && seen.Add(S(anchor, "id")), "Не удалось проверить историю назначения.");
+      Check(S(anchor, "confirmedById") == actor.Id, "Для дистанционной коррекции нужно исходное назначение этого врача.");
+      var sourceVisitId = S(anchor, "visitId");
+      Check(sourceVisitId != "", "Нет подтверждённого очного назначения.");
+      var sourceVisit = Find(doc, "visits", sourceVisitId);
+      if (S(sourceVisit, "format") == "in-person") {
+        Check(S(sourceVisit, "status") == "completed" && S(sourceVisit, "confirmedById") == actor.Id && Array(sourceVisit, "diagnoses").Any(d => S(d, "status") == "confirmed"), "Нужен завершённый очный приём этого врача с установленным диагнозом.");
+        break;
+      }
+      Check(S(sourceVisit, "format") == "remote" && S(anchor, "replacesId") != "", "Нет подтверждённого очного назначения.");
+      anchor = Find(doc, "plan", S(anchor, "replacesId"));
+    }
+  }
   private static void Enum(JsonNode node, string key, params string[] values) => Check(values.Contains(S(node, key)), $"Недопустимое значение: {key}.");
   private static JsonObject Stamp(JsonObject value, Actor actor, string now) { value["author"] = actor.Name; value["createdAt"] = now; return value; }
   private static void Add(JsonObject doc, string collection, JsonObject value, Actor actor, string now)
@@ -93,7 +123,7 @@ public static class Domain
     Check(!doc["archived"]!.GetValue<bool>() || type is "patient.archive" or "visit.print", "Карта находится в архиве.");
     ValidateMutation(mutation, type);
     var now = DateTimeOffset.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture); var value = mutation["value"]?.DeepClone() as JsonObject;
-    if (value is not null && type != "fact.save" && !type.StartsWith("workflow.",StringComparison.Ordinal) && !type.StartsWith("support.",StringComparison.Ordinal) && !type.StartsWith("adherence.",StringComparison.Ordinal)) ValidateEntity(type, value, doc);
+    if (value is not null && type is not ("fact.save" or "dose.patient" or "report.patient" or "questionnaire.patient") && !type.StartsWith("workflow.",StringComparison.Ordinal) && !type.StartsWith("support.",StringComparison.Ordinal) && !type.StartsWith("adherence.",StringComparison.Ordinal)) ValidateEntity(type, value, doc);
     var effectTarget=type is "plan.save" or "referral.save" ? S(value,"id") : type=="plan.confirm" ? id : "";
     if(effectTarget!="" && doc["workflow"] is JsonObject flow && Array(flow,"recommendations").Any(r=>ClinicalWorkflow.OwnsEffect(r,effectTarget))){
       var locked=type is "plan.save" or "plan.confirm" || type=="referral.save" && Array(doc,"referrals").Any(r=>S(r,"id")==effectTarget && S(r,"status")=="draft");
@@ -103,6 +133,49 @@ public static class Domain
     {
       case var supportType when supportType.StartsWith("support.",StringComparison.Ordinal): ClinicalSupport.Apply(doc,mutation,actor,now); break;
       case var adherenceType when adherenceType.StartsWith("adherence.",StringComparison.Ordinal): Adherence.Apply(doc,mutation,actor,now); break;
+      case "dose.patient": {
+        Check(patientAction, "Отметка доступна только пациенту.", 403); Only(mutation, ["type", "value"]); var input = Object(mutation, "value");
+        Only(input, ["scheduleId", "scheduleVersion", "plannedAt", "status", "reportedAt", "reason", "expectedVersion"]);
+        Check(S(input, "status") is "taken" or "missed" || S(input, "status") == "unknown" && Integer(input, "expectedVersion") > 0, "Выберите отметку приёма.");
+        var valueForAdherence = input.DeepClone().AsObject(); valueForAdherence["provenance"] = "patient";
+        Adherence.Apply(doc, new JsonObject { ["type"] = "adherence.record", ["value"] = valueForAdherence }, actor, now, true); break;
+      }
+      case "report.patient": {
+        Check(patientAction, "Самоотчёт доступен только пациенту.", 403);
+        ClinicalExecutionPolicy.AssertPatientAllowed(doc, actor);
+        Only(mutation, ["type", "value"]); var input = Object(mutation, "value");
+        Only(input, ["id", "entityId", "day", "formVersion", "reportedAt", "fields", "note", "label"]);
+        TextFields(input, ["id", "entityId", "day", "formVersion", "reportedAt", "note", "label"]);
+        Check(Required(input, "id").Length <= 100 && Required(input, "entityId").Length <= 100, "Некорректный идентификатор самоотчёта.");
+        Check(S(input, "formVersion") == "syncli-report-v1", "Неизвестная версия самоотчёта.");
+        Check(S(input, "note").Length <= 2000 && S(input, "label").Length <= 80, "Слишком длинный текст самоотчёта.");
+        CalendarDate(input, "day"); Instant(input, "reportedAt");
+        Check(DateTimeOffset.Parse(S(input, "reportedAt"), CultureInfo.InvariantCulture) <= DateTimeOffset.Parse(now, CultureInfo.InvariantCulture), "Дата самоотчёта не может быть в будущем.");
+        var fields = Object(input, "fields"); Only(fields, ["feeling", "sleep", "anxiety", "functioning", "tolerability"]);
+        var feeling = Object(fields, "feeling"); Only(feeling, ["valence", "energy"]);
+        Check(Integer(feeling, "valence") is >= 0 and <= 6 && Integer(feeling, "energy") is >= 0 and <= 6, "Проверьте состояние.");
+        Check(Integer(fields, "anxiety") is >= 0 and <= 10 && Integer(fields, "functioning") is >= 0 and <= 10, "Проверьте ответы самоотчёта.");
+        Enum(fields, "sleep", "Плохо", "Обычно", "Хорошо"); Enum(fields, "tolerability", "Без трудностей", "Есть трудности");
+        Add(doc, "reports", new JsonObject { ["id"] = S(input, "id"), ["reportedAt"] = S(input, "reportedAt"), ["receivedAt"] = now, ["provenance"] = "patient", ["state"] = "completed", ["mood"] = null, ["anxiety"] = null, ["sleepHours"] = null, ["functioning"] = "", ["medication"] = "no-mark", ["medicationReason"] = "", ["adverseEffects"] = "", ["note"] = S(input, "note"), ["safetyConcern"] = false, ["reviewedAt"] = "", ["mobile"] = input.DeepClone() }, actor, now);
+        break;
+      }
+      case "questionnaire.patient": {
+        Check(patientAction, "Опрос доступен только пациенту.", 403);
+        Only(mutation, ["type", "value"]); var input = Object(mutation, "value");
+        Only(input, ["id", "assignmentId", "protocolVersion", "measuredAt", "answers", "impact"]);
+        TextFields(input, ["id", "assignmentId", "protocolVersion", "measuredAt"]);
+        Check(Required(input, "id") == commandId && Required(input, "assignmentId").Length <= 100, "Проверьте идентификатор задания.");
+        var protocol = ClinicalProtocols.Find(Required(input, "protocolVersion"));
+        Check(protocol is not null && S(protocol, "id") is "gad7" or "phq9", "Неизвестная версия опроса.");
+        var workflow = Object(doc, "workflow");
+        Check(Array(workflow, "assignments").Any(a => S(a, "id") == S(input, "assignmentId") && S(a, "status") == "issued" && S(a, "protocolVersion") == S(input, "protocolVersion")), "Задание недоступно или уже выполнено.");
+        var answers = Array(input, "answers");
+        Check(answers.Count == Integer(protocol!, "items") && answers.All(a => a is JsonValue v && v.TryGetValue<int>(out var n) && n is >= 0 and <= 3), "Ответьте на все вопросы.");
+        var needsImpact = S(protocol, "id") == "phq9" && answers.Any(a => a!.GetValue<int>() > 0);
+        Check(needsImpact ? input["impact"] is JsonValue impact && impact.TryGetValue<int>(out var effect) && effect is >= 0 and <= 3 : input["impact"] is null, "Проверьте ответ о влиянии симптомов.");
+        var submission = new JsonObject { ["id"] = S(input, "id"), ["assignmentId"] = S(input, "assignmentId"), ["protocolVersion"] = S(input, "protocolVersion"), ["measuredAt"] = S(input, "measuredAt"), ["answers"] = answers.DeepClone(), ["impact"] = input["impact"]?.DeepClone(), ["state"] = "completed", ["safety"] = "unknown", ["immediateDanger"] = "unknown", ["note"] = "" };
+        ClinicalWorkflow.Apply(doc, new JsonObject { ["type"] = "workflow.submit", ["value"] = submission }, actor, now, true); break;
+      }
       case "workflow.submit":
       case "workflow.open":
       case "workflow.decide":
@@ -126,10 +199,10 @@ public static class Domain
       case "visit.save":
         {
           var old = Array(doc, "visits").OfType<JsonObject>().FirstOrDefault(v => S(v, "id") == S(value!, "id"));
-          Check(old is null || S(old, "status") is not ("completed" or "cancelled"), "Завершённый или отменённый приём нельзя переписать."); Enum(value!, "status", "scheduled", "in-progress"); Enum(value!, "kind", "initial", "follow-up", "unscheduled"); Enum(value!, "format", "in-person", "remote"); Enum(value!, "provenance", "patient", "clinician", "relative", "document"); Date(value!, "scheduledAt"); Date(value!, "nextVisitAt", true);
+          Check(old is null || S(old, "status") is not ("completed" or "cancelled"), "Завершённый или отменённый приём нельзя переписать."); Check(old is null || S(old, "status") != "in-progress" || S(value!, "status") == "in-progress", "Начатый приём нельзя вернуть в запланированные."); Check(old is null || S(old, "status") != "in-progress" || S(old, "format") == S(value!, "format"), "Формат начатого приёма нельзя изменить."); Enum(value!, "status", "scheduled", "in-progress"); Enum(value!, "kind", "initial", "follow-up", "unscheduled"); Enum(value!, "format", "in-person", "remote"); Enum(value!, "provenance", "patient", "clinician", "relative", "document"); Date(value!, "scheduledAt"); Date(value!, "nextVisitAt", true);
           if (Array(value!, "diagnoses").Any(d => S(d, "status") == "confirmed")) Check(actor.Specialty == "psychiatrist", "Подтверждение диагноза доступно психиатру.", 403);
           var duration = value!["durationMinutes"]!.GetValue<int>(); Check(duration >= 5 && duration <= 240, "Продолжительность: от 5 до 240 минут.");
-          var notes = Object(value, "notes"); var clean = new JsonObject(); foreach (var key in Notes) clean[key] = S(notes, key); value["notes"] = clean; value["completionSnapshot"] = null; value["addenda"] = new JsonArray(); value["completedAt"] = ""; value["confirmedBy"] = ""; value["startedAt"] = old is not null && S(old, "startedAt") != "" ? S(old, "startedAt") : S(value, "status") == "in-progress" ? now : ""; Upsert(doc, "visits", value, actor, now); break;
+          var notes = Object(value, "notes"); var clean = new JsonObject(); foreach (var key in Notes) clean[key] = S(notes, key); value["notes"] = clean; value["completionSnapshot"] = null; value["addenda"] = new JsonArray(); value["completedAt"] = ""; value["confirmedBy"] = ""; value["confirmedById"] = ""; value["startedAt"] = old is not null && S(old, "startedAt") != "" ? S(old, "startedAt") : S(value, "status") == "in-progress" ? now : ""; Upsert(doc, "visits", value, actor, now); break;
         }
       case "visit.complete":
         {
@@ -137,7 +210,7 @@ public static class Domain
           Check(new[] { "safetyConclusion", "conclusion", "recommendations" }.All(k => !string.IsNullOrWhiteSpace(S(notes, k))), "Заполните заключение по рискам, заключение врача и рекомендации.");
           var care = Array(doc, "consents").LastOrDefault(c => S(c!, "purpose") == "care"); Check(care is not null && S(care, "status") == "documented", "Зафиксируйте документированное согласие на помощь.");
           if (S(visit, "format") == "remote") { var consent = Array(doc, "consents").LastOrDefault(c => S(c!, "purpose") == "communication"); Check(consent is not null && S(consent, "status") == "documented", "Для дистанционного контакта требуется документированное основание и согласие на связь."); }
-          visit["status"] = "completed"; visit["completedAt"] = now; visit["confirmedBy"] = actor.Name;
+          visit["status"] = "completed"; visit["completedAt"] = now; visit["confirmedBy"] = actor.Name; visit["confirmedById"] = actor.Id;
           visit["completionSnapshot"] = new JsonObject
           {
             ["patientName"] = S(Object(doc, "profile"), "name"),
@@ -168,21 +241,21 @@ public static class Domain
           var old = Array(doc, "plan").FirstOrDefault(p => S(p!, "id") == S(value!, "id")); Check(old is null || S(old, "status") == "draft", "Подтверждённый план нельзя переписать. Создайте новую версию."); Enum(value!, "status", "draft"); Enum(value!, "kind", "medication", "psychotherapy", "assessment", "lifestyle", "follow-up"); Required(value!, "title");
           if(value!["medicine"] is not null) { var medicine=Object(value,"medicine"); Check(S(value,"kind")=="medication"&&GrlsCatalog.Allowed(medicine,old?["medicine"] as JsonObject,now[..10])&&S(value,"title")==S(medicine,"tradeName"),"Выберите актуальный препарат из ГРЛС; регистрационные сведения не совпадают."); }
           if(S(value!,"kind")=="medication"&&value!["medicine"] is null) Check(old is not null&&S(old,"kind")=="medication"&&old["medicine"] is null&&S(old,"title")==S(value,"title"),"Для нового лекарственного назначения выберите препарат из ГРЛС.");
-          WritableVisit(doc, S(value!, "visitId")); if (old is not null) WritableVisit(doc, S(old, "visitId")); if (S(value!, "replacesId") != "") { Find(doc, "plan", S(value!, "replacesId")); Required(value!, "changeReason"); }
+          WritableVisit(doc, S(value!, "visitId")); if (old is not null) WritableVisit(doc, S(old, "visitId")); if (S(value!, "replacesId") != "") { Find(doc, "plan", S(value!, "replacesId")); Required(value!, "changeReason"); } MedicationVisit(doc, value!, actor, false);
           AviandrChecks.Prepare(doc, value!, actor, now);
-          value!["confirmedAt"] = ""; value["confirmedBy"] = ""; Upsert(doc, "plan", value, actor, now); break;
+          value!["confirmedAt"] = ""; value["confirmedBy"] = ""; value["confirmedById"] = ""; Upsert(doc, "plan", value, actor, now); break;
         }
       case "plan.confirm":
         {
           ClinicalSupport.AssertPlanCurrent(doc,id,actor,now);
-          var item = Find(doc, "plan", id); ClinicalSupport.AssertMedicationCandidate(doc,item); Enum(item, "status", "draft"); WritableVisit(doc, S(item, "visitId")); Required(item, "rationale"); Required(item, "patientInstructions");
+          var item = Find(doc, "plan", id); ClinicalSupport.AssertMedicationCandidate(doc,item); Enum(item, "status", "draft"); WritableVisit(doc, S(item, "visitId")); MedicationVisit(doc, item, actor, true); Required(item, "rationale"); Required(item, "patientInstructions");
           if (S(item, "kind") == "medication") { if(item["medicine"] is not null) Check(GrlsCatalog.IsCurrent(Object(item,"medicine"),now[..10]),"ГРЛС: перед подтверждением выберите актуальную регистрацию препарата."); Required(item, "dose"); Required(item, "schedule"); Check(Uri.TryCreate(S(item, "instructionUrl"), UriKind.Absolute, out var uri) && uri.Scheme == "https", "Добавьте HTTPS-ссылку на проверенную инструкцию."); }
           AviandrChecks.Prepare(doc, item, actor, now);
-          item["status"] = "confirmed"; item["confirmedAt"] = now; item["confirmedBy"] = actor.Name;
+          item["status"] = "confirmed"; item["confirmedAt"] = now; item["confirmedBy"] = actor.Name; item["confirmedById"] = actor.Id;
           if (S(item, "replacesId") != "") { var old = Find(doc, "plan", S(item, "replacesId")); Check(S(old, "status") == "confirmed", "Изменяемая запись уже не действует.", 409); old["status"] = "stopped"; old["changeReason"] = item["changeReason"]!.DeepClone(); }
           break;
         }
-      case "plan.status": { var item = Find(doc, "plan", id); Enum(item, "status", "confirmed"); Enum(mutation, "status", "completed", "stopped"); item["status"] = S(mutation, "status"); item["changeReason"] = Required(mutation, "reason"); break; }
+      case "plan.status": { var item = Find(doc, "plan", id); Enum(item, "status", "confirmed"); Enum(mutation, "status", "completed", "stopped"); if (S(item, "kind") == "medication") { var visitId = Required(mutation, "visitId"); var visit = Find(doc, "visits", visitId); Check(S(visit, "format") == "in-person" && S(visit, "status") == "in-progress", "Изменение статуса препарата доступно на начатом очном приёме."); } item["status"] = S(mutation, "status"); item["changeReason"] = Required(mutation, "reason"); break; }
       case "report.add":
         {
           Date(value!, "reportedAt"); Enum(value!, "state", "completed", "cannot", "declined"); Enum(value!, "medication", "taken", "missed", "no-mark", "not-applicable"); foreach (var key in new[] { "mood", "anxiety", "sleepHours" }) { var n = value![key]?.GetValue<double>(); Check(n is null || double.IsFinite(n.Value) && n >= 0 && n <= (key == "sleepHours" ? 24 : 10), "Проверьте числовые значения самоотчёта."); }
@@ -241,14 +314,15 @@ public static class Domain
     doc["revision"] = revision + 1; doc["updatedAt"] = now; var recentCommands = Array(doc, "commandIds"); recentCommands.Add(commandId); while (recentCommands.Count > 100) recentCommands.RemoveAt(0);
     if(type=="patient.archive" && doc["archived"]!.GetValue<bool>()) Check(doc["workflow"] is not JsonObject wf || !Array(wf,"safety").Any(e=>S(e,"status")!="acted"),"Сначала завершите обработку событий риска.");
     Adherence.Reconcile(doc,actor,now);
-    ClinicalWorkflow.Reconcile(doc,actor,now);
+    // Patient actions must not recalculate doctor-facing workflow as a patient actor.
+    if (!patientAction) ClinicalWorkflow.Reconcile(doc,actor,now);
     if(type=="visit.complete" && doc["workflow"] is not null) ClinicalWorkflow.Apply(doc,new JsonObject{["type"]="workflow.contact",["note"]=$"Завершён приём {id}"},actor,now);
     Add(doc, "audit", new() { ["id"] = commandId, ["action"] = type, ["targetId"] = id != "" ? id : value is not null ? S(value, "id") : S(doc, "id"), ["detail"] = type == "fact.save" ? S(value,"reason") : S(mutation, "reason") }, actor, now);
     return doc;
   }
   private static void ValidateMutation(JsonObject mutation, string type)
   {
-    if(type is "fact.save" or "fact.review" || type.StartsWith("workflow.",StringComparison.Ordinal) || type.StartsWith("support.",StringComparison.Ordinal) || type.StartsWith("adherence.",StringComparison.Ordinal)) return;
+    if(type is "fact.save" or "fact.review" or "dose.patient" or "report.patient" or "questionnaire.patient" || type.StartsWith("workflow.",StringComparison.Ordinal) || type.StartsWith("support.",StringComparison.Ordinal) || type.StartsWith("adherence.",StringComparison.Ordinal)) return;
     var fields = type switch
     {
       "profile.update" or "episode.save" or "visit.save" or "measurement.add" or "plan.save" or "report.add" or "event.add" or "consent.add" or "referral.save" or "document.add" or "assessment.save" => "type,value",
@@ -264,7 +338,7 @@ public static class Domain
       "patient.archive" => "type,archived,reason",
       _ => throw new DomainException("Неизвестное или недоступное действие.")
     };
-    Only(mutation, fields.Split(','));
+    Only(mutation, fields.Split(',').Concat(type == "plan.status" ? ["visitId"] : []));
     foreach (var key in fields.Split(','))
     {
       if (key == "value") { Object(mutation, key); continue; }
@@ -273,6 +347,7 @@ public static class Domain
       Required(mutation, key);
     }
     if (mutation.ContainsKey("id")) Check(S(mutation, "id").Length <= 100, "Слишком длинный идентификатор.");
+    if (type == "plan.status" && mutation.ContainsKey("visitId")) Required(mutation, "visitId");
     if (type == "document.facts")
     {
       var facts = Array(mutation, "facts"); Check(facts.Count <= 100, "Не более 100 фактов в документе.");
@@ -304,11 +379,11 @@ public static class Domain
     var extra = type switch
     {
       "episode.save" => "diagnosisCode",
-      "visit.save" => "sourceIds,durationMinutes,notes,diagnoses,addenda,completionSnapshot",
+      "visit.save" => "sourceIds,durationMinutes,notes,diagnoses,addenda,completionSnapshot,confirmedById",
       "measurement.add" => "score,maximum,answers",
       "report.add" => "mood,anxiety,sleepHours,safetyConcern",
       "event.add" => "sourceIds,history",
-      "plan.save" => "sourceIds,aviandrReview,medicine",
+      "plan.save" => "sourceIds,aviandrReview,medicine,confirmedById",
       "referral.save" => "sourceIds",
       "document.add" => "facts",
       "assessment.save" => "responses",
@@ -316,6 +391,7 @@ public static class Domain
     };
     Only(value, fields.Split(',').Concat(extra.Split(',')).Concat(["author", "createdAt"]));
     TextFields(value, fields.Split(','));
+    if (value.ContainsKey("confirmedById")) TextFields(value, ["confirmedById"]);
     foreach (var stamp in new[] { "author", "createdAt" }) if (value.ContainsKey(stamp)) TextFields(value, [stamp]);
     if (type != "profile.update") { Required(value, "id"); Check(S(value, "id").Length <= 100, "Слишком длинный идентификатор."); }
     if (type is "visit.save" or "plan.save" or "event.add" or "referral.save")

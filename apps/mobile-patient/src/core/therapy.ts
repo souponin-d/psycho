@@ -62,6 +62,8 @@ export function assessDay(
   events: PatientEvent[],
   day: DayKey,
 ): DayAssessment {
+  if (plan.status === "unavailable")
+    return { day, complete: false, missing: ["plan:unavailable"] };
   const relevant = events
     .filter(
       (e) => e.day === day && e.recordedDay === day && e.gameEligible !== false,

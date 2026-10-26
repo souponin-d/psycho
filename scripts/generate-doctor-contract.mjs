@@ -109,6 +109,174 @@ try {
     const: "confirmed",
   };
   const ref = (name) => ({ $ref: `#/components/schemas/${name}` });
+  const mobileReportValue = {
+    type: "object",
+    additionalProperties: false,
+    required: [
+      "id",
+      "entityId",
+      "day",
+      "formVersion",
+      "reportedAt",
+      "fields",
+      "note",
+      "label",
+    ],
+    properties: {
+      id: { type: "string" },
+      entityId: { type: "string" },
+      day: { type: "string", format: "date" },
+      formVersion: { const: "syncli-report-v1" },
+      reportedAt: { type: "string", format: "date-time" },
+      note: { type: "string", maxLength: 2000 },
+      label: { type: "string", maxLength: 80 },
+      fields: {
+        type: "object",
+        additionalProperties: false,
+        required: [
+          "feeling",
+          "sleep",
+          "anxiety",
+          "functioning",
+          "tolerability",
+        ],
+        properties: {
+          feeling: {
+            type: "object",
+            additionalProperties: false,
+            required: ["valence", "energy"],
+            properties: {
+              valence: { type: "integer", minimum: 0, maximum: 6 },
+              energy: { type: "integer", minimum: 0, maximum: 6 },
+            },
+          },
+          sleep: { enum: ["Плохо", "Обычно", "Хорошо"] },
+          anxiety: { type: "integer", minimum: 0, maximum: 10 },
+          functioning: { type: "integer", minimum: 0, maximum: 10 },
+          tolerability: { enum: ["Без трудностей", "Есть трудности"] },
+        },
+      },
+    },
+  };
+  const questionnaireAssignment = {
+    type: "object",
+    additionalProperties: false,
+    required: ["id", "protocolVersion", "dueDate", "status"],
+    properties: {
+      id: { type: "string" },
+      protocolVersion: { type: "string" },
+      dueDate: { type: "string", format: "date" },
+      status: { enum: ["issued", "submitted"] },
+    },
+  };
+  const questionnaireResult = {
+    type: "object",
+    additionalProperties: false,
+    required: [
+      "id",
+      "assignmentId",
+      "protocolVersion",
+      "measuredAt",
+      "answers",
+      "impact",
+    ],
+    properties: {
+      id: { type: "string" },
+      assignmentId: { type: "string" },
+      protocolVersion: { type: "string" },
+      measuredAt: { type: "string", format: "date-time" },
+      answers: {
+        type: "array",
+        items: { type: "integer", minimum: 0, maximum: 3 },
+      },
+      impact: {
+        anyOf: [{ type: "integer", minimum: 0, maximum: 3 }, { type: "null" }],
+      },
+    },
+  };
+  const doseValue = {
+    type: "object",
+    additionalProperties: false,
+    required: [
+      "scheduleId",
+      "scheduleVersion",
+      "plannedAt",
+      "status",
+      "reportedAt",
+      "reason",
+      "expectedVersion",
+    ],
+    properties: {
+      scheduleId: { type: "string" },
+      scheduleVersion: { type: "integer" },
+      plannedAt: { type: "string" },
+      status: { type: "string", enum: ["taken", "missed", "unknown"] },
+      reportedAt: { type: "string" },
+      reason: { type: "string" },
+      expectedVersion: { type: "integer" },
+    },
+  };
+  const doseSchedule = {
+    type: "object",
+    additionalProperties: false,
+    required: [
+      "id",
+      "version",
+      "planId",
+      "times",
+      "offsetMinutes",
+      "effectiveFrom",
+      "effectiveUntil",
+      "endDate",
+      "medication",
+    ],
+    properties: {
+      id: { type: "string" },
+      version: { type: "integer" },
+      planId: { type: "string" },
+      times: { type: "array", items: { type: "string" } },
+      offsetMinutes: { type: "integer" },
+      effectiveFrom: { type: "string" },
+      effectiveUntil: { type: "string" },
+      endDate: { type: "string" },
+      medication: {
+        type: "object",
+        required: ["id", "title", "dose", "schedule", "patientInstructions"],
+        properties: Object.fromEntries(
+          ["id", "title", "dose", "schedule", "patientInstructions"].map(
+            (key) => [key, { type: "string" }],
+          ),
+        ),
+      },
+    },
+  };
+  const doseRecord = {
+    type: "object",
+    additionalProperties: false,
+    required: [
+      "id",
+      "scheduleId",
+      "scheduleVersion",
+      "plannedAt",
+      "version",
+      "status",
+      "reportedAt",
+      "provenance",
+    ],
+    properties: {
+      id: { type: "string" },
+      scheduleId: { type: "string" },
+      scheduleVersion: { type: "integer" },
+      plannedAt: { type: "string" },
+      version: { type: "integer" },
+      status: {
+        type: "string",
+        enum: ["taken", "missed", "not-applicable", "unknown"],
+      },
+      reportedAt: { type: "string" },
+      provenance: { type: "string", enum: ["patient", "clinician"] },
+    },
+  };
   const json = (value) => ({ "application/json": { schema: value } });
   const errors = Object.fromEntries(
     [400, 401, 403, 404, 409, 429, 500].map((status) => [
@@ -354,6 +522,9 @@ try {
             plan: { type: "array", items: ref("PatientPlanItem") },
             reports: { type: "array", items: ref("SelfReport") },
             messages: { type: "array", items: ref("Message") },
+            doseSchedules: { type: "array", items: doseSchedule },
+            doseRecords: { type: "array", items: doseRecord },
+            questionnaires: { type: "array", items: questionnaireAssignment },
           },
         }),
       },
@@ -362,7 +533,7 @@ try {
       post: {
         operationId: "patientCommand",
         description:
-          "Только report.add, message.patient, message.received. PatientId берётся из сессии; сервер устанавливает provenance=patient. Возвращается допустимая пациентская проекция.",
+          "Пациент отправляет сообщения, отметки, самоотчёты и ответы на выданные опросы. PatientId берётся из сессии; сервер устанавливает provenance=patient. Возвращается допустимая пациентская проекция.",
         parameters: [csrf],
         requestBody: body({
           type: "object",
@@ -371,6 +542,33 @@ try {
             commandId: { type: "string" },
             mutation: {
               oneOf: [
+                {
+                  type: "object",
+                  additionalProperties: false,
+                  required: ["type", "value"],
+                  properties: {
+                    type: { const: "report.patient" },
+                    value: mobileReportValue,
+                  },
+                },
+                {
+                  type: "object",
+                  additionalProperties: false,
+                  required: ["type", "value"],
+                  properties: {
+                    type: { const: "questionnaire.patient" },
+                    value: questionnaireResult,
+                  },
+                },
+                {
+                  type: "object",
+                  additionalProperties: false,
+                  required: ["type", "value"],
+                  properties: {
+                    type: { const: "dose.patient" },
+                    value: doseValue,
+                  },
+                },
                 {
                   type: "object",
                   required: ["type", "value"],

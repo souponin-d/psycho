@@ -13,9 +13,11 @@ import { ReminderSettings } from "../components/ReminderSettings";
 import { useJourney } from "../state/JourneyProvider";
 import { clearReminderNotifications } from "../services/localNotifications";
 import { clearSavedHistoryExports } from "../services/historyExport";
+import { usePatientConnection } from "../state/PatientConnectionProvider";
 export default function SettingsScreen() {
   const { state, dispatch, theme, preferencesSaving, storageError } = useApp();
   const { journey, act, saving } = useJourney();
+  const connection = usePatientConnection();
   const [goal, setGoal] = useState(journey?.goal ?? "Следовать плану терапии");
   const [name, setName] = useState(state.name);
   return (
@@ -222,7 +224,7 @@ export default function SettingsScreen() {
           onPress={() =>
             Alert.alert(
               "Начать заново?",
-              "Удалятся ваши локальные записи, файлы истории внутри Синкли, вопросы, настройки и расстановка. Внешние копии файлов останутся. После сброса откроется знакомство с приложением.",
+              "Удалятся локальные записи текущего профиля, ожидающие отправки данные, файлы истории внутри Синкли, вопросы, настройки и расстановка. Записи на сервере и внешние копии файлов останутся. После сброса откроется знакомство с приложением.",
               [
                 { text: "Отмена", style: "cancel" },
                 {
@@ -231,6 +233,7 @@ export default function SettingsScreen() {
                   onPress: async () => {
                     if (!(await act({ type: "reset" }))) return;
                     const cleanup = await Promise.allSettled([
+                      connection.resetConnection(),
                       clearReminderNotifications(),
                       Promise.resolve().then(clearSavedHistoryExports),
                     ]);
@@ -239,7 +242,7 @@ export default function SettingsScreen() {
                     ) {
                       Alert.alert(
                         "Очистка завершена частично",
-                        "Профиль сброшен, но часть файлов или прежних сигналов удалить не удалось. Повторите сброс после знакомства.",
+                        "Профиль сброшен, но часть очереди отправки, файлов или прежних сигналов удалить не удалось. Повторите сброс после знакомства.",
                       );
                     }
                     dispatch({ type: "reset" });

@@ -105,8 +105,8 @@ internal static class ClinicalWorkflow {
       value["destination"]=S(r,"destination");value["urgency"]=S(r,"priority");value["category"]=r["referralCategory"]?.DeepClone()??JsonValue.Create("desirable");value["reason"]=$"{(S(r,"referralReason")!=""?S(r,"referralReason"):rationale)}\nРанее зарегистрированные направления: {(previous!=""?previous:"нет сведений")}. Недостающие или непроверенные данные: {(missing!=""?missing:"полнота врачом не подтверждена")}.";value["outcome"]="";A(p,"referrals").Add(value);r["effectSnapshot"]=value.DeepClone();
     }else{value["kind"]=action=="scale"?"assessment":"follow-up";value["title"]=Labels[action];value["details"]=S(r,"rationale");foreach(var k in new[]{"dose","schedule","startDate","endDate","confirmedAt","confirmedBy","changeReason","replacesId","instructionUrl"})value[k]="";value["patientInstructions"]=action=="scale"?"Заполнить согласованный самоопросник к выбранному сроку.":"Обсудить сведения и дальнейшие действия с врачом.";A(p,"plan").Add(value);r["effectSnapshot"]=value.DeepClone();}
   }
-  public static void Apply(JsonObject p,JsonObject m,Actor actor,string now){
-    ClinicalExecutionPolicy.AssertAllowed(p,actor);
+  public static void Apply(JsonObject p,JsonObject m,Actor actor,string now,bool patientAction=false){
+    if(patientAction) ClinicalExecutionPolicy.AssertPatientAllowed(p,actor); else ClinicalExecutionPolicy.AssertAllowed(p,actor);
     var w=State(p);var type=S(m,"type");
     if(type=="workflow.submit"){
       Only(m,"type","value");var v=O(m,"value");Only(v,"id","protocolVersion","measuredAt","answers","state","safety","note","assignmentId","impact","immediateDanger","visitId");
@@ -161,6 +161,6 @@ internal static class ClinicalWorkflow {
         r["status"]="fulfilled";r["version"]=r["version"]!.GetValue<int>()+1;A(r,"history").Add(Decision(actor,now,"action-confirmed","Отдельное врачебное подтверждение проекта; не завершение медицинской помощи",action));
       }else throw new DomainException("Неизвестная учебная команда.");
     }
-    Reconcile(p,actor,now);
+    if(!patientAction) Reconcile(p,actor,now);
   }
 }

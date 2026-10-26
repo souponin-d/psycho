@@ -43,11 +43,9 @@ export function JourneyDayMarker({
         p.date +
         ". " +
         p.status +
-        ". Выполнено " +
-        node.done +
-        " из " +
-        node.total +
-        " дел. Глава " +
+        (node.planUnavailable
+          ? ". Данные плана недоступны. Глава "
+          : ". Выполнено " + node.done + " из " + node.total + " дел. Глава ") +
         chapter
       }
       onPress={onPress}

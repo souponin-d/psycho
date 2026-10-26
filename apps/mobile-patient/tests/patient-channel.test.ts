@@ -14,6 +14,94 @@ const record = {
     },
   ],
 };
+test("владелец очереди появляется только после подтверждённого входа и исчезает при блокировке", async () => {
+  const t = transport();
+  const c = createPatientChannel({
+    baseUrl: "https://clinic.example",
+    request: t.request,
+  });
+  assert.equal(c.owner(), null);
+  await c.connect("ACCESS-CODE-12345");
+  assert.deepEqual(c.owner(), {
+    origin: "https://clinic.example",
+    clinicId: "c1",
+    patientId: "p1",
+    actorId: "u1",
+  });
+  c.lock();
+  assert.equal(c.owner(), null);
+});
+test("канал передаёт подтверждённый план, а неизвестный формат плана не ломает переписку", async () => {
+  const t = transport();
+  const c = createPatientChannel({
+    baseUrl: "https://clinic.example",
+    request: t.request,
+  });
+  const snapshot = await c.connect("ACCESS-CODE-12345");
+  assert.deepEqual(snapshot.plan, { kind: "unavailable" });
+  assert.equal(snapshot.messages[0]?.text, "Связь подтверждена");
+});
+test("канал получает несколько подтверждённых назначений из проекции сервера", async () => {
+  const t = transport();
+  const appointment = {
+    id: "m1",
+    kind: "medication",
+    title: "Препарат",
+    dose: "10 мг",
+    schedule: "Утром",
+    startDate: "2026-10-26",
+    endDate: "",
+    status: "confirmed",
+    patientInstructions: "По назначению",
+  };
+  const c = createPatientChannel({
+    baseUrl: "https://clinic.example",
+    request: async (url, init) =>
+      url.endsWith("/patient/record")
+        ? {
+            ok: true,
+            status: 200,
+            json: async () => ({
+              ...record,
+              plan: [appointment, { ...appointment, id: "m2" }],
+            }),
+          }
+        : t.request(url, init),
+  });
+  const result = await c.connect("ACCESS-CODE-12345");
+  assert.equal(result.plan.kind, "ready");
+  if (result.plan.kind === "ready")
+    assert.deepEqual(
+      result.plan.items.map((item) => item.id),
+      ["m1", "m2"],
+    );
+});
+test("отметка передаётся с идентификатором версии и без подменяемого происхождения", async () => {
+  const t = transport();
+  const c = createPatientChannel({
+    baseUrl: "https://clinic.example",
+    request: t.request,
+  });
+  await c.connect("ACCESS-CODE-12345");
+  const value = {
+    scheduleId: "s1",
+    scheduleVersion: 1,
+    plannedAt: "2026-10-26T06:00:00.000Z",
+    status: "taken" as const,
+    reportedAt: "2026-10-26T06:10:00.000Z",
+    expectedVersion: 0,
+    reason: "",
+  };
+  await c.markDose(value, "dose-id");
+  const body = JSON.parse(
+    String(
+      t.calls.find((call) => call.url.endsWith("/commands"))?.options.body,
+    ),
+  );
+  assert.equal(body.commandId, "dose-id");
+  assert.deepEqual(body.mutation, { type: "dose.patient", value });
+  assert.ok(!("provenance" in body.mutation.value));
+});
 test("сообщение принимает описание на пределе формы вместе с метаданными и отклоняет превышение серверного лимита", async () => {
   const t = transport();
   const c = createPatientChannel({
