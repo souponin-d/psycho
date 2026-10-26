@@ -41,111 +41,36 @@ export function PatientJournal({
           </Button>
         }
       >
-        {patient.reports
-          .slice()
-          .sort((a, b) => b.reportedAt.localeCompare(a.reportedAt))
-          .map((r) => (
-            <article className={styles.inlineNote} key={r.id}>
-              <div className={styles.between}>
-                <h3>
-                  {formatDate(r.reportedAt, {
-                    day: "numeric",
-                    month: "long",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </h3>
-                <Badge tone={r.reviewedAt ? "neutral" : "green"}>
-                  {r.reviewedAt ? "Просмотрено" : "Новая запись"}
+        {reportGroups(patient.reports).map(([current, ...history]) => (
+          <article className={styles.inlineNote} key={current.id}>
+            <ReportEntry r={current} patientId={patient.id} actions={actions} />
+            {history.some((r) => r.safetyConcern) && (
+              <p>
+                <Badge tone="red">
+                  Есть прежняя запись с вопросом безопасности
                 </Badge>
-              </div>
-              <div className={styles.subtext}>
-                Получено{" "}
-                {formatDate(r.receivedAt, {
-                  day: "numeric",
-                  month: "short",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}{" "}
-                ·{" "}
-                {r.provenance === "patient"
-                  ? "Самоотчёт пациента"
-                  : "Внесено врачом со слов пациента"}
-              </div>
-              {r.state !== "completed" ? (
-                <p>
-                  {r.state === "cannot"
-                    ? "Не смог(ла) заполнить"
-                    : "Отказался(ась) заполнять"}
-                </p>
-              ) : (
-                <>
-                  {r.mobile ? (
-                    <div className={styles.row} style={{ marginTop: 14 }}>
-                      <Badge>
-                        Состояние: радость {r.mobile.fields.feeling.valence} /
-                        6, энергия {r.mobile.fields.feeling.energy} / 6
-                      </Badge>
-                      <Badge>Сон: {r.mobile.fields.sleep}</Badge>
-                      <Badge>Тревога: {r.mobile.fields.anxiety} / 10</Badge>
-                      <Badge>
-                        Силы на дела: {r.mobile.fields.functioning} / 10
-                      </Badge>
-                      <Badge>
-                        Переносимость: {r.mobile.fields.tolerability}
-                      </Badge>
-                    </div>
-                  ) : (
-                    <div className={styles.row} style={{ marginTop: 14 }}>
-                      <Badge>
-                        Самочувствие: {r.mood ?? "нет данных"}
-                        {r.mood !== null ? " / 10" : ""}
-                      </Badge>
-                      <Badge>
-                        Тревога: {r.anxiety ?? "нет данных"}
-                        {r.anxiety !== null ? " / 10" : ""}
-                      </Badge>
-                      <Badge>
-                        Сон: {r.sleepHours ?? "нет данных"}
-                        {r.sleepHours !== null ? " ч" : ""}
-                      </Badge>
-                    </div>
-                  )}
-                  <p>{r.functioning}</p>
-                  <p>{r.note}</p>
-                  <Badge tone={r.medication === "missed" ? "amber" : "neutral"}>
-                    {medicineLabels[r.medication]}
-                  </Badge>
-                  {r.medicationReason && <p>{r.medicationReason}</p>}
-                  {r.adverseEffects && (
-                    <div className={styles.notice}>
-                      <strong>Нежелательное явление:</strong> {r.adverseEffects}
-                    </div>
-                  )}
-                  {r.safetyConcern && (
-                    <p>
-                      <Badge tone="red">
-                        Отмечен вопрос безопасности · требуется оценка
-                      </Badge>
-                    </p>
-                  )}
-                </>
-              )}
-              {!r.reviewedAt && (
-                <Button
-                  variant="ghost"
-                  icon="check"
-                  onClick={() =>
-                    void actions
-                      .mutate(patient.id, { type: "report.review", id: r.id })
-                      .catch(() => {})
-                  }
-                >
-                  Отметить просмотр
-                </Button>
-              )}
-            </article>
-          ))}
+              </p>
+            )}
+            {!!history.length && (
+              <details className={styles.details}>
+                <summary>История изменений · {history.length}</summary>
+                {history.map((r) => (
+                  <section
+                    className={styles.inlineNote}
+                    key={r.id}
+                    aria-label="Предыдущая версия самоотчёта"
+                  >
+                    <ReportEntry
+                      r={r}
+                      patientId={patient.id}
+                      actions={actions}
+                    />
+                  </section>
+                ))}
+              </details>
+            )}
+          </article>
+        ))}
         {!patient.reports.length && (
           <Empty icon="heart" title="Дневник пока пуст">
             Здесь появятся самоотчёты пациента. Вы также можете внести сведения,
@@ -160,6 +85,136 @@ export function PatientJournal({
           actions={actions}
           onClose={() => setForm(false)}
         />
+      )}
+    </>
+  );
+}
+function reportGroups(reports: SelfReport[]): [SelfReport, ...SelfReport[]][] {
+  const groups = new Map<string, SelfReport[]>();
+  // Server receipt order defines revisions; patient timestamps may be backdated.
+  for (const report of reports) {
+    const key = report.mobile?.entityId
+      ? JSON.stringify([report.mobile.formVersion, report.mobile.entityId])
+      : JSON.stringify(["single", report.id]);
+    const group = groups.get(key) ?? [];
+    group.unshift(report);
+    groups.set(key, group);
+  }
+  return [...groups.values()]
+    .map(
+      (group) =>
+        group.sort(
+          (a, b) => Date.parse(b.receivedAt) - Date.parse(a.receivedAt),
+        ) as [SelfReport, ...SelfReport[]],
+    )
+    .sort(
+      (a, b) => Date.parse(b[0]!.reportedAt) - Date.parse(a[0]!.reportedAt),
+    );
+}
+function ReportEntry({
+  r,
+  patientId,
+  actions,
+}: {
+  r: SelfReport;
+  patientId: string;
+  actions: WorkspaceActions;
+}) {
+  return (
+    <>
+      <div className={styles.between}>
+        <h3>
+          {formatDate(r.reportedAt, {
+            day: "numeric",
+            month: "long",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </h3>
+        <Badge tone={r.reviewedAt ? "neutral" : "green"}>
+          {r.reviewedAt ? "Просмотрено" : "Новая запись"}
+        </Badge>
+      </div>
+      <div className={styles.subtext}>
+        Получено{" "}
+        {formatDate(r.receivedAt, {
+          day: "numeric",
+          month: "short",
+          hour: "2-digit",
+          minute: "2-digit",
+        })}{" "}
+        ·{" "}
+        {r.provenance === "patient"
+          ? "Самоотчёт пациента"
+          : "Внесено врачом со слов пациента"}
+      </div>
+      {r.state !== "completed" ? (
+        <p>
+          {r.state === "cannot"
+            ? "Не смог(ла) заполнить"
+            : "Отказался(ась) заполнять"}
+        </p>
+      ) : (
+        <>
+          {r.mobile ? (
+            <div className={styles.row} style={{ marginTop: 14 }}>
+              <Badge>
+                Состояние: радость {r.mobile.fields.feeling.valence} / 6,
+                энергия {r.mobile.fields.feeling.energy} / 6
+              </Badge>
+              <Badge>Сон: {r.mobile.fields.sleep}</Badge>
+              <Badge>Тревога: {r.mobile.fields.anxiety} / 10</Badge>
+              <Badge>Силы на дела: {r.mobile.fields.functioning} / 10</Badge>
+              <Badge>Переносимость: {r.mobile.fields.tolerability}</Badge>
+            </div>
+          ) : (
+            <div className={styles.row} style={{ marginTop: 14 }}>
+              <Badge>
+                Самочувствие: {r.mood ?? "нет данных"}
+                {r.mood !== null ? " / 10" : ""}
+              </Badge>
+              <Badge>
+                Тревога: {r.anxiety ?? "нет данных"}
+                {r.anxiety !== null ? " / 10" : ""}
+              </Badge>
+              <Badge>
+                Сон: {r.sleepHours ?? "нет данных"}
+                {r.sleepHours !== null ? " ч" : ""}
+              </Badge>
+            </div>
+          )}
+          <p>{r.functioning}</p>
+          <p>{r.note}</p>
+          <Badge tone={r.medication === "missed" ? "amber" : "neutral"}>
+            {medicineLabels[r.medication]}
+          </Badge>
+          {r.medicationReason && <p>{r.medicationReason}</p>}
+          {r.adverseEffects && (
+            <div className={styles.notice}>
+              <strong>Нежелательное явление:</strong> {r.adverseEffects}
+            </div>
+          )}
+          {r.safetyConcern && (
+            <p>
+              <Badge tone="red">
+                Отмечен вопрос безопасности · требуется оценка
+              </Badge>
+            </p>
+          )}
+        </>
+      )}
+      {!r.reviewedAt && (
+        <Button
+          variant="ghost"
+          icon="check"
+          onClick={() =>
+            void actions
+              .mutate(patientId, { type: "report.review", id: r.id })
+              .catch(() => {})
+          }
+        >
+          Отметить просмотр
+        </Button>
       )}
     </>
   );
