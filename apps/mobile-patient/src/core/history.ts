@@ -69,7 +69,7 @@ export function projectHistory(
       label: r.label ?? "",
       at: r.at,
       edited:
-        r.gameEligible === false ||
+        (r.gameEligible === false && r.source !== "server") ||
         r.recordedDay !== r.day ||
         state.events.filter(
           (e) =>

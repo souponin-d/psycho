@@ -98,7 +98,7 @@ export function grantRewards(state: JourneyState): JourneyState {
       rewards.push({
         id,
         itemId: chapterRewardItem(index),
-        day: days[4],
+        day: days[4]!,
       });
   }
   for (const a of achievementProgress(state))

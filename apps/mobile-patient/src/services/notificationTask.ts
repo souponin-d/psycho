@@ -30,6 +30,13 @@ TaskManager.defineTask<Notifications.NotificationTaskPayload>(
     )
       return;
     try {
+      // Legacy notification actions belong to the demo repository only.
+      // Server-linked doses must go through the authenticated outbox.
+      if (
+        (await AsyncStorage.getItem("syncli.patient.connection-mode.v1")) !==
+        "demo"
+      )
+        return;
       const job = readReminderJob(
         notificationContentData(data.notification.request.content),
       );

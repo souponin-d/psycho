@@ -26,6 +26,7 @@ import { canSchedulePrecisely } from "../services/exactAlarm";
 import { openPatientRepository } from "../storage/sqlite";
 import { handleNotificationAction } from "../core/notifications";
 import { instantNow } from "../core/calendar";
+import { usePatientConnection } from "./PatientConnectionProvider";
 
 const Context = createContext<{
   allowed: boolean;
@@ -45,6 +46,7 @@ const Context = createContext<{
 export function ReminderProvider({ children }: PropsWithChildren) {
   const { state, isActive, today } = useApp();
   const { journey, ready, act } = useJourney();
+  const { mode } = usePatientConnection();
   const [allowed, setAllowed] = useState(false),
     [precise, setPrecise] = useState<boolean | null>(null),
     [count, setCount] = useState(0),
@@ -97,7 +99,10 @@ export function ReminderProvider({ children }: PropsWithChildren) {
           journey,
           state.morning,
           state.reportTime,
-          permission.granted && journey.connected && state.onboarded,
+          permission.granted &&
+            journey.connected &&
+            state.onboarded &&
+            mode === "demo",
           previousExact.current !== exact,
         );
         const actual = (await Notifications.getAllScheduledNotificationsAsync())
@@ -129,9 +134,11 @@ export function ReminderProvider({ children }: PropsWithChildren) {
     state.onboarded,
     today,
     attempt,
+    mode,
   ]);
   useEffect(() => {
-    if (!ready || !journey?.connected || !state.onboarded) return;
+    if (!ready || !journey?.connected || !state.onboarded || mode !== "demo")
+      return;
     const handle = async (response: Notifications.NotificationResponse) => {
       if (
         Platform.OS === "android" &&
@@ -196,7 +203,7 @@ export function ReminderProvider({ children }: PropsWithChildren) {
       },
     );
     return () => listener.remove();
-  }, [ready, journey?.connected, state.onboarded, act, refresh]);
+  }, [ready, journey?.connected, state.onboarded, act, refresh, mode]);
   return (
     <Context.Provider
       value={{ allowed, precise, count, nextAt, error, refresh }}

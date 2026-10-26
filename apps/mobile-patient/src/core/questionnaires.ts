@@ -84,6 +84,7 @@ export function assignedTasks(
   day: DayKey,
 ): AssignedTask[] {
   const plan = planForDay(state, day);
+  if (plan.status === "unavailable") return [];
   const tasks: AssignedTask[] = plan.medication.slots.map((slot) => ({
     id: "dose:" + day + ":" + slot.id,
     kind: "dose",

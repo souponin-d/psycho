@@ -22,6 +22,7 @@ export function createPatientRepository(
   port: SnapshotPort,
   readLegacy: () => Promise<string | null>,
   clock: () => Instant,
+  createInitial?: (day: string) => JourneyState,
 ): PatientRepository {
   let current: JourneyState | null = null;
   let queue: Promise<unknown> = Promise.resolve();
@@ -36,7 +37,9 @@ export function createPatientRepository(
       raw = await port.read();
     const state =
       raw === null
-        ? migrateLegacy(await readLegacy(), dayAt(now))
+        ? createInitial
+          ? createInitial(dayAt(now))
+          : migrateLegacy(await readLegacy(), dayAt(now))
         : restoreJourney(raw);
     const closed = closeElapsedDays(
       upgradeWorldSections(state, dayAt(now)),

@@ -22,9 +22,10 @@ internal static class Adherence
   private static JsonObject[] Latest(JsonObject state)=>A(state,"schedules").OfType<JsonObject>().GroupBy(s=>S(s,"id")).Select(g=>g.OrderByDescending(s=>s["version"]!.GetValue<int>()).First()).ToArray();
   private static bool SamePlan(JsonObject a,JsonObject b)=>new[]{"id","kind","title","details","dose","schedule","startDate","endDate","confirmedAt","confirmedBy"}.All(k=>JsonNode.DeepEquals(a[k],b[k]))&&JsonNode.DeepEquals(a["medicine"],b["medicine"]);
 
-  public static void Apply(JsonObject p,JsonObject mutation,Actor actor,string now)
+  public static void Apply(JsonObject p,JsonObject mutation,Actor actor,string now,bool patientAction=false)
   {
-    ClinicalExecutionPolicy.AssertAllowed(p,actor);
+    if(patientAction) ClinicalExecutionPolicy.AssertPatientAllowed(p,actor); else ClinicalExecutionPolicy.AssertAllowed(p,actor);
+    if(patientAction) Check(S(mutation,"type")=="adherence.record","Пациенту доступна только собственная отметка приёма.");
     Check(p["archived"] is not JsonValue archived||!archived.GetValue<bool>(),"Архивная карта доступна только для чтения.");
     var at=Instant(now);Only(mutation,"type","value");var v=Domain.Object(mutation,"value");var state=p["adherence"] as JsonObject??new JsonObject{["schedules"]=new JsonArray(),["records"]=new JsonArray()};
     if(S(mutation,"type")=="adherence.schedule"){

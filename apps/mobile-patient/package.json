@@ -1,6 +1,6 @@
 {
   "name": "@psycho/mobile-patient",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "main": "./index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit",

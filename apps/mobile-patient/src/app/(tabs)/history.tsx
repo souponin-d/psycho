@@ -32,6 +32,7 @@ import { HistoryCalendar } from "../../components/HistoryCalendar";
 import { FeelingCharacter } from "../../components/FeelingCharacter";
 import { useApp } from "../../state/AppProvider";
 import { useJourney } from "../../state/JourneyProvider";
+import { usePatientConnection } from "../../state/PatientConnectionProvider";
 import {
   projectHistory,
   historyBounds,
@@ -118,6 +119,7 @@ const dateLabel = (day: string) =>
 export default function HistoryScreen() {
   const { theme, today, state } = useApp();
   const { journey, act, saving } = useJourney();
+  const connection = usePatientConnection();
   const focused = useIsFocused();
   useEffect(() => {
     if (focused && journey && !journey.activity?.history)
@@ -195,11 +197,13 @@ export default function HistoryScreen() {
   function removeReport(id: string, required: boolean) {
     Alert.alert(
       "Удалить запись?",
-      !state.gameplay
-        ? "Запись будет убрана из списка; история исправлений сохранится."
-        : required
-          ? "Запись будет убрана из списка; история исправлений сохранится. Обязательный самоотчёт останется в плане. Закрытый игровой итог не изменится."
-          : "Запись будет убрана из списка; история исправлений сохранится. Закрытый игровой итог и награды не изменятся.",
+      connection.mode === "server" && required
+        ? "Запись будет скрыта только на этом телефоне. В кабинете врача и на других устройствах она останется."
+        : !state.gameplay
+          ? "Запись будет убрана из списка; история исправлений сохранится."
+          : required
+            ? "Запись будет убрана из списка; история исправлений сохранится. Обязательный самоотчёт останется в плане. Закрытый игровой итог не изменится."
+            : "Запись будет убрана из списка; история исправлений сохранится. Закрытый игровой итог и награды не изменятся.",
       [
         { text: "Отмена", style: "cancel" },
         {
@@ -278,6 +282,16 @@ export default function HistoryScreen() {
         title="Ваши дни"
         body="История небольших шагов и честных записей"
       />
+      {connection.mode === "server" &&
+        connection.connected &&
+        connection.snapshot?.reports.kind !== "ready" && (
+          <Panel style={{ marginBottom: 16 }}>
+            <T size={13}>
+              Часть самоотчётов не удалось восстановить с сервера. Доступные
+              записи показаны ниже.
+            </T>
+          </Panel>
+        )}
       {!!journey?.planVersions?.length && (
         <Panel style={{ marginBottom: 16, gap: 6 }}>
           <T size={14} weight="600">

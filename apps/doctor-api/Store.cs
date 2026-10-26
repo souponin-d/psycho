@@ -109,7 +109,7 @@ public sealed class Store(NpgsqlDataSource dataSource)
     await using (var reader = await receipt.ExecuteReaderAsync()) if (await reader.ReadAsync()) { if (reader.GetString(0) != hash || reader.GetString(1) != actor.Id) throw new DomainException("Идентификатор действия уже использован для другой команды.", 409); return document; }
     if (patientAction)
     {
-      var type = Domain.S(mutation, "type"); if (type is not ("report.add" or "message.patient" or "message.received")) throw new DomainException("Действие недоступно пациенту.", 403);
+      var type = Domain.S(mutation, "type"); if (type is not ("report.add" or "report.patient" or "questionnaire.patient" or "message.patient" or "message.received" or "dose.patient")) throw new DomainException("Действие недоступно пациенту.", 403);
       command["expectedRevision"] = document["revision"]!.DeepClone();
     }
     var updated = Domain.Apply(document, command, actor, patientAction);
@@ -132,7 +132,30 @@ public sealed class Store(NpgsqlDataSource dataSource)
         if(item!.AsObject().ContainsKey(field))visible[field]=item[field]?.DeepClone();
       plan.Add(visible);
     }
-    return new() { ["patientId"] = actor.PatientId, ["name"] = doc["profile"]!["name"]!.DeepClone(), ["plan"] = plan, ["messages"] = doc["messages"]!.DeepClone(), ["reports"] = doc["reports"]!.DeepClone() };
+    var doseSchedules = new JsonArray(); var doseRecords = new JsonArray();
+    if (doc["adherence"] is JsonObject adherence) {
+      foreach (var schedule in Domain.Array(adherence, "schedules").OfType<JsonObject>()) {
+        var visible = new JsonObject();
+        foreach (var field in new[]{"id","version","planId","times","offsetMinutes","effectiveFrom","effectiveUntil","endDate"}) visible[field] = schedule[field]?.DeepClone();
+        var original = Domain.Object(schedule, "planSnapshot"); var medication = new JsonObject();
+        foreach (var field in new[]{"id","title","dose","schedule","patientInstructions"}) medication[field] = original[field]?.DeepClone();
+        visible["medication"] = medication; doseSchedules.Add(visible);
+      }
+      foreach (var record in Domain.Array(adherence, "records").OfType<JsonObject>()) {
+        var visible = new JsonObject();
+        foreach (var field in new[]{"id","scheduleId","scheduleVersion","plannedAt","version","status","reportedAt","provenance"}) visible[field] = record[field]?.DeepClone();
+        doseRecords.Add(visible);
+      }
+    }
+    var questionnaires = new JsonArray();
+    if (doc["workflow"] is JsonObject workflow && workflow["assignments"] is JsonArray assignments)
+      foreach (var assignment in assignments.OfType<JsonObject>()) {
+        var protocol = ClinicalProtocols.Find(Domain.S(assignment, "protocolVersion"));
+        if (protocol is null || Domain.S(protocol, "id") is not ("gad7" or "phq9")) continue;
+        var visible = new JsonObject(); foreach (var key in new[] { "id", "protocolVersion", "dueDate", "status" }) visible[key] = assignment[key]?.DeepClone();
+        questionnaires.Add(visible);
+      }
+    return new() { ["patientId"] = actor.PatientId, ["name"] = doc["profile"]!["name"]!.DeepClone(), ["plan"] = plan, ["messages"] = doc["messages"]!.DeepClone(), ["reports"] = doc["reports"]!.DeepClone(), ["doseSchedules"] = doseSchedules, ["doseRecords"] = doseRecords, ["questionnaires"] = questionnaires };
   }
   public async Task Audit(Actor actor, string? patientId, string action)
   {

@@ -8,6 +8,7 @@ import { Touch } from "../../components/Motion";
 import { Icon } from "../../components/Icon";
 import { useApp } from "../../state/AppProvider";
 import { useJourney } from "../../state/JourneyProvider";
+import { usePatientConnection } from "../../state/PatientConnectionProvider";
 import {
   assignedTasks,
   latestDose,
@@ -17,11 +18,14 @@ import { dayAt, instantNow } from "../../core/calendar";
 import { handleNotificationAction } from "../../core/notifications";
 import { openPatientRepository } from "../../storage/sqlite";
 import { scheduleReminder } from "../../services/notificationTransport";
+import { ServerTreatmentPlan } from "../../components/ServerTreatmentPlan";
 export default function PlanScreen() {
+  const connection = usePatientConnection();
   const { theme, today, state } = useApp();
   const { journey, act, saving } = useJourney();
   const [reminding, setReminding] = useState(false);
   const [showPrescription, setShowPrescription] = useState(false);
+  if (connection.mode === "server") return <ServerTreatmentPlan />;
   if (!journey) return null;
   const tasks = assignedTasks(journey, today);
   async function dose(slotId: string, status: "taken" | "missed" | "unknown") {
@@ -326,7 +330,13 @@ export default function PlanScreen() {
         <Button
           title="Связаться с врачом"
           icon="message"
-          onPress={() => router.push("/contact" as Href)}
+          onPress={() =>
+            router.push(
+              (connection.mode === "demo"
+                ? "/contact"
+                : "/doctor-chat") as Href,
+            )
+          }
         />
         <Button
           title="Следующий приём и вопросы"

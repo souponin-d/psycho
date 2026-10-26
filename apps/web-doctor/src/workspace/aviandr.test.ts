@@ -2,7 +2,7 @@ import { installGrlsFixture } from "../../../../tests/grls-fixture";
 import { describe, expect, it } from "vitest";
 import { seedPatients, demoActor } from "./seed";
 import { ICD10_CATALOG } from "./terminology";
-import { applyCommand } from "./commands";
+import { applyCommand, createVisit } from "./commands";
 import {
   aviandrContext,
   newAviandrReview,
@@ -176,6 +176,9 @@ describe("Подготовительная проверка Авиандра", (
   });
   it("persists a recomputed draft snapshot and never blocks or auto-confirms on unapproved findings", () => {
     const p = patient();
+    const office = createVisit("office-for-plan", now, demoActor);
+    office.status = "in-progress";
+    p.visits.push(office);
     const plan = {
       ...p.plan[0]!,
       id: "aviandr-plan",
@@ -183,7 +186,7 @@ describe("Подготовительная проверка Авиандра", (
       medicine: installGrlsFixture(),
       title: installGrlsFixture().tradeName,
       status: "draft" as const,
-      visitId: "",
+      visitId: office.id,
       dose: "20 мг",
       schedule: "Введено врачом",
       instructionUrl: "https://example.test/instruction",

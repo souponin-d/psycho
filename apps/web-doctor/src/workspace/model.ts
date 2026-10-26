@@ -107,6 +107,7 @@ export interface DiagnosisSelection extends TerminologySelection {
   status: "hypothesis" | "confirmed";
 }
 export interface Visit extends Stamp, Evidence {
+  confirmedById?: string;
   scheduledAt: string;
   durationMinutes: number;
   kind: "initial" | "follow-up" | "unscheduled";
@@ -153,6 +154,7 @@ export interface Measurement extends Stamp {
   externalForm: string;
 }
 export interface PlanItem extends Stamp, Evidence {
+  confirmedById?: string;
   medicine?: import("./grls").MedicineSelection | null;
   visitId: string;
   kind: PlanKind;
@@ -229,6 +231,22 @@ export interface AviandrReview {
   checkedBy: string;
 }
 export interface SelfReport extends Stamp {
+  mobile?: {
+    id: string;
+    entityId: string;
+    day: string;
+    formVersion: "syncli-report-v1";
+    reportedAt: string;
+    fields: {
+      feeling: { valence: number; energy: number };
+      sleep: string;
+      anxiety: number;
+      functioning: number;
+      tolerability: string;
+    };
+    label: string;
+    note: string;
+  };
   reportedAt: string;
   receivedAt: string;
   provenance: Provenance;
@@ -380,6 +398,7 @@ export type Mutation =
       id: string;
       status: "completed" | "stopped";
       reason: string;
+      visitId?: string;
     }
   | { type: "report.add"; value: SelfReport }
   | { type: "report.review"; id: string }

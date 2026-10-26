@@ -751,6 +751,7 @@ const diagnosisVisit = createVisit(
   new Date().toISOString(),
   actor,
 );
+diagnosisVisit.status = "in-progress";
 diagnosisVisit.diagnoses = [
   { ...ICD10_CATALOG.find((d) => d.code === "F41.1"), status: "hypothesis" },
   ...outsideSubset.map((d) => ({ ...d, status: "hypothesis" })),
@@ -783,7 +784,7 @@ const aviandrDraft = {
   id: aviandrId,
   createdAt: "",
   author: "forged",
-  visitId: "",
+  visitId: diagnosisVisit.id,
   kind: "medication",
   title: grlsMedicine.tradeName,
   medicine: grlsMedicine,
@@ -2658,6 +2659,9 @@ const supportCreated = await doctor.call("/patients", "POST", {
 });
 assert.equal(supportCreated.status, 201);
 patient = supportCreated.body;
+const supportVisit = createVisit(randomUUID(), new Date().toISOString(), actor);
+supportVisit.status = "in-progress";
+await flowCommand({ type: "visit.save", value: supportVisit });
 const supportAt = new Date(Date.now() - 60_000).toISOString();
 const supportInput = (extra = {}) => ({
   ...newSupportInput(),
@@ -3062,6 +3066,7 @@ await flowCommand({
   type: "plan.save",
   value: {
     ...medicationProject,
+    visitId: supportVisit.id,
     title: otherMedicine.tradeName,
     medicine: otherMedicine,
     dose: "Синтетическая доза",
@@ -3240,6 +3245,7 @@ await flowCommand({
   id: standaloneMedicine.id,
   status: "stopped",
   reason: "Синтетическая отмена врачом",
+  visitId: supportVisit.id,
 });
 assert.ok(
   patient.adherence.schedules.every((s) => s.effectiveUntil && s.closedAt),

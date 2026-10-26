@@ -13,5 +13,5 @@ const gifts = [
 ] as const;
 /** Награда превью и выдачи берётся из одного каталога, без невидимых chapter-gift ID. */
 export function chapterRewardItem(index: number): string {
-  return index <= 0 ? "garden" : gifts[(Math.floor(index) - 1) % gifts.length];
+  return index <= 0 ? "garden" : gifts[(Math.floor(index) - 1) % gifts.length]!;
 }

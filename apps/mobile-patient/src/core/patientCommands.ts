@@ -12,6 +12,8 @@ import {
 } from "./questionnaires.ts";
 import { PatientValidationError } from "./patientErrors.ts";
 import { connectScenario, seedScenario } from "./scenario.ts";
+import { createServerJourney } from "./serverJourney.ts";
+import { isPatientReport } from "./patientReportSync.ts";
 import { validateWorld } from "./world.ts";
 import { grantRewards } from "./achievements.ts";
 import type {
@@ -55,6 +57,8 @@ export function applyPatientCommand(
     case "chat:clear":
       return { ...base, chat: [], chatDraft: "" };
     case "reset": {
+      if (base.scenarioId === "server-patient-v1")
+        return createServerJourney(today);
       const fresh = seedScenario(today);
       return {
         ...fresh,
@@ -101,6 +105,52 @@ export function applyPatientCommand(
       delete drafts[command.id];
       return { ...base, drafts };
     }
+    case "server:reports": {
+      if (base.scenarioId !== "server-patient-v1")
+        throw new PatientValidationError(
+          "Серверные записи доступны только в своём профиле",
+        );
+      if (
+        new Set(command.reports.map((report) => report.id)).size !==
+          command.reports.length ||
+        command.reports.some(
+          (report) =>
+            report.kind !== "report" ||
+            report.source !== "server" ||
+            report.required !== true ||
+            !!report.deleted ||
+            !Number.isFinite(report.at) ||
+            Math.abs(report.at) > 8640000000000000 ||
+            !isPatientReport({
+              id: report.id,
+              entityId: report.entityId,
+              day: report.day,
+              formVersion: "syncli-report-v1",
+              reportedAt: new Date(report.at).toISOString(),
+              fields: report.fields,
+              label: report.label ?? "",
+              note: report.note,
+            }),
+        )
+      )
+        throw new PatientValidationError("Не удалось восстановить самоотчёты");
+      const known = new Set(base.events.map((event) => event.id));
+      const incoming = command.reports.filter(
+        (report) => report.day <= today && !known.has(report.id),
+      );
+      if (!incoming.length) return base;
+      return {
+        ...base,
+        events: [
+          ...base.events,
+          ...incoming.map((report) => ({
+            ...report,
+            recordedDay: report.day,
+            gameEligible: false as const,
+          })),
+        ],
+      };
+    }
     case "world:section":
       if (
         !isDay(command.day) ||
@@ -125,7 +175,13 @@ export function applyPatientCommand(
     case "event": {
       const input = command.event;
       let completion: ReturnType<typeof completeQuestionnaire> | undefined;
-      if (!input.id || base.events.some((e) => e.id === input.id)) return base;
+      if (!input.id) return base;
+      if (base.events.some((e) => e.id === input.id)) {
+        if (!command.draftId || !base.drafts[command.draftId]) return base;
+        const drafts = { ...base.drafts };
+        delete drafts[command.draftId];
+        return { ...base, drafts };
+      }
       if (!isDay(input.day) || input.day > today)
         throw new PatientValidationError("Нельзя выполнить будущий день");
       // Runs inside the repository's serialized transaction, so simultaneous

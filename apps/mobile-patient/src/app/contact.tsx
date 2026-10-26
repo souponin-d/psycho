@@ -324,9 +324,6 @@ export default function ContactScreen() {
               }
             />
           )}
-          <T size={12} muted>
-            Черновик сохраняется автоматически.
-          </T>
         </View>
       )}
     </Screen>

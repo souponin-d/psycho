@@ -102,6 +102,7 @@ export function JourneyMap() {
     todayNode.total,
     progress.successes,
     progress.chapterStart,
+    journey.plan.status !== "unavailable",
   );
   const closeEditor = () => {
     setDraftWorld(null);
@@ -581,15 +582,17 @@ export function JourneyMap() {
                 />
               </View>
               <T size={14} style={{ marginVertical: 12 }}>
-                {selected?.status === "future"
-                  ? "План на этот день"
-                  : selected?.status === "today"
-                    ? selected.awarded
-                      ? "Все дела на сегодня выполнены"
-                      : "Сегодня растёт ваш маленький сад"
-                    : selected?.awarded
-                      ? "День выполнен · сад сохранён"
-                      : "Пропуск · можно продолжить сегодня"}
+                {selected?.status === "unknown"
+                  ? "Нет данных об итогах дня"
+                  : selected?.status === "future"
+                    ? "План на этот день"
+                    : selected?.status === "today"
+                      ? selected.awarded
+                        ? "Все дела на сегодня выполнены"
+                        : "Сегодня растёт ваш маленький сад"
+                      : selected?.awarded
+                        ? "День выполнен · сад сохранён"
+                        : "Пропуск · можно продолжить сегодня"}
               </T>
               {selected?.status === "today" && selected.awarded && (
                 <T size={12} muted>

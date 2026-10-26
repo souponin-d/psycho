@@ -156,6 +156,39 @@ export type PatientRecordResponse = {
   }>;
   reports?: Array<models.SelfReport>;
   messages?: Array<models.Message>;
+  doseSchedules?: Array<{
+    id: string;
+    version: unknown;
+    planId: string;
+    times: Array<string>;
+    offsetMinutes: unknown;
+    effectiveFrom: string;
+    effectiveUntil: string;
+    endDate: string;
+    medication: {
+      id: string;
+      title: string;
+      dose: string;
+      schedule: string;
+      patientInstructions: string;
+    };
+  }>;
+  doseRecords?: Array<{
+    id: string;
+    scheduleId: string;
+    scheduleVersion: unknown;
+    plannedAt: string;
+    version: unknown;
+    status: "taken" | "missed" | "not-applicable" | "unknown";
+    reportedAt: string;
+    provenance: "patient" | "clinician";
+  }>;
+  questionnaires?: Array<{
+    id: string;
+    protocolVersion: string;
+    dueDate: string;
+    status: "issued" | "submitted";
+  }>;
 };
 export function patientRecord(
   transport: Transport,
@@ -168,6 +201,48 @@ export function patientCommand(
   body: {
     commandId: string;
     mutation:
+      | {
+          type: "report.patient";
+          value: {
+            id: string;
+            entityId: string;
+            day: string;
+            formVersion: "syncli-report-v1";
+            reportedAt: string;
+            note: string;
+            label: string;
+            fields: {
+              feeling: { valence: unknown; energy: unknown };
+              sleep: "Плохо" | "Обычно" | "Хорошо";
+              anxiety: unknown;
+              functioning: unknown;
+              tolerability: "Без трудностей" | "Есть трудности";
+            };
+          };
+        }
+      | {
+          type: "questionnaire.patient";
+          value: {
+            id: string;
+            assignmentId: string;
+            protocolVersion: string;
+            measuredAt: string;
+            answers: Array<unknown>;
+            impact: unknown | null;
+          };
+        }
+      | {
+          type: "dose.patient";
+          value: {
+            scheduleId: string;
+            scheduleVersion: unknown;
+            plannedAt: string;
+            status: "taken" | "missed" | "unknown";
+            reportedAt: string;
+            reason: string;
+            expectedVersion: unknown;
+          };
+        }
       | { type: "report.add"; value: models.SelfReport }
       | { type: "message.patient"; text: string }
       | { type: "message.received"; id: string; status: "delivered" | "read" };

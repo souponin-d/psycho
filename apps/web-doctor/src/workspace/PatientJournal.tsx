@@ -80,20 +80,37 @@ export function PatientJournal({
                 </p>
               ) : (
                 <>
-                  <div className={styles.row} style={{ marginTop: 14 }}>
-                    <Badge>
-                      Самочувствие: {r.mood ?? "нет данных"}
-                      {r.mood !== null ? " / 10" : ""}
-                    </Badge>
-                    <Badge>
-                      Тревога: {r.anxiety ?? "нет данных"}
-                      {r.anxiety !== null ? " / 10" : ""}
-                    </Badge>
-                    <Badge>
-                      Сон: {r.sleepHours ?? "нет данных"}
-                      {r.sleepHours !== null ? " ч" : ""}
-                    </Badge>
-                  </div>
+                  {r.mobile ? (
+                    <div className={styles.row} style={{ marginTop: 14 }}>
+                      <Badge>
+                        Состояние: радость {r.mobile.fields.feeling.valence} /
+                        6, энергия {r.mobile.fields.feeling.energy} / 6
+                      </Badge>
+                      <Badge>Сон: {r.mobile.fields.sleep}</Badge>
+                      <Badge>Тревога: {r.mobile.fields.anxiety} / 10</Badge>
+                      <Badge>
+                        Силы на дела: {r.mobile.fields.functioning} / 10
+                      </Badge>
+                      <Badge>
+                        Переносимость: {r.mobile.fields.tolerability}
+                      </Badge>
+                    </div>
+                  ) : (
+                    <div className={styles.row} style={{ marginTop: 14 }}>
+                      <Badge>
+                        Самочувствие: {r.mood ?? "нет данных"}
+                        {r.mood !== null ? " / 10" : ""}
+                      </Badge>
+                      <Badge>
+                        Тревога: {r.anxiety ?? "нет данных"}
+                        {r.anxiety !== null ? " / 10" : ""}
+                      </Badge>
+                      <Badge>
+                        Сон: {r.sleepHours ?? "нет данных"}
+                        {r.sleepHours !== null ? " ч" : ""}
+                      </Badge>
+                    </div>
+                  )}
                   <p>{r.functioning}</p>
                   <p>{r.note}</p>
                   <Badge tone={r.medication === "missed" ? "amber" : "neutral"}>

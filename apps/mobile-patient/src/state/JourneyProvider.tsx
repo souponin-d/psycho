@@ -9,9 +9,16 @@ import {
 } from "react";
 import { openPatientRepository } from "../storage/sqlite";
 import type { PatientRepository } from "../storage/database";
-import type { JourneyState, PatientCommand } from "../core/journeyModel";
+import type {
+  JourneyState,
+  PatientCommand,
+  OnboardingProgress,
+} from "../core/journeyModel";
 import { useApp } from "./AppProvider";
 import { PatientValidationError } from "../core/patientErrors";
+import type { PatientOutboxOwner } from "../core/patientOutbox";
+import { patientProfileKey } from "../core/patientProfileKey";
+import { usePatientConnection } from "./PatientConnectionProvider";
 
 const Context = createContext<{
   journey: JourneyState | null;
@@ -22,8 +29,21 @@ const Context = createContext<{
   retry: () => void;
 } | null>(null);
 
-export function JourneyProvider({ children }: PropsWithChildren) {
+export function JourneyProvider({
+  children,
+  owner = null,
+  onboarding,
+}: PropsWithChildren<{
+  owner?: PatientOutboxOwner | null;
+  onboarding?: OnboardingProgress;
+}>) {
   const { today, isActive } = useApp();
+  const connection = usePatientConnection();
+  const scope = patientProfileKey(owner);
+  const activeScope = useRef(scope);
+  activeScope.current = scope;
+  const repositoryScope = useRef<string | null>(null);
+  const [loadedScope, setLoadedScope] = useState<string | null>(null);
   const [journey, setJourney] = useState<JourneyState | null>(null);
   const [ready, setReady] = useState(false),
     [saving, setSaving] = useState(false);
@@ -41,20 +61,29 @@ export function JourneyProvider({ children }: PropsWithChildren) {
   }, []);
   useEffect(() => {
     let alive = true;
-    openPatientRepository()
+    setReady(false);
+    failed.current = null;
+    openPatientRepository(owner, undefined, onboarding)
       .then(async (repo) => {
         const state = await repo.load();
         if (alive) {
           repository.current = repo;
+          repositoryScope.current = scope;
+          setLoadedScope(scope);
           setJourney(state);
           setError("");
         }
       })
       .catch((e) => {
-        if (alive)
+        if (alive) {
+          repository.current = null;
+          repositoryScope.current = null;
+          setLoadedScope(scope);
+          setJourney(null);
           setError(
             e instanceof Error ? e.message : "Не удалось открыть записи",
           );
+        }
       })
       .finally(() => {
         if (alive) setReady(true);
@@ -62,22 +91,28 @@ export function JourneyProvider({ children }: PropsWithChildren) {
     return () => {
       alive = false;
     };
-  }, [attempt]);
+  }, [attempt, owner, onboarding, scope]);
   const act = useCallback(async (command: PatientCommand) => {
     const repo = repository.current;
-    if (!repo || failed.current) return false;
+    const turn = activeScope.current;
+    if (!repo || repositoryScope.current !== turn || failed.current)
+      return false;
     inFlight.current++;
     setSaving(true);
     try {
       const state = await repo.apply(command);
-      if (mounted.current) {
+      if (mounted.current && activeScope.current === turn) {
         setJourney(state);
         setError("");
       }
-      return true;
+      return mounted.current && activeScope.current === turn;
     } catch (e) {
-      if (!(e instanceof PatientValidationError)) failed.current = command;
-      if (mounted.current)
+      if (
+        activeScope.current === turn &&
+        !(e instanceof PatientValidationError)
+      )
+        failed.current = command;
+      if (mounted.current && activeScope.current === turn)
         setError(
           e instanceof Error ? e.message : "Не удалось сохранить запись",
         );
@@ -89,7 +124,29 @@ export function JourneyProvider({ children }: PropsWithChildren) {
   }, []);
   useEffect(() => {
     if (isActive && repository.current) void act({ type: "tick" });
-  }, [today, isActive, ready, act]);
+  }, [today, isActive, ready, loadedScope, scope, act]);
+  useEffect(() => {
+    const reports = connection.snapshot?.reports;
+    if (
+      owner &&
+      connection.connected &&
+      ready &&
+      loadedScope === scope &&
+      connection.owner &&
+      patientProfileKey(connection.owner) === scope &&
+      (reports?.kind === "ready" || reports?.kind === "partial")
+    )
+      void act({ type: "server:reports", reports: reports.reports });
+  }, [
+    owner,
+    connection.connected,
+    connection.owner,
+    connection.snapshot?.reports,
+    ready,
+    loadedScope,
+    scope,
+    act,
+  ]);
   const retry = useCallback(() => {
     const command = failed.current;
     failed.current = null;
@@ -101,7 +158,16 @@ export function JourneyProvider({ children }: PropsWithChildren) {
     }
   }, [act]);
   return (
-    <Context.Provider value={{ journey, ready, saving, error, act, retry }}>
+    <Context.Provider
+      value={{
+        journey,
+        ready: ready && loadedScope === scope,
+        saving,
+        error,
+        act,
+        retry,
+      }}
+    >
       {children}
     </Context.Provider>
   );

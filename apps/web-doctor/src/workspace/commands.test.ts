@@ -27,12 +27,30 @@ const actor: Actor = {
   specialty: "psychiatrist",
 };
 const now = "2026-10-22T09:00:00.000Z";
+it("не возвращает начатый дистанционный приём в запланированный ради смены формата", () => {
+  const remote = {
+    ...createVisit("remote-lock", now, actor),
+    format: "remote" as const,
+    status: "in-progress" as const,
+  };
+  const p = run(patient(), { type: "visit.save", value: remote });
+  expect(() =>
+    run(p, {
+      type: "visit.save",
+      value: { ...p.visits[0]!, status: "scheduled" },
+    }),
+  ).toThrow(/начат|статус/i);
+});
 it("сохраняет старое текстовое назначение и создаёт замену без перезаписи регистрационного снимка", () => {
   const medicine = installGrlsFixture();
   const p = patient();
+  p.visits.push({
+    ...createVisit("visit-med", now, actor),
+    status: "in-progress",
+  });
   const legacy = {
     ...plan(),
-    visitId: "",
+    visitId: "visit-med",
     kind: "medication" as const,
     title: "Прежняя запись врача",
     dose: "Доза врача",
@@ -71,7 +89,7 @@ it("сохраняет регистрационный снимок препар�
   const medicine = installGrlsFixture();
   const value = {
     ...plan(),
-    visitId: "",
+    visitId: "visit-med",
     kind: "medication" as const,
     title: medicine.tradeName,
     medicine,
@@ -79,7 +97,12 @@ it("сохраняет регистрационный снимок препар�
     schedule: "Режим врача",
     instructionUrl: "https://example.test/instruction",
   };
-  const p = run(patient(), { type: "plan.save", value });
+  const initial = patient();
+  initial.visits.push({
+    ...createVisit("visit-med", now, actor),
+    status: "in-progress",
+  });
+  const p = run(initial, { type: "plan.save", value });
   expect(p.plan[0]?.medicine).toEqual(medicine);
   expect(() =>
     run(patient(), {
