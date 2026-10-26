@@ -293,14 +293,14 @@ it("updates the shared profile from Aviandr without submitting or losing the med
   fireEvent.change(screen.getByLabelText("Содержание назначения"), {
     target: { value: "Сохранить мой текст" },
   });
-  fireEvent.click(screen.getByRole("button", { name: "Уточнить в карте" }));
+  fireEvent.click(screen.getByRole("button", { name: "Редактировать" }));
   fireEvent.change(screen.getByLabelText("Текущие препараты"), {
     target: { value: "Со слов пациента: учебное уточнение" },
   });
   fireEvent.click(screen.getByRole("button", { name: "Сохранить профиль" }));
   await waitFor(() =>
     expect(
-      screen.queryByRole("dialog", { name: "Профиль и контекст пациента" }),
+      screen.queryByRole("dialog", { name: "Редактирование профиля пациента" }),
     ).toBeNull(),
   );
   expect(f.mutate.mock.calls.map((call) => call[1].type)).toEqual([

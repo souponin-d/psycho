@@ -31,12 +31,11 @@ import {
   styles,
 } from "./ui/Elements";
 import { PatientContext } from "./PatientContext";
-import { PatientBrief } from "./PatientBrief";
 const tabs = [
   ["overview", "Обзор", "file"],
   ["visits", "Приёмы", "calendar"],
   ["plan", "Лечение и план", "pill"],
-  ["dynamics", "Наблюдение", "chart"],
+  ["dynamics", "Наблюдение и шкалы", "chart"],
   ["documents", "Документы", "book"],
 ] as const;
 const observationTabs = [
@@ -158,7 +157,7 @@ export function PatientView({
         </div>
         <div className={styles.row}>
           <Button variant="ghost" icon="edit" onClick={() => setProfile(true)}>
-            Профиль
+            Редактировать
           </Button>
           <Button
             variant="secondary"
@@ -243,7 +242,10 @@ export function PatientView({
         </nav>
       )}
       <div className={styles.stack}>
-        {(tab === "overview" || tab === "plan") && (
+        {tab === "overview" && (
+          <PatientContext patient={patient} actions={actions} />
+        )}
+        {tab === "overview" && (
           <ClinicalSupportPanel
             patient={patient}
             actor={actor}
@@ -252,9 +254,6 @@ export function PatientView({
         )}
         {tab === "overview" && (
           <WorkflowPanel patient={patient} actions={actions} />
-        )}
-        {tab === "overview" && (
-          <PatientBrief patient={patient} navigate={navigate} />
         )}
         {tab === "overview" && (
           <div className={styles.twoColumns}>
@@ -320,7 +319,6 @@ export function PatientView({
               </Section>
             </div>
             <div className={styles.stack}>
-              <PatientContext patient={patient} actions={actions} />
               <Section
                 title="Ближайший приём"
                 action={
@@ -406,7 +404,10 @@ export function PatientView({
                     Сведения о документах ещё не внесены.
                   </p>
                 )}
-                <SourceLinks ids={["S10", "S11"]} />
+                <details className={styles.details}>
+                  <summary>Основания</summary>
+                  <SourceLinks ids={["S10", "S11"]} />
+                </details>
               </Section>
               {recent[0] && (
                 <Section title="После последнего приёма">

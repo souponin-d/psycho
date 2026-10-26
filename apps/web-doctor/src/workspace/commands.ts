@@ -1,3 +1,5 @@
+import { patientAgeAt } from "./patient-age.ts";
+import { patientMeasurements } from "./patient-measurements.ts";
 import {
   encounterFields,
   type Actor,
@@ -383,7 +385,7 @@ function validateMutation(mutation: Mutation, previous: PatientRecord) {
       numeric("sleepHours", 24);
       requireValue(
         typeof raw.safetyConcern === "boolean",
-        "Ожидался признак безопасности.",
+        "Ожидался признак риска.",
       );
       option(raw.state, ["completed", "cannot", "declined"]);
       option(raw.medication, ["taken", "missed", "no-mark", "not-applicable"]);
@@ -534,6 +536,11 @@ function validateProfile(profile: Profile, now: string, previous?: Profile) {
     "Дата рождения не может быть в будущем.",
   );
   requireValue(
+    patientAgeAt(profile.birthDate, now) >= 18 &&
+      patientAgeAt(profile.birthDate, now) <= 120,
+    "Возраст пациента должен быть от 18 до 120 лет.",
+  );
+  requireValue(
     profile.name.trim().length <= 200,
     "Имя: не более 200 символов.",
   );
@@ -573,7 +580,7 @@ export function completionErrors(
 ): string[] {
   const errors: string[] = [];
   if (!visit.notes.safetyConclusion.trim())
-    errors.push("Зафиксируйте заключение по безопасности");
+    errors.push("Зафиксируйте заключение по рискам");
   if (!visit.notes.conclusion.trim()) errors.push("Заполните заключение врача");
   if (!visit.notes.recommendations.trim())
     errors.push("Укажите рекомендации и следующий шаг");
@@ -780,7 +787,9 @@ export function applyCommand(
         ...(p.adherence ? { adherence: p.adherence } : {}),
         ...(p.clinicalFacts ? { clinicalFacts: p.clinicalFacts } : {}),
         patientName: p.profile.name,
-        measurements: p.measurements.filter((item) => item.visitId === v.id),
+        measurements: patientMeasurements(p).filter(
+          (item) => item.visitId === v.id,
+        ),
         plan: p.plan.filter(
           (item) => item.visitId === v.id && item.status !== "draft",
         ),
@@ -979,7 +988,7 @@ export function applyCommand(
             id: `event-${command.commandId}`,
             ...stamp,
             title: m.value.safetyConcern
-              ? "Пациент отметил вопрос безопасности"
+              ? "Пациент сообщил о риске"
               : "Нежелательное явление в дневнике",
             detail: m.value.adverseEffects || m.value.note,
             urgency: m.value.safetyConcern ? "urgent" : "important",
@@ -1190,7 +1199,7 @@ export function applyCommand(
   if (m.type === "patient.archive" && m.archived)
     requireValue(
       !p.workflow?.safety.some((e) => e.status !== "acted"),
-      "Сначала завершите обработку событий безопасности.",
+      "Сначала завершите обработку событий риска.",
     );
   reconcileAdherence(p, actor, now);
   reconcileWorkflow(p, actor, now);

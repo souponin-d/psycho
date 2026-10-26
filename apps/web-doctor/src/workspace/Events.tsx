@@ -94,18 +94,17 @@ export function Events({
   }
   return (
     <>
+      {!patient && (
+        <div className={styles.pageHeading}>
+          <div>
+            <h1>Уведомления</h1>
+          </div>
+        </div>
+      )}
       <WorkflowSafetyBoard
         patients={patient ? [patient] : patients}
         actions={actions}
       />
-      {!patient && (
-        <div className={styles.pageHeading}>
-          <div>
-            <h1>Внимание и контроль</h1>
-            <p>Что требует решения врача и к какому сроку</p>
-          </div>
-        </div>
-      )}
       <Section
         title={patient ? "События пациента" : "Очередь врача"}
         action={
@@ -143,10 +142,6 @@ export function Events({
             </button>
           ))}
         </div>
-        <p className={styles.subtext}>
-          Срок задачи и клиническая срочность показаны отдельно. Просрочка не
-          меняет оценку риска.
-        </p>
         {rows.length > 0 && (
           <div className={styles.tableWrap}>
             <table className={styles.eventQueue}>
@@ -271,8 +266,7 @@ export function Events({
                       : "Открытых событий нет"
             }
           >
-            Новые сообщения о переносимости и явно отмеченные вопросы
-            безопасности появятся здесь. Событие можно создать вручную.
+            Новые сообщения о переносимости и рисках появятся здесь.
           </Empty>
         )}
       </Section>

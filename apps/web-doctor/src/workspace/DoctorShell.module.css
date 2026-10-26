@@ -1,0 +1,34 @@
+.context {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.metadata {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  color: var(--ws-muted);
+  font-size: 12px;
+}
+
+@media (max-width: 760px) {
+  .context {
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .metadata {
+    min-height: 44px;
+    gap: 8px 12px;
+  }
+}
+
+@media print {
+  .context {
+    display: none;
+  }
+}

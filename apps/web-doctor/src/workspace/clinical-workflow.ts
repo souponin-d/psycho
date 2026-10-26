@@ -44,6 +44,7 @@ export type SafetyStage =
   "created" | "delivered" | "acknowledged" | "assessed" | "acted";
 export interface WorkflowSubmission {
   id: string;
+  visitId?: string;
   protocolVersion: string;
   measuredAt: string;
   answers: (number | null)[];
@@ -719,6 +720,7 @@ export function applyWorkflowMutation(
     object(v);
     only(v, [
       "id",
+      "visitId",
       "protocolVersion",
       "measuredAt",
       "answers",
@@ -730,6 +732,21 @@ export function applyWorkflowMutation(
       "immediateDanger",
     ]);
     text(v.id, true, 100);
+    if (v.visitId !== undefined) {
+      text(v.visitId, false, 100);
+      if (v.visitId) {
+        const visit = patient.visits.find((entry) => entry.id === v.visitId);
+        check(
+          visit &&
+            (visit.status === "scheduled" || visit.status === "in-progress") &&
+            !patient.audit.some(
+              (entry) =>
+                entry.action === "visit.print" && entry.targetId === v.visitId,
+            ),
+          "Связанный приём недоступен для добавления результатов.",
+        );
+      }
+    }
     const old = v.protocolVersion === syntheticProtocol.version;
     const protocol: ClinicalProtocol | undefined = old
       ? syntheticProtocol
@@ -763,7 +780,7 @@ export function applyWorkflowMutation(
     check(
       ["completed", "declined", "cannot"].includes(v.state) &&
         ["yes", "no", "unknown"].includes(v.safety),
-      "Проверьте полноту и ответ о безопасности.",
+      "Проверьте полноту и ответы о рисках.",
     );
     check(
       Array.isArray(v.answers) &&
@@ -851,9 +868,9 @@ export function applyWorkflowMutation(
           : kind === "phq-item9"
             ? "Положительный ответ на пункт 9 PHQ-9. Уточните мысли, намерение, план и необходимость срочной помощи."
             : kind === "explicit-concern"
-              ? "Пациент сообщил о вопросе безопасности. Требуется оценка врача."
-              : "Безопасность не оценена: ответ неизвестен, пропущен или не получен.";
-      check(w.safety.length < 1000, "Достигнут лимит событий безопасности.");
+              ? "Пациент сообщил о риске. Требуется оценка врача."
+              : "Риски не оценены: ответ неизвестен, пропущен или не получен.";
+      check(w.safety.length < 1000, "Достигнут лимит событий риска.");
       w.safety.push({
         id: `wf-s-${v.id}`,
         version: 1,
@@ -906,7 +923,7 @@ export function applyWorkflowMutation(
     text(m.id, true, 105);
     text(m.note, true);
     const event = w.safety.find((e) => e.id === m.id);
-    check(event, "Событие безопасности не найдено.");
+    check(event, "Событие риска не найдено.");
     check(
       event.version === m.expectedVersion,
       "Версия события изменилась.",

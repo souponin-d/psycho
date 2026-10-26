@@ -1,0 +1,63 @@
+.card {
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.card:hover {
+  border-color: var(--ws-accent);
+}
+.card:focus-visible {
+  outline: 2px solid var(--ws-accent);
+  outline-offset: 3px;
+}
+.title {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.edition {
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--ws-muted);
+}
+.document {
+  min-width: 0;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+.document > * + * {
+  margin-top: 16px;
+}
+.document p {
+  white-space: pre-wrap;
+}
+.document ul,
+.document ol {
+  padding-left: 24px;
+}
+.document pre {
+  overflow-x: auto;
+  padding: 12px;
+  background: var(--ws-soft);
+}
+.document a {
+  color: var(--ws-accent);
+  text-decoration: underline;
+}
+.table {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table th,
+.table td {
+  padding: 8px;
+  border: 1px solid var(--ws-line);
+  text-align: left;
+  vertical-align: top;
+}

@@ -74,7 +74,10 @@ export function AssessmentForms({
     draftId?: string;
   }>();
   const [savedMessage, setSavedMessage] = useState("");
-  const forms = assessmentCatalog.filter((form) =>
+  const availableForms = assessmentCatalog.filter(
+    (form) => !(form.id === "PHQ-9" && form.sourceStatus === "missing-source"),
+  );
+  const forms = availableForms.filter((form) =>
     `${form.id} ${form.title}`
       .toLocaleLowerCase("ru")
       .includes(query.trim().toLocaleLowerCase("ru")),
@@ -88,39 +91,10 @@ export function AssessmentForms({
 
   return (
     <Section
-      title="Формы шкал · подготовка"
-      description="Все варианты доступны для сравнения. Ответы сохраняются отдельно от измерений и графиков динамики."
+      title="Другие формы шкал"
+      description="Подготовительные формы: ответы сохраняются как черновики и не включаются в динамику."
     >
       <div className={styles.stack}>
-        <div className={styles.notice}>
-          <Badge tone="amber">Не утверждено</Badge>
-          <p>
-            Формы, их версии и арифметика подготовлены для проверки. Здесь нет
-            клинических порогов, автоматических рекомендаций или активации
-            правил. Результат расчёта не является клинической интерпретацией.
-          </p>
-        </div>
-        <details className={styles.details}>
-          <summary>Другие версии в клинических рекомендациях</summary>
-          <p className={styles.subtext}>
-            Справочные варианты для последующего выбора. Эти страницы PDF не
-            оцифрованы в мастере; их формулировки и ключи нельзя автоматически
-            подменять текущими версиями.
-          </p>
-          <ul>
-            <li>HARS: S01, страницы PDF 101–105; S04, страницы PDF 80–85.</li>
-            <li>GAD-7: S04, страница PDF 86.</li>
-            <li>HDRS-17 / MADRS: S03, страницы PDF 108–116.</li>
-            <li>
-              HCL-33: S03, страницы PDF 117–119; S02, страницы PDF 160–163.
-            </li>
-            <li>YMRS: S02, страницы PDF 142–145.</li>
-            <li>
-              C-SSRS: S02, страницы PDF 127–136; S03, страницы PDF 120–125.
-            </li>
-          </ul>
-          <SourceLinks ids={["S01", "S02", "S03", "S04"]} />
-        </details>
         {savedMessage && (
           <p className={styles.saved} role="status">
             {savedMessage}
@@ -239,7 +213,7 @@ export function AssessmentForms({
             style={{ alignSelf: "end" }}
             role="status"
           >
-            Показано {forms.length} из {assessmentCatalog.length}. Для сравнения
+            Показано {forms.length} из {availableForms.length}. Для сравнения
             выберите до трёх вариантов.
           </p>
         </div>
@@ -359,22 +333,18 @@ export function AssessmentForms({
                     : `${form.itemCount} пунктов`}
                 </p>
                 <p>{form.window || "Период оценки уточняется по источнику"}</p>
-                <p style={{ overflowWrap: "anywhere" }}>
-                  Версия: {form.version}
-                </p>
-                {form.sourceId && <SourceLinks ids={[form.sourceId]} />}
-                {form.warnings.length > 0 && (
-                  <details className={styles.details}>
-                    <summary>
-                      Ограничения формы · {form.warnings.length}
-                    </summary>
+                <details className={styles.details}>
+                  <summary>Версия и источник</summary>
+                  <p style={{ overflowWrap: "anywhere" }}>{form.version}</p>
+                  {form.sourceId && <SourceLinks ids={[form.sourceId]} />}
+                  {form.warnings.length > 0 && (
                     <ul>
                       {form.warnings.map((warning, i) => (
                         <li key={i}>{warning}</li>
                       ))}
                     </ul>
-                  </details>
-                )}
+                  )}
+                </details>
                 <div className={styles.sourceActions}>
                   <Button
                     variant="secondary"
@@ -443,9 +413,7 @@ export function AssessmentForms({
           onClose={() => setSelection(undefined)}
           onSaved={() => {
             setSelection(undefined);
-            setSavedMessage(
-              "Черновик сохранён в карте. Статус: не утверждено; в графики не включён.",
-            );
+            setSavedMessage("Черновик сохранён.");
           }}
         />
       )}
@@ -775,9 +743,8 @@ function AssessmentWizard({
         {step === 0 && (
           <>
             <div className={styles.notice}>
-              Сохраняется подготовительная запись без клинической интерпретации.
-              Пустой ответ означает пропуск; 0 — заполненный ответ.
-              Автосохранения нет.
+              Пустой ответ — пропуск; 0 — заполненный ответ. Сохраните черновик
+              кнопкой внизу формы.
             </div>
             <dl className={styles.facts}>
               <div>
@@ -915,11 +882,9 @@ function AssessmentWizard({
                 <dd style={{ overflowWrap: "anywhere" }}>{form.version}</dd>
               </div>
             </dl>
-            <h4>Предварительная арифметика</h4>
+            <h4>Расчёт по ответам</h4>
             <p className={styles.notice}>
-              Расчёт помогает проверить ввод. Утверждение формы и клиническая
-              оценка выполняются отдельно. Пропущенные ответы не заменяются
-              нулями.
+              Пропущенные ответы не заменяются нулями.
             </p>
             {calculated.error && <ErrorNotice>{calculated.error}</ErrorNotice>}
             {calculated.result && (
@@ -993,8 +958,7 @@ function AssessmentWizard({
             </details>
             {value.note && <p className={styles.reviewText}>{value.note}</p>}
             <p className={styles.notice}>
-              При сохранении статус останется «Не утверждено». Запись будет
-              доступна среди черновиков форм и не изменит графики динамики.
+              Черновик сохраняется отдельно от результатов оценки.
             </p>
           </>
         )}
