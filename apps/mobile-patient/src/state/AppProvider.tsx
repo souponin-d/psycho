@@ -26,6 +26,7 @@ const Context = createContext<{
   ready: boolean;
   reducedMotion: boolean;
   storageError: boolean;
+  preferencesSaving: boolean;
   retrySave: () => void;
   today: string;
   isActive: boolean;
@@ -39,6 +40,7 @@ export function AppProvider({ children }: PropsWithChildren) {
   const [ready, setReady] = useState(false);
   const [systemReduced, setSystemReduced] = useState(false);
   const [storageError, setStorageError] = useState(false);
+  const [preferencesSaving, setPreferencesSaving] = useState(false);
   const [saveAttempt, setSaveAttempt] = useState(0);
   const [today, setToday] = useState(dayKey());
   const [isActive, setIsActive] = useState(
@@ -86,6 +88,7 @@ export function AppProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     if (!ready || !readSucceeded) return;
     let alive = true;
+    setPreferencesSaving(true);
     store
       .write(state)
       .then(() => {
@@ -93,6 +96,9 @@ export function AppProvider({ children }: PropsWithChildren) {
       })
       .catch(() => {
         if (alive) setStorageError(true);
+      })
+      .finally(() => {
+        if (alive) setPreferencesSaving(false);
       });
     return () => {
       alive = false;
@@ -106,6 +112,7 @@ export function AppProvider({ children }: PropsWithChildren) {
         ready,
         reducedMotion: systemReduced || !state.motion,
         storageError,
+        preferencesSaving,
         retrySave: () =>
           readSucceeded
             ? setSaveAttempt((n) => n + 1)

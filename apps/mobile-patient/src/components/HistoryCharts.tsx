@@ -5,6 +5,7 @@ import { useApp } from "../state/AppProvider";
 import { Touch } from "./Motion";
 import { T, Panel } from "./UI";
 import type { PatientHistoryProjection } from "../core/history";
+import { sleepLabel } from "../core/patientPresentation";
 
 function LineChart({
   days,
@@ -142,6 +143,8 @@ function LineChart({
 export function HistoryCharts({ data }: { data: PatientHistoryProjection }) {
   const { theme } = useApp();
   const { summary } = data;
+  const [sleepDay, setSleepDay] = useState<string | null>(null);
+  const selectedSleep = data.days.find((d) => d.day === sleepDay);
   const categories = [
     ["Принято", summary.taken, theme.accent],
     ["Пропущено", summary.missed, theme.dark ? "#D6B99A" : "#9B7352"],
@@ -222,18 +225,36 @@ export function HistoryCharts({ data }: { data: PatientHistoryProjection }) {
       <T size={12} weight="600">
         Сон
       </T>
-      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator
+        contentContainerStyle={{ gap: 4 }}
+      >
         {data.days.map((day) => (
-          <View
+          <Touch
             key={day.day}
-            accessibilityLabel={`${day.day}: сон ${day.sleep ?? "нет записи"}`}
-            style={{ width: 26, alignItems: "center", gap: 3 }}
+            accessibilityRole="button"
+            accessibilityLabel={`${day.day}: сон ${sleepLabel(day.sleep)}`}
+            accessibilityState={{ selected: day.day === sleepDay }}
+            onPress={() => setSleepDay(day.day)}
+            style={{
+              minWidth: 44,
+              minHeight: 62,
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 5,
+              borderRadius: 12,
+              backgroundColor:
+                day.day === sleepDay ? theme.soft : "transparent",
+            }}
           >
             <View
               style={{
-                width: 14,
-                height: 14,
-                borderRadius: 7,
+                width: 24,
+                height: 24,
+                borderRadius: 12,
+                alignItems: "center",
+                justifyContent: "center",
                 backgroundColor:
                   day.sleep === "Хорошо"
                     ? theme.accent
@@ -242,19 +263,40 @@ export function HistoryCharts({ data }: { data: PatientHistoryProjection }) {
                       : day.sleep === "Плохо"
                         ? "#B5A2C7"
                         : theme.soft,
-                borderWidth: day.sleep ? 0 : 1,
-                borderColor: theme.border,
               }}
-            />
-            <T size={9} muted>
+            >
+              <T
+                size={11}
+                weight="600"
+                style={{
+                  color: day.sleep === "Хорошо" ? theme.onAccent : theme.text,
+                }}
+              >
+                {day.sleep === "Хорошо"
+                  ? "Х"
+                  : day.sleep === "Обычно"
+                    ? "О"
+                    : day.sleep === "Плохо"
+                      ? "П"
+                      : "—"}
+              </T>
+            </View>
+            <T size={11} muted>
               {day.day.slice(-2)}
             </T>
-          </View>
+          </Touch>
         ))}
-      </View>
+      </ScrollView>
+      <T size={12} accessibilityLiveRegion="polite">
+        {selectedSleep
+          ? selectedSleep.day.split("-").reverse().join(".") +
+            " · Сон: " +
+            sleepLabel(selectedSleep.sleep)
+          : "Выберите дату на графике сна."}
+      </T>
       <T size={10} muted>
-        Зелёный — хорошо · песочный — обычно · лиловый — плохо · пустой — нет
-        записи. Графики отражают записи, без оценки лечения.
+        Х — хорошо · О — обычно · П — плохо · — нет записи. Графики отражают
+        записи, без оценки лечения.
       </T>
     </Panel>
   );

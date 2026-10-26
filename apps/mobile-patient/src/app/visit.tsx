@@ -1,3 +1,4 @@
+import { patientLabel } from "../core/patientPresentation";
 import { View } from "react-native";
 import { router, type Href } from "expo-router";
 import { Screen, Heading, T, Button } from "../components/UI";
@@ -32,7 +33,7 @@ export default function VisitScreen() {
         </T>
         <T>{visit.specialist}</T>
         <T muted size={13}>
-          {visit.place}
+          {patientLabel(visit.place)}
         </T>
       </View>
       <View style={{ gap: 12 }}>
@@ -51,10 +52,6 @@ export default function VisitScreen() {
           onPress={() => router.push("/contact" as Href)}
         />
       </View>
-      <T muted size={12} style={{ marginTop: 24 }}>
-        Сведения о визите подготовлены в учебном плане. Реальной записи в
-        клинику не создаётся.
-      </T>
     </Screen>
   );
 }

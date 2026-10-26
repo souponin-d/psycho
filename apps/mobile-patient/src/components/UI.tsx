@@ -65,6 +65,7 @@ export function Button({
       accessibilityRole="button"
       accessibilityLabel={title}
       disabled={disabled}
+      accessibilityState={{ disabled }}
       onPress={onPress}
       style={{
         minHeight: 56,

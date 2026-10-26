@@ -40,6 +40,7 @@ export default function ChatScreen() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [keyboard, setKeyboard] = useState(false);
+  const [menu, setMenu] = useState(false);
   useEffect(() => {
     alive.current = true;
     const show = Keyboard.addListener("keyboardDidShow", () =>
@@ -104,23 +105,29 @@ export default function ChatScreen() {
             marginBottom: 14,
           }}
         >
-          <Mascot size={75} />
-          <View>
-            <T size={27} weight="500" style={{ letterSpacing: -1 }}>
+          <Mascot size={48} />
+          <View style={{ flex: 1 }}>
+            <T size={23} weight="500" style={{ letterSpacing: -1 }}>
               Я рядом
             </T>
             <T muted size={12}>
-              Ваш спутник в Синкли
+              План, записи и вопросы
             </T>
           </View>
-        </View>
-        <View
-          style={{ backgroundColor: theme.soft, borderRadius: 15, padding: 12 }}
-        >
-          <T size={11} muted>
-            Помогу найти план и сохранить мысли. Связь с врачом здесь пока
-            недоступна.
-          </T>
+          <Touch
+            accessibilityRole="button"
+            accessibilityLabel="Меню переписки"
+            accessibilityState={{ expanded: menu }}
+            onPress={() => setMenu(!menu)}
+            style={{
+              minWidth: 44,
+              minHeight: 44,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <T size={24}>···</T>
+          </Touch>
         </View>
       </View>
       <ScrollView
@@ -129,7 +136,7 @@ export default function ChatScreen() {
         onContentSizeChange={() =>
           list.current?.scrollToEnd({ animated: true })
         }
-        contentContainerStyle={{ padding: 24, gap: 14, flexGrow: 1 }}
+        contentContainerStyle={{ padding: 20, gap: 12, flexGrow: 1 }}
       >
         {[...messages, ...(pending ? [pending] : [])].map((message) => (
           <Enter
@@ -158,7 +165,12 @@ export default function ChatScreen() {
                   lineHeight: 21,
                 }}
               >
-                {message.text}
+                {message.role === "assistant"
+                  ? message.text.replace(
+                      /^Сообщения врачу пока не отправляются\. /,
+                      "",
+                    )
+                  : message.text}
               </T>
             </View>
           </Enter>
@@ -181,39 +193,55 @@ export default function ChatScreen() {
             />
           </>
         ) : null}
-        <View style={{ gap: 8 }}>
+        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
           {[
-            ["Открыть план", "/plan"],
-            ["Заполнить самоотчёт", "/check-in"],
+            ["План", "/plan"],
+            ["Самоотчёт", "/check-in"],
             ["Вопросы к приёму", "/questions"],
           ].map(([label, path]) => (
-            <Button
+            <Touch
               key={path}
-              title={label}
-              secondary
+              accessibilityRole="button"
               onPress={() =>
                 router.push(path as "/plan" | "/check-in" | "/questions")
               }
-            />
+              style={{
+                minHeight: 44,
+                paddingHorizontal: 12,
+                justifyContent: "center",
+                borderRadius: 14,
+                backgroundColor: theme.soft,
+              }}
+            >
+              <T size={12}>{label}</T>
+            </Touch>
           ))}
-          <Button
-            title="Очистить переписку"
-            secondary
-            onPress={() =>
-              Alert.alert("Очистить переписку?", "Записи терапии сохранятся.", [
-                { text: "Отмена", style: "cancel" },
-                {
-                  text: "Очистить",
-                  style: "destructive",
-                  onPress: () =>
-                    void act({ type: "chat:clear" }).then((ok) => {
-                      if (ok) setText("");
-                    }),
-                },
-              ])
-            }
-          />
         </View>
+        {menu && (
+          <View>
+            <Button
+              title="Очистить переписку"
+              secondary
+              onPress={() =>
+                Alert.alert(
+                  "Очистить переписку?",
+                  "Записи терапии сохранятся.",
+                  [
+                    { text: "Отмена", style: "cancel" },
+                    {
+                      text: "Очистить",
+                      style: "destructive",
+                      onPress: () =>
+                        void act({ type: "chat:clear" }).then((ok) => {
+                          if (ok) setText("");
+                        }),
+                    },
+                  ],
+                )
+              }
+            />
+          </View>
+        )}
       </ScrollView>
       <View
         style={{

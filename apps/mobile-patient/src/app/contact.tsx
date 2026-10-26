@@ -4,12 +4,18 @@ import { router } from "expo-router";
 import { Screen, Heading, T, Button, Chip } from "../components/UI";
 import { useJourney } from "../state/JourneyProvider";
 import { useApp } from "../state/AppProvider";
+import { usePatientConnection } from "../state/PatientConnectionProvider";
 import { getContactDraft, validateContactDraft } from "../core/contactDraft";
 import { shiftDay } from "../core/calendar";
 import type { ContactDraftFields, ContactEvent } from "../core/journeyModel";
 export default function ContactScreen() {
   const { theme, today } = useApp(),
     { journey, act, saving } = useJourney();
+  const connection = usePatientConnection();
+  const outgoing = useRef<{ id: string; text: string } | null>(null);
+  const latestDoctorMessage = connection.snapshot?.messages
+    .filter((m) => m.direction === "doctor")
+    .at(-1);
   const draftId = "contact:" + today;
   const [fields, setFields] = useState<ContactDraftFields>(() =>
     getContactDraft(journey?.drafts[draftId]),
@@ -64,6 +70,7 @@ export default function ContactScreen() {
     [act, draftId, today],
   );
   const patch = (value: Partial<ContactDraftFields>) => {
+    committed.current = false;
     setError("");
     setFields((f) => ({ ...f, ...value }));
   };
@@ -75,33 +82,63 @@ export default function ContactScreen() {
       return;
     }
     inFlight.current = true;
-    const draftSaved = await act({
-      type: "draft",
-      draft: { id: draftId, kind: "contact", day: today, contact: fields },
-    });
-    if (!draftSaved) {
+    setError("");
+    const text = `${fields.description.trim()}\nНачалось: ${fields.onset}. Выраженность: ${fields.severity}. Предпочтение: ${fields.preference === "earlier" ? "обсудить раньше" : "на плановом приёме"}.`;
+    const command =
+      outgoing.current?.text === text
+        ? outgoing.current
+        : {
+            id: `contact-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
+            text,
+          };
+    outgoing.current = command;
+    try {
+      if (!journey?.events.some((event) => event.id === command.id)) {
+        if (
+          !(await act({
+            type: "draft",
+            draft: {
+              id: draftId,
+              kind: "contact",
+              day: today,
+              contact: fields,
+            },
+          }))
+        )
+          throw new Error(
+            "Не удалось сохранить черновик. Ваш ввод остался здесь.",
+          );
+        if (
+          !(await act({
+            type: "event",
+            event: {
+              id: command.id,
+              kind: "contact",
+              day: today,
+              onset: fields.onset,
+              description: fields.description.trim(),
+              severity: fields.severity,
+              preference: fields.preference,
+            },
+          }))
+        )
+          throw new Error(
+            "Не удалось сохранить обращение. Ваш ввод остался здесь.",
+          );
+      }
+      committed.current = true;
+      if (connection.mode === "server")
+        await connection.send(command.text, command.id);
+      setSaved(true);
+    } catch (e) {
+      setError(
+        (committed.current ? "Запись сохранена на телефоне. " : "") +
+          (e instanceof Error
+            ? e.message
+            : "Сервер не подтвердил действие. Попробуйте ещё раз."),
+      );
+    } finally {
       inFlight.current = false;
-      setError("Не удалось сохранить черновик. Ваш ввод остался здесь.");
-      return;
-    }
-    committed.current = true;
-    const success = await act({
-      type: "event",
-      event: {
-        id: "contact-" + Date.now(),
-        kind: "contact",
-        day: today,
-        onset: fields.onset,
-        description: fields.description.trim(),
-        severity: fields.severity,
-        preference: fields.preference,
-      },
-    });
-    inFlight.current = false;
-    if (success) setSaved(true);
-    else {
-      committed.current = false;
-      setError("Не удалось сохранить обращение. Ваш ввод остался здесь.");
     }
   }
   const inputStyle = {
@@ -117,19 +154,35 @@ export default function ContactScreen() {
   return (
     <Screen title="Обращение" back>
       <Heading
-        title={saved ? "Обращение сохранено" : "Что хотите обсудить?"}
+        title={
+          saved
+            ? connection.mode === "server"
+              ? "Обращение принято сервером"
+              : "Обращение сохранено"
+            : "Что хотите обсудить?"
+        }
         body={
           saved
-            ? "Запись осталась в вашей истории."
+            ? connection.mode === "server"
+              ? "Сервер получил запись. Это не означает, что врач её прочитал."
+              : "Запись осталась в вашей истории."
             : "Опишите трудность и выберите, как хотите её обсудить."
         }
       />
       {saved ? (
         <View style={{ gap: 22 }}>
-          <T>
-            Обращение сохранено на этом телефоне. Реальная отправка врачу пока
-            недоступна.
-          </T>
+          <T>Запись доступна в вашей истории.</T>
+          {connection.connected && (
+            <View style={{ gap: 10 }}>
+              <T weight="600">
+                {latestDoctorMessage
+                  ? "Сообщение врача"
+                  : "Ожидаем ответ врача"}
+              </T>
+              {latestDoctorMessage && <T>{latestDoctorMessage.text}</T>}
+              {connection.error ? <T size={13}>{connection.error}</T> : null}
+            </View>
+          )}
           <Button
             title="Вернуться к плану"
             onPress={() => router.dismissTo("/plan")}
@@ -137,6 +190,12 @@ export default function ContactScreen() {
         </View>
       ) : (
         <View style={{ gap: 20 }}>
+          {connection.connected && latestDoctorMessage && (
+            <View style={{ gap: 10 }}>
+              <T weight="600">Сообщение врача</T>
+              <T>{latestDoctorMessage.text}</T>
+            </View>
+          )}
           <TextInput
             accessibilityLabel="Описание трудности"
             multiline
@@ -266,9 +325,7 @@ export default function ContactScreen() {
             />
           )}
           <T size={12} muted>
-            Черновик сохраняется на этом телефоне. Это моделируемое обращение:
-            приложение не меняет назначение и не обеспечивает срочный ответ
-            врача.
+            Черновик сохраняется автоматически.
           </T>
         </View>
       )}

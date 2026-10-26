@@ -6,6 +6,8 @@ coverage/
 artifacts/
 .cache/
 *.log
+__pycache__/
+*.pyc
 
 # Local environment; examples may be committed
 .env
