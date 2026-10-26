@@ -88,7 +88,7 @@ internal static class ClinicalWorkflow {
     }else{value["kind"]=action=="scale"?"assessment":"follow-up";value["title"]=Labels[action];value["details"]=S(r,"rationale");foreach(var k in new[]{"dose","schedule","startDate","endDate","confirmedAt","confirmedBy","changeReason","replacesId","instructionUrl"})value[k]="";value["patientInstructions"]=action=="scale"?"Заполнить согласованный самоопросник к выбранному сроку.":"Обсудить сведения и дальнейшие действия с врачом.";A(p,"plan").Add(value);r["effectSnapshot"]=value.DeepClone();}
   }
   public static void Apply(JsonObject p,JsonObject m,Actor actor,string now){
-    Check(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")=="Development","Учебные команды доступны только в отдельной Development-среде.",403);
+    ClinicalExecutionPolicy.AssertAllowed(p,actor);
     var w=State(p);var type=S(m,"type");
     if(type=="workflow.submit"){
       Only(m,"type","value");var v=O(m,"value");Only(v,"id","protocolVersion","measuredAt","answers","state","safety","note","assignmentId","impact","immediateDanger");

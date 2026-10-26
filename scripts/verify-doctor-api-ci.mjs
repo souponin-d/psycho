@@ -8,6 +8,15 @@ import {
   apiAssembly,
 } from "./doctor-runtime.mjs";
 
+run(process.execPath, ["scripts/verify-clinical-policy.mjs"], {
+  env: environment(),
+});
+run(
+  process.env.DOCTOR_PYTHON ??
+    (process.platform === "win32" ? "python" : "python3"),
+  ["scripts/test_vps_update.py"],
+);
+
 const child = spawn(dotnet, [apiAssembly], {
   cwd: apiDirectory,
   env: {

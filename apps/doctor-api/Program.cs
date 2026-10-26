@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
+ClinicalExecutionPolicy.Configure(builder.Configuration);
 var hackathon = new HackathonAccess(builder.Configuration);
 if (builder.Configuration.GetValue<bool>("FORWARDEDHEADERS_ENABLED"))
   throw new InvalidOperationException("ForwardedHeaders_Enabled запрещён: приложение доверяет только явно настроенному локальному прокси.");
@@ -80,7 +81,7 @@ app.Use(async (context, next) =>
 if (!app.Environment.IsDevelopment()) { app.UseHsts(); app.UseHttpsRedirection(); }
 app.UseRateLimiter(); app.UseAuthentication(); app.UseAuthorization();
 app.Use(async (context, next) => { if (context.Request.Method is "POST" or "PUT" or "PATCH" or "DELETE") await context.RequestServices.GetRequiredService<IAntiforgery>().ValidateRequestAsync(context); await next(); });
-app.MapGet("/api/health", async (NpgsqlDataSource db) => { await using var command = db.CreateCommand("SELECT 1"); await command.ExecuteScalarAsync(); return Results.Ok(new { status = "ready", storage = "postgresql" }); }).AllowAnonymous();
+app.MapGet("/api/health", async (NpgsqlDataSource db) => { await using var command = db.CreateCommand("SELECT 1"); await command.ExecuteScalarAsync(); return Results.Ok(new { status = "ready", storage = "postgresql", release = builder.Configuration["Syncli:ReleaseId"] ?? "unversioned", contractVersion = "doctor-api-2026-10-26" }); }).AllowAnonymous();
 app.MapGet("/api/csrf", (HttpContext context, IAntiforgery anti) => Results.Ok(new { token = anti.GetAndStoreTokens(context).RequestToken })).AllowAnonymous();
 app.MapPost("/api/patient/access", async (PatientAccessRequest request, HttpContext context, Store db) =>
 {
