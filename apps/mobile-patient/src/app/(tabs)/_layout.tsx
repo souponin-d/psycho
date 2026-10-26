@@ -9,7 +9,7 @@ import { T } from "../../components/UI";
 import { Touch } from "../../components/Motion";
 const items: Record<string, { title: string; icon: IconName }> = {
   index: { title: "Путь", icon: "sun" },
-  plan: { title: "План", icon: "leaf" },
+  plan: { title: "Лечение", icon: "leaf" },
   history: { title: "История", icon: "history" },
   chat: { title: "Рядом", icon: "message" },
 };

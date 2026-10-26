@@ -13,7 +13,7 @@ import {
   latestDose,
   latestReports,
 } from "../../core/questionnaires";
-import { dayAt, instantNow, journeyProgress } from "../../core/calendar";
+import { dayAt, instantNow } from "../../core/calendar";
 import { handleNotificationAction } from "../../core/notifications";
 import { openPatientRepository } from "../../storage/sqlite";
 import { scheduleReminder } from "../../services/notificationTransport";
@@ -23,8 +23,7 @@ export default function PlanScreen() {
   const [reminding, setReminding] = useState(false);
   const [showPrescription, setShowPrescription] = useState(false);
   if (!journey) return null;
-  const tasks = assignedTasks(journey, today),
-    progress = journeyProgress(journey, today);
+  const tasks = assignedTasks(journey, today);
   async function dose(slotId: string, status: "taken" | "missed" | "unknown") {
     if (dayAt(instantNow()) !== today) {
       Alert.alert(
@@ -109,12 +108,10 @@ export default function PlanScreen() {
     <Screen title="Синкли">
       <Heading
         title="Мой план"
-        body={
-          new Date(today + "T12:00:00").toLocaleDateString("ru-RU", {
-            day: "numeric",
-            month: "long",
-          }) + " · шаг за шагом"
-        }
+        body={new Date(today + "T12:00:00").toLocaleDateString("ru-RU", {
+          day: "numeric",
+          month: "long",
+        })}
       />
       <T size={19} weight="500">
         На сегодня · {tasks.filter((t) => t.completed).length} из {tasks.length}
@@ -195,6 +192,7 @@ export default function PlanScreen() {
                       backgroundColor:
                         current?.status === status ? theme.accent : theme.soft,
                       alignItems: "center",
+                      justifyContent: "center",
                     }}
                   >
                     <T
@@ -274,14 +272,7 @@ export default function PlanScreen() {
             />
           ))}
       </View>
-      <T muted size={12} style={{ marginTop: 17, marginBottom: 25 }}>
-        {!state.gameplay
-          ? "Отмечайте назначения и сохраняйте записи в удобном ритме. Все сведения доступны в истории."
-          : progress.today.complete
-            ? "На сегодня всё выполнено. Итог дня закрепится в 00:00."
-            : "Для зачёта дня нужны все приёмы, полный самоотчёт и назначенные на сегодня тесты. День заканчивается в 00:00."}
-      </T>
-      <View style={{ gap: 12, marginBottom: 22 }}>
+      <View style={{ gap: 12, marginTop: 24, marginBottom: 22 }}>
         <Button
           title={
             showPrescription
@@ -333,8 +324,8 @@ export default function PlanScreen() {
       </View>
       <View style={{ gap: 12 }}>
         <Button
-          title="Переносимость и обращение"
-          secondary
+          title="Связаться с врачом"
+          icon="message"
           onPress={() => router.push("/contact" as Href)}
         />
         <Button
