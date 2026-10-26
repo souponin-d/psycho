@@ -231,7 +231,7 @@ function validateMutation(mutation: Mutation) {
       requireValue(
         Array.isArray(context.somaticConditions) &&
           context.somaticConditions.every(isCurrentIcd10Selection),
-        "Соматические заболевания выбираются из текущего учебного каталога МКБ-10.",
+        "Соматические заболевания выбираются из текущего каталога МКБ-10.",
       );
       break;
     }
@@ -299,7 +299,7 @@ function validateMutation(mutation: Mutation) {
               (diagnosis as { status?: unknown }).status as string,
             ),
         ),
-        "Диагноз выбирается из текущего учебного каталога МКБ-10.",
+        "Диагноз выбирается из текущего каталога МКБ-10.",
       );
       requireValue(
         raw.completionSnapshot == null && array("addenda").length === 0,

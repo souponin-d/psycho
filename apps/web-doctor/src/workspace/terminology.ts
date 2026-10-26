@@ -1,12 +1,14 @@
+import catalogCsv from "./data/mkb10-ru.csv?raw";
+
 /**
- * Учебный срез для демонстрации интерфейса. Он не является полной выгрузкой
- * НСИ и подлежит замене верифицированным импортом указанного в спецификации
- * паспорта справочника.
+ * Полная локальная выгрузка, которую передал пользователь. В CSV отсутствуют
+ * дата и номер версии. Идентификатор снапшота меняется при каждой новой
+ * загрузке каталога.
  */
 export const ICD10_SOURCE = {
   system: "ICD-10-RU",
   sourceOid: "1.2.643.5.1.13.13.11.1005",
-  sourceVersion: "educational-subset-2026-10-25",
+  sourceVersion: "local-csv-2026-10-26",
 } as const;
 
 export interface TerminologySelection {
@@ -21,29 +23,58 @@ export interface Icd10Entry extends TerminologySelection {
   parentCode?: string;
 }
 
-const entries: ReadonlyArray<readonly [string, string]> = [
-  ["F20", "Шизофрения"],
-  ["F30", "Маниакальный эпизод"],
-  ["F31", "Биполярное аффективное расстройство"],
-  ["F32.0", "Депрессивный эпизод лёгкой степени"],
-  ["F32.1", "Депрессивный эпизод средней степени"],
-  ["F32.2", "Депрессивный эпизод тяжёлой степени без психотических симптомов"],
-  ["F33", "Рекуррентное депрессивное расстройство"],
-  ["F41.0", "Паническое расстройство"],
-  ["F41.1", "Генерализованное тревожное расстройство"],
-  ["F43.1", "Посттравматическое стрессовое расстройство"],
-  ["F60", "Специфические расстройства личности"],
-  ["D50", "Железодефицитная анемия"],
-  ["E03", "Другие формы гипотиреоза"],
-  ["E11", "Сахарный диабет 2 типа"],
-  ["G40", "Эпилепсия"],
-  ["G47", "Расстройства сна"],
-  ["I10", "Эссенциальная (первичная) гипертензия"],
-];
+interface CatalogRow {
+  id: string;
+  value: string;
+  parentId: string;
+}
 
-export const ICD10_CATALOG: readonly Icd10Entry[] = entries.map(
-  ([code, title]) => ({ ...ICD10_SOURCE, code, title }),
-);
+const selectableCode = /^([A-Z]\d{2}(?:\.[0-9A-Z]+)?)\s+(.+)$/u;
+
+function parseCatalog(source: string): readonly Icd10Entry[] {
+  const [header, ...lines] = source.replace(/^\uFEFF/u, "").split(/\r?\n/u);
+  if (header !== "ID;MKB_VALUES;PARENT_ID") {
+    throw new Error("Не удалось распознать заголовок выгрузки МКБ-10.");
+  }
+
+  const rows: CatalogRow[] = lines.flatMap((line) => {
+    if (!line) return [];
+    const [id, value, parentId, ...extra] = line.split(";");
+    if (!id || !value || !parentId || extra.length) {
+      throw new Error("Выгрузка МКБ-10 содержит строку с неверной структурой.");
+    }
+    return [{ id, value, parentId }];
+  });
+
+  const codeByRowId = new Map(
+    rows.flatMap(({ id, value }) => {
+      const code = selectableCode.exec(value)?.[1];
+      return code ? [[id, code] as const] : [];
+    }),
+  );
+
+  const entries = rows.flatMap(({ value, parentId }) => {
+    const match = selectableCode.exec(value);
+    const code = match?.[1];
+    const title = match?.[2];
+    if (!code || !title) return [];
+    const parentCode = codeByRowId.get(parentId);
+    return [
+      {
+        ...ICD10_SOURCE,
+        code,
+        title,
+        ...(parentCode ? { parentCode } : {}),
+      },
+    ];
+  });
+
+  return entries.sort((left, right) =>
+    left.code.localeCompare(right.code, "en", { numeric: true }),
+  );
+}
+
+export const ICD10_CATALOG = parseCatalog(catalogCsv);
 
 const normalize = (value: string) =>
   value.trim().toLocaleLowerCase("ru-RU").replaceAll("ё", "е");

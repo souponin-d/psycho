@@ -33,7 +33,7 @@ export function TerminologyPicker<T extends Selection>({
         label={label}
         value={query}
         onChange={(event) => setQuery(event.target.value)}
-        hint="Учебный срез МКБ-10: поиск по коду или названию"
+        hint="МКБ-10: поиск по коду или названию"
       />
       {query && (
         <div className={styles.inlineNote} role="group" aria-label={label}>
