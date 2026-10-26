@@ -24,7 +24,7 @@ internal static class Adherence
 
   public static void Apply(JsonObject p,JsonObject mutation,Actor actor,string now)
   {
-    if(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")!="Development")throw new DomainException("Учебные команды доступны только в отдельной Development-среде.",403);
+    ClinicalExecutionPolicy.AssertAllowed(p,actor);
     Check(p["archived"] is not JsonValue archived||!archived.GetValue<bool>(),"Архивная карта доступна только для чтения.");
     var at=Instant(now);Only(mutation,"type","value");var v=Domain.Object(mutation,"value");var state=p["adherence"] as JsonObject??new JsonObject{["schedules"]=new JsonArray(),["records"]=new JsonArray()};
     if(S(mutation,"type")=="adherence.schedule"){

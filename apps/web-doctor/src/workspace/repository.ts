@@ -22,10 +22,13 @@ export class ApiError extends Error {
 }
 let csrf = "";
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  let response: Response;
+  const controller = new AbortController();
+  // Includes Layero cold start; the upstream proxy has its own shorter deadline.
+  const deadline = setTimeout(() => controller.abort(), 45_000);
   try {
-    response = await fetch(`/api${path}`, {
+    const response = await fetch(`/api${path}`, {
       ...options,
+      signal: controller.signal,
       credentials: "same-origin",
       headers: {
         "Content-Type": "application/json",
@@ -33,26 +36,29 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
         ...options.headers,
       },
     });
-  } catch {
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      throw new ApiError(
+        typeof body.detail === "string"
+          ? body.detail
+          : response.status === 401
+            ? "Сессия завершилась. Войдите снова."
+            : response.status === 409
+              ? "Карта изменена в другой сессии. Обновите данные перед повтором."
+              : "Не удалось выполнить действие. Повторите попытку.",
+        response.status,
+      );
+    }
+    return response.status === 204 ? (undefined as T) : await response.json();
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
     throw new ApiError(
       "Ответ сервера не получен. Результат сохранения пока неизвестен. Повторите действие: оно не будет записано дважды.",
       0,
     );
+  } finally {
+    clearTimeout(deadline);
   }
-  if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    throw new ApiError(
-      typeof body.detail === "string"
-        ? body.detail
-        : response.status === 401
-          ? "Сессия завершилась. Войдите снова."
-          : response.status === 409
-            ? "Карта изменена в другой сессии. Обновите данные перед повтором."
-            : "Не удалось выполнить действие. Повторите попытку.",
-      response.status,
-    );
-  }
-  return response.status === 204 ? (undefined as T) : response.json();
 }
 export async function serverSession(): Promise<{
   actor: Actor;

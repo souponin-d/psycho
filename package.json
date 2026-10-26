@@ -38,6 +38,8 @@
     "dev:doctor:api": "node scripts/doctor-service.mjs",
     "provision:doctor": "node scripts/doctor-service.mjs provision",
     "check:doctor:api": "node scripts/verify-doctor-api.mjs",
+    "check:doctor:policy": "node scripts/verify-clinical-policy.mjs",
+    "check:layero": "vitest run --project tools scripts/layero-proxy.test.ts scripts/layero-layout.test.ts",
     "check:doctor:ui": "node scripts/verify-doctor-ui.mjs",
     "check:doctor:restore": "node scripts/verify-doctor-restore.mjs"
   },

@@ -46,3 +46,7 @@ GitHub Issues — единственный источник текущего с�
 ## Обновление кабинета врача
 
 [#42 · клинический контекст, справочники и два маршрута помощи](https://github.com/souponin-d/psycho/issues/42) — владелец souponin-d, класс C. [Проверка объединённой ветки](../verification/2026-10-26-doctor-pr.md); рабочий статус и обсуждения ведутся в issue.
+
+## Связь Layero и VPS
+
+[#44 · Node-прокси и согласованная поставка API](https://github.com/souponin-d/psycho/issues/44) — владелец souponin-d, класс C. [План](../superpowers/plans/2026-10-26-doctor-vps-connection.md), [настройка Layero и проверки](../../deployment/layero/README.md).

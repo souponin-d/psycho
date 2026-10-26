@@ -1,0 +1,23 @@
+{
+  "$schema": "https://layero.ru/schema/layero-v2.json",
+  "runtime": "node_web",
+  "nodeVersion": "24",
+  "frontend": {
+    "root": ".",
+    "framework": "generic",
+    "install": "npm ci --ignore-scripts",
+    "build": "npm run build",
+    "output": "dist",
+    "node": "24"
+  },
+  "backend": {
+    "root": "deployment/layero",
+    "framework": "generic",
+    "runtime": "node_web",
+    "install": "node --version",
+    "start": "node server.mjs",
+    "node": "24",
+    "port": 3000
+  },
+  "apiPrefix": "/api"
+}
