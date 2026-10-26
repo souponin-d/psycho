@@ -1,0 +1,33 @@
+{
+	default_sni 176.32.37.10
+}
+
+176.32.37.10 {
+	tls force_automate {
+		issuer acme https://acme-v02.api.letsencrypt.org/directory {
+			profile shortlived
+		}
+	}
+	root * /srv/syncli/current
+	encode zstd gzip
+	header X-Content-Type-Options nosniff
+	header Referrer-Policy same-origin
+
+	@api path /api /api/*
+	handle @api {
+		reverse_proxy 127.0.0.1:5080
+	}
+	redir /doctor /doctor/ 308
+	redir /demo/admin /demo/admin/ 308
+	handle /doctor/* {
+		try_files {path} /doctor/index.html
+		file_server
+	}
+	handle /demo/admin/* {
+		try_files {path} /demo/admin/index.html
+		file_server
+	}
+	handle {
+		file_server
+	}
+}

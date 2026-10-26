@@ -1,3 +1,4 @@
+using System.Net;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
@@ -8,11 +9,23 @@ using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 var hackathon = new HackathonAccess(builder.Configuration);
+if (builder.Configuration.GetValue<bool>("FORWARDEDHEADERS_ENABLED"))
+  throw new InvalidOperationException("ForwardedHeaders_Enabled запрещён: приложение доверяет только явно настроенному локальному прокси.");
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+  options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+  options.ForwardLimit = 1;
+  options.RequireHeaderSymmetry = true;
+  options.KnownIPNetworks.Clear();
+  options.KnownProxies.Clear();
+  options.KnownProxies.Add(IPAddress.Loopback);
+});
 builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = 2_000_000);
 var connectionString = builder.Configuration.GetConnectionString("Doctor") ?? throw new InvalidOperationException("Задайте ConnectionStrings__Doctor для PostgreSQL. См. docs/doctor-workspace-runbook.md.");
 var keyDirectory = builder.Configuration["Doctor:KeyDirectory"] ?? Path.Combine(builder.Environment.ContentRootPath, ".data", "keys");
@@ -50,6 +63,7 @@ if (args.Contains("--provision"))
   await store.Provision(new(RequiredSetting("Id"), RequiredSetting("Name"), RequiredSetting("Specialty"), RequiredSetting("ClinicId"), builder.Configuration["Provision:PatientId"]), RequiredSetting("Email"), RequiredSetting("Password"));
   Console.WriteLine("Учётная запись создана. Пароль не выводится в журнал."); return;
 }
+app.UseForwardedHeaders();
 app.Use(async (context, next) =>
 {
   context.Response.Headers["X-Content-Type-Options"] = "nosniff"; context.Response.Headers["Referrer-Policy"] = "same-origin"; context.Response.Headers["Cache-Control"] = "no-store";
