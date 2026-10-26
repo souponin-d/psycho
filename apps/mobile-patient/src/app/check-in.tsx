@@ -361,7 +361,7 @@ export default function CheckInScreen() {
                   <T size={13} muted style={{ textAlign: "center" }}>
                     {point
                       ? feelingHint(preview)
-                      : "Передвиньте точку. Любые ощущения одинаково важны."}
+                      : "Коснитесь карты, чтобы выбрать состояние. Любые ощущения одинаково важны."}
                   </T>
                 </View>
                 <View style={{ alignItems: "center" }}>

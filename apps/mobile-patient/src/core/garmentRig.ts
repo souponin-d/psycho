@@ -29,6 +29,7 @@ export function garmentRig(
         : cloud
           ? [80, 268, 433, 399]
           : [106, 270, 405, 396];
+  const collarDrop = garment === "scarf" ? 7 : garment === "hoodie" ? 12 : 8;
   const center = (left + right) / 2;
   const dip = garment === "scarf" ? 102 : garment === "cape" ? 184 : 180;
   return {
@@ -37,7 +38,12 @@ export function garmentRig(
     tx,
     ty,
     transform: `translate(${tx} ${ty}) scale(${sx} ${sy})`,
-    rect: { x: left, y: top, width: right - left, height: bottom - top },
+    rect: {
+      x: left,
+      y: top + collarDrop,
+      width: right - left,
+      height: bottom - top - collarDrop,
+    },
     // Depth split is above the visible neckline: only raised rear hood/cape
     // tips stay behind the body. The curved collar itself must remain intact.
     frontPath: `M 0 ${top + 35} Q ${center} ${top - 5} 512 ${top + 35} L 512 512 L 0 512 Z`,

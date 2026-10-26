@@ -15,10 +15,6 @@ export default function HelpScreen() {
           title="Позвонить 112"
           onPress={() => void Linking.openURL("tel:112")}
         />
-        <T muted size={13}>
-          В этом сценарии нет реальной отправки врачу и работающей экстренной
-          службы. Запись состояния не означает, что специалист её увидел.
-        </T>
         <Button
           title="Сохранить вопрос к врачу"
           secondary

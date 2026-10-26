@@ -14,14 +14,14 @@ import { useJourney } from "../state/JourneyProvider";
 import { clearReminderNotifications } from "../services/localNotifications";
 import { clearSavedHistoryExports } from "../services/historyExport";
 export default function SettingsScreen() {
-  const { state, dispatch, theme } = useApp();
+  const { state, dispatch, theme, preferencesSaving, storageError } = useApp();
   const { journey, act, saving } = useJourney();
   const [goal, setGoal] = useState(journey?.goal ?? "Следовать плану терапии");
   const [name, setName] = useState(state.name);
   return (
     <Screen title="Ваше пространство" back>
       <Heading
-        title={"Пусть будет\nпо-вашему"}
+        title="Настройки"
         body="Все изменения сохраняются на этом телефоне"
       />
       <T size={18} weight="500" style={{ marginBottom: 16 }}>
@@ -57,6 +57,13 @@ export default function SettingsScreen() {
           disabled={saving || !goal.trim() || goal.trim() === journey?.goal}
           onPress={() => void act({ type: "goal", goal })}
         />
+        <T size={12} muted accessibilityLiveRegion="polite">
+          {saving
+            ? "Сохраняем цель…"
+            : goal.trim() === journey?.goal
+              ? "Цель сохранена"
+              : "Есть несохранённые изменения"}
+        </T>
       </Panel>
       <T size={18} weight="500" style={{ marginTop: 30, marginBottom: 16 }}>
         Ваш спутник
@@ -105,9 +112,11 @@ export default function SettingsScreen() {
           accessibilityLabel="Изменить имя"
           value={name}
           onChangeText={setName}
-          onEndEditing={() =>
-            dispatch({ type: "preferences", patch: { name } })
-          }
+          onEndEditing={() => {
+            const normalized = name.trim() || "Анна";
+            setName(normalized);
+            dispatch({ type: "preferences", patch: { name: normalized } });
+          }}
           maxLength={30}
           style={{
             fontFamily: "Onest",
@@ -118,6 +127,15 @@ export default function SettingsScreen() {
             color: theme.text,
           }}
         />
+        <T size={12} muted accessibilityLiveRegion="polite">
+          {storageError
+            ? "Не удалось сохранить имя"
+            : preferencesSaving
+              ? "Сохраняем…"
+              : name === state.name
+                ? "Имя сохранено"
+                : "Завершите ввод, чтобы сохранить имя"}
+        </T>
         <View
           style={{
             flexDirection: "row",
@@ -204,7 +222,7 @@ export default function SettingsScreen() {
           onPress={() =>
             Alert.alert(
               "Начать заново?",
-              "Удалятся ваши локальные записи, файлы истории внутри Синкли, вопросы, настройки и расстановка. Внешние копии файлов останутся. Снова откроется учебный сценарий с восемью прошлыми днями.",
+              "Удалятся ваши локальные записи, файлы истории внутри Синкли, вопросы, настройки и расстановка. Внешние копии файлов останутся. После сброса откроется знакомство с приложением.",
               [
                 { text: "Отмена", style: "cancel" },
                 {
@@ -234,7 +252,7 @@ export default function SettingsScreen() {
         />
       </View>
       <T muted size={11} style={{ marginTop: 24, lineHeight: 17 }}>
-        Синкли · {Constants.expoConfig?.version ?? "0.3.0"}
+        Синкли · {Constants.expoConfig?.version ?? "0.4.1"}
       </T>
     </Screen>
   );

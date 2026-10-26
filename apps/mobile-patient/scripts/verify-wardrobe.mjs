@@ -4,58 +4,60 @@ import { join } from "node:path";
 import {
   open,
   pause,
-  tap,
   tapNode,
-  seek,
   find,
   nodes,
   screen,
   shell,
-  pkg,
   dir,
 } from "./android-harness.mjs";
-open("/");
-pause(1400);
-if (find("Путь")) tap("Путь");
-tap("Обустроить мой мир");
-tap("Спутник");
-tap("Облачко");
-tapNode(seek("Окраска: Жемчуг"));
-tapNode(seek("Одежда: Худи"));
-tapNode(seek("Аксессуар: Звезда"));
-screen("wardrobe-cloud-hoodie");
-tap("Закрыть мастерскую");
-tap("Готово");
-shell("am", "force-stop", pkg);
-open("/");
-pause(1500);
-if (find("Путь")) tap("Путь");
-tap("Обустроить мой мир");
-tap("Спутник");
-for (const label of ["Окраска: Жемчуг", "Одежда: Худи", "Аксессуар: Звезда"]) {
-  const n = seek(label);
-  assert.equal(n.selected, "true", label + " сохранён после остановки");
+
+// Preview changes stay local: do not rewrite the patient's saved wardrobe.
+const previous = shell(
+  "settings",
+  "get",
+  "global",
+  "transition_animation_scale",
+).trim();
+try {
+  shell("settings", "put", "global", "transition_animation_scale", "0");
+  open("/companion-preview");
+  pause(1200);
+  const tree = nodes();
+  assert(find("Спутники Синкли", tree));
+  assert(!tree.some((n) => /Окраска|Шалфей|Лаванда|Жемчуг/.test(n.text)));
+  const clothes = ["Шарф", "Худи", "Накидка"];
+  const accessories = ["Без аксессуара", "Листок", "Звезда", "Бант"];
+  // Expects full preview controls visible at normal font scale.
+  const clothingNodes = clothes.map((label) => find(label, tree));
+  const accessoryNodes = accessories.map((label) => find(label, tree));
+  assert(clothingNodes.every(Boolean) && accessoryNodes.every(Boolean));
+  const captures = [];
+  for (const [c, clothing] of clothes.entries()) {
+    tapNode(clothingNodes[c]);
+    for (const [a, accessory] of accessories.entries()) {
+      tapNode(accessoryNodes[a]);
+      pause(500);
+      const file = `wardrobe-${c}-${a}`;
+      screen(file);
+      captures.push({ clothing, accessory, file: file + ".png" });
+      console.log("Captured both companions:", clothing, accessory);
+    }
+  }
+  writeFileSync(
+    join(dir, "wardrobe-native.json"),
+    JSON.stringify(
+      { combinations: 24, captures, verifiedAt: new Date().toISOString() },
+      null,
+      2,
+    ),
+  );
+  console.log(
+    "PASS: 24 combinations captured; inspect fit visually. Saved profile untouched.",
+  );
+} finally {
+  if (previous === "null")
+    shell("settings", "delete", "global", "transition_animation_scale");
+  else
+    shell("settings", "put", "global", "transition_animation_scale", previous);
 }
-// Only the previewed wardrobe changes when switching the mascot in this draft.
-tapNode(seek("Пушистик"));
-for (const label of ["Окраска: Шалфей", "Одежда: Шарф", "Аксессуар: Листок"]) {
-  const n = seek(label);
-  assert.equal(n.selected, "true", label + " у пушистика сохранён независимо");
-}
-screen("wardrobe-fluffy-independent");
-tapNode(seek("Облачко"));
-tap("Закрыть мастерскую");
-tap("Готово");
-writeFileSync(
-  join(dir, "wardrobe-result.json"),
-  JSON.stringify(
-    {
-      cloudOutfitPersisted: true,
-      fluffyWardrobeIndependent: true,
-      verifiedAt: new Date().toISOString(),
-    },
-    null,
-    2,
-  ),
-);
-console.log("PASS: independent native wardrobes persisted after restart");

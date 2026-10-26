@@ -9,6 +9,16 @@ export type CsrfResponse = { token?: string };
 export function csrf(transport: Transport): Promise<CsrfResponse> {
   return transport(`/csrf`, { method: "GET" });
 }
+export type PatientAccessResponse = { role: "patient" };
+export function patientAccess(
+  transport: Transport,
+  body: { code: string },
+): Promise<PatientAccessResponse> {
+  return transport(`/patient/access`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
 export type LoginResponse = {};
 export function login(
   transport: Transport,

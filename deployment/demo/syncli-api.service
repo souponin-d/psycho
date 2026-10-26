@@ -1,0 +1,26 @@
+[Unit]
+Description=Syncli synthetic demo API
+After=network-online.target postgresql.service
+Wants=network-online.target
+Requires=postgresql.service
+
+[Service]
+Type=simple
+User=syncli
+Group=syncli
+WorkingDirectory=/opt/syncli/current/api
+EnvironmentFile=/etc/syncli/api.env
+ExecStart=/usr/bin/dotnet /opt/syncli/current/api/Doctor.Api.dll
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/syncli/keys
+SyslogIdentifier=syncli-api
+
+[Install]
+WantedBy=multi-user.target

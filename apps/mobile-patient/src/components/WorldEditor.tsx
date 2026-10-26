@@ -263,11 +263,6 @@ export function WorldEditor({
                 {(
                   [
                     {
-                      title: "Окраска",
-                      key: "color",
-                      options: wardrobe.colors,
-                    },
-                    {
                       title: "Одежда",
                       key: "clothing",
                       options: wardrobe.clothing,
@@ -316,7 +311,7 @@ export function WorldEditor({
                                 : theme.surface,
                           }}
                         >
-                          {section.key !== "color" && (
+                          {
                             <View
                               pointerEvents="none"
                               importantForAccessibility="no-hide-descendants"
@@ -331,7 +326,7 @@ export function WorldEditor({
                                 }}
                               />
                             </View>
-                          )}
+                          }
                           <T size={13}>{option.name}</T>
                         </Touch>
                       ))}

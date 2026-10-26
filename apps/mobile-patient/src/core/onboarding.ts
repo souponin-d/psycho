@@ -35,7 +35,7 @@ export function saveOnboarding(
     throw new PatientValidationError("Не удалось сохранить шаг знакомства");
   if ((p.step >= 2 || p.completed) && !state.connected)
     throw new PatientValidationError(
-      "Сначала подключите план по коду или войдите в демо-режиме",
+      "Сначала подключите план по коду или продолжите знакомство",
     );
   if (
     p.completed &&

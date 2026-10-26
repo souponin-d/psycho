@@ -43,6 +43,28 @@ public sealed class Store(NpgsqlDataSource dataSource)
     command.Parameters.AddWithValue(actor.Id); command.Parameters.AddWithValue(actor.ClinicId); command.Parameters.AddWithValue(actor.SecurityVersion);
     return (bool)(await command.ExecuteScalarAsync())!;
   }
+  public async Task<Actor?> FindHackathonActor(string userId)
+  {
+    Actor? actor = null;
+    await using (var command = dataSource.CreateCommand("SELECT id,name,specialty,clinic_id,patient_id,security_version FROM clinic_users WHERE id=$1 AND active AND specialty='patient' AND patient_id IS NOT NULL"))
+    {
+      command.Parameters.AddWithValue(userId);
+      await using var reader = await command.ExecuteReaderAsync();
+      if (await reader.ReadAsync())
+      {
+        actor = new(reader.GetString(0), reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetString(4), reader.GetInt32(5));
+      }
+    }
+    if (actor is null || !await ValidHackathonSession(actor)) return null;
+    return actor;
+  }
+  public async Task<bool> ValidHackathonSession(Actor actor)
+  {
+    if (actor.PatientId is null) return false;
+    await using var command = dataSource.CreateCommand("SELECT EXISTS(SELECT 1 FROM clinic_users u JOIN patient_records p ON p.id=u.patient_id AND p.clinic_id=u.clinic_id JOIN care_relationships c ON c.patient_id=p.id AND c.clinic_id=p.clinic_id JOIN clinic_users d ON d.id=c.doctor_id AND d.clinic_id=c.clinic_id WHERE u.id=$1 AND u.clinic_id=$2 AND u.patient_id=$3 AND u.security_version=$4 AND u.active AND u.specialty='patient' AND c.active AND d.active AND d.patient_id IS NULL)");
+    command.Parameters.AddWithValue(actor.Id); command.Parameters.AddWithValue(actor.ClinicId); command.Parameters.AddWithValue(actor.PatientId); command.Parameters.AddWithValue(actor.SecurityVersion);
+    return (bool)(await command.ExecuteScalarAsync())!;
+  }
   public async Task<JsonArray> List(Actor actor)
   {
     await using var command = dataSource.CreateCommand("SELECT p.document FROM patient_records p JOIN care_relationships c ON c.patient_id=p.id AND c.clinic_id=p.clinic_id WHERE c.doctor_id=$1 AND c.clinic_id=$2 AND c.active ORDER BY p.updated_at DESC");
