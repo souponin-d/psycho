@@ -19,6 +19,7 @@ import { AviandrCheck, AviandrSummary } from "./AviandrCheck";
 import { MedicinePicker, MedicineSummary } from "./MedicinePicker";
 import { grlsCatalog, type MedicineSelection } from "./grls";
 import { loadGrlsCatalog } from "./grls-loader";
+import { assertMedicationVisit } from "./medication-policy";
 function supportPlanIssue(
   patient: PatientRecord,
   item: PlanItem,
@@ -241,6 +242,65 @@ export function PlanForm({
   const current = patient.plan.find((item) => item.id === value.id);
   const guard = useDraftGuard(current, patient.revision);
   const locked = !!current && current.status !== "draft";
+  const remoteCorrection =
+    value.kind === "medication" &&
+    patient.visits.some(
+      (visit) => visit.id === value.visitId && visit.format === "remote",
+    );
+  let remoteIssue = "";
+  if (remoteCorrection) {
+    try {
+      assertMedicationVisit(patient, value, actions.actor, false);
+    } catch (error) {
+      remoteIssue = message(error);
+    }
+  }
+  function selectVisit(id: string) {
+    setValue((previous) => {
+      const original = patient.plan.find(
+        (item) => item.id === previous.replacesId,
+      );
+      if (
+        original &&
+        patient.visits.some(
+          (visit) => visit.id === id && visit.format === "remote",
+        )
+      ) {
+        const {
+          kind,
+          title,
+          medicine,
+          details,
+          schedule,
+          startDate,
+          endDate,
+          dueDate,
+          instructionUrl,
+          patientInstructions,
+          sourceIds,
+        } = original;
+        const restored = {
+          ...previous,
+          kind,
+          title,
+          medicine,
+          details,
+          schedule,
+          startDate,
+          endDate,
+          dueDate,
+          instructionUrl,
+          patientInstructions,
+          sourceIds,
+          visitId: id,
+        };
+        if (!isAviandr(title)) delete restored.aviandrReview;
+        return restored;
+      }
+      return { ...previous, visitId: id };
+    });
+    setError("");
+  }
   const staleReview = !locked && staleAviandrReview(patient, value);
   const set = (key: keyof PlanItem, v: string | string[]) =>
     setValue((previous) => {
@@ -306,6 +366,8 @@ export function PlanForm({
         throw new Error(
           "Источник проверки или данные карты изменились. Повторите сверку.",
         );
+      if (remoteCorrection)
+        assertMedicationVisit(patient, value, actions.actor, false);
       await actions.mutate(
         patient.id,
         { type: "plan.save", value },
@@ -317,7 +379,11 @@ export function PlanForm({
     }
   }
   const identityFields = (
-    <>
+    <fieldset
+      disabled={remoteCorrection}
+      className={styles.form}
+      style={{ margin: 0, padding: 0, border: 0, minWidth: 0 }}
+    >
       <Select
         label="Тип назначения"
         value={value.kind}
@@ -358,7 +424,7 @@ export function PlanForm({
           препарата требует выбора из справочника.
         </p>
       )}
-    </>
+    </fieldset>
   );
   return (
     <Modal
@@ -384,6 +450,13 @@ export function PlanForm({
           <Badge>{locked ? "Сохранённая запись" : "Черновик"}</Badge>
         </div>
         {error && <ErrorNotice>{error}</ErrorNotice>}
+        {remoteCorrection && (
+          <p className={styles.notice}>
+            Дистанционно можно изменить только дозировку. Остальные параметры
+            сохраняются из исходного назначения.
+          </p>
+        )}
+        {remoteIssue && <ErrorNotice>{remoteIssue}</ErrorNotice>}
         <DraftConflict
           guard={guard}
           allowKeep={!locked}
@@ -436,7 +509,12 @@ export function PlanForm({
               identityFields
             )}
             {value.kind === "medication" && !isAviandr(value.title) && (
-              <Button variant="secondary" icon="book" onClick={selectAviandr}>
+              <Button
+                variant="secondary"
+                icon="book"
+                disabled={remoteCorrection}
+                onClick={selectAviandr}
+              >
                 Выбрать Авиандр
               </Button>
             )}
@@ -477,7 +555,7 @@ export function PlanForm({
                 <Select
                   label="Приём, на котором принято решение"
                   value={value.visitId}
-                  onChange={(e) => set("visitId", e.target.value)}
+                  onChange={(e) => selectVisit(e.target.value)}
                 >
                   <option value="">Выберите начатый приём</option>
                   {patient.visits
@@ -502,12 +580,14 @@ export function PlanForm({
                   />
                   <Field
                     label="Режим приёма"
+                    disabled={remoteCorrection}
                     value={value.schedule}
                     onChange={(e) => set("schedule", e.target.value)}
                   />
                 </div>
                 <Field
                   label="Ссылка на действующую инструкцию"
+                  disabled={remoteCorrection}
                   type="url"
                   placeholder="https://…"
                   value={value.instructionUrl}
@@ -522,6 +602,7 @@ export function PlanForm({
             )}
             <Textarea
               label="Содержание назначения"
+              disabled={remoteCorrection}
               value={value.details}
               onChange={(e) => set("details", e.target.value)}
               rows={3}
@@ -529,12 +610,14 @@ export function PlanForm({
             <div className={styles.formPair}>
               <Field
                 label="Дата начала"
+                disabled={remoteCorrection}
                 type="date"
                 value={value.startDate}
                 onChange={(e) => set("startDate", e.target.value)}
               />
               <Field
                 label="Дата окончания, если определена"
+                disabled={remoteCorrection}
                 type="date"
                 value={value.endDate}
                 onChange={(e) => set("endDate", e.target.value)}
@@ -542,12 +625,14 @@ export function PlanForm({
             </div>
             <Field
               label="Контрольная дата"
+              disabled={remoteCorrection}
               type="date"
               value={value.dueDate}
               onChange={(e) => set("dueDate", e.target.value)}
             />
             <Textarea
               label="Указания пациенту"
+              disabled={remoteCorrection}
               value={value.patientInstructions}
               onChange={(e) => set("patientInstructions", e.target.value)}
               rows={3}
@@ -567,10 +652,15 @@ export function PlanForm({
                 required
               />
             )}
-            <SourcePicker
-              value={value.sourceIds}
-              onChange={(ids) => set("sourceIds", ids)}
-            />
+            <fieldset
+              disabled={remoteCorrection}
+              style={{ margin: 0, padding: 0, border: 0, minWidth: 0 }}
+            >
+              <SourcePicker
+                value={value.sourceIds}
+                onChange={(ids) => set("sourceIds", ids)}
+              />
+            </fieldset>
           </fieldset>
           {value.aviandrReview && (
             <aside
@@ -601,7 +691,13 @@ export function PlanForm({
           </Button>
           <Button
             type="submit"
-            disabled={actions.busy || guard.conflict || locked || staleReview}
+            disabled={
+              actions.busy ||
+              guard.conflict ||
+              locked ||
+              staleReview ||
+              !!remoteIssue
+            }
           >
             Сохранить черновик
           </Button>
