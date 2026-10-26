@@ -113,7 +113,7 @@ try {
     "/login",
     "POST",
     { email: config.doctorEmail, password: config.doctorPassword },
-    204,
+    200,
   );
   await doctor.call("/session");
   const records = await doctor.call("/patients");
