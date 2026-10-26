@@ -9,7 +9,7 @@ import { scheduleNotificationProbe } from "../services/localNotifications";
 import { T, Panel, Button } from "./UI";
 
 export function ReminderSettings() {
-  const { state, dispatch, theme } = useApp();
+  const { state, dispatch, theme, preferencesSaving, storageError } = useApp();
   const reminders = useReminders();
   const [morning, setMorning] = useState(state.morning),
     [report, setReport] = useState(state.reportTime);
@@ -77,6 +77,15 @@ export function ReminderSettings() {
           });
         }}
       />
+      <T size={12} muted accessibilityLiveRegion="polite">
+        {storageError
+          ? "Не удалось сохранить время"
+          : preferencesSaving
+            ? "Сохраняем время…"
+            : morning === state.morning && report === state.reportTime
+              ? "Время сохранено"
+              : "Есть несохранённые изменения"}
+      </T>
       <T size={13} weight="600">
         {reminders.allowed ? "Уведомления разрешены" : "Уведомления выключены"}
       </T>

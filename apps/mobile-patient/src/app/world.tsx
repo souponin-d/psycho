@@ -1,4 +1,5 @@
 import { View } from "react-native";
+import { dayRangeLabel } from "../core/patientPresentation";
 import { router } from "expo-router";
 import { Screen, T, Button, Panel } from "../components/UI";
 import { Touch } from "../components/Motion";
@@ -80,8 +81,11 @@ export default function WorldHub() {
           </View>
         </View>
         <T size={12} muted>
-          {progress.chapterStart} — {shiftDay(progress.chapterStart, 6)}. Нужны
-          любые 5 из 7 дней. Самочувствие не влияет на награду.
+          {dayRangeLabel(
+            progress.chapterStart,
+            shiftDay(progress.chapterStart, 6),
+          )}
+          . Нужны любые 5 из 7 дней. Самочувствие не влияет на награду.
         </T>
       </Panel>
       <T size={20} weight="600" style={{ marginTop: 28, marginBottom: 12 }}>
@@ -113,8 +117,11 @@ export default function WorldHub() {
               {scenes[s.territory].name}
             </T>
             <T size={11} muted>
-              {s.anchorDay} — {shiftDay(s.anchorDay, SECTION_DAYS - 1)} ·
-              предметов {s.placements.length}
+              {dayRangeLabel(
+                s.anchorDay,
+                shiftDay(s.anchorDay, SECTION_DAYS - 1),
+              )}{" "}
+              · предметов {s.placements.length}
             </T>
           </View>
           <Icon name="arrow" size={18} color={theme.text} />

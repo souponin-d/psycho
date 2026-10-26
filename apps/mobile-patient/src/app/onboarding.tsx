@@ -1,3 +1,4 @@
+import { patientLabel } from "../core/patientPresentation";
 import { assignedTasks } from "../core/questionnaires";
 import { useReminders } from "../state/ReminderProvider";
 import { requestExactAlarmAccess } from "../services/exactAlarm";
@@ -27,7 +28,6 @@ import { Enter, Touch } from "../components/Motion";
 import { Mascot } from "../components/Mascot";
 import { ThemePicker } from "../components/ThemePicker";
 import { mascotOptions } from "../config/content";
-import { wardrobe } from "../config/worldCatalog";
 import { requestReminderPermission } from "../services/notificationPermissions";
 
 const steps = [
@@ -195,8 +195,7 @@ export default function Onboarding() {
   async function connect(value: string) {
     setCodeError("");
     if (await act({ type: "connect", code: value })) setStep(2);
-    else
-      setCodeError("Код не подошёл. Проверьте его или войдите в демо-режиме.");
+    else setCodeError("Код не подошёл. Проверьте его и попробуйте ещё раз.");
   }
   async function next() {
     if (!journey) return;
@@ -370,8 +369,7 @@ export default function Onboarding() {
                 onPress={() => void connect("SYNCLI-START")}
               />
               <T size={12} muted>
-                Сейчас подключается учебный план на синтетических данных. Связь
-                с настоящим врачом пока не выполняется.
+                Сейчас подключается учебный план на синтетических данных…
               </T>
             </>
           )}
@@ -380,9 +378,12 @@ export default function Onboarding() {
               <T size={18} weight="600">
                 {journey.plan.medication.name}
               </T>
-              <T size={14}>{journey.plan.doctor}</T>
+              <T size={14}>{patientLabel(journey.plan.doctor)}</T>
               <T size={13} muted>
-                {journey.plan.medication.dosageLabel}
+                {patientLabel(
+                  journey.plan.medication.dosageLabel,
+                  "Дозировка не указана",
+                )}
               </T>
               {journey.plan.medication.slots.map((slot) => (
                 <T size={14} key={slot.id}>
@@ -446,36 +447,6 @@ export default function Onboarding() {
                 Коснитесь спутника — он отзовётся. Наряды и украшения ждут в
                 мастерской.
               </T>
-              <T size={14} weight="600">
-                Первая окраска
-              </T>
-              <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
-                {wardrobe.colors.map((color) => (
-                  <Chip
-                    key={color.id}
-                    label={color.name}
-                    active={
-                      journey?.world.outfits[state.mascot].color === color.id
-                    }
-                    onPress={() => {
-                      if (journey)
-                        void act({
-                          type: "world",
-                          world: {
-                            ...journey.world,
-                            outfits: {
-                              ...journey.world.outfits,
-                              [state.mascot]: {
-                                ...journey.world.outfits[state.mascot],
-                                color: color.id,
-                              },
-                            },
-                          },
-                        });
-                    }}
-                  />
-                ))}
-              </View>
             </>
           )}
           {step === 4 && <ThemePicker />}
@@ -617,7 +588,7 @@ export default function Onboarding() {
                 ))}
               </ScrollView>
               <Button
-                title="К учебному сегодня"
+                title="К сегодняшнему дню"
                 secondary
                 onPress={() =>
                   practicePath.current?.scrollTo({

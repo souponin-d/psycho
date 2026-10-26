@@ -12,9 +12,7 @@ export function connectScenario(
   existing: JourneyState,
 ): JourneyState {
   if (code.trim().toUpperCase() !== "SYNCLI-START")
-    throw new PatientValidationError(
-      "Проверьте код или войдите в демо-режиме.",
-    );
+    throw new PatientValidationError("Проверьте код подключения плана.");
   return existing.connected ? existing : { ...existing, connected: true };
 }
 
@@ -30,10 +28,10 @@ export function seedScenario(seedDay: DayKey): JourneyState {
     plan: {
       id: "aviandr-educational-v1",
       startedAt: start,
-      doctor: "Елена Андреевна · учебный врач",
+      doctor: "Елена Андреевна",
       medication: {
         name: "Авиандр",
-        dosageLabel: "Дозировка задана в учебном плане",
+        dosageLabel: "Дозировка не указана",
         slots: [{ id: "morning", time: "09:00", label: "Утренний приём" }],
       },
       reportFields: [
@@ -57,7 +55,7 @@ export function seedScenario(seedDay: DayKey): JourneyState {
         day: shiftDay(seedDay, 4),
         time: "14:30",
         specialist: "Елена Андреевна",
-        place: "Учебная консультация · онлайн",
+        place: "Онлайн-консультация",
       },
     },
     events: [],

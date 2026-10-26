@@ -219,73 +219,82 @@ export function JourneyMap() {
       >
         <View
           style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 12,
-          }}
-        >
-          <View style={{ flex: 1 }}>
-            <T size={compact ? 21 : 24} weight="700">
-              Мой путь
-            </T>
-            <T size={11} muted>
-              {scenes[world.territory].name} · серия {progress.streak}
-            </T>
-          </View>
-          <RoundButton
-            icon="settings"
-            label="Настройки"
-            onPress={() => router.push("/settings")}
-          />
-        </View>
-        <Touch
-          accessibilityRole="button"
-          accessibilityLabel={"Личная цель. " + journey.goal + ". Настроить"}
-          onPress={() => router.push("/settings")}
-          haptic={false}
-          style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
-        >
-          <Icon name="leaf" size={14} color={theme.accent} />
-          <T size={12} numberOfLines={1} style={{ flex: 1 }}>
-            {journey.goal}
-          </T>
-          <Icon name="edit" size={13} color={theme.muted} />
-        </Touch>
-        <View
-          style={{
-            flexDirection: compact ? "column" : "row",
-            justifyContent: "space-between",
-            gap: 4,
-            alignItems: compact ? "flex-start" : "center",
-          }}
-        >
-          <T size={11} weight="600">
-            {hud.taskLabel}
-          </T>
-          <T size={10} muted>
-            {hud.weekLabel}
-          </T>
-        </View>
-        <View
-          accessibilityRole="progressbar"
-          accessibilityLabel="Выполненные дни главы"
-          accessibilityValue={{ min: 0, max: 5, now: progress.successes }}
-          style={{
-            height: 4,
-            borderRadius: 4,
-            backgroundColor: theme.soft,
-            overflow: "hidden",
+            backgroundColor: theme.page + "DE",
+            padding: 12,
+            gap: 6,
+            borderRadius: 20,
           }}
         >
           <View
             style={{
-              height: 4,
-              width: (String(Math.min(100, (progress.successes / 5) * 100)) +
-                "%") as `${number}%`,
-              backgroundColor: theme.accent,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 12,
             }}
-          />
+          >
+            <View style={{ flex: 1 }}>
+              <T size={compact ? 21 : 24} weight="700">
+                Мой путь
+              </T>
+              <T size={11} muted>
+                {scenes[world.territory].name} · серия {progress.streak}
+              </T>
+            </View>
+            <RoundButton
+              icon="settings"
+              label="Настройки"
+              onPress={() => router.push("/settings")}
+            />
+          </View>
+          <Touch
+            accessibilityRole="button"
+            accessibilityLabel={"Личная цель. " + journey.goal + ". Настроить"}
+            onPress={() => router.push("/settings")}
+            haptic={false}
+            style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
+          >
+            <Icon name="leaf" size={14} color={theme.accent} />
+            <T size={12} numberOfLines={1} style={{ flex: 1 }}>
+              {journey.goal}
+            </T>
+            <Icon name="edit" size={13} color={theme.muted} />
+          </Touch>
+          <View
+            style={{
+              flexDirection: compact ? "column" : "row",
+              justifyContent: "space-between",
+              gap: 4,
+              alignItems: compact ? "flex-start" : "center",
+            }}
+          >
+            <T size={11} weight="600">
+              {hud.taskLabel}
+            </T>
+            <T size={10} muted>
+              {hud.weekLabel}
+            </T>
+          </View>
+          <View
+            accessibilityRole="progressbar"
+            accessibilityLabel="Выполненные дни главы"
+            accessibilityValue={{ min: 0, max: 5, now: progress.successes }}
+            style={{
+              height: 4,
+              borderRadius: 4,
+              backgroundColor: theme.soft,
+              overflow: "hidden",
+            }}
+          >
+            <View
+              style={{
+                height: 4,
+                width: (String(Math.min(100, (progress.successes / 5) * 100)) +
+                  "%") as `${number}%`,
+                backgroundColor: theme.accent,
+              }}
+            />
+          </View>
         </View>
       </View>
       <View style={{ flex: 1 }} pointerEvents="box-none" />
@@ -662,7 +671,7 @@ export function JourneyMap() {
                 {selected?.status === "future" && (
                   <T size={12} muted>
                     Задания откроются в назначенную дату. Расписание определяет
-                    учебный врач.
+                    врач.
                   </T>
                 )}
                 <Button

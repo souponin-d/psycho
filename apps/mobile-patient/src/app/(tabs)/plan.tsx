@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { patientLabel } from "../../core/patientPresentation";
 import { Alert, View } from "react-native";
 import * as Notifications from "expo-notifications";
 import { router, type Href } from "expo-router";
@@ -118,7 +119,7 @@ export default function PlanScreen() {
       <T size={19} weight="500">
         На сегодня · {tasks.filter((t) => t.completed).length} из {tasks.length}
       </T>
-      <View style={{ gap: 20, marginTop: 18, marginBottom: 24 }}>
+      <View style={{ gap: 12, marginTop: 14, marginBottom: 14 }}>
         {journey.plan.medication.slots.map((slot) => {
           const current = latestDose(journey, today, slot.id);
           return (
@@ -128,8 +129,8 @@ export default function PlanScreen() {
                 borderWidth: 1,
                 borderColor: theme.border,
                 borderRadius: 24,
-                padding: 20,
-                gap: 12,
+                padding: 16,
+                gap: 8,
               }}
             >
               <View
@@ -139,6 +140,15 @@ export default function PlanScreen() {
                 <View style={{ flex: 1 }}>
                   <T size={19} weight="500">
                     {slot.label}
+                  </T>
+                  <T size={14} weight="600">
+                    {journey.plan.medication.name}
+                  </T>
+                  <T size={12} muted>
+                    {patientLabel(
+                      journey.plan.medication.dosageLabel,
+                      "Дозировка не указана",
+                    )}
                   </T>
                   <T size={12} muted>
                     Напоминание:{" "}
@@ -178,8 +188,8 @@ export default function PlanScreen() {
                     }}
                     onPress={() => void dose(slot.id, status)}
                     style={{
-                      flex: 1,
-                      padding: 15,
+                      minWidth: 110,
+                      padding: 12,
                       minHeight: 52,
                       borderRadius: 17,
                       backgroundColor:
@@ -308,9 +318,14 @@ export default function PlanScreen() {
               <T size={28} weight="500">
                 {journey.plan.medication.name}
               </T>
-              <T size={13}>{journey.plan.medication.dosageLabel}</T>
+              <T size={13}>
+                {patientLabel(
+                  journey.plan.medication.dosageLabel,
+                  "Дозировка не указана",
+                )}
+              </T>
               <T muted size={11}>
-                Из подключённого учебного плана · {journey.plan.doctor}
+                Назначение врача · {patientLabel(journey.plan.doctor)}
               </T>
             </View>
           </>

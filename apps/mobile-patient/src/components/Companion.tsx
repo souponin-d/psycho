@@ -1,5 +1,6 @@
+import { createResourcePreparer } from "../core/companionPlayback";
 import { memo, useEffect, useRef, useState } from "react";
-import { Pressable, View } from "react-native";
+import { Pressable, View, Image as NativeImage } from "react-native";
 import Svg, {
   Defs,
   ClipPath,
@@ -28,6 +29,16 @@ import { useJourney } from "../state/JourneyProvider";
 import { useSceneMotion } from "../hooks/useSceneMotion";
 import { useFeedback } from "../hooks/useFeedback";
 
+const prepareSource = createResourcePreparer(
+  (source: number) =>
+    new Promise<void>((resolve, reject) =>
+      NativeImage.getSize(
+        NativeImage.resolveAssetSource(source).uri,
+        () => resolve(),
+        reject,
+      ),
+    ),
+);
 const Material = memo(function Material({
   source,
   outfit,
@@ -35,6 +46,7 @@ const Material = memo(function Material({
   mascot,
   frame,
   night,
+  onReady,
 }: {
   source: number;
   outfit: Outfit;
@@ -42,18 +54,9 @@ const Material = memo(function Material({
   mascot: MascotId;
   frame: CompanionFrame;
   night: boolean;
+  onReady: () => void;
 }) {
   const light = night ? [0.55, 0.66, 0.82] : [1, 1, 1];
-  const channels = (
-    outfit.color === "lavender"
-      ? [1.04, 0.9, 1.15]
-      : outfit.color === "pearl"
-        ? [1.08, 1.02, 0.88]
-        : [0.88, 1.02, 0.79]
-  ).map((n, i) => n * light[i]);
-  const matrix = channels
-    .flatMap((c) => [0.2126 * c, 0.7152 * c, 0.0722 * c, 0, 0])
-    .concat([0, 0, 0, 1.02, -0.02]);
   const wearMatrix = [
     light[0],
     0,
@@ -124,6 +127,36 @@ const Material = memo(function Material({
   );
   const wear =
     wornAssets[`${mascot}-${outfit.clothing}` as keyof typeof wornAssets];
+  useEffect(() => {
+    let alive = true,
+      first = 0,
+      second = 0;
+    const required = [
+      source,
+      wear.source,
+      ...(outfit.accessory !== "none"
+        ? [wardrobeAssets[outfit.accessory as WardrobeItem].source]
+        : []),
+    ];
+    void Promise.all(required.map(prepareSource))
+      .then(() => {
+        if (alive)
+          first = requestAnimationFrame(() => {
+            if (alive)
+              second = requestAnimationFrame(() => {
+                if (alive) onReady();
+              });
+          });
+      })
+      .catch(() => {
+        /* Keep the last ready frame; never fade to an unloaded image. */
+      });
+    return () => {
+      alive = false;
+      cancelAnimationFrame(first);
+      cancelAnimationFrame(second);
+    };
+  }, [source, wear.source, outfit.accessory, onReady]);
   const [l, t, r, b] = wear.bounds;
   const gx = rig.rect.width / (r - l),
     gy = rig.rect.height / (b - t);
@@ -140,22 +173,12 @@ const Material = memo(function Material({
       </G>
     </G>
   );
-  const body = () => (
-    <SvgImage href={source} width="512" height="512" filter="url(#fur)" />
-  );
+  const body = () => <SvgImage href={source} width="512" height="512" />;
   return (
     <Svg width={size} height={size} viewBox="0 0 512 512" accessible={false}>
       <Defs>
         <ClipPath id="front">
           <Path d={rig.frontPath} transform={rig.transform} />
-        </ClipPath>
-        <ClipPath id="attachment">
-          <Ellipse
-            cx={rig.tx + (mascot === "cloud" ? 328 : 318) * rig.sx}
-            cy={rig.ty + 153 * rig.sy}
-            rx={16 * rig.sx}
-            ry={7 * rig.sy}
-          />
         </ClipPath>
         <ClipPath id="feet">
           <G transform={rig.transform}>
@@ -164,16 +187,6 @@ const Material = memo(function Material({
             ))}
           </G>
         </ClipPath>
-        <Filter
-          id="fur"
-          x="0"
-          y="0"
-          width="512"
-          height="512"
-          filterUnits="userSpaceOnUse"
-        >
-          <FeColorMatrix type="matrix" values={matrix} />
-        </Filter>
         <Filter
           id="wear"
           x="0"
@@ -190,12 +203,7 @@ const Material = memo(function Material({
       <G clipPath="url(#front)">{cloth()}</G>
 
       <G clipPath="url(#feet)">{body()}</G>
-      {outfit.accessory !== "none" && (
-        <>
-          {layer(outfit.accessory)}
-          <G clipPath="url(#attachment)">{body()}</G>
-        </>
-      )}
+      {outfit.accessory !== "none" && <>{layer(outfit.accessory)}</>}
     </Svg>
   );
 });
@@ -272,17 +280,10 @@ export function Companion({
         mode={shown}
         active={active}
         size={size}
-        resetKey={
-          mascot +
-          ":" +
-          outfit.color +
-          ":" +
-          outfit.clothing +
-          ":" +
-          outfit.accessory
-        }
-        renderFrame={(frame) => (
+        resetKey={mascot + ":" + outfit.clothing + ":" + outfit.accessory}
+        renderFrame={(frame, onReady) => (
           <Material
+            onReady={onReady}
             mascot={mascot}
             frame={frame}
             night={state.theme === "dark"}

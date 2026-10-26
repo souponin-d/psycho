@@ -588,7 +588,7 @@ export default function HistoryScreen() {
               {contact.severity} · {contact.preference}
             </T>
             <T muted size={11}>
-              Сохранено на телефоне. Реальная отправка врачу пока недоступна.
+              Обращение сохранено.
             </T>
           </Panel>
         ))}

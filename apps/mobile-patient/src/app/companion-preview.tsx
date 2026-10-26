@@ -26,7 +26,6 @@ export default function CompanionPreview() {
   const { theme } = useApp();
   const { width } = useWindowDimensions();
   const [mode, setMode] = useState<CompanionMode>("idle"),
-    [color, setColor] = useState("sage"),
     [clothing, setClothing] = useState("scarf"),
     [accessory, setAccessory] = useState("leaf");
   const size = Math.min(220, (width - 56) / 2);
@@ -53,7 +52,7 @@ export default function CompanionPreview() {
               size={size}
               id={id}
               mode={mode}
-              outfit={{ color, clothing, accessory }}
+              outfit={{ color: "sage", clothing, accessory }}
             />
             <T size={13} weight="600" style={{ marginBottom: 12 }}>
               {id === "fluffy" ? "Пушистик" : "Облачко"}
@@ -89,12 +88,6 @@ export default function CompanionPreview() {
         ))}
       </View>
       {[
-        {
-          title: "Окраска",
-          options: wardrobe.colors,
-          value: color,
-          set: setColor,
-        },
         {
           title: "Одежда",
           options: wardrobe.clothing,
