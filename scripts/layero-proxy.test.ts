@@ -1,6 +1,7 @@
 import { afterEach, expect, it } from "vitest";
 import http from "node:http";
 import { once } from "node:events";
+import { zstdCompressSync } from "node:zlib";
 import { createApiProxy, proxyConfig } from "../deployment/layero/proxy.mjs";
 const servers: http.Server[] = [];
 async function listen(server: http.Server) {
@@ -74,6 +75,30 @@ const json = (res: http.ServerResponse, value: unknown, status = 200) => {
   res.writeHead(status, { "content-type": "application/json" });
   res.end(JSON.stringify(value));
 };
+it.each(["zstd", "gzip, deflate, br, zstd"])(
+  "returns readable JSON for browser Accept-Encoding %s through Layero",
+  async (encoding) => {
+    let upstreamEncoding: string | undefined;
+    const records = [{ id: "synthetic", revision: 1 }];
+    const f = await fixture((req, res) => {
+      upstreamEncoding = req.headers["accept-encoding"];
+      if (upstreamEncoding?.includes("zstd")) {
+        res.writeHead(200, {
+          "content-type": "application/json",
+          "content-encoding": "zstd",
+        });
+        res.end(zstdCompressSync(Buffer.from(JSON.stringify(records))));
+      } else json(res, records);
+    });
+    const r = await request(f.proxy, "/api/patients", {
+      headers: { "accept-encoding": encoding },
+    });
+    // Layero may drop upstream Content-Encoding; its edge owns compression.
+    expect(r.headers["content-encoding"]).toBeUndefined();
+    expect(JSON.parse(r.body.toString())).toEqual(records);
+    expect(upstreamEncoding).toBe("identity");
+  },
+);
 it("validates a fixed HTTPS upstream and runtime limits without accepting a destination from the browser", () => {
   expect(proxyConfig({}).upstream).toBe("https://176.32.37.10");
   for (const value of [

@@ -220,6 +220,8 @@ export function createApiProxy(options) {
         delete headers[key];
     headers.host = upstream.host;
     headers["cache-control"] = "no-store";
+    // Layero's edge owns compression; passing upstream zstd can lose its header.
+    headers["accept-encoding"] = "identity";
     outgoing = transport.request(
       new URL(path, upstream),
       { method: req.method, headers, rejectUnauthorized: true },
