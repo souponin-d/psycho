@@ -412,7 +412,6 @@ function FactEditor({
 export function ClinicalFacts({
   patient,
   actions,
-  compact = false,
 }: {
   patient: PatientRecord;
   actions?: WorkspaceActions;
@@ -597,10 +596,6 @@ export function ClinicalFacts({
           </Button>
         )}
       </div>
-      <p className={styles.subtext}>
-        Источник, проверка и актуальность хранятся раздельно. Сведения о
-        лекарствах не равны назначению.
-      </p>
       {Object.entries(factCategoryLabels).map(([category, label]) => {
         const records = active.filter(
           (f) => latestFact(f).content.category === category,
@@ -613,54 +608,16 @@ export function ClinicalFacts({
             ) : (
               <p className={styles.subtext}>
                 Неизвестно · проверенных сведений в реестре пока нет
-                {legacy.some((r) => r.content.category === category)
-                  ? "; есть прежние записи для разбора"
-                  : ""}
               </p>
             )}
           </div>
         );
       })}
-      {!!legacy.length && (
-        <details className={styles.details}>
-          <summary>Прежние сведения для разбора ({legacy.length})</summary>
-          <p>
-            Показаны без автоматического подтверждения и угадывания кодов.
-            Назначение в плане не доказывает фактический приём лекарства.
-          </p>
-          {legacy.map((item) => (
-            <article className={styles.inlineNote} key={item.key}>
-              <strong>{item.label}</strong>
-              <p>{factValueText(item.content)}</p>
-              <p>
-                {item.changed
-                  ? "Источник изменился после переноса"
-                  : "Источник и применимость требуют проверки"}
-              </p>
-              {canWrite && (
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => setEditor({ legacy: item })}
-                >
-                  Разобрать прежнюю запись
-                </Button>
-              )}
-            </article>
-          ))}
-        </details>
-      )}
       {!!archived.length && (
         <details className={styles.details}>
           <summary>Неактуальные сведения ({archived.length})</summary>
           {archived.map(card)}
         </details>
-      )}
-      {compact && (
-        <p className={styles.subtext}>
-          Те же факты доступны в карте пациента. Изменения не нужно переносить в
-          приём вручную.
-        </p>
       )}
       {editor && actions && (
         <FactEditor

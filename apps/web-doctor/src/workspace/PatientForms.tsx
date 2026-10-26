@@ -6,6 +6,7 @@ import { createVisit } from "./commands";
 import { formatDate, localDateTime, today } from "./labels";
 import type { Navigate } from "./PatientDirectory";
 import { SourceLinks } from "./SourceLibrary";
+import { patientBirthDateBounds } from "./patient-age";
 import { TerminologyPicker } from "./TerminologyPicker";
 import {
   CurrentDraftValues,
@@ -24,10 +25,10 @@ import {
 
 type TextProfileKey = Exclude<keyof Profile, "clinicalContext">;
 const profileFields: { key: TextProfileKey; label: string }[] = [
+  { key: "familyHistory", label: "Семейный анамнез" },
+  { key: "pastEpisodes", label: "Предыдущие эпизоды и лечение" },
   { key: "allergies", label: "Аллергии и непереносимость" },
   { key: "currentMedication", label: "Текущие препараты" },
-  { key: "pastEpisodes", label: "Предыдущие эпизоды и лечение" },
-  { key: "familyHistory", label: "Семейный анамнез" },
   { key: "substanceUse", label: "Алкоголь, ПАВ, другие вещества" },
   { key: "socialContext", label: "Социальный контекст и поддержка" },
   {
@@ -131,129 +132,139 @@ export function ProfileForm({
     }
   }
   return (
-    <Modal open onClose={onClose} title="Профиль и контекст пациента">
+    <Modal
+      open
+      onClose={onClose}
+      showCloseButton={false}
+      className={styles.profileDialog}
+      title="Редактирование профиля пациента"
+    >
       <form className={styles.form} onSubmit={save}>
-        {error && <ErrorNotice>{error}</ErrorNotice>}
-        <DraftConflict
-          guard={guard}
-          onReload={() => {
-            setValue(current);
-            setError("");
-          }}
-        >
-          <CurrentDraftValues
-            current={profileValues(current)}
-            draft={profileValues(value)}
-            labels={profileLabels}
-          />
-        </DraftConflict>
-        <Field
-          label="Фамилия, имя, отчество"
-          value={value.name}
-          onChange={(e) => set("name", e.target.value)}
-          required
-        />
-        <div className={styles.formPair}>
+        <div className={styles.profileFields}>
+          {error && <ErrorNotice>{error}</ErrorNotice>}
+          <DraftConflict
+            guard={guard}
+            onReload={() => {
+              setValue(current);
+              setError("");
+            }}
+          >
+            <CurrentDraftValues
+              current={profileValues(current)}
+              draft={profileValues(value)}
+              labels={profileLabels}
+            />
+          </DraftConflict>
           <Field
-            label="Дата рождения"
-            type="date"
-            value={value.birthDate}
-            onChange={(e) => set("birthDate", e.target.value)}
+            label="Фамилия, имя, отчество"
+            value={value.name}
+            onChange={(e) => set("name", e.target.value)}
             required
           />
-          <Select
-            label="Пол"
-            value={value.sex}
-            onChange={(e) => set("sex", e.target.value)}
-          >
-            <option value="unspecified">Не указан</option>
-            <option value="female">Женский</option>
-            <option value="male">Мужской</option>
-          </Select>
-        </div>
-        <div className={styles.formPair}>
+          <div className={styles.formPair}>
+            <Field
+              label="Дата рождения"
+              type="date"
+              {...patientBirthDateBounds()}
+              value={value.birthDate}
+              onChange={(e) => set("birthDate", e.target.value)}
+              required
+            />
+            <Select
+              label="Пол"
+              value={value.sex}
+              onChange={(e) => set("sex", e.target.value)}
+            >
+              <option value="unspecified">Не указан</option>
+              <option value="female">Женский</option>
+              <option value="male">Мужской</option>
+            </Select>
+          </div>
+          <div className={styles.formPair}>
+            <Field
+              label="Телефон"
+              type="tel"
+              value={value.phone}
+              onChange={(e) => set("phone", e.target.value)}
+            />
+            <Field
+              label="Электронная почта"
+              type="email"
+              value={value.email}
+              onChange={(e) => set("email", e.target.value)}
+            />
+          </div>
           <Field
-            label="Телефон"
-            type="tel"
-            value={value.phone}
-            onChange={(e) => set("phone", e.target.value)}
+            label="Род занятий"
+            value={value.occupation}
+            onChange={(e) => set("occupation", e.target.value)}
           />
           <Field
-            label="Электронная почта"
-            type="email"
-            value={value.email}
-            onChange={(e) => set("email", e.target.value)}
+            label="Адрес"
+            value={value.address}
+            onChange={(e) => set("address", e.target.value)}
           />
-        </div>
-        <Field
-          label="Род занятий"
-          value={value.occupation}
-          onChange={(e) => set("occupation", e.target.value)}
-        />
-        <Field
-          label="Адрес"
-          value={value.address}
-          onChange={(e) => set("address", e.target.value)}
-        />
-        <Field
-          label="Предпочтительный способ связи"
-          value={value.preferredContact}
-          onChange={(e) => set("preferredContact", e.target.value)}
-        />
-        <Field
-          label="Контакт на случай необходимости"
-          hint="Наличие контакта не предоставляет доступ к карте"
-          value={value.emergencyContact}
-          onChange={(e) => set("emergencyContact", e.target.value)}
-        />
-        {profileFields.map(({ key, label }) => (
+          <Field
+            label="Предпочтительный способ связи"
+            value={value.preferredContact}
+            onChange={(e) => set("preferredContact", e.target.value)}
+          />
+          <Field
+            label="Контакт на случай необходимости"
+            value={value.emergencyContact}
+            onChange={(e) => set("emergencyContact", e.target.value)}
+          />
           <Textarea
-            key={key}
-            label={label}
-            value={value[key]}
-            onChange={(e) => set(key, e.target.value)}
-            rows={2}
+            label="Жалобы"
+            value={value.clinicalContext.complaints}
+            onChange={(e) =>
+              setValue({
+                ...value,
+                clinicalContext: {
+                  ...value.clinicalContext,
+                  complaints: e.target.value,
+                },
+              })
+            }
+            rows={3}
           />
-        ))}
-        <Textarea
-          label="Жалобы"
-          value={value.clinicalContext.complaints}
-          onChange={(e) =>
-            setValue({
-              ...value,
-              clinicalContext: {
-                ...value.clinicalContext,
-                complaints: e.target.value,
-              },
-            })
-          }
-          rows={3}
-        />
-        <Textarea
-          label="Анамнез заболевания"
-          value={value.clinicalContext.illnessHistory}
-          onChange={(e) =>
-            setValue({
-              ...value,
-              clinicalContext: {
-                ...value.clinicalContext,
-                illnessHistory: e.target.value,
-              },
-            })
-          }
-          rows={4}
-        />
-        <TerminologyPicker
-          label="Соматические заболевания (МКБ-10)"
-          value={value.clinicalContext.somaticConditions}
-          onChange={(somaticConditions) =>
-            setValue({
-              ...value,
-              clinicalContext: { ...value.clinicalContext, somaticConditions },
-            })
-          }
-        />
-        <SourceLinks ids={["S01", "S02", "S03", "S04"]} />
+          <Textarea
+            label="Анамнез заболевания"
+            value={value.clinicalContext.illnessHistory}
+            onChange={(e) =>
+              setValue({
+                ...value,
+                clinicalContext: {
+                  ...value.clinicalContext,
+                  illnessHistory: e.target.value,
+                },
+              })
+            }
+            rows={4}
+          />
+          {profileFields.map(({ key, label }) => (
+            <Textarea
+              key={key}
+              label={label}
+              value={value[key]}
+              onChange={(e) => set(key, e.target.value)}
+              rows={2}
+            />
+          ))}
+          <TerminologyPicker
+            label="Соматические заболевания (МКБ-10)"
+            value={value.clinicalContext.somaticConditions}
+            onChange={(somaticConditions) =>
+              setValue({
+                ...value,
+                clinicalContext: {
+                  ...value.clinicalContext,
+                  somaticConditions,
+                },
+              })
+            }
+          />
+        </div>
         <div className={styles.formActions}>
           <Button variant="secondary" onClick={onClose}>
             Отмена

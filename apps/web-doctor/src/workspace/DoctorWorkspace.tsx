@@ -21,6 +21,7 @@ import { EncounterEditor, type RegisterGuard } from "./EncounterEditor";
 import { Events } from "./Events";
 import { formatDate, initials } from "./labels";
 import { LoginSphere } from "./LoginSphere";
+import shellStyles from "./DoctorShell.module.css";
 import {
   Button,
   Empty,
@@ -330,9 +331,9 @@ function Workspace({
   const nav: { path: string; title: string; icon: IconName }[] = [
     { path: "workday", title: "Рабочий день", icon: "home" },
     { path: "patients", title: "Пациенты", icon: "people" },
-    { path: "events", title: "Внимание", icon: "bell" },
+    { path: "events", title: "Уведомления", icon: "bell" },
     { path: "calendar", title: "Календарь", icon: "calendar" },
-    { path: "sources", title: "Источники", icon: "book" },
+    { path: "sources", title: "Библиотека", icon: "book" },
   ];
   const title = nav.find((n) => n.path === section)?.title ?? "Рабочий день";
   const sessionRecovery = actions.sessionExpired && (
@@ -428,8 +429,14 @@ function Workspace({
           {navigation}
         </Modal>
         <main className={styles.main}>
-          <header className={styles.topbar}>
-            <div className={styles.breadcrumb}>
+          <section
+            className={styles.content}
+            ref={headingRef}
+            tabIndex={-1}
+            id="workspace-content"
+            aria-label={title}
+          >
+            <div className={shellStyles.context}>
               <button
                 className={styles.mobileMenu}
                 aria-label="Открыть навигацию"
@@ -439,47 +446,33 @@ function Workspace({
               >
                 <Icon name={mobile ? "close" : "menu"} />
               </button>
-              {section !== "workday" && <span>{title}</span>}
-              {patient && (
-                <>
-                  <Icon name="chevron" size={13} />
-                  <span>{patient.profile.name}</span>
-                </>
-              )}
-            </div>
-            <div className={styles.topbarRight}>
-              <span>
-                {formatDate(new Date().toISOString(), {
-                  day: "numeric",
-                  month: "long",
-                })}
-              </span>
-              {actions.savedAt && (
-                <span className={styles.saved} role="status">
-                  <Icon name="check" size={13} />
-                  Сохранено{" "}
-                  {formatDate(actions.savedAt, {
-                    hour: "2-digit",
-                    minute: "2-digit",
+              <div className={shellStyles.metadata}>
+                <span>
+                  {formatDate(new Date().toISOString(), {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
                   })}
                 </span>
-              )}
-              <span className={styles.mode}>
-                <Icon
-                  name={repository.mode === "demo" ? "book" : "shield"}
-                  size={12}
-                />
-                {repository.mode === "demo" ? "Локально" : "Клиника"}
-              </span>
+                {actions.savedAt && (
+                  <span className={styles.saved} role="status">
+                    <Icon name="check" size={13} />
+                    Сохранено{" "}
+                    {formatDate(actions.savedAt, {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                )}
+                <span className={styles.mode}>
+                  <Icon
+                    name={repository.mode === "demo" ? "book" : "shield"}
+                    size={12}
+                  />
+                  {repository.mode === "demo" ? "Демо-данные" : "Клиника"}
+                </span>
+              </div>
             </div>
-          </header>
-          <section
-            className={styles.content}
-            ref={headingRef}
-            tabIndex={-1}
-            id="workspace-content"
-            aria-label={title}
-          >
             {sessionError && <ErrorNotice>{sessionError}</ErrorNotice>}
             {sessionRecovery}
             {actions.error && (
@@ -554,7 +547,11 @@ function Workspace({
                 onCreate={() => setNewPatient(true)}
               />
             ) : section === "calendar" ? (
-              <Calendar patients={actions.patients} navigate={navigate} />
+              <Calendar
+                patients={actions.patients}
+                navigate={navigate}
+                actions={actions}
+              />
             ) : section === "events" ? (
               <Events
                 patients={actions.patients}
@@ -565,6 +562,7 @@ function Workspace({
               <SourceLibrary />
             ) : (
               <Workday
+                actions={actions}
                 patients={actions.patients}
                 navigate={navigate}
                 onCreate={() => setNewPatient(true)}

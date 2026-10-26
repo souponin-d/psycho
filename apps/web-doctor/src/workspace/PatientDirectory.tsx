@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import type { PatientRecord } from "./model";
 import type { WorkspaceActions } from "./useWorkspace";
 import { message } from "./useWorkspace";
+import { patientBirthDateBounds } from "./patient-age";
 import { age, formatDate, formatTime, initials, visitStatus } from "./labels";
 import {
   Badge,
@@ -65,6 +66,7 @@ export function NewPatient({
           <Field
             label="Дата рождения"
             type="date"
+            {...patientBirthDateBounds()}
             value={birthDate}
             onChange={(e) => setBirthDate(e.target.value)}
             required
@@ -118,7 +120,6 @@ export function PatientDirectory({
       <div className={styles.pageHeading}>
         <div>
           <h1>Пациенты</h1>
-          <p>История, планы и динамика — в одном рабочем контексте</p>
         </div>
         <Button icon="plus" onClick={onCreate}>
           Новый пациент
@@ -262,9 +263,11 @@ export function PatientDirectory({
               : "Создайте первую карту, чтобы запланировать приём и начать наблюдение."}
           </Empty>
         )}
-        <div className={styles.tableFooter}>
-          Показано: {filtered.length} · доступные вам карты пациентов
-        </div>
+        {filtered.length > 0 && (
+          <div className={styles.tableFooter}>
+            Показано: {filtered.length} · доступные вам карты пациентов
+          </div>
+        )}
       </section>
     </>
   );

@@ -1,3 +1,4 @@
+import { AppointmentForm } from "./PatientForms";
 import { ClinicalDecisionQueue } from "./ClinicalDecisionQueue";
 import type { WorkspaceActions } from "./useWorkspace";
 import { useState } from "react";
@@ -17,6 +18,7 @@ import {
   Empty,
   Field,
   Icon,
+  Modal,
   Section,
   styles,
 } from "./ui/Elements";
@@ -115,13 +117,6 @@ export function Workday({
       <div className={styles.pageHeading}>
         <div>
           <h1>Ваш рабочий день</h1>
-          <p>
-            {formatDate(new Date().toISOString(), {
-              weekday: "long",
-              day: "numeric",
-              month: "long",
-            })}
-          </p>
         </div>
         <Button icon="plus" onClick={onCreate}>
           Новый пациент
@@ -141,6 +136,112 @@ export function Workday({
           <strong>{unread}</strong> новых записей
         </span>
       </div>
+      <Section
+        title="Приёмы на сегодня"
+        action={
+          <Button
+            variant="ghost"
+            icon="calendar"
+            onClick={() => navigate("/calendar")}
+          >
+            Календарь
+          </Button>
+        }
+      >
+        {appointments.length ? (
+          <div className={styles.tableWrap}>
+            <table className={styles.workdaySchedule}>
+              <thead>
+                <tr>
+                  <th>Время</th>
+                  <th>Пациент</th>
+                  <th>Встреча</th>
+                  <th>
+                    <span className={styles.stepHeading}>Действие</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {appointments.map((a, i) => (
+                  <tr key={a.visit.id}>
+                    <td>
+                      <strong>{formatTime(a.visit.scheduledAt)}</strong>
+                      <p className={styles.subtext}>
+                        {a.visit.durationMinutes} мин
+                      </p>
+                    </td>
+                    <td>
+                      <div className={styles.schedulePatient}>
+                        <span className={styles.avatar}>
+                          {initials(a.patient.profile.name)}
+                        </span>
+                        <div>
+                          <button
+                            className={styles.textButton}
+                            onClick={() =>
+                              navigate(`/patients/${a.patient.id}`)
+                            }
+                          >
+                            {a.patient.profile.name}
+                          </button>
+                          <p className={styles.subtext}>
+                            {a.visit.kind === "initial"
+                              ? "Первичный"
+                              : a.visit.kind === "follow-up"
+                                ? "Повторный"
+                                : "Внеплановый"}{" "}
+                            ·{" "}
+                            {a.visit.format === "remote"
+                              ? "Дистанционно"
+                              : "Очно"}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className={styles.scheduleStatus}>
+                      <Badge>{visitStatus[a.visit.status]}</Badge>
+                    </td>
+                    <td>
+                      <Button
+                        variant={
+                          a.visit.status === "in-progress" ||
+                          (i === 0 && a.visit.status === "scheduled")
+                            ? "primary"
+                            : "secondary"
+                        }
+                        icon="arrow"
+                        onClick={() =>
+                          navigate(
+                            `/patients/${a.patient.id}/visits/${a.visit.id}`,
+                          )
+                        }
+                      >
+                        {a.visit.status === "in-progress"
+                          ? "Продолжить"
+                          : a.visit.status === "completed"
+                            ? "Итог приёма"
+                            : "Открыть приём"}
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <Empty
+            icon="calendar"
+            title="Сегодня свободно"
+            action={
+              <Button variant="secondary" onClick={() => navigate("/patients")}>
+                Выбрать пациента
+              </Button>
+            }
+          >
+            Запланируйте встречу в карте пациента.
+          </Empty>
+        )}
+      </Section>
       {first ? (
         <section
           className={styles.attentionBanner}
@@ -182,171 +283,78 @@ export function Workday({
         actions={actions}
         navigate={navigate}
       />
-      <div className={styles.workdayColumns}>
-        <Section
-          title="Приёмы на сегодня"
-          description="Откройте карту или перейдите к встрече"
-          action={
-            <Button
-              variant="ghost"
-              icon="calendar"
-              onClick={() => navigate("/calendar")}
-            >
-              Календарь
-            </Button>
-          }
-        >
-          {appointments.length ? (
-            <div className={styles.tableWrap}>
-              <table className={styles.workdaySchedule}>
-                <thead>
-                  <tr>
-                    <th>Время</th>
-                    <th>Пациент</th>
-                    <th>Встреча</th>
-                    <th>
-                      <span className={styles.stepHeading}>Действие</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {appointments.map((a, i) => (
-                    <tr key={a.visit.id}>
-                      <td>
-                        <strong>{formatTime(a.visit.scheduledAt)}</strong>
-                        <p className={styles.subtext}>
-                          {a.visit.durationMinutes} мин
-                        </p>
-                      </td>
-                      <td>
-                        <div className={styles.schedulePatient}>
-                          <span className={styles.avatar}>
-                            {initials(a.patient.profile.name)}
-                          </span>
-                          <div>
-                            <button
-                              className={styles.textButton}
-                              onClick={() =>
-                                navigate(`/patients/${a.patient.id}`)
-                              }
-                            >
-                              {a.patient.profile.name}
-                            </button>
-                            <p className={styles.subtext}>
-                              {a.visit.kind === "initial"
-                                ? "Первичный"
-                                : a.visit.kind === "follow-up"
-                                  ? "Повторный"
-                                  : "Внеплановый"}{" "}
-                              ·{" "}
-                              {a.visit.format === "remote"
-                                ? "Дистанционно"
-                                : "Очно"}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className={styles.scheduleStatus}>
-                        <Badge>{visitStatus[a.visit.status]}</Badge>
-                      </td>
-                      <td>
-                        <Button
-                          variant={
-                            a.visit.status === "in-progress" ||
-                            (i === 0 && a.visit.status === "scheduled")
-                              ? "primary"
-                              : "secondary"
-                          }
-                          icon="arrow"
-                          onClick={() =>
-                            navigate(
-                              `/patients/${a.patient.id}/visits/${a.visit.id}`,
-                            )
-                          }
-                        >
-                          {a.visit.status === "in-progress"
-                            ? "Продолжить"
-                            : a.visit.status === "completed"
-                              ? "Итог приёма"
-                              : "Открыть приём"}
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <Empty
-              icon="calendar"
-              title="Сегодня свободно"
-              action={
-                <Button
-                  variant="secondary"
-                  onClick={() => navigate("/patients")}
-                >
-                  Выбрать пациента
-                </Button>
-              }
-            >
-              Запланируйте встречу в карте пациента.
-            </Empty>
-          )}
-        </Section>
-        <Section
-          title="После последнего контакта"
-          description="Последние записи в картах пациентов"
-        >
-          {visible
-            .slice()
-            .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
-            .slice(0, 4)
-            .map((p) => {
-              const report = p.reports
-                .slice()
-                .sort((a, b) => b.reportedAt.localeCompare(a.reportedAt))[0];
-              return (
-                <div
-                  className={`${styles.inlineNote} ${styles.activityEntry}`}
-                  key={p.id}
-                >
-                  <Icon name={report ? "message" : "file"} size={17} />
-                  <div>
-                    <button
-                      className={styles.textButton}
-                      onClick={() => navigate(`/patients/${p.id}`)}
-                    >
-                      {p.profile.name}
-                    </button>
-                    <p>{report?.note || "Текстовых записей пока нет"}</p>
-                    <p className={styles.subtext}>
-                      {report
-                        ? `Самоотчёт · ${formatDate(report.reportedAt)}`
-                        : "Из карты пациента"}
-                    </p>
-                  </div>
+      <Section
+        title="После последнего контакта"
+        description="Последние записи в картах пациентов"
+      >
+        {visible
+          .slice()
+          .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+          .slice(0, 4)
+          .map((p) => {
+            const report = p.reports
+              .slice()
+              .sort((a, b) => b.reportedAt.localeCompare(a.reportedAt))[0];
+            return (
+              <div
+                className={`${styles.inlineNote} ${styles.activityEntry}`}
+                key={p.id}
+              >
+                <Icon name={report ? "message" : "file"} size={17} />
+                <div>
+                  <button
+                    className={styles.textButton}
+                    onClick={() => navigate(`/patients/${p.id}`)}
+                  >
+                    {p.profile.name}
+                  </button>
+                  <p>{report?.note || "Текстовых записей пока нет"}</p>
+                  <p className={styles.subtext}>
+                    {report
+                      ? `Самоотчёт · ${formatDate(report.reportedAt)}`
+                      : "Из карты пациента"}
+                  </p>
                 </div>
-              );
-            })}
-          {!visible.length && (
-            <Empty title="Карт пока нет" icon="people">
-              Добавьте учебного пациента или доступную вам карту.
-            </Empty>
-          )}
-        </Section>
-      </div>
+              </div>
+            );
+          })}
+        {!visible.length && (
+          <Empty title="Карт пока нет" icon="people">
+            Добавьте учебного пациента или доступную вам карту.
+          </Empty>
+        )}
+      </Section>
     </>
   );
 }
 export function Calendar({
   patients,
   navigate,
+  actions,
 }: {
   patients: PatientRecord[];
   navigate: Navigate;
+  actions: WorkspaceActions;
 }) {
   const [from, setFrom] = useState(today());
   const [status, setStatus] = useState("all");
+  const [planning, setPlanning] = useState(false);
+  const [selectedPatientId, setSelectedPatientId] = useState("");
+  const [search, setSearch] = useState("");
+  const selectedPatient = patients.find(
+    (p) => p.id === selectedPatientId && !p.archived,
+  );
+  const availablePatients = patients.filter((p) => !p.archived);
+  const matchingPatients = availablePatients.filter((p) =>
+    (p.profile.name + " " + p.code)
+      .toLocaleLowerCase("ru")
+      .includes(search.trim().toLocaleLowerCase("ru")),
+  );
+  function closePlanning() {
+    setPlanning(false);
+    setSelectedPatientId("");
+    setSearch("");
+  }
   const appointments = patients
     .filter((p) => !p.archived)
     .flatMap((patient) =>
@@ -369,19 +377,70 @@ export function Calendar({
       <div className={styles.pageHeading}>
         <div>
           <h1>Календарь приёмов</h1>
-          <p>
-            Время показано в вашем часовом поясе:{" "}
-            {Intl.DateTimeFormat().resolvedOptions().timeZone}
-          </p>
         </div>
         <Button
           variant="secondary"
           icon="people"
-          onClick={() => navigate("/patients")}
+          onClick={() => setPlanning(true)}
         >
           Запланировать из карты
         </Button>
       </div>
+      <Modal
+        open={planning && !selectedPatient}
+        onClose={closePlanning}
+        title="Выбрать пациента"
+      >
+        <div className={styles.form}>
+          {availablePatients.length ? (
+            <>
+              <Field
+                label="Поиск пациента"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Имя или номер карты"
+              />
+              {matchingPatients.map((patient) => (
+                <Button
+                  key={patient.id}
+                  variant="secondary"
+                  onClick={() => setSelectedPatientId(patient.id)}
+                >
+                  {patient.profile.name} · {patient.code}
+                </Button>
+              ))}
+              {!matchingPatients.length && (
+                <Empty title="Пациенты не найдены" icon="people">
+                  Измените запрос.
+                </Empty>
+              )}
+            </>
+          ) : (
+            <Empty title="Нет доступных пациентов" icon="people">
+              Добавьте пациента, чтобы запланировать приём.
+            </Empty>
+          )}
+          <div className={styles.formActions}>
+            <Button variant="secondary" onClick={closePlanning}>
+              Отмена
+            </Button>
+          </div>
+        </div>
+      </Modal>
+      {planning && selectedPatient && (
+        <AppointmentForm
+          patient={selectedPatient}
+          actor={actions.actor}
+          actions={actions}
+          navigate={navigate}
+          onClose={closePlanning}
+          initialDate={
+            (from || today()) +
+            "T" +
+            localDateTime(new Date().toISOString()).slice(11, 16)
+          }
+        />
+      )}
       <Section title="Ближайшие встречи">
         <div className={styles.toolbar}>
           <Field

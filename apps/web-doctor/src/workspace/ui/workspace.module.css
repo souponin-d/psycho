@@ -622,6 +622,56 @@
   max-height: 72dvh;
   overflow: auto;
 }
+.profileDialog {
+  overflow: hidden;
+}
+.profileDialog > form {
+  max-height: calc(70dvh - 8px);
+  grid-template-rows: minmax(0, 1fr) auto;
+}
+.profileFields {
+  display: grid;
+  gap: 18px;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 2px 8px 10px 2px;
+}
+.terminologyChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.terminologyChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  padding: 6px 8px 6px 10px;
+  background: var(--ws-soft);
+  border: 1px solid var(--ws-line);
+  font-size: 12px;
+  max-width: 100%;
+}
+.chipRemove {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  min-width: 28px;
+  min-height: 28px;
+  opacity: 0;
+}
+.terminologyChip:hover .chipRemove,
+.terminologyChip:focus-within .chipRemove {
+  opacity: 1;
+}
+@media (hover: none) {
+  .chipRemove {
+    opacity: 1;
+    min-width: 40px;
+    min-height: 40px;
+  }
+}
 .errorNotice {
   display: flex;
   align-items: flex-start;

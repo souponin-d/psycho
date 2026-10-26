@@ -454,7 +454,7 @@ it("незавершённая безопасность блокирует ар�
       demoActor,
       now,
     ),
-  ).toThrow(/безопасност/);
+  ).toThrow(/риска/);
   const r = p.workflow!.recommendations.find((r) => r.type === "observation")!;
   const command = {
     commandId: "same-decision",

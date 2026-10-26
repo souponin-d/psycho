@@ -8,6 +8,7 @@ import {
   newSupportInput,
 } from "./clinical-support-engine";
 import { isSupportEvaluationCurrent } from "./clinical-support";
+import compactStyles from "./clinical-rows.module.css";
 import {
   clinicalSignals,
   seriousnessCriteria,
@@ -31,13 +32,15 @@ import {
   styles,
 } from "./ui/Elements";
 
+const optionTitle = (value: string) => value.replace("безопасности", "рисков");
+
 const origins: Record<Provenance, string> = {
   clinician: "Сведения врача",
   patient: "Со слов пациента",
   relative: "Со слов близкого",
   document: "Из документа",
 };
-const answers = { unknown: "Не уточнено", yes: "Да", no: "Нет" };
+const answers = { yes: "Да", no: "Нет", unknown: "Неизвестно" };
 const optionStatuses = {
   discuss: "Для обсуждения",
   clarify: "Нужно уточнить",
@@ -573,9 +576,6 @@ function ClinicalSupportPanelContent({
       <div className={styles.sectionHeading}>
         <div>
           <h2>Клиническая поддержка</h2>
-          <p className={styles.subtext}>
-            Варианты, ограничения и основания решения в одной карте.
-          </p>
         </div>
       </div>
       {error && !selection && !routeSelection && (
@@ -669,54 +669,74 @@ function ClinicalSupportPanelContent({
             {input.observations.filter((o) => o.answer !== "unknown").length} из{" "}
             {clinicalSignals.length}
           </summary>
-          <p className={styles.subtext}>
-            Неизвестные сведения оставьте неуточнёнными. Источник и дата
-            относятся к конкретному ответу.
-          </p>
           {input.observations.map((o) => (
-            <details className={styles.details} key={o.key}>
-              <summary>
-                {supportSignalLabels[o.key]} · {answers[o.answer]}
-              </summary>
-              <div className={styles.form}>
-                <Select
-                  label={supportSignalLabels[o.key]}
-                  value={o.answer}
-                  onChange={(e) =>
-                    observation(o.key, {
-                      answer: e.target.value as ClinicalObservation["answer"],
-                    })
-                  }
-                >
-                  {choices(answers)}
-                </Select>
-                <Select
-                  label={`Источник · ${supportSignalLabels[o.key]}`}
-                  value={o.provenance}
-                  onChange={(e) =>
-                    observation(o.key, {
-                      provenance: e.target.value as Provenance,
-                    })
-                  }
-                >
-                  {choices(origins)}
-                </Select>
-                <Field
-                  label={`Дата сведений · ${supportSignalLabels[o.key]}`}
-                  type="datetime-local"
-                  value={localTime(o.observedAt)}
-                  onChange={(e) =>
-                    observation(o.key, { observedAt: instant(e.target.value) })
-                  }
-                />
-                <Textarea
-                  label={`Основание · ${supportSignalLabels[o.key]}`}
-                  value={o.note}
-                  onChange={(e) => observation(o.key, { note: e.target.value })}
-                  rows={2}
-                />
+            <div className={compactStyles.observation} key={o.key}>
+              <div
+                className={compactStyles.row}
+                role="group"
+                aria-labelledby={`observation-${patient.id}-${o.key}`}
+              >
+                <span id={`observation-${patient.id}-${o.key}`}>
+                  {supportSignalLabels[o.key]}
+                </span>
+                <div className={compactStyles.answers}>
+                  {Object.entries(answers).map(([answer, label]) => (
+                    <label className={compactStyles.answer} key={answer}>
+                      <input
+                        type="radio"
+                        name={`observation-${patient.id}-${o.key}`}
+                        value={answer}
+                        checked={o.answer === answer}
+                        onChange={() =>
+                          observation(o.key, {
+                            answer: answer as ClinicalObservation["answer"],
+                          })
+                        }
+                      />
+                      {label}
+                    </label>
+                  ))}
+                </div>
               </div>
-            </details>
+              <details className={compactStyles.evidence}>
+                <summary
+                  aria-label={`Источник и детали · ${supportSignalLabels[o.key]}`}
+                >
+                  Источник и детали
+                </summary>
+                <div className={styles.form}>
+                  <Select
+                    label={`Источник · ${supportSignalLabels[o.key]}`}
+                    value={o.provenance}
+                    onChange={(e) =>
+                      observation(o.key, {
+                        provenance: e.target.value as Provenance,
+                      })
+                    }
+                  >
+                    {choices(origins)}
+                  </Select>
+                  <Field
+                    label={`Дата сведений · ${supportSignalLabels[o.key]}`}
+                    type="datetime-local"
+                    value={localTime(o.observedAt)}
+                    onChange={(e) =>
+                      observation(o.key, {
+                        observedAt: instant(e.target.value),
+                      })
+                    }
+                  />
+                  <Textarea
+                    label={`Основание · ${supportSignalLabels[o.key]}`}
+                    value={o.note}
+                    onChange={(e) =>
+                      observation(o.key, { note: e.target.value })
+                    }
+                    rows={2}
+                  />
+                </div>
+              </details>
+            </div>
           ))}
         </details>
         <Textarea
@@ -835,10 +855,10 @@ function ClinicalSupportPanelContent({
               <article
                 key={option.id}
                 className={styles.inlineNote}
-                aria-label={`Вариант: ${option.title}`}
+                aria-label={`Вариант: ${optionTitle(option.title)}`}
               >
                 <div className={styles.between}>
-                  <h4>{option.title}</h4>
+                  <h4>{optionTitle(option.title)}</h4>
                   <Badge
                     tone={option.status === "discuss" ? "neutral" : "amber"}
                   >
@@ -1028,8 +1048,8 @@ function ClinicalSupportPanelContent({
                   .filter((d) => d.evaluationId === e.id)
                   .map((d) => (
                     <p key={d.id}>
-                      {d.option.title} · {decisionLabels[d.decision]} ·{" "}
-                      {d.reason}
+                      {optionTitle(d.option.title)} ·{" "}
+                      {decisionLabels[d.decision]} · {d.reason}
                     </p>
                   ))}
                 {state.routeDecisions
@@ -1057,7 +1077,7 @@ function ClinicalSupportPanelContent({
         {selection && (
           <form className={styles.form} onSubmit={decide}>
             {error && <ErrorNotice>{error}</ErrorNotice>}
-            <h3>{selection.option.title}</h3>
+            <h3>{optionTitle(selection.option.title)}</h3>
             <p>{decisionLabels[selection.decision]}</p>
             {selectionStale && (
               <p className={styles.notice}>

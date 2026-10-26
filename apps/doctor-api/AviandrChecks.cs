@@ -74,7 +74,7 @@ public static class AviandrChecks
     Add("indication", "Основание назначения", indication == "unknown" ? "missing" : indication == "other" ? "review" : "not-identified", indication is "gad" or "post-covid" ? "Врач выбрал контекст из раздела показаний. Диагноз и применимость подтверждает врач." : "Требуется сопоставить диагноз и клинический контекст с зарегистрированным показанием.", "4.1");
     foreach (var rule in Rules) {
       var answer = S(input, S(rule, "id"));
-      Add(S(rule, "id"), S(rule, "title"), answer == "unknown" ? "missing" : answer == "yes" ? S(rule, "positive") : "not-identified", answer == "unknown" ? "Не уточнено. Отсутствие сведений не считается отсутствием ограничения." : answer == "yes" ? "По уточнению врача выявлено условие из ОХЛП. Правило не утверждено; требуется клиническая оценка." : "По уточнению врача условие не отмечено. Это не заключение о безопасности препарата.", S(rule, "section"));
+      Add(S(rule, "id"), S(rule, "title"), answer == "unknown" ? "missing" : answer == "yes" ? S(rule, "positive") : "not-identified", answer == "unknown" ? "Не уточнено. Отсутствие сведений не считается отсутствием ограничения." : answer == "yes" ? "По уточнению врача выявлено условие из ОХЛП. Правило не утверждено; требуется клиническая оценка." : "По уточнению врача условие не отмечено. Это не исключает рисков препарата.", S(rule, "section"));
     }
     var egfr = input["egfr"]?.GetValue<double>(); var renalDate = S(input, "egfrDate");
     var renalStatus = egfr is null || renalDate == "" || !startValid ? "missing" : S(input, "egfrUnit") != "ml/min" || string.CompareOrdinal(renalDate, start) > 0 ? "review" : egfr < 60 ? "contraindication" : "review";
