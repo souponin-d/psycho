@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
+var hackathon = new HackathonAccess(builder.Configuration);
 builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = 2_000_000);
 var connectionString = builder.Configuration.GetConnectionString("Doctor") ?? throw new InvalidOperationException("Задайте ConnectionStrings__Doctor для PostgreSQL. См. docs/doctor-workspace-runbook.md.");
 var keyDirectory = builder.Configuration["Doctor:KeyDirectory"] ?? Path.Combine(builder.Environment.ContentRootPath, ".data", "keys");
@@ -30,7 +31,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
   options.ExpireTimeSpan = TimeSpan.FromHours(8); options.SlidingExpiration = false;
   options.Events.OnRedirectToLogin = context => { context.Response.StatusCode = 401; return Task.CompletedTask; };
   options.Events.OnRedirectToAccessDenied = context => { context.Response.StatusCode = 403; return Task.CompletedTask; };
-  options.Events.OnValidatePrincipal = async context => { if (context.Principal is null || !await context.HttpContext.RequestServices.GetRequiredService<Store>().ValidSession(Actor.From(context.Principal))) context.RejectPrincipal(); };
+  options.Events.OnValidatePrincipal = async context => {
+    if (context.Principal is null) { context.RejectPrincipal(); return; }
+    var actor = Actor.From(context.Principal);
+    var db = context.HttpContext.RequestServices.GetRequiredService<Store>();
+    if (!await db.ValidSession(actor) || (HackathonAccess.IsCodeSession(context.Principal) && (!hackathon.Allows(actor) || !await db.ValidHackathonSession(actor)))) context.RejectPrincipal();
+  };
 });
 builder.Services.AddAuthorization(options => { options.AddPolicy("doctor", policy => policy.RequireRole("doctor")); options.AddPolicy("patient", policy => policy.RequireRole("patient")); });
 builder.Services.AddAntiforgery(options => { options.HeaderName = "X-CSRF-TOKEN"; options.Cookie.Name = "syncli-csrf"; options.Cookie.HttpOnly = true; options.Cookie.SameSite = SameSiteMode.Strict; options.Cookie.SecurePolicy = builder.Environment.IsDevelopment() ? CookieSecurePolicy.SameAsRequest : CookieSecurePolicy.Always; });
@@ -60,6 +66,21 @@ app.UseRateLimiter(); app.UseAuthentication(); app.UseAuthorization();
 app.Use(async (context, next) => { if (context.Request.Method is "POST" or "PUT" or "PATCH" or "DELETE") await context.RequestServices.GetRequiredService<IAntiforgery>().ValidateRequestAsync(context); await next(); });
 app.MapGet("/api/health", async (NpgsqlDataSource db) => { await using var command = db.CreateCommand("SELECT 1"); await command.ExecuteScalarAsync(); return Results.Ok(new { status = "ready", storage = "postgresql" }); }).AllowAnonymous();
 app.MapGet("/api/csrf", (HttpContext context, IAntiforgery anti) => Results.Ok(new { token = anti.GetAndStoreTokens(context).RequestToken })).AllowAnonymous();
+app.MapPost("/api/patient/access", async (PatientAccessRequest request, HttpContext context, Store db) =>
+{
+  var code = request.Code?.Trim();
+  if (!hackathon.Active || string.IsNullOrEmpty(code) || code.Length > 200)
+    return Results.Json(new { detail = "Код не подошёл. Проверьте его и попробуйте ещё раз." }, statusCode: 401);
+  if (!hackathon.VerifyCode(code)) return Results.Unauthorized();
+  var actor = await db.FindHackathonActor(hackathon.PatientUserId);
+  if (actor is null || !hackathon.Allows(actor))
+    return Results.Json(new { detail = "Код не подошёл. Проверьте его и попробуйте ещё раз." }, statusCode: 401);
+  var principal = actor.Principal();
+  ((System.Security.Claims.ClaimsIdentity)principal.Identity!).AddClaim(new(HackathonAccess.ModeClaim, "hackathon"));
+  await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties { IsPersistent = false, ExpiresUtc = hackathon.ExpiresAt < DateTimeOffset.UtcNow.AddHours(8) ? hackathon.ExpiresAt : DateTimeOffset.UtcNow.AddHours(8) });
+  await db.Audit(actor, actor.PatientId, "session.patient-code");
+  return Results.Ok(new { role = "patient" });
+}).RequireRateLimiting("login").AllowAnonymous();
 app.MapPost("/api/login", async (LoginRequest request, HttpContext context, Store db) =>
 {
   if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrEmpty(request.Password) || request.Email.Length > 250 || request.Password.Length > 200) return Results.BadRequest(new { detail = "Проверьте данные входа." });

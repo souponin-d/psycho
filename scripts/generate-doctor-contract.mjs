@@ -139,6 +139,27 @@ try {
         }),
       },
     },
+    "/api/patient/access": {
+      post: {
+        operationId: "patientAccess",
+        description:
+          "Опциональный хакатонный доступ к одной синтетической карте. Повторно используемый код, серверная привязка, CSRF и лимит попыток. По умолчанию выключен.",
+        security: [],
+        parameters: [csrf],
+        requestBody: body({
+          type: "object",
+          required: ["code"],
+          properties: {
+            code: { type: "string", minLength: 1, maxLength: 200 },
+          },
+        }),
+        responses: response({
+          type: "object",
+          required: ["role"],
+          properties: { role: { const: "patient" } },
+        }),
+      },
+    },
     "/api/login": {
       post: {
         operationId: "login",

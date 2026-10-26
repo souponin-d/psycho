@@ -29,6 +29,7 @@ import { Mascot } from "../components/Mascot";
 import { ThemePicker } from "../components/ThemePicker";
 import { mascotOptions } from "../config/content";
 import { requestReminderPermission } from "../services/notificationPermissions";
+import { usePatientConnection } from "../state/PatientConnectionProvider";
 
 const steps = [
   {
@@ -45,7 +46,7 @@ const steps = [
   },
   {
     title: "Кто пойдёт\nс вами?",
-    body: "Спутника, его окраску и одежду можно менять в любой момент.",
+    body: "Спутника и его одежду можно менять в любой момент.",
   },
   {
     title: "Ваше\nнастроение света",
@@ -94,12 +95,17 @@ export default function Onboarding() {
   const reminders = useReminders();
   const practicePath = useRef<ScrollView>(null);
   const { journey, act, saving } = useJourney();
-  const { replay } = useLocalSearchParams<{ replay?: string }>();
+  const connection = usePatientConnection();
+  const { replay, access } = useLocalSearchParams<{
+    replay?: string;
+    access?: string;
+  }>();
+  const accessOnly = access === "1" && !replay;
   const initial =
     journey?.onboarding && !journey.onboarding.completed && !replay
       ? journey.onboarding
       : initialOnboarding(journey?.goal, state.name, state.morning);
-  const [step, setStep] = useState(initial.step);
+  const [step, setStep] = useState(accessOnly ? 1 : initial.step);
   const [practiceDose, setPracticeDose] = useState(initial.practiceDose);
   const [practiceFeeling, setPracticeFeeling] = useState<FeelingPoint | null>(
     initial.practiceFeeling ?? null,
@@ -139,6 +145,7 @@ export default function Onboarding() {
   const [asking, setAsking] = useState(false);
   const safe = useSafeAreaInsets();
   useEffect(() => {
+    if (accessOnly) return;
     const timer = setTimeout(
       () =>
         void act({
@@ -146,7 +153,7 @@ export default function Onboarding() {
           progress: {
             version: 1,
             step,
-            code,
+            code: "",
             name,
             goal,
             morning: time,
@@ -166,20 +173,21 @@ export default function Onboarding() {
     name,
     goal,
     time,
+    accessOnly,
     practiceDose,
     practiceFeeling,
     practiceItem,
   ]);
   useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
-      if (step > 0) {
+      if (step > 0 && !accessOnly) {
         setStep((s) => s - 1);
         return true;
       }
       return false;
     });
     return () => sub.remove();
-  }, [step]);
+  }, [step, accessOnly]);
   if (!journey) return null;
   const validTime = /^([01]\d|2[0-3]):[0-5]\d$/.test(time);
   const inputStyle = {
@@ -192,10 +200,27 @@ export default function Onboarding() {
     borderWidth: 1,
     borderColor: theme.border,
   };
-  async function connect(value: string) {
+  async function connect(value: string, demo = false) {
     setCodeError("");
-    if (await act({ type: "connect", code: value })) setStep(2);
-    else setCodeError("Код не подошёл. Проверьте его и попробуйте ещё раз.");
+    try {
+      if (demo) await connection.demo();
+      else await connection.connect(value);
+      // This flag opens the existing local teaching journey, not an API session.
+      // Server access is controlled separately by the authenticated channel.
+      if (!(await act({ type: "connect", code: "SYNCLI-START" })))
+        throw new Error(
+          "Не удалось открыть записи на телефоне. Подключитесь ещё раз.",
+        );
+      setCode("");
+      if (accessOnly) router.replace("/");
+      else setStep(2);
+    } catch (e) {
+      setCodeError(
+        e instanceof Error
+          ? e.message
+          : "Не удалось подключиться. Попробуйте ещё раз.",
+      );
+    }
   }
   async function next() {
     if (!journey) return;
@@ -213,7 +238,7 @@ export default function Onboarding() {
         progress: {
           version: 1,
           step: Math.min(12, step + 1),
-          code,
+          code: "",
           name,
           goal,
           morning: time,
@@ -359,14 +384,14 @@ export default function Onboarding() {
               )}
               <Button
                 title="Подключить план"
-                disabled={saving}
+                disabled={saving || connection.opening}
                 onPress={() => void connect(code)}
               />
               <Button
                 title="Войти в демо-режиме"
                 secondary
-                disabled={saving}
-                onPress={() => void connect("SYNCLI-START")}
+                disabled={saving || connection.opening}
+                onPress={() => void connect("SYNCLI-START", true)}
               />
               <T size={12} muted>
                 Сейчас подключается учебный план на синтетических данных…

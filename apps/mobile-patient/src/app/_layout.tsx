@@ -7,11 +7,24 @@ import { AppProvider, useApp } from "../state/AppProvider";
 import { JourneyProvider, useJourney } from "../state/JourneyProvider";
 import { ReminderProvider } from "../state/ReminderProvider";
 import { T } from "../components/UI";
+import {
+  PatientConnectionProvider,
+  usePatientConnection,
+} from "../state/PatientConnectionProvider";
 export { ErrorBoundary } from "expo-router";
 function Navigation() {
   const { ready, theme, reducedMotion, storageError, retrySave } = useApp();
   const patient = useJourney();
-  if (!ready || !patient.ready)
+  const connection = usePatientConnection();
+  const { state } = useApp();
+  const needsAccess =
+    ready &&
+    patient.ready &&
+    connection.ready &&
+    state.onboarded &&
+    connection.mode !== "demo" &&
+    !connection.connected;
+  if (!ready || !patient.ready || !connection.ready)
     return (
       <View
         style={{
@@ -56,19 +69,33 @@ function Navigation() {
           animationDuration: 300,
         }}
       >
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="onboarding" options={{ gestureEnabled: false }} />
+        <Stack.Protected guard={!needsAccess}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen
+            name="check-in"
+            options={{
+              presentation: "modal",
+              animation: reducedMotion ? "none" : "slide_from_bottom",
+            }}
+          />
+          <Stack.Screen
+            name="settings"
+            options={{ animation: reducedMotion ? "none" : "slide_from_right" }}
+          />
+          <Stack.Screen name="companion-preview" />
+          <Stack.Screen name="contact" />
+          <Stack.Screen name="questionnaire" />
+          <Stack.Screen name="questions" />
+          <Stack.Screen name="shore-settings" />
+          <Stack.Screen name="visit" />
+          <Stack.Screen name="world" />
+        </Stack.Protected>
         <Stack.Screen
-          name="check-in"
-          options={{
-            presentation: "modal",
-            animation: reducedMotion ? "none" : "slide_from_bottom",
-          }}
+          name="onboarding"
+          initialParams={{ access: state.onboarded ? "1" : undefined }}
+          options={{ gestureEnabled: false }}
         />
-        <Stack.Screen
-          name="settings"
-          options={{ animation: reducedMotion ? "none" : "slide_from_right" }}
-        />
+        <Stack.Screen name="help" />
       </Stack>
       {(storageError || patient.error) && (
         <View
@@ -104,11 +131,13 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <AppProvider>
-        <JourneyProvider>
-          <ReminderProvider>
-            <Navigation />
-          </ReminderProvider>
-        </JourneyProvider>
+        <PatientConnectionProvider>
+          <JourneyProvider>
+            <ReminderProvider>
+              <Navigation />
+            </ReminderProvider>
+          </JourneyProvider>
+        </PatientConnectionProvider>
       </AppProvider>
     </SafeAreaProvider>
   );
