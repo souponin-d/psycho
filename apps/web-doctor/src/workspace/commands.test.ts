@@ -12,9 +12,13 @@ import type {
   Measurement,
   PlanItem,
   Referral,
+  Episode,
 } from "./model";
 import sourceData from "./source-data.json";
 import { ICD10_CATALOG } from "./terminology";
+import { installGrlsFixture } from "../../../../tests/grls-fixture";
+import { grlsCatalog } from "./grls";
+import legacyIcd10 from "./icd10-legacy.json";
 
 const actor: Actor = {
   id: "doctor-1",
@@ -23,6 +27,166 @@ const actor: Actor = {
   specialty: "psychiatrist",
 };
 const now = "2026-10-22T09:00:00.000Z";
+it("сохраняет старое текстовое назначение и создаёт замену без перезаписи регистрационного снимка", () => {
+  const medicine = installGrlsFixture();
+  const p = patient();
+  const legacy = {
+    ...plan(),
+    visitId: "",
+    kind: "medication" as const,
+    title: "Прежняя запись врача",
+    dose: "Доза врача",
+    schedule: "Режим врача",
+    instructionUrl: "https://example.test/instruction",
+  };
+  p.plan.push(legacy);
+  const saved = run(p, { type: "plan.save", value: legacy });
+  expect(saved.plan[0]?.medicine).toBeUndefined();
+  const confirmed = run(saved, { type: "plan.confirm", id: legacy.id });
+  const replacement = {
+    ...legacy,
+    id: "grls-replacement",
+    title: medicine.tradeName,
+    medicine,
+    replacesId: legacy.id,
+    changeReason: "Новое решение врача",
+  };
+  const revised = run(confirmed, { type: "plan.save", value: replacement });
+  const done = run(revised, { type: "plan.confirm", id: replacement.id });
+  expect(done.plan[0]?.title).toBe(legacy.title);
+  expect(done.plan[0]?.status).toBe("stopped");
+  expect(done.plan[1]?.medicine).toEqual(medicine);
+  expect(() => run(patient(), { type: "plan.save", value: legacy })).toThrow(
+    /ГРЛС/,
+  );
+  const archived = structuredClone(done.plan[1]);
+  grlsCatalog.install({
+    sourceVersion: "later",
+    snapshotDate: "2026-10-26",
+    records: [],
+  });
+  expect(done.plan[1]).toEqual(archived);
+});
+it("сохраняет регистрационный снимок препарата и не позволяет подменить его или переписать подтверждённое назначение", () => {
+  const medicine = installGrlsFixture();
+  const value = {
+    ...plan(),
+    visitId: "",
+    kind: "medication" as const,
+    title: medicine.tradeName,
+    medicine,
+    dose: "Ввод врача",
+    schedule: "Режим врача",
+    instructionUrl: "https://example.test/instruction",
+  };
+  const p = run(patient(), { type: "plan.save", value });
+  expect(p.plan[0]?.medicine).toEqual(medicine);
+  expect(() =>
+    run(patient(), {
+      type: "plan.save",
+      value: {
+        ...value,
+        medicine: { ...medicine, registrationStatus: "Исключённый" },
+      },
+    }),
+  ).toThrow(/ГРЛС/);
+  expect(() =>
+    run(patient(), {
+      type: "plan.save",
+      value: { ...value, medicine: { ...medicine, tradeName: "Подмена" } },
+    }),
+  ).toThrow(/ГРЛС/);
+  const confirmed = run(p, { type: "plan.confirm", id: value.id });
+  expect(() => run(confirmed, { type: "plan.save", value })).toThrow(
+    /подтверждён/i,
+  );
+  expect(confirmed.plan[0]?.medicine).toEqual(medicine);
+});
+it("проверяет код эпизода и сохраняет старый текст без угадывания кода", () => {
+  const code = ICD10_CATALOG.find((e) => e.code === "U07.1")!;
+  const episode: Episode = {
+    id: "episode-code",
+    createdAt: now,
+    author: actor.name,
+    title: "Наблюдение",
+    startedOn: "2026-10-22",
+    status: "active",
+    phase: "assessment",
+    diagnosis: `${code.code} · ${code.title}`,
+    diagnosisCode: code,
+    diagnosisStatus: "hypothesis",
+    endDate: "",
+    summary: "",
+  };
+  expect(
+    run(patient(), { type: "episode.save", value: episode }).episodes[0]
+      ?.diagnosisCode,
+  ).toEqual(code);
+  expect(() =>
+    run(patient(), {
+      type: "episode.save",
+      value: { ...episode, diagnosisCode: { ...code, code: "BAD" } },
+    }),
+  ).toThrow(/МКБ/);
+  expect(() =>
+    run(patient(), {
+      type: "episode.save",
+      value: {
+        ...episode,
+        diagnosisCode: undefined,
+        diagnosis: "Свободный диагноз",
+      },
+    }),
+  ).toThrow(/МКБ/);
+  const old = {
+    ...episode,
+    diagnosisCode: undefined,
+    diagnosis: "Старая гипотеза",
+  };
+  const p = patient();
+  p.episodes.push(old);
+  expect(
+    run(p, { type: "episode.save", value: old }).episodes[0]?.diagnosis,
+  ).toBe("Старая гипотеза");
+});
+it("сохраняет историческую версию только на исходной записи без переписывания названия", () => {
+  const legacy = {
+    system: "ICD-10-RU" as const,
+    sourceOid: "1.2.643.5.1.13.13.11.1005",
+    sourceVersion: legacyIcd10.sourceVersion,
+    ...legacyIcd10.entries[0]!,
+  };
+  const p = patient();
+  p.profile.clinicalContext.somaticConditions = [legacy];
+  expect(
+    run(p, { type: "profile.update", value: p.profile }).profile.clinicalContext
+      .somaticConditions,
+  ).toEqual([legacy]);
+  expect(() =>
+    run(patient(), { type: "profile.update", value: p.profile }),
+  ).toThrow(/МКБ/);
+  expect(() =>
+    run(p, {
+      type: "profile.update",
+      value: {
+        ...p.profile,
+        clinicalContext: {
+          ...p.profile.clinicalContext,
+          somaticConditions: [{ ...legacy, title: "Подмена" }],
+        },
+      },
+    }),
+  ).toThrow(/МКБ/);
+  const visit = createVisit("historical-visit", now, actor);
+  visit.diagnoses = [{ ...legacy, status: "hypothesis" }];
+  p.visits.push(visit);
+  expect(
+    run(p, { type: "visit.save", value: visit }).visits[0]?.diagnoses,
+  ).toEqual(visit.diagnoses);
+  expect(() =>
+    run(p, { type: "visit.save", value: { ...visit, id: "another" } }),
+  ).toThrow(/МКБ/);
+});
 it("keeps unapproved questionnaire responses separate and rejects approval or source tampering", () => {
   const source = sourceData.find((s) => s.id === "S23")!;
   const value = {

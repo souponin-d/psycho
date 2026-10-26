@@ -42,3 +42,7 @@ GitHub Issues — единственный источник текущего с�
 Отдельная доска Projects для начала не нужна: [все открытые задачи](https://github.com/souponin-d/psycho/issues), [готовые к работе](https://github.com/souponin-d/psycho/issues?q=is%3Aissue%20is%3Aopen%20label%3Astatus%3Aready), [заблокированные](https://github.com/souponin-d/psycho/issues?q=is%3Aissue%20is%3Aopen%20label%3Astatus%3Ablocked). Assignee и метки обновляются в GitHub, а не дублируются как оперативные статусы в Markdown.
 
 19 октября 2026 года пользователь отменил и удалил задачу №2 о серверной защите main. Она не является зависимостью #4. Сведения об ограничениях GitHub сохранены в [CONTRIBUTING](../../CONTRIBUTING.md#настройка-github). Прямой push запрещён независимо от доступности защиты; отдельные ветки, PR, проверки и независимое одобрение остаются правилами команды. Тариф, видимость репозитория и серверные правила не менялись.
+
+## Обновление кабинета врача
+
+[#42 · клинический контекст, справочники и два маршрута помощи](https://github.com/souponin-d/psycho/issues/42) — владелец souponin-d, класс C. [Проверка объединённой ветки](../verification/2026-10-26-doctor-pr.md); рабочий статус и обсуждения ведутся в issue.

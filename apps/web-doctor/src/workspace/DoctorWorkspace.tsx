@@ -154,10 +154,7 @@ function LoginScreen({
       </div>
       <div className={styles.loginForm}>
         <h2>Рабочее место врача</h2>
-        <p>
-          Войдите в клинику или познакомьтесь со всеми сценариями на учебных
-          данных.
-        </p>
+        <p>Приёмы и наблюдение пациентов.</p>
         {error && <ErrorNotice>{error}</ErrorNotice>}
         <form className={styles.form} onSubmit={enter}>
           <Field
@@ -189,7 +186,7 @@ function LoginScreen({
           disabled={busy}
           style={{ width: "100%" }}
         >
-          Открыть учебное рабочее место
+          Открыть кабинет
         </Button>
       </div>
     </div>
@@ -324,7 +321,10 @@ function Workspace({
   const patient = actions.patients.find((p) => p.id === patientId);
   const visit = patient?.visits.find((v) => v.id === visitId);
   const eventCount = actions.patients.reduce(
-    (n, p) => n + p.events.filter((e) => e.status !== "closed").length,
+    (n, p) =>
+      n +
+      p.events.filter((e) => e.status !== "closed").length +
+      (p.workflow?.safety.filter((e) => e.status !== "acted").length ?? 0),
     0,
   );
   const nav: { path: string; title: string; icon: IconName }[] = [
@@ -469,7 +469,7 @@ function Workspace({
                   name={repository.mode === "demo" ? "book" : "shield"}
                   size={12}
                 />
-                {repository.mode === "demo" ? "Учебные данные" : "Клиника"}
+                {repository.mode === "demo" ? "Локально" : "Клиника"}
               </span>
             </div>
           </header>

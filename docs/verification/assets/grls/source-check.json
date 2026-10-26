@@ -1,0 +1,47 @@
+{
+  "records": 24331,
+  "sourceRows": 143504,
+  "files": [
+    {
+      "status": "Действующий",
+      "rows": 19661,
+      "eligible": 15752
+    },
+    {
+      "status": "Изменённый",
+      "rows": 104260,
+      "eligible": 0
+    },
+    {
+      "status": "Исключённый",
+      "rows": 4363,
+      "eligible": 0
+    },
+    {
+      "status": "Истёкший",
+      "rows": 5482,
+      "eligible": 0
+    },
+    {
+      "status": "Выдано по правилам ЕАЭС",
+      "rows": 9576,
+      "eligible": 8478
+    },
+    {
+      "status": "Действует, на подтверждении государственной регистрации",
+      "rows": 77,
+      "eligible": 74
+    },
+    {
+      "status": "Приостановлено применение",
+      "rows": 49,
+      "eligible": 0
+    },
+    {
+      "status": "Действует, в иностранных упаковках",
+      "rows": 36,
+      "eligible": 28
+    }
+  ],
+  "allRecordHashesMatch": true
+}

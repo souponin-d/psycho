@@ -1,0 +1,623 @@
+{
+  "version": "clinical-support-2026-10-26-literature-v1",
+  "status": "literature-reviewed",
+  "sources": [
+    {
+      "id": "gad-ru",
+      "title": "Минздрав РФ · Генерализованное тревожное расстройство",
+      "version": "457_3, 2024",
+      "url": "https://apicr.minzdrav.gov.ru/api.ashx?id=457_3&op=GetClinrecPdf",
+      "section": "2; 3.1–3.3; 5–6",
+      "limitation": "Проверен официальный PDF указанной редакции; текущий статус в рубрикаторе не подтверждён. Молекула в КР не доказывает показание конкретного РУ."
+    },
+    {
+      "id": "depression-ru",
+      "title": "Минздрав РФ · Депрессивный эпизод, рекуррентное депрессивное расстройство",
+      "version": "301_3, 2024",
+      "url": "https://apicr.minzdrav.gov.ru/api.ashx?id=301_3&op=GetClinrecPdf",
+      "section": "2; 3.1–3.7; 6",
+      "limitation": "Проверен официальный PDF указанной редакции; текущий статус в рубрикаторе не подтверждён. Молекула в КР не доказывает показание конкретного РУ."
+    },
+    {
+      "id": "gad-nice",
+      "title": "NICE · Генерализованная тревога у взрослых",
+      "version": "CG113, 2011; изученные изменения 2020/2022",
+      "url": "https://www.nice.org.uk/guidance/cg113/chapter/Recommendations",
+      "section": "1.2.6–1.2.12; 1.2.17–1.2.37",
+      "limitation": "Международное дополнение; российские показания и правила оказания помощи не подтверждает. Проверен индексированный текст первичного сайта."
+    },
+    {
+      "id": "depression-nice",
+      "title": "NICE · Депрессия у взрослых",
+      "version": "NG222, 2022; карточка: пересмотр 30.01.2026",
+      "url": "https://www.nice.org.uk/guidance/ng222/chapter/Recommendations",
+      "section": "1.2.6–1.2.11; 1.4; 1.5–1.6; 1.9",
+      "limitation": "Международное дополнение; российские показания и правила оказания помощи не подтверждает. Проверен индексированный текст первичного сайта."
+    },
+    {
+      "id": "safety-nice",
+      "title": "NICE · Самоповреждение: оценка и помощь",
+      "version": "NG225, 2022",
+      "url": "https://www.nice.org.uk/guidance/ng225/chapter/recommendations",
+      "section": "1.6.1–1.6.6",
+      "limitation": "Международное дополнение; российские показания и правила оказания помощи не подтверждает. Проверен индексированный текст первичного сайта. Шкалы не прогнозируют индивидуальный суицид и не определяют выписку."
+    },
+    {
+      "id": "bipolar-nice",
+      "title": "NICE · Биполярное расстройство",
+      "version": "CG185, пункты 2014; изменения руководства 2025",
+      "url": "https://www.nice.org.uk/guidance/cg185/chapter/recommendations",
+      "section": "1.2.1–1.2.3; 1.5.2",
+      "limitation": "Международное дополнение; российские показания и правила оказания помощи не подтверждает. Проверен индексированный текст первичного сайта. Анамнез гипомании/мании требует отдельной оценки."
+    },
+    {
+      "id": "allergy-nice",
+      "title": "NICE · Лекарственная аллергия",
+      "version": "CG183, 2014",
+      "url": "https://www.nice.org.uk/guidance/cg183/chapter/recommendations",
+      "section": "1.2.1–1.2.6; 1.4.1–1.4.2",
+      "limitation": "Международное дополнение; российские показания и правила оказания помощи не подтверждает. Проверен индексированный текст первичного сайта. Не смешивать аллергию и неаллергическое нежелательное явление."
+    },
+    {
+      "id": "medicines-nice",
+      "title": "NICE · Сверка лекарств",
+      "version": "NG5, 2015",
+      "url": "https://www.nice.org.uk/guidance/ng5/chapter/Recommendations",
+      "section": "1.3",
+      "limitation": "Международное дополнение; российские показания и правила оказания помощи не подтверждает. Проверен индексированный текст первичного сайта. Учитываются рецептурные, безрецептурные и дополнительные средства."
+    },
+    {
+      "id": "ich-e2d",
+      "title": "ICH · Данные безопасности после регистрации",
+      "version": "E2D(R1), Step 4 15.09.2025; EMA Step 5 18.09.2025",
+      "url": "https://www.ema.europa.eu/en/documents/scientific-guideline/ich-e2dr1-guideline-post-approval-safety-data-definitions-standards-management-reporting-individual-case-safety-reports-step-5_en.pdf",
+      "section": "2.1.1–2.1.3; 6.3",
+      "limitation": "Первичный документ; действует в ЕС с 18.03.2026. Определения серьёзности и события не равны российскому порядку или автоматической подаче сообщения. Тяжесть симптомов не равна серьёзности."
+    },
+    {
+      "id": "who-umc",
+      "title": "UMC · Оценка причинной связи",
+      "version": "WHO-UMC system, документ 06.04.2018",
+      "url": "https://who-umc.org/media/164200/who-umc-causality-assessment_new-logo.pdf",
+      "section": "Table 2; The use of the WHO-UMC system",
+      "limitation": "Проверен индексированный текст первичного документа; прямое открытие требует входа. Категории требуют оценки случая; совпадение по времени не доказывает причинность. Повторное введение ради проверки не предлагается."
+    },
+    {
+      "id": "aviandr",
+      "title": "Авиандр · публичная ОХЛП",
+      "version": "Копия от 16.07.2026; SHA-256 4e535418cfb0153018812148e988cc5adc230c2e926605c72828d4dab80158a4",
+      "url": "https://disk.360.yandex.ru/i/n-l5OQc0Fbsojw",
+      "section": "4.1–4.8; 5.2",
+      "limitation": "Копия по ссылке производителя; соответствие последней ОХЛП ГРЛС не подтверждено. ГТР — рассматриваемое показание; депрессивные симптомы сами по себе не показание. Доза не подбирается."
+    },
+    {
+      "id": "sertraline-label",
+      "title": "ZOLOFT · первичная маркировка США",
+      "version": "08/2023, version 7, setid fda754f6-d0f3-4dce-a17a-927d64f912f7",
+      "url": "https://dailymed.nlm.nih.gov/dailymed/fda/fdaDrugXsl.cfm?setid=fda754f6-d0f3-4dce-a17a-927d64f912f7&type=display",
+      "section": "5.2–5.3; 5.10; 7.1",
+      "limitation": "Первичная иностранная маркировка используется для рисков, не для подтверждения регистрации или показаний в РФ. Ограниченный перечень не заменяет сверку ОХЛП выбранного РУ."
+    },
+    {
+      "id": "duloxetine-label",
+      "title": "CYMBALTA · первичная маркировка США",
+      "version": "Изученная онлайн-копия 26.10.2026; изменения 08/2023",
+      "url": "https://pi.lilly.com/us/cymbalta-pi.pdf",
+      "section": "5.4–5.5; 7.4; 7.9",
+      "limitation": "Первичная иностранная маркировка используется для рисков, не для подтверждения регистрации или показаний в РФ. Ограниченный перечень не заменяет сверку ОХЛП выбранного РУ."
+    },
+    {
+      "id": "fluoxetine-label",
+      "title": "PROZAC · первичная маркировка США",
+      "version": "Изученная онлайн-копия 26.10.2026",
+      "url": "https://pi.lilly.com/us/prozac.pdf",
+      "section": "7.7",
+      "limitation": "Первичная иностранная маркировка используется для рисков, не для подтверждения регистрации или показаний в РФ. Ограниченный перечень не заменяет сверку ОХЛП выбранного РУ."
+    },
+    {
+      "id": "paroxetine-label",
+      "title": "PAXIL · первичная маркировка США",
+      "version": "Изученная онлайн-копия 26.10.2026",
+      "url": "https://www.dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=ef3b5cbe-f9e1-c1ac-79da-cfe14e3a7e7e",
+      "section": "5.3; 7",
+      "limitation": "Первичная иностранная маркировка используется для рисков, не для подтверждения регистрации или показаний в РФ. Ограниченный перечень не заменяет сверку ОХЛП выбранного РУ."
+    },
+    {
+      "id": "hydroxyzine-ema",
+      "title": "EMA · Гидроксизин и нарушения ритма",
+      "version": "EMA/149624/2015, 27.03.2015",
+      "url": "https://www.ema.europa.eu/en/documents/press-release/new-restrictions-minimise-risks-effects-heart-rhythm-hydroxyzine-containing-medicines_en.pdf",
+      "section": "Информация для специалистов",
+      "limitation": "Регуляторное сообщение ЕС о QT/TdP; не подтверждает российское показание."
+    },
+    {
+      "id": "pregabalin-label",
+      "title": "LYRICA · первичная маркировка США",
+      "version": "Изученная онлайн-копия 26.10.2026; дыхательные риски 04/2020",
+      "url": "https://labeling.pfizer.com/showlabeling.aspx?id=561",
+      "section": "5.4–5.5; 7; 9",
+      "limitation": "Первичная иностранная маркировка используется для рисков, не для подтверждения регистрации или показаний в РФ. Ограниченный перечень не заменяет сверку ОХЛП выбранного РУ. Американская маркировка не содержит показания ГТР; вариант при ГТР взят из RU-A/CG113."
+    },
+    {
+      "id": "mirtazapine-label",
+      "title": "REMERON · первичная маркировка США",
+      "version": "11/2021, изученная копия 26.10.2026",
+      "url": "https://www.organon.com/product/usa/pi_circulars/r/remeron/remeron_tablets_pi.pdf",
+      "section": "5.3; 5.5; 5.7–5.8; 7",
+      "limitation": "Используется для серотонинергических, QT и седативных рисков, не подтверждает показания конкретного российского РУ."
+    }
+  ],
+  "options": [
+    {
+      "id": "cbt",
+      "routes": ["gad", "depression"],
+      "title": "Когнитивно-поведенческая терапия",
+      "kind": "psychotherapy",
+      "position": "first",
+      "summary": "Обсудить структурированную психотерапию с учётом целей, предпочтений и доступности специалиста.",
+      "drugClasses": [],
+      "monitoring": [
+        "Функционирование и симптомы",
+        "Вовлечённость и безопасность"
+      ],
+      "sourceIds": ["gad-ru", "depression-ru", "gad-nice", "depression-nice"]
+    },
+    {
+      "id": "guided-self-help",
+      "routes": ["gad", "depression"],
+      "title": "Психообразование и сопровождаемая самопомощь",
+      "kind": "psychotherapy",
+      "position": "first",
+      "summary": "Для подходящего клинического контекста обсудить материалы на принципах КПТ; не заменяет помощь при непосредственной опасности.",
+      "drugClasses": [],
+      "monitoring": [
+        "Доступность и понимание материалов",
+        "Контакт при ухудшении"
+      ],
+      "sourceIds": ["gad-nice", "depression-nice"]
+    },
+    {
+      "id": "ssri",
+      "routes": ["gad", "depression"],
+      "title": "СИОЗС",
+      "kind": "medication",
+      "position": "first",
+      "summary": "Основной класс для обсуждения. Выбор конкретного препарата требует проверки показаний и ограничений его РУ.",
+      "drugClasses": ["ssri"],
+      "monitoring": [
+        "Активация, сон, безопасность в начале лечения",
+        "ЖКТ, сексуальные эффекты, кровотечения",
+        "Взаимодействия и отмена"
+      ],
+      "sourceIds": ["gad-ru", "depression-ru", "gad-nice", "depression-nice"]
+    },
+    {
+      "id": "snri",
+      "routes": ["gad", "depression"],
+      "title": "СИОЗСН",
+      "kind": "medication",
+      "position": "first",
+      "summary": "Обсудить с учётом прежнего ответа и переносимости; показания каждого выбранного препарата сверяются отдельно.",
+      "drugClasses": ["snri"],
+      "monitoring": [
+        "Артериальное давление по выбранному препарату",
+        "Активация и безопасность",
+        "Переносимость, взаимодействия, отмена"
+      ],
+      "sourceIds": ["gad-ru", "depression-ru", "gad-nice", "depression-nice"]
+    },
+    {
+      "id": "aviandr",
+      "routes": ["gad"],
+      "title": "Авиандр · отдельный вариант при ГТР",
+      "kind": "medication",
+      "position": "alternative",
+      "summary": "Рассмотреть при подтверждённом ГТР с отдельной проверкой ОХЛП. Депрессивные жалобы и PHQ-9 сами по себе не показание.",
+      "drugClasses": ["aviandr"],
+      "monitoring": [
+        "СКФ с методом, единицами и датой; печёночный контекст",
+        "Беременность, лактация, МАО и взаимодействия",
+        "Сонливость, головокружение и нежелательные явления"
+      ],
+      "sourceIds": ["aviandr"]
+    },
+    {
+      "id": "pregabalin",
+      "routes": ["gad"],
+      "title": "Прегабалин · последующий вариант",
+      "kind": "medication",
+      "position": "alternative",
+      "summary": "Обсудить при непереносимости/недостаточном ответе на основные варианты; сначала уточнить фактический приём и предыдущий курс.",
+      "drugClasses": ["pregabalin"],
+      "monitoring": [
+        "Функция почек и репродуктивный контекст",
+        "Злоупотребление/зависимость",
+        "Седация, дыхательные риски при сочетаниях"
+      ],
+      "sourceIds": ["gad-ru", "gad-nice", "pregabalin-label"]
+    },
+    {
+      "id": "mirtazapine",
+      "routes": ["depression"],
+      "title": "Миртазапин · альтернативный антидепрессант",
+      "kind": "medication",
+      "position": "alternative",
+      "summary": "Отдельный вариант после клинической оценки депрессивного эпизода и предпочтений; не выбирается по одной сумме шкалы.",
+      "drugClasses": ["mirtazapine"],
+      "monitoring": [
+        "Масса тела и седация",
+        "Безопасность, переносимость и прежний ответ"
+      ],
+      "sourceIds": ["depression-ru", "mirtazapine-label"]
+    },
+    {
+      "id": "depression-psychotherapy",
+      "routes": ["depression"],
+      "title": "Интерперсональная терапия / поведенческая активация",
+      "kind": "psychotherapy",
+      "position": "alternative",
+      "summary": "Обсудить подход по трудностям функционирования и отношений; возможна комбинация с лекарственной терапией.",
+      "drugClasses": [],
+      "monitoring": [
+        "Функционирование и совместные цели",
+        "Ответ и доступность помощи"
+      ],
+      "sourceIds": ["depression-ru", "depression-nice"]
+    },
+    {
+      "id": "daily-support",
+      "routes": ["gad", "depression"],
+      "title": "Режим дня, активность и поддержка",
+      "kind": "lifestyle",
+      "position": "adjunct",
+      "summary": "Обсудить выполнимые изменения повседневной активности и социальной поддержки как дополнение к согласованному плану.",
+      "drugClasses": [],
+      "monitoring": [
+        "Сон и функционирование",
+        "Избегание чрезмерных требований к пациенту"
+      ],
+      "sourceIds": ["gad-nice", "depression-nice"]
+    },
+    {
+      "id": "followup",
+      "routes": ["gad", "depression"],
+      "title": "Контроль ответа, переносимости и безопасности",
+      "kind": "follow-up",
+      "position": "adjunct",
+      "summary": "Согласовать дату и способ контакта; при ухудшении или опасности не ждать планового срока.",
+      "drugClasses": [],
+      "monitoring": [
+        "Фактический приём и предпочтения",
+        "Симптомы и функционирование",
+        "Нежелательные явления и безопасность"
+      ],
+      "sourceIds": ["gad-nice", "depression-nice", "medicines-nice"]
+    },
+    {
+      "id": "specialist-review",
+      "routes": ["depression"],
+      "title": "Специализированная оценка дальнейшей терапии",
+      "kind": "follow-up",
+      "position": "alternative",
+      "summary": "При психозе, смешанных/маниакальных признаках, выраженном ухудшении или нескольких неуспешных курсах нужен отдельный маршрут. Комбинации и ЭСТ/ТМС не назначаются автоматически.",
+      "drugClasses": [],
+      "monitoring": [
+        "Диагноз и условия оказания помощи",
+        "Полнота прежних курсов",
+        "Текущая безопасность"
+      ],
+      "sourceIds": [
+        "depression-ru",
+        "depression-nice",
+        "bipolar-nice",
+        "safety-nice"
+      ]
+    }
+  ],
+  "drugClasses": [
+    {
+      "id": "ssri",
+      "title": "СИОЗС",
+      "inns": [
+        "сертралин",
+        "пароксетин",
+        "флуоксетин",
+        "флувоксамин",
+        "циталопрам",
+        "эсциталопрам",
+        "sertraline",
+        "paroxetine",
+        "fluoxetine",
+        "fluvoxamine",
+        "citalopram",
+        "escitalopram"
+      ]
+    },
+    {
+      "id": "snri",
+      "title": "СИОЗСН",
+      "inns": ["венлафаксин", "дулоксетин", "venlafaxine", "duloxetine"]
+    },
+    {
+      "id": "aviandr",
+      "title": "Маритупирдин · Авиандр",
+      "inns": ["маритупирдин", "maritupirdine"]
+    },
+    {
+      "id": "pregabalin",
+      "title": "Прегабалин",
+      "inns": ["прегабалин", "pregabalin"]
+    },
+    {
+      "id": "mirtazapine",
+      "title": "Миртазапин",
+      "inns": ["миртазапин", "mirtazapine"]
+    },
+    {
+      "id": "serotonergic",
+      "title": "Средства с серотонинергическим действием",
+      "inns": [
+        "сертралин",
+        "пароксетин",
+        "флуоксетин",
+        "флувоксамин",
+        "циталопрам",
+        "эсциталопрам",
+        "венлафаксин",
+        "дулоксетин",
+        "амитриптилин",
+        "кломипрамин",
+        "трамадол",
+        "фентанил",
+        "литий",
+        "лития карбонат",
+        "буспирон",
+        "триптофан",
+        "зверобоя трава",
+        "зверобоя продырявленного трава",
+        "зверобоя продырявленного травы экстракт",
+        "sertraline",
+        "paroxetine",
+        "fluoxetine",
+        "fluvoxamine",
+        "citalopram",
+        "escitalopram",
+        "venlafaxine",
+        "duloxetine",
+        "amitriptyline",
+        "clomipramine",
+        "tramadol",
+        "fentanyl",
+        "lithium",
+        "lithium carbonate",
+        "buspirone",
+        "tryptophan",
+        "hypericum perforatum",
+        "hypericum perforatum extract",
+        "миртазапин",
+        "mirtazapine"
+      ]
+    },
+    {
+      "id": "maoi",
+      "title": "Ингибиторы МАО · требуется дата и путь введения",
+      "inns": [
+        "селегилин",
+        "транилципромин",
+        "изокарбоксазид",
+        "фенелзин",
+        "линезолид",
+        "метилтиониния хлорид",
+        "метиленовый синий",
+        "selegiline",
+        "tranylcypromine",
+        "isocarboxazid",
+        "phenelzine",
+        "linezolid",
+        "methylthioninium chloride",
+        "methylene blue"
+      ]
+    },
+    {
+      "id": "sedative",
+      "title": "Изученные седативные средства",
+      "inns": [
+        "диазепам",
+        "лоразепам",
+        "алпразолам",
+        "дифенгидрамин",
+        "гидроксизин",
+        "diazepam",
+        "lorazepam",
+        "alprazolam",
+        "diphenhydramine",
+        "hydroxyzine",
+        "миртазапин",
+        "mirtazapine"
+      ]
+    },
+    {
+      "id": "opioid",
+      "title": "Изученные опиоиды",
+      "inns": [
+        "трамадол",
+        "фентанил",
+        "метадон",
+        "tramadol",
+        "fentanyl",
+        "methadone"
+      ]
+    },
+    {
+      "id": "qt",
+      "title": "Изученные средства с риском QT",
+      "inns": [
+        "циталопрам",
+        "эсциталопрам",
+        "гидроксизин",
+        "пимозид",
+        "хлорпромазин",
+        "моксифлоксацин",
+        "эритромицин",
+        "хинидин",
+        "амиодарон",
+        "соталол",
+        "метадон",
+        "citalopram",
+        "escitalopram",
+        "hydroxyzine",
+        "pimozide",
+        "chlorpromazine",
+        "moxifloxacin",
+        "erythromycin",
+        "quinidine",
+        "amiodarone",
+        "sotalol",
+        "methadone",
+        "миртазапин",
+        "mirtazapine"
+      ]
+    },
+    {
+      "id": "bleeding",
+      "title": "Изученные средства, влияющие на гемостаз",
+      "inns": [
+        "ацетилсалициловая кислота",
+        "аспирин",
+        "клопидогрел",
+        "гепарин",
+        "гепарин натрия",
+        "варфарин",
+        "acetylsalicylic acid",
+        "aspirin",
+        "clopidogrel",
+        "heparin",
+        "heparin sodium",
+        "warfarin"
+      ]
+    },
+    {
+      "id": "cyp2d6-inhibitor",
+      "title": "Изученные ингибиторы CYP2D6 · сила различается",
+      "inns": [
+        "флуоксетин",
+        "пароксетин",
+        "дулоксетин",
+        "сертралин",
+        "дифенгидрамин",
+        "тербинафин",
+        "хинидин",
+        "гидроксихлорохин",
+        "fluoxetine",
+        "paroxetine",
+        "duloxetine",
+        "sertraline",
+        "diphenhydramine",
+        "terbinafine",
+        "quinidine",
+        "hydroxychloroquine"
+      ]
+    }
+  ],
+  "interactions": [
+    {
+      "id": "serotonergic-maoi",
+      "left": "serotonergic",
+      "right": "maoi",
+      "title": "Серотонинергические средства и ингибиторы МАО",
+      "detail": "Возможен серотониновый синдром. Нужны точные средства, время последнего приёма и путь введения; интервалы сверяются для конкретной пары. Не применять единый срок ко всему классу.",
+      "sourceIds": ["sertraline-label", "duloxetine-label", "mirtazapine-label"]
+    },
+    {
+      "id": "serotonergic-combination",
+      "left": "serotonergic",
+      "right": "serotonergic",
+      "title": "Несколько серотонинергических средств",
+      "detail": "Сочетание разных средств требует проверки серотонинергической нагрузки и признаков токсичности. Сигнал не объявляет все комбинации одинаково противопоказанными.",
+      "sourceIds": ["sertraline-label", "duloxetine-label", "mirtazapine-label"]
+    },
+    {
+      "id": "ssri-hemostasis",
+      "left": "ssri",
+      "right": "bleeding",
+      "title": "СИОЗС и средства, влияющие на гемостаз",
+      "detail": "Возможен дополнительный риск кровотечения; уточнить анамнез, другие средства и мониторинг. Список не включает все НПВП/антикоагулянты.",
+      "sourceIds": ["sertraline-label"]
+    },
+    {
+      "id": "snri-hemostasis",
+      "left": "snri",
+      "right": "bleeding",
+      "title": "СИОЗСН и средства, влияющие на гемостаз",
+      "detail": "Риск кровотечений требует проверки конкретной пары и текущего состояния; это предупреждение, не безусловная отмена.",
+      "sourceIds": ["duloxetine-label"]
+    },
+    {
+      "id": "qt-combination",
+      "left": "qt",
+      "right": "qt",
+      "title": "Несколько средств с риском QT",
+      "detail": "Оценить совокупный риск, сердечный анамнез, электролиты и необходимость ЭКГ. Риски и ограничения различаются по паре; универсальная категория противопоказания не присваивается.",
+      "sourceIds": [
+        "sertraline-label",
+        "hydroxyzine-ema",
+        "depression-ru",
+        "mirtazapine-label"
+      ]
+    },
+    {
+      "id": "aviandr-serotonergic",
+      "left": "aviandr",
+      "right": "serotonergic",
+      "title": "Авиандр и серотонинергические средства",
+      "detail": "В проверенной публичной ОХЛП указаны осторожность и возможность серотонинового синдрома. Требуется сверка выбранных препаратов и регуляторной редакции.",
+      "sourceIds": ["aviandr"]
+    },
+    {
+      "id": "aviandr-maoi",
+      "left": "aviandr",
+      "right": "maoi",
+      "title": "Авиандр и МАО: проверить приём и срок отмены",
+      "detail": "Публичная ОХЛП относит совместный приём и две недели после отмены МАО к противопоказаниям. Дату/путь введения уточнить; автоматическое разрешение по отсутствующей дате недопустимо.",
+      "sourceIds": ["aviandr"]
+    },
+    {
+      "id": "aviandr-sedative",
+      "left": "aviandr",
+      "right": "sedative",
+      "title": "Возможное усиление седации Авиандром",
+      "detail": "Оценить сонливость, падения, вождение и фактический приём; источник предусматривает осторожность.",
+      "sourceIds": ["aviandr"]
+    },
+    {
+      "id": "aviandr-cyp2d6",
+      "left": "aviandr",
+      "right": "cyp2d6-inhibitor",
+      "title": "Авиандр и ингибиторы CYP2D6",
+      "detail": "В ОХЛП — осторожность: возможно изменение экспозиции. Сила ингибирования различается; субстрат фермента не равен ингибитору. Отдельное исследованное сочетание не доказывает безопасность всех пар.",
+      "sourceIds": [
+        "aviandr",
+        "fluoxetine-label",
+        "paroxetine-label",
+        "duloxetine-label",
+        "sertraline-label"
+      ]
+    },
+    {
+      "id": "pregabalin-sedative",
+      "left": "pregabalin",
+      "right": "sedative",
+      "title": "Прегабалин и угнетающие ЦНС средства",
+      "detail": "Возможны усиление седации и угнетение дыхания; учитывать дыхательные нарушения и другие средства. Не является назначением или автоматическим запретом всех сочетаний.",
+      "sourceIds": ["pregabalin-label"]
+    },
+    {
+      "id": "pregabalin-opioid",
+      "left": "pregabalin",
+      "right": "opioid",
+      "title": "Прегабалин и опиоиды",
+      "detail": "Проверить риск угнетения дыхания и седации; нужны точные препараты и состояние пациента.",
+      "sourceIds": ["pregabalin-label"]
+    }
+  ]
+}

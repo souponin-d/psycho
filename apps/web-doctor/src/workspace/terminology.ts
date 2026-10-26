@@ -1,12 +1,10 @@
-/**
- * Учебный срез для демонстрации интерфейса. Он не является полной выгрузкой
- * НСИ и подлежит замене верифицированным импортом указанного в спецификации
- * паспорта справочника.
- */
+import catalog from "./icd10-ru.json" with { type: "json" };
+import legacy from "./icd10-legacy.json" with { type: "json" };
+
 export const ICD10_SOURCE = {
   system: "ICD-10-RU",
-  sourceOid: "1.2.643.5.1.13.13.11.1005",
-  sourceVersion: "educational-subset-2026-10-25",
+  sourceOid: catalog.source.sourceOid,
+  sourceVersion: catalog.source.sourceVersion,
 } as const;
 
 export interface TerminologySelection {
@@ -16,59 +14,110 @@ export interface TerminologySelection {
   code: string;
   title: string;
 }
-
-export interface Icd10Entry extends TerminologySelection {
-  parentCode?: string;
-}
-
-const entries: ReadonlyArray<readonly [string, string]> = [
-  ["F20", "Шизофрения"],
-  ["F30", "Маниакальный эпизод"],
-  ["F31", "Биполярное аффективное расстройство"],
-  ["F32.0", "Депрессивный эпизод лёгкой степени"],
-  ["F32.1", "Депрессивный эпизод средней степени"],
-  ["F32.2", "Депрессивный эпизод тяжёлой степени без психотических симптомов"],
-  ["F33", "Рекуррентное депрессивное расстройство"],
-  ["F41.0", "Паническое расстройство"],
-  ["F41.1", "Генерализованное тревожное расстройство"],
-  ["F43.1", "Посттравматическое стрессовое расстройство"],
-  ["F60", "Специфические расстройства личности"],
-  ["D50", "Железодефицитная анемия"],
-  ["E03", "Другие формы гипотиреоза"],
-  ["E11", "Сахарный диабет 2 типа"],
-  ["G40", "Эпилепсия"],
-  ["G47", "Расстройства сна"],
-  ["I10", "Эссенциальная (первичная) гипертензия"],
-];
-
-export const ICD10_CATALOG: readonly Icd10Entry[] = entries.map(
-  ([code, title]) => ({ ...ICD10_SOURCE, code, title }),
+export type Icd10Entry = TerminologySelection;
+/** Full published hierarchy, including inactive historical nodes. */
+export const ICD10_NODES = catalog.records;
+export const ICD10_CATALOG: readonly Icd10Entry[] = catalog.records
+  .filter((r) => r.active && r.kind === "code")
+  .map(({ code, title }) => ({ ...ICD10_SOURCE, code, title }));
+const current = new Map(ICD10_CATALOG.map((entry) => [entry.code, entry]));
+const historical = new Map(
+  legacy.entries.map((entry) => [entry.code, entry.title]),
 );
-
+const byId = new Map(catalog.records.map((entry) => [entry.id, entry]));
 const normalize = (value: string) =>
-  value.trim().toLocaleLowerCase("ru-RU").replaceAll("ё", "е");
-
+  value
+    .trim()
+    .toLocaleLowerCase("ru-RU")
+    .replaceAll("ё", "е")
+    .replace(/\s+/g, " ");
+const searchable = catalog.records
+  .filter((r) => r.active && r.kind === "code")
+  .map((r) => {
+    const ancestors = [];
+    const ancestorCodes: string[] = [];
+    let parent = r.parentId;
+    while (parent) {
+      const node = byId.get(parent)!;
+      ancestors.push(`${node.code} ${node.title}`);
+      ancestorCodes.push(node.code.toLowerCase());
+      parent = node.parentId;
+    }
+    return {
+      entry: current.get(r.code)!,
+      title: normalize(r.title),
+      context: normalize(ancestors.join(" ")),
+      ancestorCodes,
+    };
+  });
 export function searchIcd10(query: string): Icd10Entry[] {
   const needle = normalize(query);
   if (!needle) return [...ICD10_CATALOG];
-  return ICD10_CATALOG.filter(
-    (entry) =>
-      normalize(entry.code).includes(needle) ||
-      normalize(entry.title).includes(needle),
-  );
+  const code = needle.replaceAll(" ", "");
+  const words = needle.split(" ");
+  const chapter = /^класс\s+([ivx]+)$/.exec(needle)?.[1];
+  return searchable
+    .filter((r) =>
+      chapter
+        ? r.ancestorCodes.includes(chapter)
+        : r.entry.code.toLowerCase().includes(code) ||
+          words.every((w) => r.title.includes(w)) ||
+          words.every((w) => r.context.includes(w)),
+    )
+    .sort(
+      (a, b) =>
+        Number(b.entry.code.toLowerCase() === code) -
+        Number(a.entry.code.toLowerCase() === code),
+    )
+    .map((r) => r.entry);
 }
-
 export function isCurrentIcd10Selection(
   value: unknown,
 ): value is TerminologySelection {
   if (!value || typeof value !== "object") return false;
   const selection = value as Partial<TerminologySelection>;
-  return ICD10_CATALOG.some(
-    (entry) =>
-      entry.system === selection.system &&
-      entry.sourceOid === selection.sourceOid &&
-      entry.sourceVersion === selection.sourceVersion &&
-      entry.code === selection.code &&
-      entry.title === selection.title,
+  return (
+    selection.system === ICD10_SOURCE.system &&
+    selection.sourceOid === ICD10_SOURCE.sourceOid &&
+    selection.sourceVersion === ICD10_SOURCE.sourceVersion &&
+    current.get(selection.code ?? "")?.title === selection.title &&
+    typeof selection.title === "string"
+  );
+}
+/** Frozen legacy tuples remain readable, but may only be retained on their existing record. */
+export function isKnownIcd10Selection(
+  value: unknown,
+): value is TerminologySelection {
+  if (isCurrentIcd10Selection(value)) return true;
+  if (!value || typeof value !== "object") return false;
+  const s = value as Partial<TerminologySelection>;
+  return (
+    s.system === ICD10_SOURCE.system &&
+    s.sourceOid === ICD10_SOURCE.sourceOid &&
+    s.sourceVersion === legacy.sourceVersion &&
+    typeof s.title === "string" &&
+    historical.get(s.code ?? "") === s.title
+  );
+}
+export function sameIcd10Selection(
+  a: TerminologySelection,
+  b: TerminologySelection,
+) {
+  return (
+    a.system === b.system &&
+    a.sourceOid === b.sourceOid &&
+    a.sourceVersion === b.sourceVersion &&
+    a.code === b.code &&
+    a.title === b.title
+  );
+}
+export function isAllowedIcd10Selection(
+  value: unknown,
+  previous: readonly TerminologySelection[] = [],
+): value is TerminologySelection {
+  return (
+    isCurrentIcd10Selection(value) ||
+    (isKnownIcd10Selection(value) &&
+      previous.some((entry) => sameIcd10Selection(entry, value)))
   );
 }

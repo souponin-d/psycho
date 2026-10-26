@@ -1,65 +1,28 @@
-import { SourceLinks } from "./SourceLibrary";
+import { supportCatalog } from "./clinical-support-engine";
 import { styles } from "./ui/Elements";
-
-const variants = [
-  {
-    id: "S01",
-    title: "Тревожно-фобические расстройства",
-    location: "§3.1 и приложение Б; PDF с.34, 38–39, 95–98",
-    context:
-      "Фобические ситуации, избегание и ограничение жизни; ответ на лечение, переносимость и план последующего наблюдения.",
-    limitation:
-      "Действующую редакцию и применимость выбранного варианта подтверждает врач.",
-  },
-  {
-    id: "S02",
-    title: "Биполярное аффективное расстройство",
-    location:
-      "Раздел лечения и приложения; PDF с.113–116 — мониторинг препаратов",
-    context:
-      "Полюс и этап эпизода, смешанные и психотические проявления, лечение в анамнезе; специфический мониторинг выбранного препарата.",
-    limitation:
-      "Варианты для разных полюсов и этапов не взаимозаменяемы. Условия выбора не превращены в автоматическое назначение.",
-  },
-  {
-    id: "S03",
-    title: "Депрессивный эпизод и рекуррентное депрессивное расстройство",
-    location: "§3, §3.1.5; PDF с.23–24, 30–31, 101–104",
-    context:
-      "Индивидуальный план с учётом предшествующего лечения, дифференциального контекста, переносимости, рисков и предпочтений пациента.",
-    limitation:
-      "Схема Б3 на PDF с.102 неполная. Условия при смешанных чертах различаются; недостающая ветвь не восстановлена по предположению.",
-  },
-  {
-    id: "S04",
-    title: "Генерализованное тревожное расстройство",
-    location: "§3.2; PDF с.24–31, 74–77",
-    context:
-      "Варианты терапии и пересмотра с учётом полученного лечения, пропусков и переносимости; отдельная проверка инструкций лекарств.",
-    limitation:
-      "У маритупердина / Авиандра в локальном тексте есть расхождение в номере линии. Актуальная инструкция в подборке отсутствует; правило назначения не утверждено.",
-  },
-];
-
 export function TherapyReference() {
+  const sources = supportCatalog.sources.filter((s) =>
+    ["gad-ru", "depression-ru", "gad-nice", "depression-nice"].includes(s.id),
+  );
   return (
     <details className={styles.details}>
-      <summary>
-        Материалы для выбора варианта терапии · 4 клинические рекомендации
-      </summary>
+      <summary>Источники вариантов терапии · ГТР и депрессия</summary>
       <p className={styles.subtext}>
-        Откройте нужный документ и раздел. Решение, инструкцию, обоснование и
-        выбранный режим можно записать в плане ведения. Автоматический выбор для
-        пациента ожидает утверждения правил.
+        Сравнение вариантов и индивидуальные ограничения доступны в клинической
+        поддержке карты.
       </p>
       <div className={styles.smallStack}>
-        {variants.map((variant) => (
-          <article key={variant.id} className={styles.inlineNote}>
-            <h3>{variant.title}</h3>
-            <p>{variant.context}</p>
-            <p className={styles.subtext}>{variant.location}</p>
-            <p className={styles.notice}>{variant.limitation}</p>
-            <SourceLinks ids={[variant.id]} />
+        {sources.map((s) => (
+          <article key={s.id} className={styles.inlineNote}>
+            <h3>
+              <a href={s.url} target="_blank" rel="noreferrer">
+                {s.title}
+              </a>
+            </h3>
+            <p>
+              {s.version} · {s.section}
+            </p>
+            <p className={styles.subtext}>{s.limitation}</p>
           </article>
         ))}
       </div>

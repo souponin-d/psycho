@@ -1,3 +1,4 @@
+import { WorkflowSafetyBoard } from "./ClinicalWorkflow";
 import { useState, type FormEvent } from "react";
 import type { CareEvent, EventStatus, PatientRecord } from "./model";
 import type { WorkspaceActions } from "./useWorkspace";
@@ -93,6 +94,10 @@ export function Events({
   }
   return (
     <>
+      <WorkflowSafetyBoard
+        patients={patient ? [patient] : patients}
+        actions={actions}
+      />
       {!patient && (
         <div className={styles.pageHeading}>
           <div>

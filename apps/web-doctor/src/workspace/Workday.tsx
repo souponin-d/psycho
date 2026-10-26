@@ -1,3 +1,5 @@
+import { ClinicalDecisionQueue } from "./ClinicalDecisionQueue";
+import type { WorkspaceActions } from "./useWorkspace";
 import { useState } from "react";
 import type { PatientRecord, Visit } from "./model";
 import type { Navigate } from "./PatientDirectory";
@@ -69,6 +71,7 @@ export function AppointmentRow({
   );
 }
 export function Workday({
+  actions,
   patients,
   navigate,
   onCreate,
@@ -76,6 +79,7 @@ export function Workday({
   patients: PatientRecord[];
   navigate: Navigate;
   onCreate: () => void;
+  actions?: WorkspaceActions;
 }) {
   const visible = patients.filter((p) => !p.archived);
   const appointments = visible
@@ -173,6 +177,11 @@ export function Workday({
       ) : (
         <div className={styles.workspaceLine}>Открытых событий нет</div>
       )}
+      <ClinicalDecisionQueue
+        patients={patients}
+        actions={actions}
+        navigate={navigate}
+      />
       <div className={styles.workdayColumns}>
         <Section
           title="Приёмы на сегодня"

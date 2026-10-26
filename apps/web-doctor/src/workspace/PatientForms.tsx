@@ -77,8 +77,9 @@ const episodeLabels: Record<string, string> = {
   summary: "Итог эпизода",
 };
 function episodeValues(episode: Episode) {
+  const { diagnosisCode: _diagnosisCode, ...fields } = episode;
   return {
-    ...episode,
+    ...fields,
     status: {
       active: "Активное наблюдение",
       remission: "Ремиссия, наблюдение продолжается",
@@ -546,11 +547,25 @@ export function EpisodeForm({
           <option value="continuation">Продолжение лечения</option>
           <option value="maintenance">Поддерживающий этап</option>
         </Select>
-        <Field
+        <TerminologyPicker
           label="Диагноз / гипотеза"
-          value={value.diagnosis}
-          onChange={(e) => setValue({ ...value, diagnosis: e.target.value })}
+          value={value.diagnosisCode ? [value.diagnosisCode] : []}
+          multiple={false}
+          onChange={(items) => {
+            const selected = items[0];
+            setValue({
+              ...value,
+              diagnosisCode: selected ?? null,
+              diagnosis: selected ? `${selected.code} · ${selected.title}` : "",
+            });
+          }}
         />
+        {!value.diagnosisCode && value.diagnosis && (
+          <p className={styles.inlineNote}>
+            Прежняя запись без кода МКБ-10: {value.diagnosis}. Текст сохранится;
+            код выбирается врачом отдельно.
+          </p>
+        )}
         <Select
           label="Степень подтверждения"
           value={value.diagnosisStatus}

@@ -1,3 +1,4 @@
+import { clinicalFactsContext } from "./clinical-facts.ts";
 import catalog from "./aviandr-rules.json" with { type: "json" };
 import type {
   AviandrContext,
@@ -9,6 +10,12 @@ import type {
 } from "./model";
 
 export const aviandr = catalog;
+export const isAviandrSourceCurrent = (review: AviandrReview) =>
+  review.sourceVersion === catalog.version &&
+  review.sourceHash === catalog.sha256 &&
+  review.sourceDate === catalog.sourceDate &&
+  review.sourceUrl === catalog.url &&
+  review.status === catalog.status;
 export const isAviandr = (title: string) =>
   /(?:^|[^а-яa-z])(?:авиандр|aviandr|маритупирдин|maritupirdine)(?:$|[^а-яa-z])/iu.test(
     title,
@@ -26,6 +33,9 @@ export function aviandrContext(
     substanceUse,
   } = patient.profile;
   return {
+    ...(patient.clinicalFacts?.length
+      ? { clinicalFacts: clinicalFactsContext(patient) }
+      : {}),
     birthDate,
     allergies,
     conditions: clinicalContext.somaticConditions
@@ -194,7 +204,8 @@ export function validateAviandrReview(value: AviandrReview) {
   );
   const context = value.context;
   check(
-    Object.keys(context).length === 8 &&
+    Object.keys(context).length ===
+      (context.clinicalFacts === undefined ? 8 : 9) &&
       Object.keys(context).every((k) =>
         [
           "birthDate",
@@ -205,11 +216,12 @@ export function validateAviandrReview(value: AviandrReview) {
           "substanceUse",
           "diagnoses",
           "medicines",
+          "clinicalFacts",
         ].includes(k),
       ),
   );
   for (const [key, v] of Object.entries(context)) {
-    if (key === "diagnoses" || key === "medicines")
+    if (key === "diagnoses" || key === "medicines" || key === "clinicalFacts")
       check(
         Array.isArray(v) &&
           v.length <= 1000 &&

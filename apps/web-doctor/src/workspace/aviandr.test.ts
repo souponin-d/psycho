@@ -1,3 +1,4 @@
+import { installGrlsFixture } from "../../../../tests/grls-fixture";
 import { describe, expect, it } from "vitest";
 import { seedPatients, demoActor } from "./seed";
 import { ICD10_CATALOG } from "./terminology";
@@ -18,6 +19,37 @@ function evaluate(change: Record<string, unknown> = {}) {
   return evaluateAviandr(review, "2026-10-24");
 }
 describe("Подготовительная проверка Авиандра", () => {
+  it("requires individual review for pregnancy while retaining the breastfeeding contraindication", () => {
+    const rows = evaluate({ pregnancy: "yes", breastfeeding: "yes" });
+    expect(rows.find((f) => f.id === "pregnancy")?.status).toBe("review");
+    expect(rows.find((f) => f.id === "breastfeeding")?.status).toBe(
+      "contraindication",
+    );
+  });
+  it("identifies glucose-galactose malabsorption rather than any malabsorption", () => {
+    const finding = evaluate({ galactoseDisorder: "yes" }).find(
+      (f) => f.id === "galactoseDisorder",
+    );
+    expect(finding?.title).toBe(
+      "Наследственная непереносимость галактозы, дефицит лактазы или глюкозо-галактозная мальабсорбция",
+    );
+    expect(finding?.status).toBe("contraindication");
+  });
+  it("requires a fresh review for the corrected rule version without rewriting the old snapshot", () => {
+    const p = patient();
+    const oldReview = newAviandrReview(p, "new-plan");
+    oldReview.sourceVersion = "aviandr-2026-07-16-draft-1";
+    const snapshot = structuredClone(oldReview);
+    expect(() =>
+      prepareAviandrReview(p, "new-plan", oldReview, now, "Врач"),
+    ).toThrow(/источником/);
+    expect(oldReview).toEqual(snapshot);
+    const fresh = newAviandrReview(p, "new-plan");
+    expect(fresh.sourceVersion).toBe("aviandr-2026-07-16-draft-2");
+    expect(fresh.sourceHash).toBe(snapshot.sourceHash);
+    expect(fresh.sourceDate).toBe(snapshot.sourceDate);
+    expect(fresh.status).toBe("unapproved");
+  });
   it("does not treat a planned future MAOI cessation as already completed", () => {
     const p = patient();
     const review = newAviandrReview(p, "new-plan");
@@ -148,7 +180,8 @@ describe("Подготовительная проверка Авиандра", (
       ...p.plan[0]!,
       id: "aviandr-plan",
       kind: "medication" as const,
-      title: "Авиандр, таблетки 20 мг",
+      medicine: installGrlsFixture(),
+      title: installGrlsFixture().tradeName,
       status: "draft" as const,
       visitId: "",
       dose: "20 мг",

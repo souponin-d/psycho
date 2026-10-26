@@ -1,3 +1,4 @@
+import { loadGrlsCatalog } from "./grls-loader";
 import { applyCommand, createPatient, DomainError } from "./commands";
 import { demoActor, seedPatients } from "./seed";
 import type { Actor, Command, PatientRecord, Profile } from "./model";
@@ -187,8 +188,29 @@ export async function demoRepository(): Promise<Repository> {
         };
       });
     },
-    execute: (id, command) =>
-      transaction<PatientRecord>("readwrite", (store, set, fail) => {
+    execute: async (id, command) => {
+      const mutation = command.mutation;
+      if (
+        mutation.type === "fact.save" &&
+        mutation.value.content.state === "known" &&
+        mutation.value.content.category === "medication"
+      )
+        await loadGrlsCatalog();
+      if (mutation.type === "plan.save" && mutation.value.medicine)
+        await loadGrlsCatalog();
+      if (mutation.type === "plan.confirm") {
+        const current = await transaction<PatientRecord | undefined>(
+          "readonly",
+          (store, set) => {
+            const request = store.get(id);
+            request.onsuccess = () =>
+              set(request.result as PatientRecord | undefined);
+          },
+        );
+        if (current?.plan.find((item) => item.id === mutation.id)?.medicine)
+          await loadGrlsCatalog();
+      }
+      return transaction<PatientRecord>("readwrite", (store, set, fail) => {
         const request = store.get(id);
         request.onsuccess = () => {
           try {
@@ -206,7 +228,8 @@ export async function demoRepository(): Promise<Repository> {
             fail(error);
           }
         };
-      }),
+      });
+    },
     logout: async () => {},
   };
 }

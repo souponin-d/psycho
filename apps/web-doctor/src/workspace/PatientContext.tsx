@@ -1,3 +1,4 @@
+import { ClinicalFacts } from "./ClinicalFacts";
 import { useState } from "react";
 import type { PatientRecord } from "./model";
 import type { WorkspaceActions } from "./useWorkspace";
@@ -69,20 +70,24 @@ export function PatientContext({
             </Button>
           )}
         </div>
-        <dl className={styles.facts}>
-          {facts.map(([label, value]) => (
-            <div key={label}>
-              <dt>{label}</dt>
-              <dd>
-                {value || (
-                  <span className={styles.subtext}>
-                    Нет сведений · уточнить
-                  </span>
-                )}
-              </dd>
-            </div>
-          ))}
-        </dl>
+        <ClinicalFacts patient={patient} actions={actions} compact={compact} />
+        <details className={styles.details} open={!compact}>
+          <summary>Прежние поля профиля и общие сведения</summary>
+          <dl className={styles.facts}>
+            {facts.map(([label, value]) => (
+              <div key={label}>
+                <dt>{label}</dt>
+                <dd>
+                  {value || (
+                    <span className={styles.subtext}>
+                      Нет сведений · уточнить
+                    </span>
+                  )}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </details>
         {compact ? (
           <details className={styles.contextOrigin}>
             <summary>Источник и давность сведений</summary>

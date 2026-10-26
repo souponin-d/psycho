@@ -82,6 +82,32 @@ export function sources(
 ): Promise<Array<models.SourceDocument>> {
   return transport(`/sources`, { method: "GET" });
 }
+export function searchIcd10(
+  transport: Transport,
+  query: { q?: string; page?: number; pageSize?: number } = {},
+): Promise<models.Icd10SearchResult> {
+  return transport(
+    `/terminology/icd10?${new URLSearchParams(
+      Object.entries(query)
+        .filter(([, value]) => value !== undefined)
+        .map(([key, value]) => [key, String(value)]),
+    )}`,
+    { method: "GET" },
+  );
+}
+export function searchGrls(
+  transport: Transport,
+  query: { q?: string; page?: number; pageSize?: number } = {},
+): Promise<models.GrlsSearchResult> {
+  return transport(
+    `/terminology/grls?${new URLSearchParams(
+      Object.entries(query)
+        .filter(([, value]) => value !== undefined)
+        .map(([key, value]) => [key, String(value)]),
+    )}`,
+    { method: "GET" },
+  );
+}
 export function assessmentForm(
   transport: Transport,
   id: string,
@@ -99,7 +125,35 @@ export function patientSession(
 export type PatientRecordResponse = {
   patientId?: string;
   name?: string;
-  plan?: Array<models.PlanItem>;
+  plan?: Array<{
+    id: string;
+    kind: models.PlanKind;
+    title: string;
+    dose: string;
+    schedule: string;
+    startDate: string;
+    endDate: string;
+    dueDate: string;
+    status: "confirmed";
+    confirmedAt: string;
+    confirmedBy: string;
+    patientInstructions: string;
+    medicine?: null | {
+      system: "GRLS";
+      sourceVersion: string;
+      recordId: string;
+      registrationNumber: string;
+      tradeName: string;
+      inn: string;
+      forms: string;
+      manufacturers: string;
+      holder: string;
+      registeredOn: string;
+      expiresOn: string;
+      cancelledOn: string;
+      registrationStatus: string;
+    };
+  }>;
   reports?: Array<models.SelfReport>;
   messages?: Array<models.Message>;
 };

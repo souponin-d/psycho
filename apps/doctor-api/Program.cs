@@ -56,6 +56,8 @@ builder.Services.AddAntiforgery(options => { options.HeaderName = "X-CSRF-TOKEN"
 builder.Services.AddRateLimiter(options => { options.RejectionStatusCode = 429; options.AddPolicy("login", context => RateLimitPartition.GetFixedWindowLimiter(context.Connection.RemoteIpAddress?.ToString() ?? "unknown", _ => new() { PermitLimit = 10, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 })); });
 builder.Services.AddOpenApi();
 var app = builder.Build();
+Icd10Catalog.Initialize();
+GrlsCatalog.Initialize();
 var store = app.Services.GetRequiredService<Store>(); await store.Initialize(AppContext.BaseDirectory);
 if (args.Contains("--provision"))
 {
@@ -104,6 +106,8 @@ app.MapPost("/api/login", async (LoginRequest request, HttpContext context, Stor
 app.MapPost("/api/logout", async (HttpContext context, Store db) => { await db.Audit(Actor.From(context.User), null, "session.logout"); await context.SignOutAsync(); return Results.NoContent(); }).RequireAuthorization();
 app.MapGet("/api/session", (HttpContext context, IAntiforgery anti) => Results.Ok(new { actor = Actor.From(context.User), csrfToken = anti.GetAndStoreTokens(context).RequestToken })).RequireAuthorization("doctor");
 var doctor = app.MapGroup("/api").RequireAuthorization("doctor");
+doctor.MapGet("/terminology/grls", (string? q,int? page,int? pageSize)=>Results.Json(GrlsCatalog.Search(q??"",page??1,pageSize??12)));
+doctor.MapGet("/terminology/icd10", (string? q, int? page, int? pageSize) => Results.Json(Icd10Catalog.Search(q ?? "", page ?? 1, pageSize ?? 25)));
 doctor.MapGet("/patients", async (HttpContext context, Store db) => Results.Json(await db.List(Actor.From(context.User))));
 doctor.MapPost("/patients", async (JsonObject request, HttpContext context, Store db) => Results.Json(await db.Create(Actor.From(context.User), request), statusCode: 201));
 doctor.MapPost("/patients/{id}/commands", async (string id, JsonObject request, HttpContext context, Store db) => Results.Json(await db.Execute(Actor.From(context.User), id, request)));

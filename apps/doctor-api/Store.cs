@@ -124,7 +124,14 @@ public sealed class Store(NpgsqlDataSource dataSource)
     var raw = (string?)await command.ExecuteScalarAsync(); if (raw is null) throw new DomainException("Карта недоступна.", 404);
     var doc = JsonNode.Parse(raw)!.AsObject(); await Audit(actor, actor.PatientId, "patient.read");
     var plan = new JsonArray();
-    foreach (var item in Domain.Array(doc, "plan").Where(n => Domain.S(n!, "status") == "confirmed")) { var visible = item!.DeepClone().AsObject(); visible.Remove("aviandrReview"); plan.Add(visible); }
+    // Patient instructions are an explicit projection. Internal rationales,
+    // observations, source snapshots and scale interpretations stay with the doctor.
+    foreach (var item in Domain.Array(doc, "plan").Where(n => Domain.S(n!, "status") == "confirmed")) {
+      var visible = new JsonObject();
+      foreach(var field in new[]{"id","kind","title","dose","schedule","startDate","endDate","dueDate","status","confirmedAt","confirmedBy","patientInstructions","medicine"})
+        if(item!.AsObject().ContainsKey(field))visible[field]=item[field]?.DeepClone();
+      plan.Add(visible);
+    }
     return new() { ["patientId"] = actor.PatientId, ["name"] = doc["profile"]!["name"]!.DeepClone(), ["plan"] = plan, ["messages"] = doc["messages"]!.DeepClone(), ["reports"] = doc["reports"]!.DeepClone() };
   }
   public async Task Audit(Actor actor, string? patientId, string action)

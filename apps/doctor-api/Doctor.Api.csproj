@@ -11,6 +11,13 @@
     <Content Include="Migrations/*.sql" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../web-doctor/src/workspace/source-data.json" Link="Sources.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../web-doctor/src/workspace/aviandr-rules.json" Link="AviandrRules.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../web-doctor/src/workspace/clinical-protocols.json" Link="ClinicalProtocols.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../web-doctor/src/workspace/clinical-support-catalog.json" Link="ClinicalSupportCatalog.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../web-doctor/src/workspace/icd10-ru.json" Link="Icd10Ru.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../web-doctor/src/workspace/icd10-ru.manifest.json" Link="Icd10Ru.manifest.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../web-doctor/src/workspace/icd10-legacy.json" Link="Icd10Legacy.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../web-doctor/src/workspace/grls-catalog.json.gz" Link="Grls.json.gz" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../web-doctor/src/workspace/grls-manifest.json" Link="GrlsManifest.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../../docs/contracts/doctor.openapi.json" Link="doctor.openapi.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

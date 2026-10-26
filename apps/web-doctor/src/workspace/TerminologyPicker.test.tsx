@@ -3,6 +3,26 @@ import { expect, it, vi } from "vitest";
 import { TerminologyPicker } from "./TerminologyPicker";
 import { ICD10_CATALOG } from "./terminology";
 
+it("открывает результаты после первой страницы и сбрасывает страницу при новом запросе", () => {
+  render(
+    <TerminologyPicker label="Полная МКБ-10" value={[]} onChange={vi.fn()} />,
+  );
+  const input = screen.getByRole("textbox", { name: /^Полная МКБ-10/ });
+  fireEvent.change(input, { target: { value: "F" } });
+  const next = screen.getByRole("button", { name: "Следующие результаты" });
+  const first = screen.getByRole("group", {
+    name: "Полная МКБ-10",
+  }).textContent;
+  fireEvent.click(next);
+  expect(
+    screen.getByRole("group", { name: "Полная МКБ-10" }).textContent,
+  ).not.toBe(first);
+  fireEvent.change(input, { target: { value: "U07.1" } });
+  expect(
+    screen.getByRole("button", { name: /U07.1 · COVID-19/ }),
+  ).toBeDefined();
+});
+
 it("позволяет психиатру явно изменить статус выбранного диагноза", () => {
   const onChange = vi.fn();
   const diagnosis = {
