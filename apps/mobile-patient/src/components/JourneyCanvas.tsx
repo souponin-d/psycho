@@ -24,6 +24,7 @@ import { dayNode } from "../core/dayNode";
 import { daysBetween, shiftDay } from "../core/calendar";
 import { calendarStones, CALENDAR_SLOTS } from "../core/pathLayout";
 import { sectionBaseDay, allWorldSections } from "../core/worldSections";
+import { journeyCameraOffset } from "../core/journeyCamera";
 import { scenes } from "../config/worldCatalog";
 import { WorldScene } from "./WorldScene";
 import { WorldCompanion } from "./WorldCompanion";
@@ -94,7 +95,11 @@ export const JourneyCanvas = forwardRef<JourneyCanvasHandle, Props>(
         CALENDAR_SLOTS,
     );
     const offset = (block: number, y: number) =>
-      (count - 1 - block) * tileHeight + y * tileHeight - viewport * 0.6;
+      journeyCameraOffset(
+        (count - 1 - block) * tileHeight + y * tileHeight,
+        viewport,
+        insets,
+      );
     const to = (block: number, y: number, animated = !reducedMotion) =>
       list.current?.scrollToOffset({
         offset: Math.max(0, offset(block, y)),
@@ -128,7 +133,7 @@ export const JourneyCanvas = forwardRef<JourneyCanvasHandle, Props>(
       });
       return () => cancelAnimationFrame(frame);
       // Camera resets only for a date/size change, not after every saved task.
-    }, [today, width, viewport, count]);
+    }, [today, width, viewport, count, insets.top, insets.bottom]);
     const onView = useRef(
       ({ viewableItems }: { viewableItems: ViewToken<number>[] }) =>
         setVisible(viewableItems.map((v) => v.item)),
@@ -239,13 +244,17 @@ export const JourneyCanvas = forwardRef<JourneyCanvasHandle, Props>(
             position: "absolute",
             left: 0,
             right: 0,
-            top: insets.top,
-            bottom: insets.bottom,
+            top: 0,
+            bottom: 0,
             overflow: "hidden",
           }}
           onLayout={(e) => setViewport(e.nativeEvent.layout.height)}
         >
           <Animated.FlatList
+            contentContainerStyle={{
+              paddingTop: insets.top,
+              paddingBottom: insets.bottom,
+            }}
             scrollEventThrottle={16}
             onScroll={Animated.event(
               [{ nativeEvent: { contentOffset: { y: scrollY } } }],
@@ -256,7 +265,7 @@ export const JourneyCanvas = forwardRef<JourneyCanvasHandle, Props>(
             keyExtractor={(block) => String(block)}
             getItemLayout={(_, index) => ({
               length: tileHeight,
-              offset: index * tileHeight,
+              offset: insets.top + index * tileHeight,
               index,
             })}
             initialNumToRender={2}

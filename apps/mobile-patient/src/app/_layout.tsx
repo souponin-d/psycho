@@ -89,6 +89,7 @@ function Navigation() {
           <Stack.Screen name="companion-preview" />
           <Stack.Screen name="contact" />
           <Stack.Screen name="doctor-chat" />
+          <Stack.Screen name="history" />
           <Stack.Screen name="questionnaire" />
           <Stack.Screen name="questions" />
           <Stack.Screen name="shore-settings" />

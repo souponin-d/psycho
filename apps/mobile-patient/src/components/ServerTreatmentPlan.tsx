@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Alert, View } from "react-native";
-import { router, type Href } from "expo-router";
-import { Screen, Heading, T, Button } from "./UI";
+import { router } from "expo-router";
+import { Screen, T, Button } from "./UI";
 import { Touch } from "./Motion";
 import { Icon } from "./Icon";
 import { useApp } from "../state/AppProvider";
@@ -66,14 +66,13 @@ export function ServerTreatmentPlan() {
     );
   }
   return (
-    <Screen title="Синкли">
-      <Heading
-        title="Мой план"
-        body={new Date(today + "T12:00:00").toLocaleDateString("ru-RU", {
+    <Screen title="Лечение">
+      <T muted size={14} style={{ marginBottom: 18 }}>
+        {new Date(today + "T12:00:00").toLocaleDateString("ru-RU", {
           day: "numeric",
           month: "long",
         })}
-      />
+      </T>
       <T size={19} weight="500">
         На сегодня
       </T>
@@ -375,11 +374,6 @@ export function ServerTreatmentPlan() {
           ))}
         </View>
       )}
-      <Button
-        title="Связаться с врачом"
-        icon="message"
-        onPress={() => router.push("/doctor-chat" as Href)}
-      />
     </Screen>
   );
 }

@@ -203,6 +203,12 @@ export default function SettingsScreen() {
       <View style={{ gap: 12, marginTop: 24 }}>
         <Button
           secondary
+          title="История"
+          icon="history"
+          onPress={() => router.push("/history")}
+        />
+        <Button
+          secondary
           title="Украшения берега"
           icon="home"
           onPress={() => router.push("/shore-settings")}

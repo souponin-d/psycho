@@ -3,7 +3,7 @@ import { patientLabel } from "../../core/patientPresentation";
 import { Alert, View } from "react-native";
 import * as Notifications from "expo-notifications";
 import { router, type Href } from "expo-router";
-import { Screen, Heading, T, Button } from "../../components/UI";
+import { Screen, T, Button } from "../../components/UI";
 import { Touch } from "../../components/Motion";
 import { Icon } from "../../components/Icon";
 import { useApp } from "../../state/AppProvider";
@@ -109,14 +109,13 @@ export default function PlanScreen() {
     }
   }
   return (
-    <Screen title="Синкли">
-      <Heading
-        title="Мой план"
-        body={new Date(today + "T12:00:00").toLocaleDateString("ru-RU", {
+    <Screen title="Лечение">
+      <T muted size={14} style={{ marginBottom: 18 }}>
+        {new Date(today + "T12:00:00").toLocaleDateString("ru-RU", {
           day: "numeric",
           month: "long",
         })}
-      />
+      </T>
       <T size={19} weight="500">
         На сегодня · {tasks.filter((t) => t.completed).length} из {tasks.length}
       </T>
@@ -327,17 +326,6 @@ export default function PlanScreen() {
         )}
       </View>
       <View style={{ gap: 12 }}>
-        <Button
-          title="Связаться с врачом"
-          icon="message"
-          onPress={() =>
-            router.push(
-              (connection.mode === "demo"
-                ? "/contact"
-                : "/doctor-chat") as Href,
-            )
-          }
-        />
         <Button
           title="Следующий приём и вопросы"
           secondary
