@@ -409,15 +409,8 @@ export function Messages({
     }
   }
   return (
-    <Section
-      title="Сообщения"
-      description="Сохраняйте договорённости и вопросы в контексте пациента"
-    >
-      <div className={styles.notice}>
-        {server
-          ? "Сообщение получает статус доставки только после получения пациентским клиентом. Канал не предназначен для экстренной помощи."
-          : "Учебная переписка: сообщения сохраняются в этом браузере и не отправляются реальному человеку."}
-      </div>
+    <Section title="Сообщения">
+      {server && <div className={styles.notice}>Не для экстренной помощи.</div>}
       <div className={styles.messageList}>
         {patient.messages.map((m) => (
           <div
@@ -448,8 +441,7 @@ export function Messages({
       </div>
       {!patient.messages.length && (
         <Empty title="Диалог ещё не начат" icon="message">
-          Напишите понятное сообщение или зафиксируйте договорённость. Доставка
-          и прочтение отображаются отдельно.
+          Напишите пациенту.
         </Empty>
       )}
       <form className={styles.form} onSubmit={send}>
@@ -479,7 +471,6 @@ export function Messages({
           </Button>
         </div>
       </form>
-      <SourceLinks ids={["S10", "S11"]} />
     </Section>
   );
 }

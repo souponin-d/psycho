@@ -633,14 +633,16 @@ export function ConsentForm({
   patient,
   actions,
   onClose,
+  initialPurpose = "care",
 }: {
   patient: PatientRecord;
   actions: WorkspaceActions;
   onClose: () => void;
+  initialPurpose?: "care" | "data" | "communication" | "disclosure";
 }) {
   const [purpose, setPurpose] = useState<
     "care" | "data" | "communication" | "disclosure"
-  >("care");
+  >(initialPurpose);
   const [status, setStatus] = useState<"documented" | "refused" | "withdrawn">(
     "documented",
   );

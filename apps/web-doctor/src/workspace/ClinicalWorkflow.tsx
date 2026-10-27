@@ -216,10 +216,7 @@ export function WorkflowRecommendations({
         </details>
         {r.effectId && (
           <p>
-            <a href={`#/patients/${patient.id}/plan`}>
-              Связанный проект в плане или направлениях
-            </a>{" "}
-            · {r.effectId}
+            <a href={`#/patients/${patient.id}/plan`}>Открыть план</a>
           </p>
         )}
         {writable &&
@@ -775,9 +772,6 @@ export function WorkflowPanel({
                     Добавить самоотчёт
                   </Button>
                 </div>
-                <p className={styles.subtext}>
-                  Новые данные сохраняются с историей.
-                </p>
               </div>
             </details>
           )}

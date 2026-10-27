@@ -19,7 +19,7 @@ export function SourceProvider({
       <Modal
         open={!!source}
         onClose={() => setSelected("")}
-        title={source ? `${source.id} · Паспорт источника` : "Источник"}
+        title="Паспорт источника"
       >
         {source && (
           <div className={styles.stack}>
@@ -56,6 +56,7 @@ export function SourceProvider({
             </div>
             <details className={styles.details}>
               <summary>Сведения об источнике</summary>
+              <p>Код источника: {source.id}</p>
               <p>{source.status}</p>
               <p>{source.locator}</p>
             </details>
@@ -83,8 +84,8 @@ export function SourceLinks({ ids }: { ids: readonly string[] }) {
             key={id}
             onClick={() => open(id)}
             title={source.title}
+            aria-label={source.title}
           >
-            {id} ·{" "}
             {source.title.length > 58
               ? `${source.title.slice(0, 55)}…`
               : source.title}
@@ -148,10 +149,9 @@ export function SourceLibrary() {
             className={`${styles.sourceCard} ${readerStyles.card}`}
             key={source.id}
             onClick={() => open(source.id)}
-            aria-label={`${source.id} · ${source.title}`}
+            aria-label={source.title}
           >
             <span className={styles.between}>
-              <span className={styles.subtext}>{source.id}</span>
               <Badge tone="neutral">
                 {source.category === "guideline"
                   ? "Клинические рекомендации"
@@ -215,7 +215,7 @@ export function SourcePicker({
                 }
               />
               <span>
-                {s.id} · {s.title}
+                {s.title}
                 {s.activation === "historical" && (
                   <small className={styles.errorText}>
                     {" "}

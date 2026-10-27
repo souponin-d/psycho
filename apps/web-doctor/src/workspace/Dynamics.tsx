@@ -417,13 +417,11 @@ export function Dynamics({
               {latest.maximum !== null ? `/ ${latest.maximum}` : ""} ·{" "}
               {latest.scale}
             </span>
-            <span>
-              {formatDate(latest.measuredAt)} · {latest.version}
-            </span>
+            <span>{formatDate(latest.measuredAt)}</span>
           </div>
         )}
         {keys.length > 0 && (
-          <details className={styles.details} open={!compact || undefined}>
+          <details className={styles.details}>
             <summary>Ряд и период сравнения</summary>
             <div className={styles.toolbar}>
               <Select

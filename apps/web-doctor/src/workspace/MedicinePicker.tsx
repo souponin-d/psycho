@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { grlsCatalog, type MedicineSelection } from "./grls";
-import { grlsSource, loadGrlsCatalog } from "./grls-loader";
+import { loadGrlsCatalog } from "./grls-loader";
 import { Button, Field, styles } from "./ui/Elements";
 
 export function MedicineSummary({ value }: { value: MedicineSelection }) {
@@ -9,16 +9,15 @@ export function MedicineSummary({ value }: { value: MedicineSelection }) {
       <p>
         <strong>{value.tradeName}</strong> · {value.inn || "МНН не указано"}
       </p>
-      <p>
-        РУ {value.registrationNumber} · {value.registrationStatus}
-      </p>
-      <p className={styles.subtext}>
-        Снимок {value.sourceVersion}; окончание регистрации:{" "}
-        {value.expiresOn || "дата не указана"}
-        {value.cancelledOn ? `; аннулирование: ${value.cancelledOn}` : ""}
-      </p>
+      <p>{value.registrationStatus}</p>
       <details className={styles.details}>
-        <summary>Формы выпуска и производитель на момент выбора</summary>
+        <summary>Регистрация и производитель</summary>
+        <p>РУ {value.registrationNumber}</p>
+        <p className={styles.subtext}>
+          Снимок {value.sourceVersion}; окончание регистрации:{" "}
+          {value.expiresOn || "дата не указана"}
+          {value.cancelledOn ? `; аннулирование: ${value.cancelledOn}` : ""}
+        </p>
         <p>{value.forms || "Форма не указана"}</p>
         <p>{value.manufacturers || value.holder}</p>
       </details>
@@ -73,7 +72,7 @@ export function MedicinePicker({
           setPage(1);
         }}
         maxLength={250}
-        hint={`Актуальные регистрации · снимок ${grlsSource.snapshotDate}. Поиск по МНН, названию, форме, производителю или РУ.`}
+        hint="МНН, название, форма, производитель или РУ"
       />
       {!ready && !error && <p role="status">Загрузка полного справочника…</p>}
       {error && (

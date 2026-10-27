@@ -683,9 +683,6 @@ export function PlanForm({
           )}
         </div>
         <div className={`${styles.formActions} ${styles.prescriptionActions}`}>
-          <span className={styles.subtext}>
-            Сохранение черновика не назначает лечение
-          </span>
           <Button variant="secondary" onClick={onClose}>
             Отмена
           </Button>
@@ -800,7 +797,6 @@ export function CarePlan({
     <>
       <Section
         title="Лечение и план"
-        description="Черновики доступны врачу. Действующий план состоит из подтверждённых записей."
         action={
           <div className={styles.row}>
             <Button variant="secondary" onClick={() => setForm("new")}>
@@ -872,9 +868,12 @@ export function CarePlan({
             {item.patientInstructions && (
               <div className={styles.notice}>{item.patientInstructions}</div>
             )}
-            <p className={styles.subtext}>
-              {item.rationale || "Обоснование ещё не внесено"}
-            </p>
+            {item.rationale && (
+              <details className={styles.details}>
+                <summary>Обоснование</summary>
+                <p className={styles.subtext}>{item.rationale}</p>
+              </details>
+            )}
             {item.instructionUrl && /^https:\/\//.test(item.instructionUrl) && (
               <a
                 href={item.instructionUrl}
@@ -966,7 +965,7 @@ export function CarePlan({
                     Изменить статус
                   </Button>
                   <Button variant="ghost" onClick={() => revise(item)}>
-                    Новая версия
+                    Изменить назначение
                   </Button>
                 </>
               ) : (
@@ -1019,9 +1018,12 @@ export function CarePlan({
               {confirmation.patientInstructions ||
                 "Указания пациенту не внесены"}
             </div>
-            <p className={styles.reviewText}>
-              {confirmation.rationale || "Обоснование не внесено"}
-            </p>
+            <details className={styles.details}>
+              <summary>Обоснование</summary>
+              <p className={styles.reviewText}>
+                {confirmation.rationale || "Обоснование не внесено"}
+              </p>
+            </details>
             {!!confirmation.sourceIds.length && (
               <details className={styles.details}>
                 <summary>Источники решения</summary>
@@ -1039,10 +1041,6 @@ export function CarePlan({
                 stale={confirmationStale}
               />
             )}
-            <p className={styles.subtext}>
-              Подтверждение сохраняет автора и время. Последующие изменения
-              оформляются новой версией.
-            </p>
             <div className={styles.formActions}>
               <Button variant="secondary" onClick={() => setConfirmation(null)}>
                 Назад
