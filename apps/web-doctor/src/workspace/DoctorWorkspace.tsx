@@ -325,7 +325,11 @@ function Workspace({
     (n, p) =>
       n +
       p.events.filter((e) => e.status !== "closed").length +
-      (p.workflow?.safety.filter((e) => e.status !== "acted").length ?? 0),
+      (p.workflow?.safety.filter((e) => e.status !== "acted").length ?? 0) +
+      (p.archived
+        ? 0
+        : p.reports.filter((r) => r.provenance === "patient" && !r.reviewedAt)
+            .length),
     0,
   );
   const nav: { path: string; title: string; icon: IconName }[] = [
