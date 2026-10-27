@@ -1,5 +1,6 @@
+import { PatientIncoming } from "./PatientIncoming";
 import { WorkflowSafetyBoard } from "./ClinicalWorkflow";
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import type { CareEvent, EventStatus, PatientRecord } from "./model";
 import type { WorkspaceActions } from "./useWorkspace";
 import type { Navigate } from "./PatientDirectory";
@@ -35,6 +36,7 @@ export function Events({
   navigate: Navigate;
   patient?: PatientRecord;
 }) {
+  const incomingRef = useRef<HTMLDivElement>(null);
   const [filter, setFilter] = useState("open");
   const [selected, setSelected] = useState<{
     patientId: string;
@@ -99,12 +101,28 @@ export function Events({
           <div>
             <h1>Уведомления</h1>
           </div>
+          <Button
+            variant="secondary"
+            onClick={() =>
+              incomingRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              })
+            }
+          >
+            От пациентов
+          </Button>
         </div>
       )}
       <WorkflowSafetyBoard
         patients={patient ? [patient] : patients}
         actions={actions}
       />
+      {!patient && (
+        <div ref={incomingRef}>
+          <PatientIncoming patients={patients} navigate={navigate} />
+        </div>
+      )}
       <Section
         title={patient ? "События пациента" : "Очередь врача"}
         action={
