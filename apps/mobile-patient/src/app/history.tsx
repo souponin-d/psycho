@@ -17,37 +17,29 @@ import {
 import { router, useLocalSearchParams } from "expo-router";
 import { useIsFocused } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import {
-  Screen,
-  T,
-  Heading,
-  Panel,
-  Button,
-  Chip,
-  RoundButton,
-} from "../../components/UI";
-import { Touch } from "../../components/Motion";
-import { HistoryCharts } from "../../components/HistoryCharts";
-import { HistoryCalendar } from "../../components/HistoryCalendar";
-import { FeelingCharacter } from "../../components/FeelingCharacter";
-import { useApp } from "../../state/AppProvider";
-import { useJourney } from "../../state/JourneyProvider";
-import { usePatientConnection } from "../../state/PatientConnectionProvider";
+import { Screen, T, Panel, Button, Chip, RoundButton } from "../components/UI";
+import { Touch } from "../components/Motion";
+import { HistoryCharts } from "../components/HistoryCharts";
+import { HistoryCalendar } from "../components/HistoryCalendar";
+import { FeelingCharacter } from "../components/FeelingCharacter";
+import { useApp } from "../state/AppProvider";
+import { useJourney } from "../state/JourneyProvider";
+import { usePatientConnection } from "../state/PatientConnectionProvider";
 import {
   projectHistory,
   historyBounds,
   doseLabels,
   historyDayPresentation,
-} from "../../core/history";
-import { isDay } from "../../core/shore";
-import { shiftDay } from "../../core/calendar";
-import { latestReports } from "../../core/questionnaires";
+} from "../core/history";
+import { isDay } from "../core/shore";
+import { shiftDay } from "../core/calendar";
+import { latestReports } from "../core/questionnaires";
 import {
   saveHistoryExport,
   openExportShareSheet,
   saveExportCopy,
-} from "../../services/historyExport";
-import { moodOptions } from "../../config/content";
+} from "../services/historyExport";
+import { moodOptions } from "../config/content";
 
 function Sheet({
   children,
@@ -277,11 +269,7 @@ export default function HistoryScreen() {
     }
   }
   return (
-    <Screen>
-      <Heading
-        title="Ваши дни"
-        body="История небольших шагов и честных записей"
-      />
+    <Screen title="История" back>
       {connection.mode === "server" &&
         connection.connected &&
         connection.snapshot?.reports.kind !== "ready" && (

@@ -165,7 +165,7 @@ export function ReminderProvider({ children }: PropsWithChildren) {
           await act({ type: "tick" });
           if (result.kind === "expired")
             router.push({
-              pathname: "/(tabs)/history",
+              pathname: "/history",
               params: { day: job.day },
             });
           else router.push("/(tabs)/plan");

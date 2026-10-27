@@ -95,7 +95,7 @@ export default function ChatScreen() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <View style={{ paddingHorizontal: 24 }}>
-        <Header />
+        <Header title="Рядом" />
         <View
           style={{
             flexDirection: "row",
@@ -107,9 +107,6 @@ export default function ChatScreen() {
         >
           <Mascot size={48} />
           <View style={{ flex: 1 }}>
-            <T size={23} weight="500" style={{ letterSpacing: -1 }}>
-              Я рядом
-            </T>
             <T muted size={12}>
               План, записи и вопросы
             </T>

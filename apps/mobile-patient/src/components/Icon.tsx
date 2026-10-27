@@ -1,6 +1,8 @@
 import Svg, { Path, Circle } from "react-native-svg";
 export type IconName =
   | "sun"
+  | "path"
+  | "doctor"
   | "moon"
   | "pill"
   | "leaf"
@@ -18,6 +20,9 @@ export type IconName =
   | "edit"
   | "calendar";
 const paths: Record<IconName, string> = {
+  path: "M7 19h8a4 4 0 0 0 0-8H9a4 4 0 0 1 0-8h8",
+  doctor:
+    "M6 19 3 21V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8a4 4 0 0 1-4 4H6Zm6-12v8m-4-4h8",
   sun: "M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5",
   moon: "M20.5 13.5A8.5 8.5 0 0 1 10.5 3.5a8.5 8.5 0 1 0 10 10Z",
   pill: "m8 16 8-8M5 19a5 5 0 0 1 0-7l7-7a5 5 0 0 1 7 7l-7 7a5 5 0 0 1-7 0Z",
@@ -25,9 +30,9 @@ const paths: Record<IconName, string> = {
   heart:
     "M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z",
   message:
-    "M21 11.5a8.5 8.5 0 0 1-8.5 8.5H4l-2 2V11.5a9.5 9.5 0 0 1 19 0ZM7 11h10m-10 4h6",
+    "M7 4h10a4 4 0 0 1 4 4v7a4 4 0 0 1-4 4H8l-5 3V8a4 4 0 0 1 4-4Zm0 6h10M7 14h6",
   home: "m3 10 9-7 9 7v10H3ZM9 20v-7h6v7",
-  history: "M3 5v5h5M3 10a9 9 0 1 1 1 9m8-13v6l4 2",
+  history: "M4 4v5h5M4 9a8 8 0 1 1 .6 8M12 7v5l3 2",
   settings: "M9 3h6l1 3 3 1 2 5-2 5-3 1-1 3H9l-1-3-3-1-2-5 2-5 3-1Z",
   arrow: "M4 12h16m-6-6 6 6-6 6",
   check: "m5 12 4 4L19 6",
@@ -60,6 +65,12 @@ export function Icon({
       strokeLinejoin="round"
     >
       {name === "sun" && <Circle cx="12" cy="12" r="4" />}
+      {name === "path" && (
+        <>
+          <Circle cx="5" cy="19" r="2" />
+          <Circle cx="19" cy="3" r="2" />
+        </>
+      )}
       {name === "settings" && <Circle cx="12" cy="12" r="3" />}
       <Path d={paths[name]} />
     </Svg>

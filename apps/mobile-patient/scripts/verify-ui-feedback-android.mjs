@@ -96,8 +96,10 @@ function layout() {
       (t) => t.includes("шаг за шагом") || t.includes("Для зачёта дня"),
     ),
   );
+  open("doctor");
+  waitFor("Связь с врачом");
   seek("Связаться с врачом");
-  screen("plan-contact");
+  screen("doctor-inbox");
   press("Связаться с врачом");
   waitFor("Обращение");
   seek("Отправить");

@@ -8,9 +8,9 @@ import { Icon, type IconName } from "../../components/Icon";
 import { T } from "../../components/UI";
 import { Touch } from "../../components/Motion";
 const items: Record<string, { title: string; icon: IconName }> = {
-  index: { title: "Путь", icon: "sun" },
-  plan: { title: "Лечение", icon: "leaf" },
-  history: { title: "История", icon: "history" },
+  index: { title: "Путь", icon: "path" },
+  plan: { title: "Лечение", icon: "pill" },
+  doctor: { title: "Врач", icon: "doctor" },
   chat: { title: "Рядом", icon: "message" },
 };
 function Bar({ state, navigation }: BottomTabBarProps) {
@@ -65,7 +65,11 @@ function Bar({ state, navigation }: BottomTabBarProps) {
                 gap: 3,
               }}
             >
-              <Icon name={item.icon} color={theme.text} size={21} />
+              <Icon
+                name={item.icon}
+                color={active ? theme.accent : theme.text}
+                size={23}
+              />
               <T size={10} weight={active ? "600" : "400"}>
                 {item.title}
               </T>
@@ -92,7 +96,7 @@ export default function TabsLayout() {
     >
       <Tabs.Screen name="index" />
       <Tabs.Screen name="plan" />
-      <Tabs.Screen name="history" />
+      <Tabs.Screen name="doctor" />
       <Tabs.Screen name="chat" />
     </Tabs>
   );

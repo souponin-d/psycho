@@ -243,9 +243,9 @@ export function JourneyMap() {
               </T>
             </View>
             <RoundButton
-              icon="settings"
-              label="Настройки"
-              onPress={() => router.push("/settings")}
+              icon="history"
+              label="История"
+              onPress={() => router.push("/history")}
             />
           </View>
           <Touch
@@ -665,7 +665,7 @@ export function JourneyMap() {
                     onPress={() => {
                       setSelectedDay(null);
                       router.push({
-                        pathname: "/(tabs)/history",
+                        pathname: "/history",
                         params: { day: selectedDay },
                       });
                     }}
