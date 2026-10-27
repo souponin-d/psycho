@@ -1,0 +1,17 @@
+{
+  "utc": "2026-10-27T11:36:08.656491+00:00",
+  "services": {
+    "syncli-api": "active",
+    "caddy": "active",
+    "postgresql": "active"
+  },
+  "release": "/opt/syncli/releases/20261027-integration-90ee18d",
+  "temporary_databases": "",
+  "temporary_directories": [],
+  "https_health": {
+    "status": "ready",
+    "storage": "postgresql",
+    "release": "20261027-integration-90ee18d",
+    "contractVersion": "doctor-api-2026-10-26"
+  }
+}

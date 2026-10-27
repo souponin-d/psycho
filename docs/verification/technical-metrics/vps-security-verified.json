@@ -1,0 +1,132 @@
+{
+  "started_at": "2026-10-27T11:12:50.729148+00:00",
+  "origin": "https://176.32.37.10",
+  "protocol": "urllib-new-connection-per-request",
+  "generator": {
+    "pid": 19600,
+    "platform": "nt"
+  },
+  "series": {
+    "health": {
+      "raw": [
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 86.656
+        }
+      ],
+      "summary": {
+        "attempts": 1,
+        "errors": 0,
+        "error_rate": 0.0,
+        "success_ms": {
+          "p50": 86.656,
+          "p95": 86.656,
+          "p99": 86.656,
+          "max": 86.656
+        },
+        "all_ms": {
+          "p50": 86.656,
+          "p95": 86.656,
+          "p99": 86.656,
+          "max": 86.656
+        }
+      }
+    },
+    "patient-list": {
+      "raw": [
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 226.06
+        }
+      ],
+      "summary": {
+        "attempts": 1,
+        "errors": 0,
+        "error_rate": 0.0,
+        "success_ms": {
+          "p50": 226.06,
+          "p95": 226.06,
+          "p99": 226.06,
+          "max": 226.06
+        },
+        "all_ms": {
+          "p50": 226.06,
+          "p95": 226.06,
+          "p99": 226.06,
+          "max": 226.06
+        }
+      }
+    },
+    "icd-search": {
+      "raw": [
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 134.118
+        }
+      ],
+      "summary": {
+        "attempts": 1,
+        "errors": 0,
+        "error_rate": 0.0,
+        "success_ms": {
+          "p50": 134.118,
+          "p95": 134.118,
+          "p99": 134.118,
+          "max": 134.118
+        },
+        "all_ms": {
+          "p50": 134.118,
+          "p95": 134.118,
+          "p99": 134.118,
+          "max": 134.118
+        }
+      }
+    }
+  },
+  "checks": [
+    {
+      "name": "anonymous cannot read doctor records",
+      "ok": true
+    },
+    {
+      "name": "patient cannot read doctor API",
+      "ok": true
+    },
+    {
+      "name": "mutation without CSRF rejected",
+      "ok": true
+    },
+    {
+      "name": "session cookies have Secure on HTTPS",
+      "ok": true
+    },
+    {
+      "name": "unknown patient command rejected",
+      "ok": true
+    },
+    {
+      "name": "release remained unchanged",
+      "ok": true
+    }
+  ],
+  "stages": [],
+  "health": {
+    "status": "ready",
+    "storage": "postgresql",
+    "release": "20261027-integration-90ee18d",
+    "contractVersion": "doctor-api-2026-10-26"
+  },
+  "completed_at": "2026-10-27T11:12:53.431643+00:00",
+  "health_after": {
+    "status": "ready",
+    "storage": "postgresql",
+    "release": "20261027-integration-90ee18d",
+    "contractVersion": "doctor-api-2026-10-26"
+  }
+}

@@ -1,0 +1,218 @@
+{
+  "utc": "2026-10-27T11:22:00.397Z",
+  "url": "http://127.0.0.1:8758/",
+  "method": "automated happy-path task execution, not human usability study",
+  "action_unit": "one click or one field fill; typing/reading/thinking excluded",
+  "rows": [
+    {
+      "task": "find-card",
+      "repeat": 0,
+      "ok": true,
+      "actions": 3,
+      "ms": 193.98909999999978
+    },
+    {
+      "task": "find-card",
+      "repeat": 1,
+      "ok": true,
+      "actions": 3,
+      "ms": 184.10500000000002
+    },
+    {
+      "task": "find-card",
+      "repeat": 2,
+      "ok": true,
+      "actions": 3,
+      "ms": 169.19389999999976
+    },
+    {
+      "task": "find-card",
+      "repeat": 3,
+      "ok": true,
+      "actions": 3,
+      "ms": 148.27039999999988
+    },
+    {
+      "task": "find-card",
+      "repeat": 4,
+      "ok": true,
+      "actions": 3,
+      "ms": 157.67590000000018
+    },
+    {
+      "task": "find-card",
+      "repeat": 5,
+      "ok": true,
+      "actions": 3,
+      "ms": 159.1265000000003
+    },
+    {
+      "task": "find-card",
+      "repeat": 6,
+      "ok": true,
+      "actions": 3,
+      "ms": 173.2853
+    },
+    {
+      "task": "find-card",
+      "repeat": 7,
+      "ok": true,
+      "actions": 3,
+      "ms": 206.77649999999994
+    },
+    {
+      "task": "find-card",
+      "repeat": 8,
+      "ok": true,
+      "actions": 3,
+      "ms": 192.43370000000004
+    },
+    {
+      "task": "find-card",
+      "repeat": 9,
+      "ok": true,
+      "actions": 3,
+      "ms": 195.21399999999994
+    },
+    {
+      "task": "view-dynamics",
+      "repeat": 0,
+      "ok": true,
+      "actions": 1,
+      "ms": 54.19430000000011
+    },
+    {
+      "task": "view-dynamics",
+      "repeat": 1,
+      "ok": true,
+      "actions": 1,
+      "ms": 83.93549999999959
+    },
+    {
+      "task": "view-dynamics",
+      "repeat": 2,
+      "ok": true,
+      "actions": 1,
+      "ms": 88.66210000000046
+    },
+    {
+      "task": "view-dynamics",
+      "repeat": 3,
+      "ok": true,
+      "actions": 1,
+      "ms": 85.64999999999964
+    },
+    {
+      "task": "view-dynamics",
+      "repeat": 4,
+      "ok": true,
+      "actions": 1,
+      "ms": 90.65099999999984
+    },
+    {
+      "task": "view-dynamics",
+      "repeat": 5,
+      "ok": true,
+      "actions": 1,
+      "ms": 38.459899999999834
+    },
+    {
+      "task": "view-dynamics",
+      "repeat": 6,
+      "ok": true,
+      "actions": 1,
+      "ms": 45.570199999999204
+    },
+    {
+      "task": "view-dynamics",
+      "repeat": 7,
+      "ok": true,
+      "actions": 1,
+      "ms": 69.98280000000068
+    },
+    {
+      "task": "view-dynamics",
+      "repeat": 8,
+      "ok": true,
+      "actions": 1,
+      "ms": 39.97280000000046
+    },
+    {
+      "task": "view-dynamics",
+      "repeat": 9,
+      "ok": true,
+      "actions": 1,
+      "ms": 46.32979999999952
+    },
+    {
+      "task": "open-messages",
+      "repeat": 0,
+      "ok": true,
+      "actions": 2,
+      "ms": 134.84190000000035
+    },
+    {
+      "task": "open-messages",
+      "repeat": 1,
+      "ok": true,
+      "actions": 2,
+      "ms": 138.3172000000004
+    },
+    {
+      "task": "open-messages",
+      "repeat": 2,
+      "ok": true,
+      "actions": 2,
+      "ms": 153.46100000000024
+    },
+    {
+      "task": "open-messages",
+      "repeat": 3,
+      "ok": true,
+      "actions": 2,
+      "ms": 142.92240000000038
+    },
+    {
+      "task": "open-messages",
+      "repeat": 4,
+      "ok": true,
+      "actions": 2,
+      "ms": 141.91089999999986
+    },
+    {
+      "task": "open-messages",
+      "repeat": 5,
+      "ok": true,
+      "actions": 2,
+      "ms": 138.11369999999988
+    },
+    {
+      "task": "open-messages",
+      "repeat": 6,
+      "ok": true,
+      "actions": 2,
+      "ms": 139.22909999999956
+    },
+    {
+      "task": "open-messages",
+      "repeat": 7,
+      "ok": true,
+      "actions": 2,
+      "ms": 123.14950000000044
+    },
+    {
+      "task": "open-messages",
+      "repeat": 8,
+      "ok": true,
+      "actions": 2,
+      "ms": 139.6304
+    },
+    {
+      "task": "open-messages",
+      "repeat": 9,
+      "ok": true,
+      "actions": 2,
+      "ms": 168.05130000000008
+    }
+  ]
+}

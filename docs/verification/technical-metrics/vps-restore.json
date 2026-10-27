@@ -1,0 +1,65 @@
+{
+  "utc": "2026-10-27T11:01:23.924176+00:00",
+  "source_database": "syncli_hackathon",
+  "source_service_stopped": false,
+  "scope": "PostgreSQL dump/restore, not full host or application recovery",
+  "trials": [
+    {
+      "dump_seconds": 0.27152061999368016,
+      "restore_seconds": 1.6145321730000433,
+      "restore_and_verify_seconds": 1.8185438240034273,
+      "dump_bytes": 492845,
+      "dump_sha256": "5d046aa58ded49fbb116cac6971e812d4df78ce9e159059be8292cc47ffdfbf5",
+      "snapshot_fingerprints_match": true,
+      "table_rows": {
+        "schema_migrations": 1,
+        "clinic_users": 2,
+        "patient_records": 3,
+        "care_relationships": 3,
+        "record_versions": 82,
+        "command_receipts": 79,
+        "access_audit": 8462,
+        "creation_receipts": 3
+      },
+      "tables_verified": 8
+    },
+    {
+      "dump_seconds": 0.26720996499352623,
+      "restore_seconds": 0.7358946229942376,
+      "restore_and_verify_seconds": 0.9194273489993066,
+      "dump_bytes": 493197,
+      "dump_sha256": "ec8b8c4b16cb16c733c308d11076c7d4ae135171913eaf36d28add1f5c979d54",
+      "snapshot_fingerprints_match": true,
+      "table_rows": {
+        "schema_migrations": 1,
+        "clinic_users": 2,
+        "patient_records": 3,
+        "care_relationships": 3,
+        "record_versions": 82,
+        "command_receipts": 79,
+        "access_audit": 8501,
+        "creation_receipts": 3
+      },
+      "tables_verified": 8
+    },
+    {
+      "dump_seconds": 0.33363698700850364,
+      "restore_seconds": 0.8002465650060913,
+      "restore_and_verify_seconds": 0.9863978070061421,
+      "dump_bytes": 493421,
+      "dump_sha256": "2c32418fd547eeaeb4843175ee6dc5a0415169bfa0629a1994f8c1788c0507a4",
+      "snapshot_fingerprints_match": true,
+      "table_rows": {
+        "schema_migrations": 1,
+        "clinic_users": 2,
+        "patient_records": 3,
+        "care_relationships": 3,
+        "record_versions": 82,
+        "command_receipts": 79,
+        "access_audit": 8527,
+        "creation_receipts": 3
+      },
+      "tables_verified": 8
+    }
+  ]
+}
