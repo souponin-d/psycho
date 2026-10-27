@@ -133,9 +133,11 @@ export function PatientBrief({
               {latest.scale}
             </span>
           </div>
-          <p className={styles.subtext}>
-            {formatDate(latest.measuredAt)} · {latest.version}
-          </p>
+          <p className={styles.subtext}>{formatDate(latest.measuredAt)}</p>
+          <details className={styles.details}>
+            <summary>Методика</summary>
+            <p>{latest.version}</p>
+          </details>
           <p className={styles.subtext}>
             {latest.completeness === "complete"
               ? "Исходный результат. Интерпретация — врачом."

@@ -248,9 +248,9 @@ it("анамнез мании препятствует предложению с
 it("изменения источника и клинического контекста блокируют старое решение без потери истории", () => {
   const p = evaluated(),
     e = p.clinicalSupport!.evaluations[0]!;
-  expect(isSupportEvaluationCurrent(p, e, demoActor)).toBe(true);
+  expect(isSupportEvaluationCurrent(p, e, demoActor, now)).toBe(true);
   p.profile.birthDate = "1991-01-01";
-  expect(isSupportEvaluationCurrent(p, e, demoActor)).toBe(false);
+  expect(isSupportEvaluationCurrent(p, e, demoActor, now)).toBe(false);
   expect(() =>
     applySupportMutation(
       p,
@@ -270,7 +270,7 @@ it("изменения источника и клинического конте
   const old = supportCatalog.version;
   try {
     supportCatalog.version = "changed";
-    expect(supportContextKey(patient(), demoActor)).not.toBe(e.contextKey);
+    expect(supportContextKey(patient(), demoActor, now)).not.toBe(e.contextKey);
   } finally {
     supportCatalog.version = old;
   }

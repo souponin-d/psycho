@@ -40,14 +40,14 @@ const percentage = (value: number | null) =>
 export function AdherencePanel({
   patient,
   actions,
-  actor,
 }: {
   patient: PatientRecord & { adherence?: AdherenceState };
   actions?: WorkspaceActions;
   actor: Actor;
 }) {
   const now = new Date().toISOString();
-  const currentDay = local(now, 180).slice(0, 10);
+  const deviceOffset = -new Date().getTimezoneOffset();
+  const currentDay = local(now, deviceOffset).slice(0, 10);
   const [fromDate, setFromDate] = useState(
     new Date(Date.parse(`${currentDay}T00:00:00Z`) - 6 * 86_400_000)
       .toISOString()
@@ -61,7 +61,7 @@ export function AdherencePanel({
   } | null>(null);
   const [planId, setPlanId] = useState("");
   const [times, setTimes] = useState("");
-  const [offsetMinutes, setOffsetMinutes] = useState(180);
+  const [offsetMinutes, setOffsetMinutes] = useState(deviceOffset);
   const [effectiveFrom, setEffectiveFrom] = useState("");
   const [startImmediately, setStartImmediately] = useState(true);
   const [endDate, setEndDate] = useState("");
@@ -100,8 +100,8 @@ export function AdherencePanel({
     });
     setPlanId(plan.id);
     setTimes(schedule?.times.join(", ") ?? "");
-    setOffsetMinutes(schedule?.offsetMinutes ?? 180);
-    setEffectiveFrom(local(now, schedule?.offsetMinutes ?? 180));
+    setOffsetMinutes(schedule?.offsetMinutes ?? deviceOffset);
+    setEffectiveFrom(local(now, schedule?.offsetMinutes ?? deviceOffset));
     setStartImmediately(true);
     setEndDate(schedule?.endDate ?? plan.endDate.slice(0, 10));
     setScheduleReason("");
@@ -402,17 +402,20 @@ export function AdherencePanel({
               required
               hint="Укажите согласованное время; дозировка берётся из подтверждённого назначения"
             />
-            <Field
-              label="Смещение UTC, минут"
-              type="number"
-              min={-720}
-              max={840}
-              step={15}
+            <Select
+              label="Часовой пояс"
               value={offsetMinutes}
               onChange={(event) => setOffsetMinutes(Number(event.target.value))}
-              required
-              hint="Для Москвы: 180 минут, UTC+03:00"
-            />
+            >
+              {Array.from({ length: 105 }, (_, i) => -720 + i * 15).map(
+                (offset) => (
+                  <option key={offset} value={offset}>
+                    {zone(offset)}
+                    {offset === deviceOffset ? " · На устройстве" : ""}
+                  </option>
+                ),
+              )}
+            </Select>
             <Select
               label="Начало расписания"
               value={startImmediately ? "next-minute" : "specified"}
@@ -447,9 +450,6 @@ export function AdherencePanel({
               onChange={(event) => setScheduleReason(event.target.value)}
               required
             />
-            <p className={styles.subtext}>
-              Запишет {actor.name}. Доза назначения не изменяется.
-            </p>
             <Button type="submit" disabled={actions?.busy}>
               Сохранить расписание
             </Button>

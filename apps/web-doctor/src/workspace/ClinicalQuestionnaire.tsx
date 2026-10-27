@@ -237,7 +237,9 @@ export function ClinicalQuestionnaire({
             .filter((a) => a.status === "issued")
             .map((a) => (
               <option key={a.id} value={a.id}>
-                {a.id} · {a.dueDate}
+                {getClinicalProtocol(a.protocolVersion)?.title ??
+                  "Самоопросник"}{" "}
+                · {a.dueDate}
               </option>
             ))}
         </Select>

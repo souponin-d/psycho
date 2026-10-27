@@ -55,6 +55,19 @@ const summaryFields: EncounterField[] = [
   "recommendations",
   "patientPreference",
 ];
+const completionTargets: Record<
+  string,
+  | { step: number; field: EncounterField }
+  | { consent: "care" | "communication" }
+> = {
+  "Зафиксируйте заключение по рискам": { step: 1, field: "safetyConclusion" },
+  "Заполните заключение врача": { step: 2, field: "conclusion" },
+  "Укажите рекомендации и следующий шаг": { step: 2, field: "recommendations" },
+  "Зафиксируйте документированное согласие на помощь": { consent: "care" },
+  "Для дистанционного контакта зафиксируйте основание и согласие на связь": {
+    consent: "communication",
+  },
+};
 
 export function EncounterEditor({
   patient,
@@ -75,6 +88,23 @@ export function EncounterEditor({
   const [saving, setSaving] = useState(false);
   const [measurement, setMeasurement] = useState(false);
   const [consent, setConsent] = useState(false);
+  const [consentPurpose, setConsentPurpose] = useState<
+    "care" | "communication"
+  >("care");
+  const [focusField, setFocusField] = useState<EncounterField | null>(null);
+  const noteFields = useRef<
+    Partial<Record<EncounterField, HTMLDivElement | null>>
+  >({});
+  useEffect(() => {
+    if (!focusField) return;
+    const frame = window.requestAnimationFrame(() => {
+      const field = noteFields.current[focusField];
+      field?.querySelector("textarea")?.focus();
+      field?.scrollIntoView?.({ block: "center" });
+      setFocusField(null);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [step, focusField]);
   const [confirm, setConfirm] = useState(false);
   const [cancel, setCancel] = useState(false);
   const [addendum, setAddendum] = useState(false);
@@ -231,16 +261,50 @@ export function EncounterEditor({
   }
   const fields = (keys: EncounterField[]) =>
     keys.map((key) => (
-      <Textarea
+      <div
         key={key}
-        label={encounterLabels[key]}
-        value={draft.notes[key]}
-        onChange={(e) => setNote(key, e.target.value)}
-        rows={key === "mentalStatus" ? 4 : 3}
-        required={key === "safetyConclusion"}
-      />
+        id={`encounter-field-${key}`}
+        ref={(element) => {
+          noteFields.current[key] = element;
+        }}
+      >
+        <Textarea
+          label={encounterLabels[key]}
+          value={draft.notes[key]}
+          onChange={(e) => setNote(key, e.target.value)}
+          rows={key === "mentalStatus" ? 4 : 3}
+          required={key === "safetyConclusion"}
+        />
+      </div>
     ));
   const errors = completionErrors(patient, draft);
+  function completionError(error: string) {
+    const target = completionTargets[error];
+    if (!target) return error;
+    return (
+      <a
+        className={styles.link}
+        href={
+          "field" in target
+            ? `#encounter-field-${target.field}`
+            : "#encounter-consent"
+        }
+        onClick={(event) => {
+          event.preventDefault();
+          setConfirm(false);
+          if ("field" in target) {
+            setStep(target.step);
+            setFocusField(target.field);
+          } else {
+            setConsentPurpose(target.consent);
+            setConsent(true);
+          }
+        }}
+      >
+        {error}
+      </a>
+    );
+  }
   return (
     <>
       <Button
@@ -532,9 +596,11 @@ export function EncounterEditor({
                               {m.maximum !== null ? ` / ${m.maximum}` : ""}
                             </Badge>
                           </div>
-                          <p>
-                            {m.version} · {m.interpretation}
-                          </p>
+                          <p>{m.interpretation}</p>
+                          <details className={styles.details}>
+                            <summary>Методика</summary>
+                            <p>{m.version}</p>
+                          </details>
                         </div>
                       ))}
                     {!patientMeasurements(patient).some(
@@ -639,7 +705,7 @@ export function EncounterEditor({
                         <strong>Нужно дополнить</strong>
                         <ul>
                           {errors.map((e) => (
-                            <li key={e}>{e}</li>
+                            <li key={e}>{completionError(e)}</li>
                           ))}
                         </ul>
                       </div>
@@ -653,6 +719,7 @@ export function EncounterEditor({
                       <Button
                         variant="secondary"
                         onClick={async () => {
+                          setConsentPurpose("care");
                           if (await save()) setConsent(true);
                         }}
                       >
@@ -761,6 +828,7 @@ export function EncounterEditor({
           patient={patient}
           actions={actions}
           onClose={() => setConsent(false)}
+          initialPurpose={consentPurpose}
         />
       )}
       {followup && (
@@ -791,7 +859,7 @@ export function EncounterEditor({
             <ErrorNotice>
               <ul>
                 {errors.map((e) => (
-                  <li key={e}>{e}</li>
+                  <li key={e}>{completionError(e)}</li>
                 ))}
               </ul>
             </ErrorNotice>

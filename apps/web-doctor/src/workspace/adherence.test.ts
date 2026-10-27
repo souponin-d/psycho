@@ -1,6 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createElement } from "react";
-import { render, screen, within } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createPatient } from "./commands";
 import { demoActor } from "./seed";
@@ -16,6 +22,69 @@ import {
 } from "./adherence";
 
 const now = "2026-10-26T09:00:00.000Z";
+
+it("подставляет часовой пояс устройства в новое расписание и сохраняет прежний формат API", async () => {
+  const offset = vi
+    .spyOn(Date.prototype, "getTimezoneOffset")
+    .mockReturnValue(-330);
+  try {
+    const p = patient(),
+      mutate = vi.fn().mockResolvedValue(p);
+    const actions = {
+      actor: demoActor,
+      busy: false,
+      mutate,
+    } as unknown as WorkspaceActions;
+    render(
+      createElement(AdherencePanel, { patient: p, actions, actor: demoActor }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Указать расписание" }));
+    expect(
+      (screen.getByLabelText("Часовой пояс") as HTMLSelectElement).value,
+    ).toBe("330");
+    fireEvent.change(screen.getByLabelText(/Время приёма через запятую/), {
+      target: { value: "09:00" },
+    });
+    fireEvent.change(screen.getByLabelText(/Последний день расписания/), {
+      target: { value: "2026-11-01" },
+    });
+    fireEvent.change(
+      screen.getByLabelText(/Основание расписания \/ изменения/),
+      { target: { value: "Согласовано" } },
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: "Сохранить расписание" }),
+    );
+    await waitFor(() => expect(mutate).toHaveBeenCalled());
+    expect(mutate.mock.calls[0]![1].value.offsetMinutes).toBe(330);
+  } finally {
+    offset.mockRestore();
+  }
+});
+
+it("сохраняет часовой пояс существующего расписания при другом часовом поясе устройства", () => {
+  const offset = vi
+    .spyOn(Date.prototype, "getTimezoneOffset")
+    .mockReturnValue(-330);
+  try {
+    const p = run(patient(), schedule());
+    const actions = {
+      actor: demoActor,
+      busy: false,
+      mutate: vi.fn(),
+    } as unknown as WorkspaceActions;
+    render(
+      createElement(AdherencePanel, { patient: p, actions, actor: demoActor }),
+    );
+    fireEvent.click(screen.getByText("Расписание и история"));
+    fireEvent.click(screen.getByRole("button", { name: "Изменить время" }));
+    expect(
+      (screen.getByLabelText("Часовой пояс") as HTMLSelectElement).value,
+    ).toBe("180");
+  } finally {
+    offset.mockRestore();
+  }
+});
 afterEach(() => vi.useRealTimers());
 type Subject = PatientRecord & { adherence?: AdherenceState };
 function patient(): Subject {

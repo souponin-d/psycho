@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, expect, it, vi } from "vitest";
 import { SourceLibrary, SourceLinks, SourceProvider } from "./SourceLibrary";
 import { SourceMarkdown, SourceReader } from "./SourceReader";
+import { sourceById } from "./sources";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -14,18 +15,26 @@ it("скрывает исторические карточки, сохраняя
       <SourceLinks ids={["S05"]} />
     </SourceProvider>,
   );
-  expect(screen.queryByRole("button", { name: /^S05 / })).toBeTruthy();
+  expect(
+    screen.queryByRole("button", { name: sourceById("S05")!.title }),
+  ).toBeTruthy();
   const cards = screen
     .getAllByRole("button")
     .filter((button) => button.className.includes("card"));
-  expect(cards.some((card) => card.textContent?.includes("S05"))).toBe(false);
-  const source = screen.getByRole("button", { name: /^S01 / });
+  expect(
+    cards.some(
+      (card) => card.getAttribute("aria-label") === sourceById("S05")!.title,
+    ),
+  ).toBe(false);
+  const source = screen.getByRole("button", { name: sourceById("S01")!.title });
   source.focus();
   await user.keyboard("{Enter}");
   expect(screen.getByRole("dialog")).toBeTruthy();
   expect(within(screen.getByRole("dialog")).queryByText("Проверка")).toBeNull();
   await user.keyboard("{Escape}");
-  await user.click(screen.getByRole("button", { name: /^S05 / }));
+  await user.click(
+    screen.getByRole("button", { name: sourceById("S05")!.title }),
+  );
   expect(
     within(screen.getByRole("dialog")).getByText("Исторический документ"),
   ).toBeTruthy();
@@ -44,7 +53,9 @@ it("загружает имеющийся Markdown через проверяем
       <SourceLinks ids={["S23"]} />
     </SourceProvider>,
   );
-  await user.click(screen.getByRole("button", { name: /^S23 / }));
+  await user.click(
+    screen.getByRole("button", { name: sourceById("S23")!.title }),
+  );
   expect(
     await screen.findByRole("heading", { name: "Полный текст" }),
   ).toBeTruthy();
@@ -86,7 +97,9 @@ it("не показывает страницу входа или текст др
       <SourceLinks ids={["S23"]} />
     </SourceProvider>,
   );
-  await user.click(screen.getByRole("button", { name: /^S23 / }));
+  await user.click(
+    screen.getByRole("button", { name: sourceById("S23")!.title }),
+  );
   expect(await screen.findByRole("alert")).toHaveProperty(
     "textContent",
     expect.stringContaining("Не удалось загрузить текст"),
@@ -134,7 +147,9 @@ it("не запрашивает PDF как Markdown", async () => {
       <SourceLinks ids={["S01"]} />
     </SourceProvider>,
   );
-  await user.click(screen.getByRole("button", { name: /^S01 / }));
+  await user.click(
+    screen.getByRole("button", { name: sourceById("S01")!.title }),
+  );
   expect(
     screen
       .getByRole("link", { name: "Открыть исходный документ" })
