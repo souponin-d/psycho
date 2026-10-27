@@ -1,0 +1,24 @@
+{
+  "utc": "2026-10-27T11:07:18.503Z",
+  "url": "http://127.0.0.1:8758/",
+  "browser": "151.0.7922.34",
+  "viewport": "1440x1000",
+  "method": "navigation until visible heading; no human task timing",
+  "rows": [
+    {
+      "operation": "cold-login-form",
+      "ms": 3268.8713000000002,
+      "ok": true
+    },
+    {
+      "operation": "login-to-workday",
+      "ms": 347.7836000000002,
+      "ok": true
+    }
+  ],
+  "page_errors": [],
+  "failure": {
+    "name": "TimeoutError",
+    "message": "locator.waitFor: Timeout 25000ms exceeded.\n"
+  }
+}

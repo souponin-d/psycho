@@ -1,0 +1,23 @@
+{
+  "utc": "2026-10-27T11:21:30.525Z",
+  "url": "https://syncli-main.layero.app/doctor/",
+  "method": "automated happy-path task execution, not human usability study",
+  "action_unit": "one click or one field fill; typing/reading/thinking excluded",
+  "rows": [
+    {
+      "task": "send-message",
+      "repeat": 0,
+      "ok": true,
+      "actions": 2,
+      "ms": 591.3858
+    },
+    {
+      "task": "send-message",
+      "repeat": 1,
+      "ok": false,
+      "actions": 2,
+      "ms": 20025.3312,
+      "error": "TimeoutError"
+    }
+  ]
+}

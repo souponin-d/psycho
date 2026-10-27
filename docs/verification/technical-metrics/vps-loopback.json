@@ -1,0 +1,639 @@
+{
+  "started_at": "2026-10-27T11:10:35.444836+00:00",
+  "origin": "https://176.32.37.10",
+  "protocol": "urllib-new-connection-per-request",
+  "generator": {
+    "pid": 26838,
+    "platform": "posix"
+  },
+  "series": {
+    "health": {
+      "raw": [
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 11.321
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 10.568
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 11.998
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 14.535
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 12.798
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 11.549
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 8.788
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 10.159
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 11.68
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 15.581
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 13.271
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 13.212
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 15.326
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 12.892
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 11.779
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 9.528
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 9.769
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 16.875
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 11.59
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 11.674
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 14.717
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 14.322
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 12.766
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 11.716
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 9.645
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 10.426
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 11.147
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 9.869
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 13.571
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 124,
+          "ms": 13.132
+        }
+      ],
+      "summary": {
+        "attempts": 30,
+        "errors": 0,
+        "error_rate": 0.0,
+        "success_ms": {
+          "p50": 11.716,
+          "p95": 15.581,
+          "p99": 16.875,
+          "max": 16.875
+        },
+        "all_ms": {
+          "p50": 11.716,
+          "p95": 15.581,
+          "p99": 16.875,
+          "max": 16.875
+        }
+      }
+    },
+    "patient-list": {
+      "raw": [
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 30.017
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 30.907
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 32.969
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 41.478
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 32.263
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 27.689
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 39.814
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 32.649
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 30.324
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 30.176
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 28.775
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 31.798
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 30.17
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 35.231
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 28.434
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 29.374
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 28.485
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 37.634
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 30.892
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 32.339
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 31.327
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 43.659
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 27.884
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 30.045
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 30.684
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 39.741
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 48.13
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 44.339
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 37.332
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 341675,
+          "ms": 32.401
+        }
+      ],
+      "summary": {
+        "attempts": 30,
+        "errors": 0,
+        "error_rate": 0.0,
+        "success_ms": {
+          "p50": 31.327,
+          "p95": 44.339,
+          "p99": 48.13,
+          "max": 48.13
+        },
+        "all_ms": {
+          "p50": 31.327,
+          "p95": 44.339,
+          "p99": 48.13,
+          "max": 48.13
+        }
+      }
+    },
+    "icd-search": {
+      "raw": [
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 28.861
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 21.663
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 18.762
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 17.526
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 20.98
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 19.026
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 19.298
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 19.134
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 16.333
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 19.039
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 19.857
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 18.247
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 17.65
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 19.506
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 17.055
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 22.488
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 19.562
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 16.538
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 18.17
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 16.985
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 18.489
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 18.747
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 17.03
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 17.911
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 21.277
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 23.836
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 21.991
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 18.025
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 16.451
+        },
+        {
+          "status": 200,
+          "ok": true,
+          "bytes": 1412,
+          "ms": 20.958
+        }
+      ],
+      "summary": {
+        "attempts": 30,
+        "errors": 0,
+        "error_rate": 0.0,
+        "success_ms": {
+          "p50": 18.762,
+          "p95": 23.836,
+          "p99": 28.861,
+          "max": 28.861
+        },
+        "all_ms": {
+          "p50": 18.762,
+          "p95": 23.836,
+          "p99": 28.861,
+          "max": 28.861
+        }
+      }
+    }
+  },
+  "checks": [
+    {
+      "name": "anonymous cannot read doctor records",
+      "ok": true
+    },
+    {
+      "name": "release remained unchanged",
+      "ok": true
+    }
+  ],
+  "stages": [],
+  "health": {
+    "status": "ready",
+    "storage": "postgresql",
+    "release": "20261027-integration-90ee18d",
+    "contractVersion": "doctor-api-2026-10-26"
+  },
+  "completed_at": "2026-10-27T11:10:38.044420+00:00",
+  "health_after": {
+    "status": "ready",
+    "storage": "postgresql",
+    "release": "20261027-integration-90ee18d",
+    "contractVersion": "doctor-api-2026-10-26"
+  },
+  "scope": "Production Caddy/API/PostgreSQL via verified HTTPS loopback; generator shares VPS resources"
+}

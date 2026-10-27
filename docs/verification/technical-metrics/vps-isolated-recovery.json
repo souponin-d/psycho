@@ -1,0 +1,18 @@
+{
+  "utc": "2026-10-27T11:25:33.958575+00:00",
+  "scope": "Isolated API process crash on real VPS with restored DB, copied API, keys and certificate",
+  "main_service_stopped": false,
+  "backup_and_db_restore_seconds": 1.374935441010166,
+  "prepare_start_login_write_seconds": 11.484730159994797,
+  "crash_to_health_seconds": 5.245435028002248,
+  "crash_to_verified_read_retry_seconds": 5.398193272994831,
+  "pre_crash_session_survived": true,
+  "confirmed_messages_before_crash": 1,
+  "confirmed_messages_after_crash": 1,
+  "matching_messages_after_retry": 1,
+  "request_during_outage_failed_without_false_ack": true,
+  "pending_command_delivered_after_restart": true,
+  "pending_client_scope": "Measurement client memory; not a durable mobile queue test",
+  "confirmed_message_loss_count": 0,
+  "limitation": "API crash/restart only; not physical host loss, disk failure, WAN availability or offsite recovery"
+}

@@ -1,0 +1,2635 @@
+{
+  "started_at": "2026-10-27T11:17:36.995Z",
+  "node": "v24.19.0",
+  "extraction": {
+    "unit": "exact labelled section, not clinical entity or NLP accuracy",
+    "clinician_validated": false,
+    "groups": {
+      "standard": {
+        "documents": 20,
+        "expected": 140,
+        "extracted": 140,
+        "exact": 140,
+        "quote_matches": 140,
+        "ms": [
+          3.196399999999983, 0.050499999999999545, 0.03489999999999327,
+          0.03989999999998872, 0.016099999999994452, 0.013900000000035106,
+          0.013700000000028467, 0.013300000000015189, 0.014000000000010004,
+          0.013800000000003365, 0.01779999999996562, 0.013300000000015189,
+          0.013499999999964984, 0.013499999999964984, 0.016099999999994452,
+          0.01320000000004029, 0.013500000000021828, 0.013599999999996726,
+          0.028700000000014825, 0.013599999999996726
+        ],
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "reordered": {
+        "documents": 20,
+        "expected": 140,
+        "extracted": 140,
+        "exact": 140,
+        "quote_matches": 140,
+        "ms": [
+          0.017499999999984084, 0.014400000000023283, 0.014800000000036562,
+          0.013900000000035106, 0.013700000000028467, 0.015499999999974534,
+          0.013500000000021828, 0.013699999999971624, 0.026199999999960255,
+          0.014000000000010004, 0.014200000000016644, 0.013900000000035106,
+          0.015800000000012915, 0.014200000000016644, 0.014600000000029922,
+          0.013500000000021828, 0.02740000000000009, 0.014099999999984902,
+          0.013899999999978263, 0.013800000000003365
+        ],
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "multiline": {
+        "documents": 20,
+        "expected": 140,
+        "extracted": 0,
+        "exact": 0,
+        "quote_matches": 0,
+        "ms": [
+          0.0036000000000058208, 0.0027000000000043656, 0.002200000000016189,
+          0.0020000000000095497, 0.0020999999999844476, 0.0020999999999844476,
+          0.0020999999999844476, 0.0018999999999778083, 0.002100000000041291,
+          0.0020000000000095497, 0.003100000000017644, 0.0021999999999593456,
+          0.0020000000000095497, 0.0020000000000095497, 0.0020000000000095497,
+          0.002100000000041291, 0.0019999999999527063, 0.0018999999999778083,
+          0.0019000000000346517, 0.0036000000000058208
+        ],
+        "precision": null,
+        "recall": 0,
+        "f1": 0
+      },
+      "numbered": {
+        "documents": 20,
+        "expected": 140,
+        "extracted": 0,
+        "exact": 0,
+        "quote_matches": 0,
+        "ms": [
+          0.0024000000000228283, 0.0013999999999896318, 0.0013000000000147338,
+          0.0013000000000147338, 0.0012999999999578904, 0.0011999999999829924,
+          0.0013999999999896318, 0.0013000000000147338, 0.0013999999999896318,
+          0.0013999999999896318, 0.0011999999999829924, 0.0013000000000147338,
+          0.0016000000000531145, 0.0013999999999896318, 0.0013000000000147338,
+          0.0011999999999829924, 0.0013000000000147338, 0.0012999999999578904,
+          0.0011999999999829924, 0.0013000000000147338
+        ],
+        "precision": null,
+        "recall": 0,
+        "f1": 0
+      },
+      "narrative": {
+        "documents": 20,
+        "expected": 140,
+        "extracted": 0,
+        "exact": 0,
+        "quote_matches": 0,
+        "ms": [
+          0.0009000000000014552, 0.0008000000000265572, 0.0006999999999948159,
+          0.0006999999999948159, 0.0006999999999948159, 0.0006000000000199179,
+          0.0006000000000199179, 0.0005999999999630745, 0.0006999999999948159,
+          0.0006999999999948159, 0.0006999999999948159, 0.0009000000000014552,
+          0.0006999999999948159, 0.0007000000000516593, 0.001099999999951251,
+          0.015000000000043201, 0.0006999999999948159, 0.0006999999999948159,
+          0.0006000000000199179, 0.0006999999999948159
+        ],
+        "precision": null,
+        "recall": 0,
+        "f1": 0
+      }
+    }
+  },
+  "support": {
+    "cases": [
+      {
+        "ms": 1.6476999999999862,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.75649999999996,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.5792999999999893,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.6358999999999924,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.58299999999997,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.6252999999999815,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.5635000000000332,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.6243000000000052,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.5314999999999941,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.602800000000002,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.5418000000000234,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.6280999999999608,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.5721000000000345,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.6118999999999915,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.5366000000000213,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.6564000000000192,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.6229999999999905,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.5955999999999904,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.575999999999965,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.6234999999999786,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.5196000000000254,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 1.0387000000000057,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 2.3748999999999683,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 1.077799999999968,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.95150000000001,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 1.0237999999999943,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.9275000000000091,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 1.0837999999999965,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 1.0212999999999965,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 1.065999999999974,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.719600000000014,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 1.0760000000000218,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.910000000000025,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.6486000000000445,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.5767000000000166,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.9169999999999732,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.966700000000003,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 1.0031999999999925,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.7141999999999484,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.6847999999999956,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.7701000000000136,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 1.092999999999961,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 1.046199999999999,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 1.1259000000000015,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 1.0456999999999539,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.9601999999999862,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.7728999999999928,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.44940000000002556,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.39580000000000837,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.7444000000000415,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.5154999999999745,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.5207000000000335,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 4.018400000000042,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.6202000000000112,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.6272999999999911,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.7624999999999886,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.8068000000000097,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.7826000000000022,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.7534999999999741,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.6315000000000168,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.44779999999997244,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.439899999999966,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.42629999999996926,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.38589999999999236,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.33559999999999945,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.44880000000000564,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.5792999999999893,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.7472999999999956,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.6924000000000206,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.6528000000000134,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.4481999999999857,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.37110000000001264,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.4077000000000339,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.4585999999999899,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.46109999999998763,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.5088000000000079,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.4725999999999999,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.4812000000000012,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.3808999999999969,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.42159999999995534,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.46100000000001273,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.7749000000000024,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.6997000000000071,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.7771000000000186,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.7281000000000404,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.811300000000017,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.7419000000000437,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.769299999999987,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.7261000000000308,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.7872999999999593,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.711400000000026,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.8079000000000178,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.7588999999999828,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.6938000000000102,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.45699999999999363,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.49569999999999936,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.44360000000000355,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.4655999999999949,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.4312999999999647,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 9,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      },
+      {
+        "ms": 0.5348999999999933,
+        "findings": 5,
+        "findings_with_sources": 5,
+        "findings_with_resolved_sources": 5,
+        "options": 8,
+        "option_keys": [
+          "id",
+          "routes",
+          "title",
+          "kind",
+          "position",
+          "summary",
+          "drugClasses",
+          "monitoring",
+          "sourceIds",
+          "status",
+          "reasons"
+        ]
+      }
+    ],
+    "source_count": 18,
+    "sources_with_version_url_locator": 18,
+    "clinical_approvals": 0,
+    "limitation": "Synthetic technical traceability only; clinical correctness and source currency not evaluated"
+  },
+  "automatic_grounding": {
+    "cases": [
+      {
+        "case": 1,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 14,
+        "outputs_with_resolved_locator": 14
+      },
+      {
+        "case": 2,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 14,
+        "outputs_with_resolved_locator": 14
+      },
+      {
+        "case": 3,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 15,
+        "outputs_with_resolved_locator": 15
+      },
+      {
+        "case": 4,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 14,
+        "outputs_with_resolved_locator": 14
+      },
+      {
+        "case": 5,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 15,
+        "outputs_with_resolved_locator": 15
+      },
+      {
+        "case": 6,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 15,
+        "outputs_with_resolved_locator": 15
+      },
+      {
+        "case": 7,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 16,
+        "outputs_with_resolved_locator": 16
+      },
+      {
+        "case": 8,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 15,
+        "outputs_with_resolved_locator": 15
+      },
+      {
+        "case": 9,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 15,
+        "outputs_with_resolved_locator": 15
+      },
+      {
+        "case": 10,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 15,
+        "outputs_with_resolved_locator": 15
+      },
+      {
+        "case": 11,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 16,
+        "outputs_with_resolved_locator": 16
+      },
+      {
+        "case": 12,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 15,
+        "outputs_with_resolved_locator": 15
+      },
+      {
+        "case": 13,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 16,
+        "outputs_with_resolved_locator": 16
+      },
+      {
+        "case": 14,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 16,
+        "outputs_with_resolved_locator": 16
+      },
+      {
+        "case": 15,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 17,
+        "outputs_with_resolved_locator": 17
+      },
+      {
+        "case": 16,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 16,
+        "outputs_with_resolved_locator": 16
+      },
+      {
+        "case": 17,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 13,
+        "outputs_with_resolved_locator": 13
+      },
+      {
+        "case": 18,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 13,
+        "outputs_with_resolved_locator": 13
+      },
+      {
+        "case": 19,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 14,
+        "outputs_with_resolved_locator": 14
+      },
+      {
+        "case": 20,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 13,
+        "outputs_with_resolved_locator": 13
+      },
+      {
+        "case": 21,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 14,
+        "outputs_with_resolved_locator": 14
+      },
+      {
+        "case": 22,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 14,
+        "outputs_with_resolved_locator": 14
+      },
+      {
+        "case": 23,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 15,
+        "outputs_with_resolved_locator": 15
+      },
+      {
+        "case": 24,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 14,
+        "outputs_with_resolved_locator": 14
+      },
+      {
+        "case": 25,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 14,
+        "outputs_with_resolved_locator": 14
+      },
+      {
+        "case": 26,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 14,
+        "outputs_with_resolved_locator": 14
+      },
+      {
+        "case": 27,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 15,
+        "outputs_with_resolved_locator": 15
+      },
+      {
+        "case": 28,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 14,
+        "outputs_with_resolved_locator": 14
+      },
+      {
+        "case": 29,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 15,
+        "outputs_with_resolved_locator": 15
+      },
+      {
+        "case": 30,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 15,
+        "outputs_with_resolved_locator": 15
+      },
+      {
+        "case": 31,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 16,
+        "outputs_with_resolved_locator": 16
+      },
+      {
+        "case": 32,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 15,
+        "outputs_with_resolved_locator": 15
+      },
+      {
+        "case": 33,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 14,
+        "outputs_with_resolved_locator": 14
+      },
+      {
+        "case": 34,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 14,
+        "outputs_with_resolved_locator": 14
+      },
+      {
+        "case": 35,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 15,
+        "outputs_with_resolved_locator": 15
+      },
+      {
+        "case": 36,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 14,
+        "outputs_with_resolved_locator": 14
+      },
+      {
+        "case": 37,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 15,
+        "outputs_with_resolved_locator": 15
+      },
+      {
+        "case": 38,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 15,
+        "outputs_with_resolved_locator": 15
+      },
+      {
+        "case": 39,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 16,
+        "outputs_with_resolved_locator": 16
+      },
+      {
+        "case": 40,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 15,
+        "outputs_with_resolved_locator": 15
+      },
+      {
+        "case": 41,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 15,
+        "outputs_with_resolved_locator": 15
+      },
+      {
+        "case": 42,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 15,
+        "outputs_with_resolved_locator": 15
+      },
+      {
+        "case": 43,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 16,
+        "outputs_with_resolved_locator": 16
+      },
+      {
+        "case": 44,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 15,
+        "outputs_with_resolved_locator": 15
+      },
+      {
+        "case": 45,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 16,
+        "outputs_with_resolved_locator": 16
+      },
+      {
+        "case": 46,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 16,
+        "outputs_with_resolved_locator": 16
+      },
+      {
+        "case": 47,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 17,
+        "outputs_with_resolved_locator": 17
+      },
+      {
+        "case": 48,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 16,
+        "outputs_with_resolved_locator": 16
+      },
+      {
+        "case": 49,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 13,
+        "outputs_with_resolved_locator": 13
+      },
+      {
+        "case": 50,
+        "repeat_exact": true,
+        "input_order_invariant": true,
+        "input_not_mutated": true,
+        "outputs": 13,
+        "outputs_with_resolved_locator": 13
+      }
+    ],
+    "criteria": "Determinism, observation-order invariance, no input mutation, resolution of source/version/locator",
+    "clinical_content_entailment_evaluated": false
+  },
+  "model_coverage": {
+    "synthetic_examples": 6,
+    "fields": [
+      {
+        "field": "profile",
+        "present_on_new_record": true,
+        "examples_with_nonempty_value": 6
+      },
+      {
+        "field": "episodes",
+        "present_on_new_record": true,
+        "examples_with_nonempty_value": 6
+      },
+      {
+        "field": "visits",
+        "present_on_new_record": true,
+        "examples_with_nonempty_value": 6
+      },
+      {
+        "field": "measurements",
+        "present_on_new_record": true,
+        "examples_with_nonempty_value": 5
+      },
+      {
+        "field": "plan",
+        "present_on_new_record": true,
+        "examples_with_nonempty_value": 5
+      },
+      {
+        "field": "reports",
+        "present_on_new_record": true,
+        "examples_with_nonempty_value": 3
+      },
+      {
+        "field": "events",
+        "present_on_new_record": true,
+        "examples_with_nonempty_value": 3
+      },
+      {
+        "field": "consents",
+        "present_on_new_record": true,
+        "examples_with_nonempty_value": 6
+      },
+      {
+        "field": "messages",
+        "present_on_new_record": true,
+        "examples_with_nonempty_value": 0
+      },
+      {
+        "field": "referrals",
+        "present_on_new_record": true,
+        "examples_with_nonempty_value": 0
+      },
+      {
+        "field": "documents",
+        "present_on_new_record": true,
+        "examples_with_nonempty_value": 0
+      },
+      {
+        "field": "audit",
+        "present_on_new_record": true,
+        "examples_with_nonempty_value": 6
+      },
+      {
+        "field": "clinicalFacts",
+        "present_on_new_record": false,
+        "examples_with_nonempty_value": 2
+      },
+      {
+        "field": "clinicalSupport",
+        "present_on_new_record": false,
+        "examples_with_nonempty_value": 6
+      },
+      {
+        "field": "adherence",
+        "present_on_new_record": false,
+        "examples_with_nonempty_value": 0
+      },
+      {
+        "field": "workflow",
+        "present_on_new_record": false,
+        "examples_with_nonempty_value": 6
+      }
+    ],
+    "limitation": "Structural presence and example coverage, not semantic/clinical completeness or full requirements acceptance"
+  },
+  "extension": {
+    "experiment": "in-memory form catalog registration and rollback",
+    "ms": 0.021000000000015007,
+    "added": true,
+    "old_versions_preserved": true,
+    "rollback_removed_new": true,
+    "persisted": false,
+    "engine_changes": 0,
+    "limitation": "Does not prove arbitrary scoring, medicine registration, alert-rule or new feature extensibility",
+    "catalog_experiments": [
+      {
+        "kind": "medicine class",
+        "observed": true,
+        "ms": 0.2529999999999859
+      },
+      {
+        "kind": "interaction warning",
+        "observed": true,
+        "ms": 1.3231000000000108,
+        "limitation": "Warning generation only; not arbitrary clinical alert conditions or external delivery"
+      },
+      {
+        "kind": "catalog option",
+        "observed": true,
+        "ms": 0.5762000000000285,
+        "limitation": "Existing option schema only; not arbitrary new application functionality"
+      }
+    ],
+    "catalog_rollback_exact": true
+  }
+}

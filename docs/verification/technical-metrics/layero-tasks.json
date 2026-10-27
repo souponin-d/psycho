@@ -1,0 +1,226 @@
+{
+  "utc": "2026-10-27T11:16:58.277Z",
+  "url": "https://syncli-main.layero.app/doctor/",
+  "method": "automated happy-path task execution, not human usability study",
+  "action_unit": "one click or one field fill; typing/reading/thinking excluded",
+  "rows": [
+    {
+      "task": "find-card",
+      "repeat": 0,
+      "ok": true,
+      "actions": 3,
+      "ms": 158.6803
+    },
+    {
+      "task": "find-card",
+      "repeat": 1,
+      "ok": true,
+      "actions": 3,
+      "ms": 154.47980000000098
+    },
+    {
+      "task": "find-card",
+      "repeat": 2,
+      "ok": true,
+      "actions": 3,
+      "ms": 152.51320000000123
+    },
+    {
+      "task": "find-card",
+      "repeat": 3,
+      "ok": true,
+      "actions": 3,
+      "ms": 167.45999999999913
+    },
+    {
+      "task": "find-card",
+      "repeat": 4,
+      "ok": true,
+      "actions": 3,
+      "ms": 177.05349999999817
+    },
+    {
+      "task": "find-card",
+      "repeat": 5,
+      "ok": true,
+      "actions": 3,
+      "ms": 177.46900000000096
+    },
+    {
+      "task": "find-card",
+      "repeat": 6,
+      "ok": true,
+      "actions": 3,
+      "ms": 177.91249999999854
+    },
+    {
+      "task": "find-card",
+      "repeat": 7,
+      "ok": true,
+      "actions": 3,
+      "ms": 184.0639999999985
+    },
+    {
+      "task": "find-card",
+      "repeat": 8,
+      "ok": true,
+      "actions": 3,
+      "ms": 208.43179999999847
+    },
+    {
+      "task": "find-card",
+      "repeat": 9,
+      "ok": true,
+      "actions": 3,
+      "ms": 170.98329999999987
+    },
+    {
+      "task": "view-dynamics",
+      "repeat": 0,
+      "ok": true,
+      "actions": 1,
+      "ms": 43.31720000000132
+    },
+    {
+      "task": "view-dynamics",
+      "repeat": 1,
+      "ok": true,
+      "actions": 1,
+      "ms": 38.47330000000147
+    },
+    {
+      "task": "view-dynamics",
+      "repeat": 2,
+      "ok": true,
+      "actions": 1,
+      "ms": 72.96280000000115
+    },
+    {
+      "task": "view-dynamics",
+      "repeat": 3,
+      "ok": true,
+      "actions": 1,
+      "ms": 36.84690000000046
+    },
+    {
+      "task": "view-dynamics",
+      "repeat": 4,
+      "ok": true,
+      "actions": 1,
+      "ms": 42.50369999999748
+    },
+    {
+      "task": "view-dynamics",
+      "repeat": 5,
+      "ok": true,
+      "actions": 1,
+      "ms": 69.34749999999985
+    },
+    {
+      "task": "view-dynamics",
+      "repeat": 6,
+      "ok": true,
+      "actions": 1,
+      "ms": 38.07930000000124
+    },
+    {
+      "task": "view-dynamics",
+      "repeat": 7,
+      "ok": true,
+      "actions": 1,
+      "ms": 42.104599999998754
+    },
+    {
+      "task": "view-dynamics",
+      "repeat": 8,
+      "ok": true,
+      "actions": 1,
+      "ms": 59.158800000001065
+    },
+    {
+      "task": "view-dynamics",
+      "repeat": 9,
+      "ok": true,
+      "actions": 1,
+      "ms": 75.47019999999975
+    },
+    {
+      "task": "open-messages",
+      "repeat": 0,
+      "ok": true,
+      "actions": 2,
+      "ms": 135.252199999999
+    },
+    {
+      "task": "open-messages",
+      "repeat": 1,
+      "ok": true,
+      "actions": 2,
+      "ms": 157.81690000000162
+    },
+    {
+      "task": "open-messages",
+      "repeat": 2,
+      "ok": true,
+      "actions": 2,
+      "ms": 147.91660000000047
+    },
+    {
+      "task": "open-messages",
+      "repeat": 3,
+      "ok": true,
+      "actions": 2,
+      "ms": 150.88129999999728
+    },
+    {
+      "task": "open-messages",
+      "repeat": 4,
+      "ok": true,
+      "actions": 2,
+      "ms": 151.17859999999928
+    },
+    {
+      "task": "open-messages",
+      "repeat": 5,
+      "ok": true,
+      "actions": 2,
+      "ms": 152.20750000000044
+    },
+    {
+      "task": "open-messages",
+      "repeat": 6,
+      "ok": true,
+      "actions": 2,
+      "ms": 128.5722999999998
+    },
+    {
+      "task": "open-messages",
+      "repeat": 7,
+      "ok": true,
+      "actions": 2,
+      "ms": 143.80909999999858
+    },
+    {
+      "task": "open-messages",
+      "repeat": 8,
+      "ok": true,
+      "actions": 2,
+      "ms": 204.9961000000003
+    },
+    {
+      "task": "open-messages",
+      "repeat": 9,
+      "ok": true,
+      "actions": 2,
+      "ms": 148.43930000000182
+    },
+    {
+      "task": "send-message",
+      "repeat": 0,
+      "ok": false,
+      "actions": 1,
+      "ms": 20008.5715,
+      "error": "TimeoutError"
+    }
+  ]
+}

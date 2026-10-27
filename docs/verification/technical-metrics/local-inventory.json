@@ -1,0 +1,15 @@
+{
+  "utc": "2026-10-27T11:24:28.175Z",
+  "platform": "win32",
+  "release": "10.0.26200",
+  "cpu_model": "12th Gen Intel(R) Core(TM) i7-12700H",
+  "logical_cpus": 20,
+  "total_memory_bytes": 16890716160,
+  "free_memory_bytes": 2915504128,
+  "node": "v24.19.0",
+  "source_commit": "ac1fd86e9aa3f89ee27f22f702448aa421e35cdb",
+  "api": "http://127.0.0.1:5088",
+  "postgres_port": 55458,
+  "mode": "Development Debug",
+  "web_mode": "Vite development"
+}

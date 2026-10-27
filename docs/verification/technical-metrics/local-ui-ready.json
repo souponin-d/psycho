@@ -1,0 +1,320 @@
+{
+  "utc": "2026-10-27T11:12:04.751Z",
+  "url": "http://127.0.0.1:8758/",
+  "browser": "151.0.7922.34",
+  "viewport": "1440x1000",
+  "method": "navigation until visible heading; no human task timing",
+  "rows": [
+    {
+      "operation": "cold-login-form",
+      "ms": 1480.5772,
+      "ok": true
+    },
+    {
+      "operation": "login-to-workday",
+      "ms": 237.85809999999992,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 24.300700000000234,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 115.11859999999979,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 19.38760000000002,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 81.21439999999984,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 16.121099999999842,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 86.85219999999981,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 9.871900000000096,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 66.73619999999983,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 9.310099999999693,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 66.88910000000033,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 18.43769999999995,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 95.04300000000012,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 15.521299999999883,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 87.24029999999993,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 28.695900000000165,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 82.29619999999977,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 15.486100000000079,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 84.07640000000038,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 18.02079999999978,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 95.68370000000004,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 16.980999999999767,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 77.61989999999969,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 20.54379999999992,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 73.65000000000009,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 9.602699999999913,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 85.15000000000009,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 12.6867000000002,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 75.78150000000005,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 9.638699999999972,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 80.80069999999978,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 25.832700000000386,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 127.82069999999976,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 28.54419999999982,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 138.52179999999998,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 24.966799999999694,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 103.46569999999974,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 16.01389999999992,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 86.01649999999972,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 11.135200000000623,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 69.34510000000046,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 9.75500000000011,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 76.5626000000002,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 14.932400000000598,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 81.08880000000045,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 9.936599999999999,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 68.7479000000003,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 10.514799999999923,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 81.33989999999994,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 13.039600000000064,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 86.72699999999986,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 17.030099999999948,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 102.53499999999985,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 22.105499999999665,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 125.88360000000011,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 23.531800000000658,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 99.5014000000001,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 9.462899999999536,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 69.80540000000019,
+      "ok": true
+    },
+    {
+      "operation": "patient-directory",
+      "ms": 10.138500000000022,
+      "ok": true
+    },
+    {
+      "operation": "open-chart",
+      "ms": 65.02839999999924,
+      "ok": true
+    }
+  ],
+  "page_errors": []
+}
