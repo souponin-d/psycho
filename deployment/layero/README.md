@@ -2,7 +2,7 @@
 
 Основной адрес — <https://syncli-main.layero.app/>; кабинет — `/doctor/`. `layero.json` задаёт fullstack: весь корневой `dist/` остаётся статикой, только `/api` попадает в отдельный Node.js 24 runtime. API, PostgreSQL, cookie-аутентификация и клиническая логика остаются на VPS. Android продолжает обращаться напрямую к VPS.
 
-Контур уже опубликован. [Поставка API/VPS 27 октября](../../docs/verification/2026-10-27-vps-integration.md) и [публичный обмен с установленным APK 0.4.4 через VPS и Layero](../../docs/verification/2026-10-27-doctor-integration-polish.md) описывают выполненные проверки. Текущие исходники Android — 0.4.5, versionCode 9; версия клиента не меняет ID установленного API `20261027-integration-90ee18d`. [Текущий статус](../../docs/status.md), [проверка репозитория 29 октября](../../docs/verification/2026-10-29-repository-state.md).
+Контур уже опубликован. [Поставка API/VPS 27 октября](../../docs/verification/2026-10-27-vps-integration.md) и [публичный обмен с установленным APK 0.4.4 через VPS и Layero](../../docs/verification/2026-10-27-doctor-integration-polish.md) описывают выполненные проверки. Текущие исходники Android — 0.4.5, versionCode 9; версия клиента не меняет ID установленного API `20261027-integration-90ee18d`. [Текущий статус](../../docs/status.md), [проверка работы стенда 29 октября](../../docs/verification/2026-10-29-repository-state.md).
 
 ## Настройка существующего проекта
 

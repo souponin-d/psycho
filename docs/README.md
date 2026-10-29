@@ -42,6 +42,6 @@
 - [APK → VPS → Layero](verification/2026-10-27-doctor-integration-polish.md): назначения, дозы, сообщения, отчёты и опросы.
 - [Навигация Android 0.4.5](verification/2026-10-27-mobile-navigation.md), [врачебные входящие](verification/2026-10-27-doctor-daily-copy.md).
 - [Инженерные измерения](verification/technical-metrics/README.md): методика, исходные результаты и пределы выводов.
-- [Сверка 29 октября](verification/2026-10-29-repository-state.md): база Git, очистка документации и свежие проверки.
+- [Проверка VPS 29 октября](verification/2026-10-29-repository-state.md): доступность стенда, вход врача и сохранность данных.
 
 Датированные документы в `verification/`, `research/`, `clinical-validation/` и `decisions/` сохраняют факты на указанную дату. Текущие ограничения перечислены в [статусе](status.md). Завершённые планы задач и заменённые промежуточные описания удаляются после переноса нужных сведений; их версии остаются в Git.

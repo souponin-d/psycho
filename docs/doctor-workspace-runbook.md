@@ -1,6 +1,6 @@
 # Рабочее место врача: запуск и эксплуатация
 
-Актуализировано 29 октября 2026 года по `main` (`6c468f5`). [Текущее покрытие](status.md) и [результаты сверки](verification/2026-10-29-repository-state.md) отделяют код от версии опубликованного стенда. Веб доступен через Layero, API/PostgreSQL — на VPS; [настройки Layero](../deployment/layero/README.md) и [VPS](../deployment/demo/README.md) описывают фактическую поставку. Мобильный пациент подключён к общей серверной карте.
+Актуализировано 29 октября 2026 года по `main` (`6c468f5`). [Текущее покрытие](status.md) и [проверка VPS](verification/2026-10-29-repository-state.md) описывают реализацию и работу опубликованного стенда. Веб доступен через Layero, API/PostgreSQL — на VPS; [настройки Layero](../deployment/layero/README.md) и [VPS](../deployment/demo/README.md) описывают фактическую поставку. Мобильный пациент подключён к общей серверной карте.
 
 Спецификация: [D01–D25 и R01–R24](specifications/doctor-web/2026-10-22-doctor-web-specification.md). [Реестр источников с полными названиями](specifications/doctor-web/2026-10-22-source-register.md). [Покрытие и результаты](verification/doctor-workspace.md).
 
