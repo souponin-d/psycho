@@ -1,5 +1,7 @@
 # Разработка клинической экосистемы — план пяти контрибьюторов
 
+> **Статус документа:** Правила ответственности и передачи работ сохраняют силу. Дорожная карта ниже — исторический план, а не текущий статус; старые целевые пути не являются инструкцией запуска. [Текущее состояние](../../status.md).
+
 > **For agentic workers:** Use `superpowers:executing-plans` for the assigned issue only. Respect its allowed files and verification class. Contributors 2–5 must not expand a small task into backend, mobile, security, or clinical-engine implementation.
 
 **Goal:** Ускорить работу главы разработки за счёт четырёх участников, выполняющих небольшие изолированные задачи с простой приёмкой.

@@ -1,5 +1,7 @@
 # Doctor context and ICD-10 Implementation Plan
 
+> **Статус документа:** Исторический план задачи. Поручения, целевые пути, чекбоксы и ограничения описывают исходную постановку, а не состояние текущего main. Сохранён для требований и прослеживаемости; не использовать как инструкцию запуска. [Текущее состояние](../../status.md).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Replace fragmented visit notes with patient context and two statuses, and support versioned ICD-10 selections in the synthetic doctor workspace.
